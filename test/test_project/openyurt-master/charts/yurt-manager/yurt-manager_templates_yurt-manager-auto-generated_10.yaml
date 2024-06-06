@@ -1,0 +1,233 @@
+# Source: yurt-manager/templates/yurt-manager-auto-generated.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: yurt-manager-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-v1-deployment
+  failurePolicy: Ignore
+  name: mutate.apps.v1.deployment
+  rules:
+  - apiGroups:
+    - apps
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - deployments
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-raven-openyurt-io-v1beta1-gateway
+  failurePolicy: Fail
+  name: mutate.gateway.v1beta1.raven.openyurt.io
+  rules:
+  - apiGroups:
+    - raven.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - gateways
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-core-openyurt-io-v1-node
+  failurePolicy: Ignore
+  name: mutate.core.v1.node.openyurt.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - nodes
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-openyurt-io-v1beta1-nodepool
+  failurePolicy: Fail
+  name: m.v1beta1.nodepool.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    resources:
+    - nodepools
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-iot-openyurt-io-v1alpha2-platformadmin
+  failurePolicy: Fail
+  name: mplatformadmin.kb.io
+  rules:
+  - apiGroups:
+    - iot.openyurt.io
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - platformadmins
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-core-openyurt-io-v1-pod
+  failurePolicy: Ignore
+  name: mutate.core.v1.pod.openyurt.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-openyurt-io-v1alpha1-yurtappdaemon
+  failurePolicy: Fail
+  name: mutate.apps.v1alpha1.yurtappdaemon.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtappdaemons
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-openyurt-io-v1alpha1-yurtappoverrider
+  failurePolicy: Fail
+  name: mutate.apps.v1alpha1.yurtappoverrider.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtappoverriders
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-openyurt-io-v1beta1-yurtappset
+  failurePolicy: Fail
+  name: myurtappset.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtappsets
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-apps-openyurt-io-v1alpha1-yurtstaticset
+  failurePolicy: Fail
+  name: mutate.apps.v1alpha1.yurtstaticset.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtstaticsets
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /mutate-net-openyurt-io-poolservice
+  failurePolicy: Fail
+  name: mutate.net.v1alpha1.poolservice.openyurt.io
+  rules:
+  - apiGroups:
+    - net.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - poolservices
+  sideEffects: None

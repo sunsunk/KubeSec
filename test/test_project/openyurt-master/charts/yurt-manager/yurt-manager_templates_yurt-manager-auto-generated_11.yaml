@@ -1,0 +1,195 @@
+# Source: yurt-manager/templates/yurt-manager-auto-generated.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: yurt-manager-validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-raven-openyurt-io-v1beta1-gateway
+  failurePolicy: Fail
+  name: validate.gateway.v1beta1.raven.openyurt.io
+  rules:
+  - apiGroups:
+    - raven.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - gateways
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-core-openyurt-io-v1-node
+  failurePolicy: Ignore
+  name: validate.core.v1.node.openyurt.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - UPDATE
+    resources:
+    - nodes
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-apps-openyurt-io-v1beta1-nodepool
+  failurePolicy: Fail
+  name: v.v1beta1.nodepool.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - nodepools
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-iot-openyurt-io-v1alpha2-platformadmin
+  failurePolicy: Fail
+  name: vplatformadmin.kb.io
+  rules:
+  - apiGroups:
+    - iot.openyurt.io
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - platformadmins
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-apps-openyurt-io-v1alpha1-yurtappdaemon
+  failurePolicy: Fail
+  name: validate.apps.v1alpha1.yurtappdaemon.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtappdaemons
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-apps-openyurt-io-v1alpha1-yurtappoverrider
+  failurePolicy: Fail
+  name: validate.apps.v1alpha1.yurtappoverrider.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - yurtappoverriders
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-apps-openyurt-io-v1beta1-yurtappset
+  failurePolicy: Fail
+  name: vyurtappset.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtappsets
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-apps-openyurt-io-v1alpha1-yurtstaticset
+  failurePolicy: Fail
+  name: validate.apps.v1alpha1.yurtstaticset.openyurt.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - yurtstaticsets
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: default
+      path: /validate-net-openyurt-io-poolservice
+  failurePolicy: Fail
+  name: validate.net.v1alpha1.poolservice.openyurt.io
+  rules:
+  - apiGroups:
+    - net.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - poolservices
+  sideEffects: None

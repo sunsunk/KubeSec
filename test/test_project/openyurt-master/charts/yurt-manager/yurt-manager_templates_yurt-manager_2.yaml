@@ -1,0 +1,6 @@
+# Source: yurt-manager/templates/yurt-manager.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yurt-manager-webhook-certs
+  namespace: default

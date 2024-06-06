@@ -1,0 +1,85 @@
+# Source: yurt-manager/templates/yurt-manager.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    helm.sh/chart: yurt-manager-1.4.3
+    app.kubernetes.io/name: yurt-manager
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.4.0"
+    app.kubernetes.io/managed-by: Helm
+  name: yurt-manager
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yurt-manager
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yurt-manager
+        app.kubernetes.io/instance: my-release
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      containers:
+        - args:
+            - --metrics-addr=:10271
+            - --health-probe-addr=:10272
+            - --webhook-port=10273
+            - --logtostderr=true
+            - --v=4
+            - --working-namespace=default
+            - --leader-elect-resource-name=cloud-yurt-manager
+            - --controllers=*
+          command:
+            - /usr/local/bin/yurt-manager
+          image: openyurt/yurt-manager:v1.4.0
+          imagePullPolicy: IfNotPresent
+          name: yurt-manager
+          ports:
+            - containerPort: 10273
+              name: webhook-server
+              protocol: TCP
+            - containerPort: 10271
+              name: metrics
+              protocol: TCP
+            - containerPort: 10272
+              name: health
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10272
+            initialDelaySeconds: 60
+            timeoutSeconds: 2
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 10272
+            initialDelaySeconds: 60
+            timeoutSeconds: 2
+            periodSeconds: 10
+            failureThreshold: 2
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      serviceAccountName: yurt-manager
+      affinity: 
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists

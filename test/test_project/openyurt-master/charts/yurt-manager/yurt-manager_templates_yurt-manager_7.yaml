@@ -1,0 +1,25 @@
+# Source: yurt-manager/templates/yurt-manager.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yurt-manager-webhook-service
+  namespace: default
+  labels:
+    helm.sh/chart: yurt-manager-1.4.3
+    app.kubernetes.io/name: yurt-manager
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.4.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 10273
+      name: https
+    - port: 10271
+      protocol: TCP
+      targetPort: 10271
+      name: metrics
+  selector:
+    app.kubernetes.io/name: yurt-manager
+    app.kubernetes.io/instance: my-release
