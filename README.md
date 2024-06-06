@@ -6,9 +6,8 @@
 
 ## KubeSec
 
-KubeSec用来全面自动化识别TPA危险授权和TPC漏洞。
-
-KubeSec 使用python和go语言开发。
+KubeSec is used to fully automate the identification of dangerous authorizations and TPC vulnerabilities in TPA.
+KubeSec is developed in python and go.
 
 
 
