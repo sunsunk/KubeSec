@@ -6,8 +6,9 @@
 
 ## KubeSec
 
-KubeSec is used to fully automate the identification of dangerous authorizations and TPC vulnerabilities in TPA.
-KubeSec is developed in python and go.
+  KubeSec is used to fully automate the identification of dangerous authorizations and TPC vulnerabilities in TPA.
+  
+  KubeSec is developed in python and go.
 
 
 
