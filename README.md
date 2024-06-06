@@ -1,3 +1,0 @@
-# KubeSec
-In this repository, we open source the KubeSec parsing framework to fully identify the risk of over-authorization in TPA and TPCs containing vulnerabilities in the Kubernetes ecosystem.
-The source code will be uploaded in full in two days...
