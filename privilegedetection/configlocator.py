@@ -148,11 +148,6 @@ def post_processing_helm(p, file_path):
     p.helm_process_file.append(os.path.basename(file_path))
 
 def loc(directory_path):
-    # global helm_project
-    # parser = argparse.ArgumentParser(description='Process some directories.')
-    # parser.add_argument('directory_path', type=str, help='Path to the directory containing projects')
-    # args = parser.parse_args()
-    # directory_path = args.directory_path
 
     strings = ['ServiceAccount', 'ClusterRole', 'ClusterRoleBinding', 'Role', 'RoleBinding', 'Deployment'] 
     projects = find_project(directory_path)
@@ -197,48 +192,4 @@ def loc(directory_path):
         print(p.helm_process_file)
         helm_project = set()    
 
-# if __name__ == "__main__":
-#     loc()
-#     file_path = '../../target/CLUSTEROLE_BINDING_INFO.json'   
-#     permission_list = [
-#         [
-#             ['*', '*'],  
-#         ],
-#         [
-#             ['*', 'secrets'],  
-#             ['*',  'nodes'],
-#             ['*', 'clusterroles'],
-#             ['*', 'clusterrolebindings'],
-#             ['list', '*'],   
-#             ['get', '*'],
-#             ['watch', '*'],
-#             ['patch', '*'],
-#             ['update', '*'],
-#         ],
-#         [
-#             ['list', 'secrets'],  
-#             ['get', 'secrets'],
-#             ['watch', 'secrets'],
-#             ['patch', 'secrets'],
-#             ['update', 'secrets'],
-#             ['patch', 'nodes'],
-#             ['update', 'nodes'],
 
-#             ['list', 'clusterroles'],  
-#             ['get', 'clusterroles'],
-#             ['watch', 'clusterroles'],
-#             ['patch', 'clusterroles'],
-#             ['update', 'clusterroles'],
-
-#             ['list', 'clusterrolebindings'],  
-#             ['get', 'clusterrolebindings'],
-#             ['watch', 'clusterrolebindings'],
-#             ['patch', 'clusterrolebindings'],
-#             ['update', 'clusterrolebindings'],
-#             ['escalate', 'clusterrolebindings']
-#         ],
-#     ]
-
-#     updated_permission_list = riskanalyzer.process_permission_data(file_path, permission_list)
-    
-#     riskanalyzer.save_to_excel(updated_permission_list, '../../target/permission_list.xlsx')

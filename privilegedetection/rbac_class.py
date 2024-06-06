@@ -16,10 +16,8 @@ def count_permissions(data, permission_count):
             rules = entry['clusterRole']['rules']
             for rule in rules:
                 for resources, operations in rule.items():
-                    # 将资源按逗号分隔
                     resource_list = resources.split(',')
                     for resource in resource_list:
-                        # 形成权限字符串并统计
                         for operation in operations:
                             permission = f"{resource}:{operation}"
                             permission_count[permission] += 1
@@ -40,8 +38,6 @@ def main():
     directory_path = 'dir'  
     output_file_path = 'log2.txt'  
     sorted_permissions, total_permissions = process_directory(directory_path)
-    
-    # 输出结果到文件
     with open(output_file_path, 'w') as output_file:
         output_file.write(f"Total number of unique permissions: {total_permissions}\n")
         for permission, count in sorted_permissions:

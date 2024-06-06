@@ -10,20 +10,18 @@ def check_rules(rules, data):
                 data_keys = data_key.split(',')
                 if rule_key in data_keys:
                     if ',' in data_value:
-                        # 多个字符串，分别比较
                         data_values = data_value.split(',')
                         if any(set(rule_values) & set(val.strip()) for val in data_values):
                             flag = True
                             return flag
                     else:
-                        # 单个字符串，直接比较
                         if set(rule_values) & set(data_value):
                             flag = True
                             return flag
     return flag
 class_name = 'CLUSTEROLE_BINDING_INFO'
 file_path = class_name+'.json'
-# file_path = 'test.json'
+
 with open(file_path, "r") as json_file:
     for line in json_file:
         data = json.loads(line)

@@ -8,6 +8,7 @@ from tpcdetection.coordinator import detect as dt
 from tpcdetection.coordinator import analis as als
 from privilegedetection import configlocator as ct
 from privilegedetection import riskanalyzer as rr
+
 def tpc(directory_path, output_directory):
     gb.process_projects(directory_path, output_directory)
     projects = dt.find_project(directory_path)
@@ -24,8 +25,8 @@ def tpc(directory_path, output_directory):
         dt.download_vulnerability_report(project_name, project_uuid, f"{output_directory}/vulners-boms/{project_name}.vulner.json")
     folder_path = './target/tpc/vulners-boms/'
     als.process_folder(folder_path)
+
 def rbac(directory_path):
-    # rbac
     ct.loc(directory_path)
     file_path = './target/rbac/CLUSTEROLE_BINDING_INFO.json'
     rr.analyze(file_path, './target/rbac/permission_report.xlsx')

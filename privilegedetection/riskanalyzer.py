@@ -76,21 +76,21 @@ def  analyze(file_path,out_path):
   
     permission_list = [
         [
-            ['*', '*'],  # 最大危险等级  任意操作  任意资源
+            ['*', '*'],  
         ],
         [
-            ['*', 'secrets'],  # 第二级 任意操作  敏感资源 
+            ['*', 'secrets'], 
             ['*',  'nodes'],
             ['*', 'clusterroles'],
             ['*', 'clusterrolebindings'],
-            ['list', '*'],  # 第三级 敏感操作  任意资源 
+            ['list', '*'], 
             ['get', '*'],
             ['watch', '*'],
             ['patch', '*'],
             ['update', '*'],
         ],
         [
-            ['list', 'secrets'],  # 第四级 敏感操作  敏感资源
+            ['list', 'secrets'], 
             ['get', 'secrets'],
             ['watch', 'secrets'],
             ['patch', 'secrets'],

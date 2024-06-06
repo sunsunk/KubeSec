@@ -14,5 +14,4 @@ def upload_bom(project_name,project_uuid):
 
     response = requests.post(url, headers=headers, files=files)
     print(response.status_code)
-    # print(response.json())
 upload_bom("cert-manager-master","5a203693-c176-43a2-b425-78bce789baa4")

@@ -61,9 +61,4 @@ def process_projects(directory_path, output_directory):
             error_project.append(project)
 
 
-# # 示例调用
-# directory_path = "../../dateset"
-# output_directory = "../../target"
 
-
-# process_projects(directory_path, output_directory)

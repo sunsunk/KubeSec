@@ -89,7 +89,7 @@ def upload_bom(project_name,project_uuid):
     file_path = f"./target/tpc/sboms/{project_name}.bom.json"
     print(file_path)
     if os.path.exists(file_path):
-        # 文件存在，执行相关操作
+ 
         files = {
             'project': (None, f'{project_uuid}'),
             'bom': (f'{project_name}.bom.json', open(file_path, 'rb'), 'application/json')
@@ -97,9 +97,7 @@ def upload_bom(project_name,project_uuid):
         response = requests.post(url, headers=headers, files=files)
         print(response.status_code)
         print(response)
-    # else:
-    #     with open("error.txt", "a") as error_file:
-    #         error_file.write(f"File not found: {file_path}\n")
+  
 '''
 获取漏洞报告
 '''
@@ -125,14 +123,10 @@ def download_vulnerability_report(project_name,project_id,out_path):
     response = requests.get(url, params=params, headers=headers)
 
     if response.status_code == 200:
-        file_name = out_path  # 文件保存的名称
+        file_name = out_path 
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(file_name, "wb") as file:
             file.write(response.content)
         print(f"Download succeed,output to {out_path}")
         return file_name
-    # else:
-    #     error_download.append(project_name)
-    #     print(f"Request failed with status code: {response.status_code}")
-    #     return None
 

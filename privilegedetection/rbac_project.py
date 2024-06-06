@@ -44,7 +44,6 @@ def main():
     output_file_path = 'log2_project.txt'  
     sorted_permissions, total_permissions = process_directory(directory_path)
     
-    # 输出结果到文件
     with open(output_file_path, 'w') as output_file:
         output_file.write(f"Total number of unique permissions: {total_permissions}\n")
         for permission, count in sorted_permissions:
