@@ -1,0 +1,27 @@
+# Source: hwameistor/templates/auditor.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-auditor
+  namespace: default
+  labels:
+    app: hwameistor-auditor
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-auditor
+  template:
+    metadata:
+      labels:
+        app: hwameistor-auditor
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: auditor
+          image: ghcr.io/hwameistor/auditor:v0.14.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}

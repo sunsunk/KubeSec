@@ -13,7 +13,7 @@ def find_project(directory):
             project_name.append(subdir)
     return project_name
 
-def create_project(project_name, project_version):
+def create_project(project_name):
     url = "http://localhost:8080/api/v1/project"
     headers = {
         "Content-Type": "application/json",
@@ -21,7 +21,7 @@ def create_project(project_name, project_version):
     }
     data = {
         "name": project_name,
-        "version": project_version
+        "version": 'latest'
     }
     response = requests.put(url, headers=headers, json=data)
     if response.status_code == 201:

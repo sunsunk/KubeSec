@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-apiserver
+  namespace: dynamic_parameters
+  labels:
+    app: hwameistor-apiserver
+spec:
+  replicas: dynamic_parameters
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-apiserver
+  template:
+    metadata:
+      labels:
+        app: hwameistor-apiserver
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: server
+          image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources: 
+          env:
+            - name: EnableAuth
+              value: "dynamic_parameters"
+            - name: AuthAccessId
+              value: dynamic_parameters
+            - name: AuthSecretKey
+              value: dynamic_parameters
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-apiserver
+  namespace: dynamic_parameters
+  labels:
+    app: hwameistor-apiserver
+spec:
+  selector:
+    app: hwameistor-apiserver
+  ports:
+    - port: 80
+      targetPort: http
+
+---

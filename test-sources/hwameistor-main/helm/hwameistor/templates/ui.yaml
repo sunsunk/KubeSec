@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hwameistor-ui
+  name: hwameistor-ui
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: hwameistor-ui
+  template:
+    metadata:
+      labels:
+        app: hwameistor-ui
+      name: hwameistor-ui
+    spec:
+      containers:
+        - image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          name: hwameistor-ui
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+          resources:
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hwameistor-ui
+  name: hwameistor-ui
+  namespace: dynamic_parameters
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: http
+  selector:
+    app: hwameistor-ui
+
+---
+
+---

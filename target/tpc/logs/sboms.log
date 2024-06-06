@@ -1,0 +1,16 @@
+./sources/openyurt-master/go.mod
+go.mod path: ./target/tpc/sboms/openyurt-master.bom.json
+Processing openyurt-master....
+openyurt-master BOM generation completed successfully.
+./sources/spiderpool-main/go.mod
+go.mod path: ./target/tpc/sboms/spiderpool-main.bom.json
+Processing spiderpool-main....
+spiderpool-main BOM generation completed successfully.
+./sources/hwameistor-main/go.mod
+go.mod path: ./target/tpc/sboms/hwameistor-main.bom.json
+Processing hwameistor-main....
+hwameistor-main BOM generation completed successfully.
+['openyurt-master', 'spiderpool-main', 'hwameistor-main']
+Project created successfully.
+Project created successfully.
+Project created successfully.

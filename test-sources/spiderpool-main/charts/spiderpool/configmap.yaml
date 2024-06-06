@@ -1,0 +1,59 @@
+# Source: spiderpool/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spiderpool-conf
+  namespace: default
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-controller
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  conf.yml: |
+    ipamUnixSocketPath: /var/run/spidernet/spiderpool.sock
+    enableIPv4: true
+    enableIPv6: true
+    enableStatefulSet: true
+    enableKubevirtStaticIP: true
+    enableSpiderSubnet: true
+    clusterSubnetDefaultFlexibleIPNumber: 1
+
+---
+# Source: spiderpool/templates/configmap.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: spiderpool-multus
+  namespace: "default"
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-multus
+    name: multus
+    app.kubernetes.io/managed-by: Helm
+    tier: node
+    app: multus
+data:
+  cni-conf.json: |
+    {
+      "cniVersion": "0.3.1",
+      "name": "multus-cni-network",
+      "type": "multus",
+      "confDir": "/etc/cni/net.d/" ,
+      "logLevel": "debug",
+      "logFile": "/var/log/multus.log",
+      "capabilities": {
+        "portMappings": true,
+        "bandwidth": true
+      },
+      "namespaceIsolation": false,
+      "clusterNetwork": "",
+      "defaultNetworks": [],
+      "multusNamespace": "default",
+      "systemNamespaces": [],
+      "kubeconfig": "/etc/cni/net.d/multus.d/multus.kubeconfig"
+    }

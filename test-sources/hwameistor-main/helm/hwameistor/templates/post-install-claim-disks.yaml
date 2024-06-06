@@ -1,0 +1,22 @@
+# Claim nodes disks
+{{-  range .Values.storageNodes }}
+{{- $name :=  .  }}
+apiVersion: hwameistor.io/v1alpha1
+kind: LocalDiskClaim
+metadata:
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-failed
+  name: {{ $name }}
+spec:
+  # nodeName is the node where disk is attached
+  # If nodeName contains ".",please replace it with "-".
+  # The field value should be consistent with the nodeName in localdisk
+  nodeName: {{ . }}
+  # owner indicates which storage-system will consume the bounded disks backing this claim
+  # by default, we set local-storage as the owner
+  owner: local-storage
+  description:
+    diskType: {{ $.Values.storageClass.diskType }}
+---
+{{- end}}

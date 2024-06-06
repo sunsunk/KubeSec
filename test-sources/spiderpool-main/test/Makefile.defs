@@ -1,0 +1,222 @@
+#============ e2e-kind-config ====================
+
+# iptables,ipvs or none, default iptables
+ifeq ($(DISABLE_KUBE_PROXY),true)
+    E2E_KUBE_PROXY_MODE ?= none
+else
+    E2E_KUBE_PROXY_MODE ?= iptables
+endif
+
+E2E_CHINA_IMAGE_REGISTRY ?= false
+HTTP_PROXY ?=
+
+K8S_IPV4_SERVICE_CIDR = 10.233.0.0/18
+K8S_IPV6_SERVICE_CIDR = fd00:10:233::/116
+
+CLUSTER_POD_SUBNET_V4 = 10.233.64.0/18
+CLUSTER_POD_SUBNET_V6 = fd00:10:233:64::/64
+CALICO_CLUSTER_POD_SUBNET_V4 = 10.243.64.0/18
+CALICO_CLUSTER_POD_SUBNET_V6 = fd00:10:243::/112
+CILIUM_CLUSTER_POD_SUBNET_V4 = 10.244.64.0/18
+CILIUM_CLUSTER_POD_SUBNET_V6 = fd00:10:244::/112
+
+# ipv4 or ipv6 or dual, default ipv4
+E2E_IP_FAMILY ?= dual
+
+# kubernetes version
+# serviceCIDR is available in 1.29
+E2E_KIND_IMAGE_TAG ?= v1.29.0
+# with kind default version
+# E2E_KIND_IMAGE_TAG ?= 
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_KIND_IMAGE_NAME ?= docker.m.daocloud.io/kindest/node
+else
+    E2E_KIND_IMAGE_NAME ?= docker.io/kindest/node
+endif
+
+# disable default cni, default true
+E2E_DISABLE_DEFAULT_CNI ?= true
+
+INSTALL_MACVLAN ?= true
+
+INSTALL_OVERLAY_CNI ?= false
+
+INSTALL_CALICO ?= true
+
+INSTALL_CILIUM ?= true
+
+DISABLE_KUBE_PROXY ?= false
+
+INSTALL_KRUISE ?= false
+
+INSTALL_KDOCTOR ?= false
+
+INSTALL_KUBEVIRT ?= false
+
+INSTALL_OVS ?= false
+
+INSTALL_SRIOV ?= false
+
+INSTALL_RDMA ?= false
+
+#============ ginkgo-custom-flag ====================
+E2E_CLUSTER_NAME ?= spider
+
+RELEASE_NAME ?= spiderpool
+RELEASE_NAMESPACE ?= kube-system
+
+# multi flag separated by commas,like setup,ippool
+E2E_GINKGO_LABELS ?=
+
+GINKGO_OPTION ?=
+
+E2E_TIMEOUT ?= 60m
+
+E2E_GINKGO_PROCS ?= 4
+
+E2E_SPIDERPOOL_ENABLE_SUBNET ?= true
+E2E_SPIDERPOOL_ENABLE_COORDINATOR ?= true
+E2E_SPIDERPOOL_ENABLE_MULTUSCONFIG ?= true
+
+E2E_HELM_ADDITIONAL_OPTIONS ?=
+
+#============Image version===========
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+  TEST_IMAGE_NAME ?= docker.m.daocloud.io/alpine:latest
+else
+  TEST_IMAGE_NAME ?= docker.io/alpine:latest
+endif
+
+#USE_TLS_METHOD := certmanager
+#USE_TLS_METHOD := provided
+USE_TLS_METHOD := auto
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    IMAGE_PYROSCOPE_NAME ?= docker.m.daocloud.io/grafana/pyroscope:latest
+else
+    IMAGE_PYROSCOPE_NAME ?= docker.io/grafana/pyroscope:latest
+endif
+
+
+CERT_MANAGER_VERSION := v1.8.0
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    IMAGE_CERT_MANAGER_REPO := quay.m.daocloud.io/jetstack
+else
+    IMAGE_CERT_MANAGER_REPO := quay.io/jetstack
+endif
+IMAGE_CERT_MANAGER_NAME := $(IMAGE_CERT_MANAGER_REPO)/cert-manager-cainjector:$(CERT_MANAGER_VERSION) $(IMAGE_CERT_MANAGER_REPO)/cert-manager-cainjector:$(CERT_MANAGER_VERSION) $(IMAGE_CERT_MANAGER_REPO)/cert-manager-webhook:$(CERT_MANAGER_VERSION) $(IMAGE_CERT_MANAGER_REPO)/cert-manager-controller:$(CERT_MANAGER_VERSION)
+CERT_MANAGER_ISSUER_NAME := selfsigned
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_VLAN_GATEWAY_IMAGE ?= docker.m.daocloud.io/centos/tools:latest
+else
+    E2E_VLAN_GATEWAY_IMAGE ?= docker.io/centos/tools:latest
+endif
+
+VLAN_GATEWAY_CONTAINER := vlan-gateway
+
+#================= multus
+MULTUS_DEFAULT_CNI_CALICO := k8s-pod-network
+MULTUS_DEFAULT_CNI_CILIUM := cilium
+MULTUS_DEFAULT_CNI_VLAN0 := macvlan-vlan0
+MULTUS_DEFAULT_CNI_VLAN100 := macvlan-vlan100
+MULTUS_DEFAULT_CNI_VLAN200 := macvlan-vlan200
+MULTUS_OVS_CNI_VLAN30 := ovs-vlan30
+MULTUS_OVS_CNI_VLAN40 := ovs-vlan40
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_MULTUS_IMAGE_REGISTER ?= ghcr.m.daocloud.io
+else
+    E2E_MULTUS_IMAGE_REGISTER ?= ghcr.io
+endif
+E2E_MULTUS_IMAGE_NAME ?= $(E2E_MULTUS_IMAGE_REGISTER)/k8snetworkplumbingwg/multus-cni
+
+
+#================= calico
+CALICO_VERSION ?=
+DEFAULT_CALICO_VERSION ?= v3.26.4
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+  CALICO_IMAGE_REPO ?= docker.m.daocloud.io
+else
+  CALICO_IMAGE_REPO ?= docker.io
+endif
+
+CALICO_AUTODETECTION_METHOD ?= "kubernetes-internal-ip"
+
+#================= cilium
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_CILIUM_IMAGE_REPO ?= "quay.m.daocloud.io"
+else
+    E2E_CILIUM_IMAGE_REPO ?= "quay.io"
+endif
+
+CILIUM_VERSION ?=
+
+#================= kdoctor
+KDOCTOR_VERSION ?= v0.2.1
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_KDOCTOR_IMAGE_REPO ?= ghcr.m.daocloud.io
+else
+    E2E_KDOCTOR_IMAGE_REPO ?= ghcr.io
+endif
+
+KDOCTOR_REPORT_PATH=/var/log/kdoctor/controller
+
+#====== pyroscope
+PYROSCOPE_CONTAINER_NAME := e2e-pyroscope
+PYROSCOPE_LOCAL_PORT := 4040
+
+#============Tmp Path================
+# do not modify this ,it is also written on CI workflow file
+DOWNLOAD_DIR := $(ROOT_DIR)/test/.download
+CLUSTER_DIR := $(ROOT_DIR)/test/.cluster
+E2E_KUBECONFIG := $(CLUSTER_DIR)/$(E2E_CLUSTER_NAME)/.kube/config
+GLOBAL_KIND_CONFIG_PATH := $(ROOT_DIR)/test/yamls/global-kind.yaml
+
+#=============http_proxy=============
+http_proxy ?=
+
+E2E_LOG_FILE ?= $(ROOT_DIR)/test/e2edebugLog.txt
+
+#========= openkruise =========
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_OPENKRUISE_IMAGE ?= docker.m.daocloud.io/openkruise/kruise-manager
+else
+    E2E_OPENKRUISE_IMAGE ?= docker.io/openkruise/kruise-manager
+endif
+
+#========= rdma shared dp =========
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_RDMA_DP_IMAGE_REPO ?= ghcr.m.daocloud.io
+else
+    E2E_RDMA_DP_IMAGE_REPO ?= ghcr.io
+endif
+
+#========= sriov =========
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_SRIOV_IMAGE_REPO ?= ghcr.m.daocloud.io
+else
+    E2E_SRIOV_IMAGE_REPO ?= ghcr.io
+endif
+
+#=========== kubevrit ============
+
+# empty for latest
+KUBEVIRT_VERSION :=
+
+ifeq ($(E2E_CHINA_IMAGE_REGISTRY),true)
+    E2E_KUBEVIRT_IMAGE_REPO ?= quay.m.daocloud.io
+else
+    E2E_KUBEVIRT_IMAGE_REPO ?= quay.io
+endif
+
+#================= ovs
+DOCKER_ADDITIONAL_NETWORK := spider_eth1
+HOST_ADDITIONAL_INTERFACE := eth1
+BRIDGE_INTERFACE := br1

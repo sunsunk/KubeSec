@@ -1,0 +1,187 @@
+# Source: spiderpool/templates/deployment.yaml
+apiVersion: dynamic_parameters
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+    
+  annotations:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+        
+        
+      labels:
+        
+        
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      tolerations:
+      nodeSelector:
+      affinity:
+      
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    
+      containers:
+      - name: dynamic_parameters
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        command:
+        - dynamic_parameters
+        args:
+        - daemon
+        - --config-path=/tmp/spiderpool/config-map/conf.yml
+        - --tls-server-cert=/etc/tls/tls.crt
+        - --tls-server-key=/etc/tls/tls.key
+        ports:
+        - name: metrics
+          containerPort: dynamic_parameters
+          protocol: TCP
+        - name: http
+          containerPort: dynamic_parameters
+          protocol: TCP
+        - name: webhook
+          containerPort: dynamic_parameters
+          protocol: TCP
+        startupProbe:
+          httpGet:
+            host: dynamic_parameters
+            path: /v1/runtime/startup
+            port: dynamic_parameters
+            scheme: HTTP
+          failureThreshold: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          successThreshold: 1
+        livenessProbe:
+          httpGet:
+            host: dynamic_parameters
+            path: /v1/runtime/liveness
+            port: dynamic_parameters
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: dynamic_parameters
+          successThreshold: 1
+          failureThreshold: dynamic_parameters
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            host: dynamic_parameters
+            path: /v1/runtime/readiness
+            port: dynamic_parameters
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: dynamic_parameters
+          successThreshold: 1
+          failureThreshold: dynamic_parameters
+          timeoutSeconds: 1
+        resources:
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - dynamic_parameters
+                - shutdown
+        env:
+        - name: SPIDERPOOL_LOG_LEVEL
+          value: dynamic_parameters
+        - name: SPIDERPOOL_ENABLED_METRIC
+          value: dynamic_parameters
+        - name: SPIDERPOOL_ENABLED_DEBUG_METRIC
+          value: dynamic_parameters
+        - name: SPIDERPOOL_METRIC_HTTP_PORT
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GOPS_LISTEN_PORT
+          value: dynamic_parameters
+        - name: SPIDERPOOL_WEBHOOK_PORT
+          value: dynamic_parameters
+        - name: SPIDERPOOL_HEALTH_PORT
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GC_IP_ENABLED
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GC_STATELESS_TERMINATING_POD_ON_READY_NODE_ENABLED
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GC_STATELESS_TERMINATING_POD_ON_NOT_READY_NODE_ENABLED
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GC_ADDITIONAL_GRACE_DELAY
+          value: dynamic_parameters
+        - name: SPIDERPOOL_GC_DEFAULT_INTERVAL_DURATION
+          value: dynamic_parameters
+        - name: SPIDERPOOL_MULTUS_CONFIG_ENABLED
+          value: dynamic_parameters
+        - name: SPIDERPOOL_CNI_CONFIG_DIR
+          value: dynamic_parameters
+        - name: SPIDERPOOL_COORDINATOR_ENABLED
+          value: dynamic_parameters
+        - name: SPIDERPOOL_COORDINATOR_DEAFULT_NAME
+          value: dynamic_parameters
+        - name: SPIDERPOOL_CILIUM_CONFIGMAP_NAMESPACE_NAME
+          value: dynamic_parameters
+        - name: SPIDERPOOL_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPIDERPOOL_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        securityContext:
+        volumeMounts:
+        - name: config-path
+          mountPath: /tmp/spiderpool/config-map
+          readOnly: true
+        - name: cni-conf-dir
+          mountPath: dynamic_parameters
+          readOnly: true
+        - name: tls
+          mountPath: /etc/tls
+          readOnly: true
+        
+      volumes:
+      # To read the configuration from the config map
+      - name: config-path
+        configMap:
+          name: dynamic_parameters
+      - name: cni-conf-dir
+        hostPath:
+          path:  dynamic_parameters
+          type: DirectoryOrCreate
+      - name: tls
+        projected:
+          defaultMode: 0400
+          sources:
+          - secret:
+              name: dynamic_parameters
+              items:
+                - key: tls.crt
+                  path: tls.crt
+                - key: tls.key
+                  path: tls.key
+
+---
+# Source: spiderpool/templates/deployment.yaml
+---
+
+---

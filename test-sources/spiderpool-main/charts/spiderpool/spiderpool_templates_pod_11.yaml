@@ -1,0 +1,86 @@
+# Source: spiderpool/templates/pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spiderpool-init
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-init
+  annotations:
+spec:
+  serviceAccountName: spiderpool-init
+  priorityClassName: system-node-critical
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  restartPolicy: Never
+  tolerations:
+  - operator: Exists
+  nodeSelector:
+    kubernetes.io/os: linux
+  containers:
+  - name: spiderpool-init
+    image: "ghcr.io/spidernet-io/spiderpool/spiderpool-controller:v0.9.0"
+    imagePullPolicy: IfNotPresent
+    command:
+      - /usr/bin/spiderpool-init
+    readinessProbe:
+      exec:
+        command:
+        - cat
+        - "/etc/spiderpool/ready"
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 30
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    env:
+    - name: SPIDERPOOL_NAMESPACE
+      value: "default"
+    - name: SPIDERPOOL_CONTROLLER_NAME
+      value: spiderpool-controller
+    - name: SPIDERPOOL_AGENT_NAME
+      value: "spiderpool-agent"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_NAME
+      value: "default"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_MODE
+      value: "auto"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_POD_CIDR_TYPE
+      value: "auto"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_DETECT_GATEWAY
+      value: "false"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_DETECT_IP_CONFLICT
+      value: "false"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_TUNE_POD_ROUTES
+      value: "true"
+    - name: SPIDERPOOL_INIT_DEFAULT_COORDINATOR_HIJACK_CIDR
+      value: "[\"169.254.0.0/16\"]"
+    - name: SPIDERPOOL_INIT_ENABLE_MULTUS_CONFIG
+      value: "true"
+    - name: SPIDERPOOL_INIT_INSTALL_MULTUS
+      value: "true"
+    - name: SPIDERPOOL_INIT_DEFAULT_CNI_NAME
+      value: ""
+    - name: SPIDERPOOL_INIT_DEFAULT_CNI_NAMESPACE
+      value: "default"
+    - name: SPIDERPOOL_INIT_MULTUS_CONFIGMAP
+      value: "spiderpool-multus"
+    - name: SPIDERPOOL_INIT_DEFAULT_CNI_DIR
+      value: "/etc/cni/net.d"
+    - name: SPIDERPOOL_INIT_READINESS_FILE
+      value: "/etc/spiderpool/ready"
+    volumeMounts:
+      - name: cni
+        mountPath: /etc/cni/net.d
+  volumes:
+    - name: cni
+      hostPath:
+        path: /etc/cni/net.d

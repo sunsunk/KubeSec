@@ -1,0 +1,27 @@
+# Source: hwameistor/templates/local-disk-action-controller.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-local-disk-action-controller
+  namespace: default
+  labels:
+    app: hwameistor-local-disk-action-controller
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-local-disk-action-controller
+  template:
+    metadata:
+      labels:
+        app: hwameistor-local-disk-action-controller
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: lda-controller
+          image: ghcr.io/hwameistor/local-disk-action-controller:v0.14.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}

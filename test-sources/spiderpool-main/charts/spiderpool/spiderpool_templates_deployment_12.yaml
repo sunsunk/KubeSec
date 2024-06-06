@@ -1,0 +1,182 @@
+# Source: spiderpool/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spiderpool-controller
+  namespace: "default"
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-controller
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: spiderpool
+      app.kubernetes.io/instance: my-release
+      app.kubernetes.io/component: spiderpool-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: spiderpool
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/component: spiderpool-controller
+    spec:
+      serviceAccountName: spiderpool-controller
+      priorityClassName: system-node-critical
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      restartPolicy: Always
+      tolerations:
+      - operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: spiderpool
+                    app.kubernetes.io/instance: my-release
+                    app.kubernetes.io/component: spiderpool-controller
+      containers:
+      - name: spiderpool-controller
+        image: "ghcr.io/spidernet-io/spiderpool/spiderpool-controller:v0.9.0"
+        imagePullPolicy: IfNotPresent
+        command:
+        - /usr/bin/spiderpool-controller
+        args:
+        - daemon
+        - --config-path=/tmp/spiderpool/config-map/conf.yml
+        - --tls-server-cert=/etc/tls/tls.crt
+        - --tls-server-key=/etc/tls/tls.key
+        ports:
+        - name: http
+          containerPort: 5720
+          protocol: TCP
+        - name: webhook
+          containerPort: 5722
+          protocol: TCP
+        startupProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/startup
+            port: 5720
+            scheme: HTTP
+          failureThreshold: 30
+          periodSeconds: 2
+          successThreshold: 1
+        livenessProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/liveness
+            port: 5720
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 6
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/readiness
+            port: 5720
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /usr/bin/spiderpool-controller
+                - shutdown
+        env:
+        - name: SPIDERPOOL_LOG_LEVEL
+          value: "info"
+        - name: SPIDERPOOL_ENABLED_METRIC
+          value: "false"
+        - name: SPIDERPOOL_ENABLED_DEBUG_METRIC
+          value: "false"
+        - name: SPIDERPOOL_METRIC_HTTP_PORT
+          value: "5721"
+        - name: SPIDERPOOL_GOPS_LISTEN_PORT
+          value: "5724"
+        - name: SPIDERPOOL_WEBHOOK_PORT
+          value: "5722"
+        - name: SPIDERPOOL_HEALTH_PORT
+          value: "5720"
+        - name: SPIDERPOOL_GC_IP_ENABLED
+          value: "true"
+        - name: SPIDERPOOL_GC_STATELESS_TERMINATING_POD_ON_READY_NODE_ENABLED
+          value: "true"
+        - name: SPIDERPOOL_GC_STATELESS_TERMINATING_POD_ON_NOT_READY_NODE_ENABLED
+          value: "true"
+        - name: SPIDERPOOL_GC_ADDITIONAL_GRACE_DELAY
+          value: "0"
+        - name: SPIDERPOOL_GC_DEFAULT_INTERVAL_DURATION
+          value: "600"
+        - name: SPIDERPOOL_MULTUS_CONFIG_ENABLED
+          value: "true"
+        - name: SPIDERPOOL_CNI_CONFIG_DIR
+          value: "/etc/cni/net.d"
+        - name: SPIDERPOOL_COORDINATOR_ENABLED
+          value: "true"
+        - name: SPIDERPOOL_COORDINATOR_DEAFULT_NAME
+          value: "default"
+        - name: SPIDERPOOL_CILIUM_CONFIGMAP_NAMESPACE_NAME
+          value: "kube-system/cilium-config"
+        - name: SPIDERPOOL_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPIDERPOOL_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: config-path
+          mountPath: /tmp/spiderpool/config-map
+          readOnly: true
+        - name: cni-conf-dir
+          mountPath: /etc/cni/net.d
+          readOnly: true
+        - name: tls
+          mountPath: /etc/tls
+          readOnly: true
+      volumes:
+      # To read the configuration from the config map
+      - name: config-path
+        configMap:
+          name: spiderpool-conf
+      - name: cni-conf-dir
+        hostPath:
+          path:  /etc/cni/net.d
+          type: DirectoryOrCreate
+      - name: tls
+        projected:
+          defaultMode: 0400
+          sources:
+          - secret:
+              name: spiderpool-controller-server-certs
+              items:
+                - key: tls.crt
+                  path: tls.crt
+                - key: tls.key
+                  path: tls.key

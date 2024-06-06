@@ -86,7 +86,7 @@ def upload_bom(project_name,project_uuid):
         'Accept': 'application/json, text/plain, */*',
         'Referer': f'http://localhost:8080/projects/{project_uuid}/components'
     }
-    file_path = f"../../target/sboms/{project_name}.bom.json"
+    file_path = f"./target/tpc/sboms/{project_name}.bom.json"
     print(file_path)
     if os.path.exists(file_path):
         # 文件存在，执行相关操作
@@ -126,6 +126,7 @@ def download_vulnerability_report(project_name,project_id,out_path):
 
     if response.status_code == 200:
         file_name = out_path  # 文件保存的名称
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(file_name, "wb") as file:
             file.write(response.content)
         print(f"Download succeed,output to {out_path}")

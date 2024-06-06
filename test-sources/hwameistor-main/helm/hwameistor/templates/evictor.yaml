@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-volume-evictor
+  namespace: dynamic_parameters
+  labels:
+    app: hwameistor-volume-evictor
+spec:
+  replicas: dynamic_parameters
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-volume-evictor
+  template:
+    metadata:
+      labels:
+        app: hwameistor-volume-evictor
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: evictor
+          image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          resources: 
+
+---

@@ -1,0 +1,18 @@
+./target/tpc/sboms/hwameistor-main.bom.json
+200
+<Response [200]>
+Waiting 5 seconds...
+./target/tpc/sboms/openyurt-master.bom.json
+200
+<Response [200]>
+Waiting 5 seconds...
+./target/tpc/sboms/spiderpool-main.bom.json
+200
+<Response [200]>
+Waiting 5 seconds...
+Download succeed,output to ./target/tpc/vulners-boms/hwameistor-main.vulner.json
+Download succeed,output to ./target/tpc/vulners-boms/openyurt-master.vulner.json
+Download succeed,output to ./target/tpc/vulners-boms/spiderpool-main.vulner.json
+./target/tpc/vulners-boms/openyurt-master.vulner.json
+./target/tpc/vulners-boms/spiderpool-main.vulner.json
+./target/tpc/vulners-boms/hwameistor-main.vulner.json

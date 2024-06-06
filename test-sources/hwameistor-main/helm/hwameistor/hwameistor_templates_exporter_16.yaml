@@ -1,0 +1,35 @@
+# Source: hwameistor/templates/exporter.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-exporter
+  namespace: default
+  labels:
+    app: hwameistor-exporter
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-exporter
+  template:
+    metadata:
+      labels:
+        app: hwameistor-exporter
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: exporter
+          image: ghcr.io/hwameistor/exporter:v0.14.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http-metrics
+          resources:
+            {}
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

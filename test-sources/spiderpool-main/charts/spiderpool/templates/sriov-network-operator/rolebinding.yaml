@@ -1,0 +1,38 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+      
+  annotations:
+    
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+roleRef:
+  kind: Role
+  name: dynamic_parameters
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sriov-network-config-daemon
+  namespace: dynamic_parameters
+  labels:
+    
+      
+  annotations:
+    
+subjects:
+  - kind: ServiceAccount
+    name: sriov-network-config-daemon
+    namespace: dynamic_parameters
+roleRef:
+  kind: Role
+  name: sriov-network-config-daemon
+  apiGroup: rbac.authorization.k8s.io
+---

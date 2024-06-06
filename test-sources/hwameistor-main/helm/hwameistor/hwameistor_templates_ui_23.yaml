@@ -1,0 +1,30 @@
+# Source: hwameistor/templates/ui.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hwameistor-ui
+  name: hwameistor-ui
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hwameistor-ui
+  template:
+    metadata:
+      labels:
+        app: hwameistor-ui
+      name: hwameistor-ui
+    spec:
+      containers:
+        - image: ghcr.io/hwameistor/hwameistor-ui:v0.15.1
+          imagePullPolicy: IfNotPresent
+          name: hwameistor-ui
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+          resources:
+            {}
+      restartPolicy: Always

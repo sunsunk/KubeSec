@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-pvc-autoresizer
+  namespace: dynamic_parameters
+  labels:
+    app: hwameistor-pvc-autoresizer
+spec:
+  replicas: dynamic_parameters
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-pvc-autoresizer
+  template:
+    metadata:
+      labels:
+        app: hwameistor-pvc-autoresizer
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: pvc-autoresizer
+          image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          resources: 
+---

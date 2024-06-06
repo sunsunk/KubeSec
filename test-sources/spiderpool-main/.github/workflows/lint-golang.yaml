@@ -1,0 +1,248 @@
+name: Auto Golang Lint And Unittest
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+      - release-*
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'branch, sha, tag'
+        required: true
+        default: main
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+permissions: write-all
+
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+#   cancel-in-progress: true
+
+jobs:
+  filter_changes:
+    name: Deduce required tests from code changes
+    runs-on: ubuntu-latest
+    outputs:
+      check: ${{ env.check }}
+      ref: ${{ env.ref }}
+    steps:
+      - name: Check Go Code Changes
+        uses: dorny/paths-filter@v2.11.1
+        if: ${{ github.event_name == 'pull_request' }}
+        id: filter_pr
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          filters: |
+            src:
+              - .github/workflows/lint-golang.yaml
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
+              - 'api/**/openapi.yaml'
+              - 'charts/**/crds/*.yaml'
+
+      - name: Result
+        id: result
+        run: |
+          if ${{ github.event_name == 'push' }} ; then
+              echo "trigger by push"
+              echo "check=true" >> $GITHUB_ENV
+              echo "ref=${{ github.sha }}" >> $GITHUB_ENV
+          elif ${{ github.event_name == 'pull_request' }} ; then
+              echo "trigger by pull_request"
+              flag=${{ steps.filter_pr.outputs.src }}
+              echo "check=${flag}" >> $GITHUB_ENV
+              ref=${{ github.event.pull_request.head.sha }}
+              echo "ref=${ref}" >> $GITHUB_ENV
+          elif ${{ inputs.ref != '' }} ; then
+              echo "trigger by workflow_call"
+              echo "check=true" >> $GITHUB_ENV
+              echo "ref=${{ inputs.ref }}" >> $GITHUB_ENV
+          elif ${{ github.event_name == 'workflow_dispatch' }} ; then
+              echo "trigger by workflow_dispatch"
+              echo "check=true" >> $GITHUB_ENV
+              echo "ref=${{ github.event.inputs.ref }}" >> $GITHUB_ENV
+          else
+              echo "error, unexpected event "
+              exit 1
+          fi
+
+  lint-golang:
+    needs: filter_changes
+    if: ${{ needs.filter_changes.outputs.check == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21.4
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ needs.filter_changes.outputs.ref }}
+
+      - name: Check module vendoring
+        run: |
+          go mod tidy
+          go mod vendor
+          if ! test -z "$(git status --porcelain)"; then
+              echo "please run 'go mod tidy && go mod vendor', and submit your changes"
+              exit 1
+          fi
+
+      # ================ lint
+      - name: Run golangci-lint
+        id: golangci_lint
+        continue-on-error: true
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+
+      - name: Check Make lint-golang
+        id: lintgolang
+        continue-on-error: true
+        run: |
+          make lint-golang
+
+      - name: Check TODO Comment
+        id: comment
+        continue-on-error: true
+        run: |
+          tools/scripts/todocover.sh "check"
+
+      - name: Result
+        run: |
+          result=${{ steps.golangci_lint.outcome }}
+          [ "${result}"x == "failure"x ] && echo "step golangci_lint failed" && exit 1
+          result=${{ steps.lintgolang.outcome }}
+          [ "${result}"x == "failure"x ] && echo "step lint-golang failed" && exit 2
+          result=${{ steps.comment.outcome }}
+          [ "${result}"x == "failure"x ] && echo "step comment failed" && exit 3
+          echo "all succeed"
+          exit 0
+
+  lint_SDK_and_build:
+    needs: filter_changes
+    if: ${{ needs.filter_changes.outputs.check == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21.4
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ needs.filter_changes.outputs.ref }}
+
+      - name: Check SDK
+        run: |
+          flag=""
+          echo "Check Openapi yaml"
+          if make openapi-validate-spec ; then
+              echo " pass openapi yaml "
+          else
+              echo "error, failed to check openapi yaml "
+              flag="bad"
+          fi
+          echo "Check Openapi SDK"
+          if make openapi-verify ; then
+              echo " pass openapi sdk check"
+          else
+              echo "error, failed to check openapi sdk "
+              flag="bad"
+          fi
+          echo "Check Kubebuilder SDK and chart"
+          if make manifests-verify ; then
+              echo " pass Kubebuilder SDK and yaml"
+          else
+              echo "error, failed to check Kubebuilder SDK and yaml"
+              flag="bad"
+          fi
+          echo "Check Code-generator SDK"
+          if make codegen-verify ; then
+              echo " pass Code-generator SDK"
+          else
+              echo "error, failed to check Code-generator SDK"
+              flag="bad"
+          fi
+          [ -n "$flag" ] && exit 1
+          exit 0
+
+      - name: Build Lint
+        run: |
+          make build-bin
+
+  unittest:
+    needs: filter_changes
+    if: ${{ needs.filter_changes.outputs.check == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21.4
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ needs.filter_changes.outputs.ref }}
+
+      # unittest and e2e, _test.go
+      - name: Check label of All test go
+        run: |
+          make check_test_label
+
+      # ================= unittest
+      - name: Run unittest
+        id: unittest
+        continue-on-error: true
+        run: |
+          make unittest-tests
+
+      - name: Upload Coverage Artifact
+        if: ${{ steps.unittest.outcome == 'failure' }}
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: coverage.out
+          path: coverage.out
+          retention-days: 1
+
+      - name: Upload Report Artifact
+        if: ${{ steps.unittest.outcome == 'failure' }}
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: unittestreport.json
+          path: unittestreport.json
+          retention-days: 1
+
+      # ============= upload coverage report
+      - name: Upload to Codecov
+        if: ${{ steps.unittest.outcome != 'failure' }}
+        uses: codecov/codecov-action@v3.1.4
+        with:
+          directory: './'
+          files: 'coverage.out'
+          flags: unittests
+          name: my-codecov-umbrella
+          fail_ci_if_error: true
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Result
+        if: ${{ steps.unittest.outcome == 'failure' }}
+        run: |
+          echo "unittest failed"
+          exit 1

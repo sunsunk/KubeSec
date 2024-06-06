@@ -1,0 +1,4747 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:ac010f4d-dc02-414a-99f0-6b3d74d0a106",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2024-06-06T15:37:46Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.10.1"
+      }
+    ],
+    "component" : {
+      "name" : "openyurt-master",
+      "version" : "latest",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/openyurtio/openyurt"
+        }
+      ],
+      "type" : "application",
+      "bom-ref" : "b231be36-8996-4026-ba87-b023057e7794"
+    }
+  },
+  "components" : [
+    {
+      "name" : "cloud.google.com/go/compute",
+      "version" : "v1.19.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6a6f3a9aab835208c6356c621a7fb93c62db9a08965e513fc8d5a922936fb976"
+        }
+      ],
+      "purl" : "pkg:golang/cloud.google.com/go/compute@v1.19.1?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "92625167-89ac-4510-b0ba-7b421e0e1e2f"
+    },
+    {
+      "name" : "cloud.google.com/go/compute/metadata",
+      "version" : "v0.2.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9a0e23964ee60808fac57a7d509e1f8c8f55508e6bb9bb86056e5a27b52704c6"
+        }
+      ],
+      "purl" : "pkg:golang/cloud.google.com/go/compute/metadata@v0.2.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "264c7d97-8861-41ae-b1e8-d92336fb2766"
+    },
+    {
+      "name" : "github.com/Azure/go-ansiterm",
+      "version" : "v0.0.0-20210617225240-d185dfc1b5a1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "5101cc80b3be4f1384971e41e4767884942ca09fcfbd4bca4612470d05cef0ff"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/azure/go-ansiterm@v0.0.0-20210617225240-d185dfc1b5a1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/Azure/go-ansiterm"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "0eab0a8e-4dd9-4572-9a36-715dbbe9f015"
+    },
+    {
+      "name" : "github.com/MakeNowJust/heredoc",
+      "version" : "v0.0.0-20170808103936-bb23615498cd",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b23428bc3930ad9a7cbbe8312ed3e02868e4e610b1bb2da1ad17a305303dc455"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/makenowjust/heredoc@v0.0.0-20170808103936-bb23615498cd?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/MakeNowJust/heredoc"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "15a29ccd-16d4-456e-b362-96dc841e0977"
+    },
+    {
+      "name" : "github.com/NYTimes/gziphandler",
+      "version" : "v1.1.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6540e3a5069edbd8f4af2ad2d2efc1f0765f241b414078eac36ad0d9ca944372"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/nytimes/gziphandler@v1.1.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/NYTimes/gziphandler"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "4c6c1764-199a-4d88-b07b-af09385ecbad"
+    },
+    {
+      "name" : "github.com/PuerkitoBio/purell",
+      "version" : "v1.1.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "58442a96a6866eb3e4c4b2567c1c1099f10013567b38d7432eaacddfcb4d15f2"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/puerkitobio/purell@v1.1.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/PuerkitoBio/purell"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "19a8ae5d-ec6e-4ecb-9482-92a86c93b7cb"
+    },
+    {
+      "name" : "github.com/PuerkitoBio/urlesc",
+      "version" : "v0.0.0-20170810143723-de5bf2ad4578",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "77e05cedae6b2ee7d5fec4a4ffc76782e7ea7a57e1ea39eb8bce6b88c01a17f3"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/puerkitobio/urlesc@v0.0.0-20170810143723-de5bf2ad4578?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/PuerkitoBio/urlesc"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "0ce0f994-0c55-4e3a-8cc8-ecc7690af5a1"
+    },
+    {
+      "name" : "github.com/aliyun/alibaba-cloud-sdk-go",
+      "version" : "v1.62.156",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2b837dd53d7e4654a5c7eb7676e8de0ef8b2e1e8521958c496d96e0e099e1d2e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/aliyun/alibaba-cloud-sdk-go@v1.62.156?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/aliyun/alibaba-cloud-sdk-go"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "54520167-064b-485e-8a8a-a6a8652296cc"
+    },
+    {
+      "name" : "github.com/beorn7/perks",
+      "version" : "v1.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "5656ca2a735f57c6c9cdeaa86b870e2aa3ba6d8af75a0299c4ef19d7afa1b0e3"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/beorn7/perks@v1.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/beorn7/perks"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "921126bd-5545-4740-932e-8f1664f62192"
+    },
+    {
+      "name" : "github.com/blang/semver",
+      "version" : "v3.5.1+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7103530a3a75dea2fc282dcd6f1affcb606a6fade85fac1d9e78e925b90ce094"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/blang/semver@v3.5.1%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/blang/semver"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "5d431fa9-1b1b-42ea-bbf1-5bbce8cbf2ce"
+    },
+    {
+      "name" : "github.com/cespare/xxhash/v2",
+      "version" : "v2.2.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0c2d82675129e58e24dd943cf7d0e575ea60adac9150613a04167f71df428f8e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/cespare/xxhash/v2@v2.2.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/cespare/xxhash"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "620f9f47-13cc-419c-a255-d4b5a285d230"
+    },
+    {
+      "name" : "github.com/chai2010/gettext-go",
+      "version" : "v0.0.0-20160711120539-c6fed771bfd5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "eda587a9eae5278d72e853ac114be49ea8179c6989c8949b8e1016ab9a4ee05f"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/chai2010/gettext-go@v0.0.0-20160711120539-c6fed771bfd5?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/chai2010/gettext-go"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "d8ba055a-d74d-4f82-b517-1b86ced24ca9"
+    },
+    {
+      "name" : "github.com/coreos/go-semver",
+      "version" : "v0.3.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c241cb8b0d163404d99d21bb7a92ecba388c0a03c073dc618c9e2d82703199f3"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/coreos/go-semver@v0.3.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/coreos/go-semver"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "15ff2dd1-6938-4959-9803-e9f79cc27d1a"
+    },
+    {
+      "name" : "github.com/coreos/go-systemd/v22",
+      "version" : "v22.3.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0fdfdb424e6f95740567a2b0baeeb36a25c9f684cf7baf3ef80cc025cd43cd22"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/coreos/go-systemd/v22@v22.3.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/coreos/go-systemd"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "bfc8b460-23e2-49b4-b5af-b30c37c86395"
+    },
+    {
+      "name" : "github.com/cpuguy83/go-md2man/v2",
+      "version" : "v2.0.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a75120c08fc2ecd853d09995930083d9904af23e1a787417da93071c17cc43ac"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/cpuguy83/go-md2man"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "cdeceed4-6be1-4d59-83e5-00701a7e385a"
+    },
+    {
+      "name" : "github.com/cyphar/filepath-securejoin",
+      "version" : "v0.2.4",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "520766edc83b8ba64aeb1df10c5d6812ed677e4c9f1f9dc4b4a7906130b79328"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/cyphar/filepath-securejoin@v0.2.4?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/cyphar/filepath-securejoin"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "7d3088c1-5a22-48c0-9ae6-c315492e2672"
+    },
+    {
+      "name" : "github.com/davecgh/go-spew",
+      "version" : "v1.1.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "be3f63feed5baa7bc211f24ec1486d94e011aacdfeae41d8635de36164d4f7b7"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/davecgh/go-spew@v1.1.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/davecgh/go-spew"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "f893b7c8-9925-4327-b1f3-1746f42a0ac7"
+    },
+    {
+      "name" : "github.com/docker/distribution",
+      "version" : "v2.7.1+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6b99a5915ced87a5b90387ceb12dc3d843b90549ac269701f9c4652d4edc4ae8"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/docker/distribution@v2.7.1%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/docker/distribution"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2e986b2d-11a3-44da-bf89-18bc464f18de"
+    },
+    {
+      "name" : "github.com/edgexfoundry/go-mod-core-contracts/v3",
+      "version" : "v3.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c63c02237e032ccdf5712975abd5e66205d2dc9a97b9f409320a219cb2cb0f1d"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/edgexfoundry/go-mod-core-contracts/v3@v3.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/edgexfoundry/go-mod-core-contracts"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "77dd902a-cc31-4875-a265-3005c271ee27"
+    },
+    {
+      "name" : "github.com/emicklei/go-restful",
+      "version" : "v2.16.0+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ae0aa228d8d39c5400ea492115ed7a0fc7a94e4b32f47435332adb0d749d6213"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/emicklei/go-restful@v2.16.0%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/emicklei/go-restful"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "9a7eed9e-d54a-441f-8a88-73467e8701e7"
+    },
+    {
+      "name" : "github.com/evanphx/json-patch",
+      "version" : "v5.6.0+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "8c160310488504fc40d2fe74b4576f3b34104c2be92fa9a7161e66076fe5d7a5"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/evanphx/json-patch@v5.6.0%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/evanphx/json-patch"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c3674294-d6d5-43ec-a8f4-8499eb097689"
+    },
+    {
+      "name" : "github.com/exponent-io/jsonpath",
+      "version" : "v0.0.0-20151013193312-d6023ce2651d",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d74e60c72686c0215a77c72b47d75c3105af57d1efba5bba870521e2d58f2673"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/exponent-io/jsonpath@v0.0.0-20151013193312-d6023ce2651d?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/exponent-io/jsonpath"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c7f23003-4feb-442e-bdc2-307dea3d7d69"
+    },
+    {
+      "name" : "github.com/fatih/camelcase",
+      "version" : "v1.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "87136f357ff1601a74a2f9dcb3c5b2599aceae904db9bfc97da32f6d44727edf"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/fatih/camelcase@v1.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/fatih/camelcase"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "8d12a536-39e2-45ba-bfaf-57285615098c"
+    },
+    {
+      "name" : "github.com/felixge/httpsnoop",
+      "version" : "v1.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "96f079265f3d0ac66d1885ae4dc0ccd44fef915b38f7f325ec925ed3b97c48f4"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/felixge/httpsnoop@v1.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/felixge/httpsnoop"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2b055e61-9592-4097-8dd3-a8e944f6fda4"
+    },
+    {
+      "name" : "github.com/fsnotify/fsnotify",
+      "version" : "v1.6.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9fee56aae1b47dc5a85a9eb13d67c775bb2430241a1671ba3df06b8752b2e076"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/fsnotify/fsnotify@v1.6.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/fsnotify/fsnotify"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "ed88032e-4d7e-49c1-818e-a2c3f27f4be2"
+    },
+    {
+      "name" : "github.com/fvbommel/sortorder",
+      "version" : "v1.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7529d72ede262581f6e6e0c319addb899350b28cda5160d259e289d2aa857f31"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/fvbommel/sortorder@v1.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/fvbommel/sortorder"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "40f0bafe-1b48-4bdb-b37b-fd35403e931a"
+    },
+    {
+      "name" : "github.com/fxamacker/cbor/v2",
+      "version" : "v2.4.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ae2d00ae5391fb95ee9ce3fc091528c13d294893b0856d3df19094cac9190fcf"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/fxamacker/cbor/v2@v2.4.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/fxamacker/cbor"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "7b191174-4c8e-4099-91bd-193da9f9f6a0"
+    },
+    {
+      "name" : "github.com/go-errors/errors",
+      "version" : "v1.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2d41f39a42b7194294acbff581f054c401f371ebf76a94257b35fff8eee66bac"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-errors/errors@v1.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-errors/errors"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "b1f05a20-00ce-41f9-bce8-ff775a60dce7"
+    },
+    {
+      "name" : "github.com/go-jose/go-jose/v3",
+      "version" : "v3.0.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7c52967a283f8abb29ed70f6cc1c6f9e603f5da456a79577081b195c917b1bb9"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-jose/go-jose/v3@v3.0.3?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-jose/go-jose"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c7402be6-43e6-4770-b64a-72eab1c0cd16"
+    },
+    {
+      "name" : "github.com/go-logr/logr",
+      "version" : "v0.4.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2bbfc1d63b7a7c805055de0ec2fd8ca8640295c81fd11dbaebeec2fd08d170b7"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-logr/logr@v0.4.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-logr/logr"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "e7a8449b-f055-49c4-ab65-85d03426205a"
+    },
+    {
+      "name" : "github.com/go-openapi/jsonpointer",
+      "version" : "v0.19.5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "819afe088601c94aa372078b5e742eda01d8402f68ef71b65d478e1581080ae6"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-openapi/jsonpointer@v0.19.5?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-openapi/jsonpointer"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "1be89645-b277-476d-bff7-7453c9157a68"
+    },
+    {
+      "name" : "github.com/go-openapi/jsonreference",
+      "version" : "v0.19.5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d5624fff08b83a3078895f0a55b1fbdeb41aa226a526baaff208ad64bc462ed3"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-openapi/jsonreference@v0.19.5?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-openapi/jsonreference"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "f54dfa9f-7e0d-466c-9bf3-da67514b585b"
+    },
+    {
+      "name" : "github.com/go-openapi/swag",
+      "version" : "v0.19.14",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "826def38e5df8aec398bda7937dc49bdf8efba87e9caf2c0f56afa41f2b91678"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-openapi/swag@v0.19.14?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-openapi/swag"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "d06c92f7-b6a7-49a2-b628-72bc267a2c8f"
+    },
+    {
+      "name" : "github.com/go-playground/locales",
+      "version" : "v0.14.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "116690ff0b308e295f28b4c40a25f3ed187edc18c585f0c52affe85ec9448c90"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-playground/locales@v0.14.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-playground/locales"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "afb3e446-a986-43ba-96ae-0a14e442839c"
+    },
+    {
+      "name" : "github.com/go-playground/universal-translator",
+      "version" : "v0.18.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "05c9e6d19c2c1b259b0b32265effa90099d82bd4b8ef72d016ecc26c36df4856"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-playground/universal-translator@v0.18.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-playground/universal-translator"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "db154fe0-00eb-4d43-99b7-27fbacd478ba"
+    },
+    {
+      "name" : "github.com/go-playground/validator/v10",
+      "version" : "v10.13.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "70545075f6923023927c60822c1db4307beea076ffb391bc2f9a6eda9a4ae404"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-playground/validator/v10@v10.13.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-playground/validator"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "e1b88f45-1b60-4ec1-8b3b-caebde1b39f4"
+    },
+    {
+      "name" : "github.com/go-resty/resty/v2",
+      "version" : "v2.12.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "aec54bf0ff742c5be4518abf57905355edb4dd67d1214e20bdc7fec9fcc9cc60"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/go-resty/resty/v2@v2.12.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-resty/resty"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "7078a82a-f1b9-409d-8a0c-12e57608aaeb"
+    },
+    {
+      "name" : "github.com/gogo/protobuf",
+      "version" : "v1.3.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "3afd5cbdce7c505ddbe578c19d9bfbfa8a5c4dc40565e6d88d6ce2df8bdd9b84"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/gogo/protobuf@v1.3.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/gogo/protobuf"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "9b22579d-9f93-4a38-9a2d-0d34971a926a"
+    },
+    {
+      "name" : "github.com/golang-jwt/jwt",
+      "version" : "v3.2.2+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "21f575d8af3100a02766a757573099f933a36e867691e2e0f357977d6dcefa86"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/golang-jwt/jwt@v3.2.2%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/golang-jwt/jwt"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "1f563af2-c732-4fef-ab0d-44ccc5589463"
+    },
+    {
+      "name" : "github.com/golang/groupcache",
+      "version" : "v0.0.0-20210331224755-41bb18bfe9da",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a08e710aab02a39eb897c88d53e0f00797a9c66b1aa81fab8462f49b98ed62a1"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/golang/groupcache@v0.0.0-20210331224755-41bb18bfe9da?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/golang/groupcache"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "d96917a6-5286-441d-bdeb-d18b37545e45"
+    },
+    {
+      "name" : "github.com/golang/protobuf",
+      "version" : "v1.5.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2a1ca3295520ed4b2bfdd62c752aa816f78c61de64a3bd83fb300dc251b59a68"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/golang/protobuf@v1.5.3?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/golang/protobuf"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2afa02e6-354f-46f7-859b-3678a5eccc47"
+    },
+    {
+      "name" : "github.com/google/btree",
+      "version" : "v1.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "80ae0ac7921a198f420f9b0f277e851e2049e995e5d248a54628828fe8dd629e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/google/btree@v1.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/google/btree"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "62865945-890d-4000-98bd-005ea0486c00"
+    },
+    {
+      "name" : "github.com/google/go-cmp",
+      "version" : "v0.5.9",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "3b64dfab9aa0e2a738026c1596fbf4a0b89500607b7a7052276c760ea4058b7f"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/google/go-cmp@v0.5.9?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/google/go-cmp"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "55e19cc8-99d9-4f9b-8467-3cad6b525d39"
+    },
+    {
+      "name" : "github.com/google/gofuzz",
+      "version" : "v1.2.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c51cb803e46165a88a8c9d5b3dfc10f2c79d080f984b661c0875ba79cec9322d"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/google/gofuzz@v1.2.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/google/gofuzz"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "9c47f4b2-1739-436a-97c4-ae2f8c825e0d"
+    },
+    {
+      "name" : "github.com/google/shlex",
+      "version" : "v0.0.0-20191202100458-e7afc7fbc510",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "125e8ce244d308e87a68188a694186ee861348f3fc331a8be182379192b070fe"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/google/shlex@v0.0.0-20191202100458-e7afc7fbc510?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/google/shlex"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "11647e80-6d1c-4edb-a54d-1f3cf4d25133"
+    },
+    {
+      "name" : "github.com/google/uuid",
+      "version" : "v1.3.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b7a2625e09b05cc8c4b3c56eb172099360571ec9fec31f0165d4daa19e5fbbb2"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/google/uuid@v1.3.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/google/uuid"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce"
+    },
+    {
+      "name" : "github.com/googleapis/gnostic",
+      "version" : "v0.5.5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f5f1c0b4ad2e0dfa6f79eaaaa3586411925c16f61702208ddd4bad2fc17dc47c"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/googleapis/gnostic@v0.5.5?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/googleapis/gnostic"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "adc876ee-e8e8-4e4b-8ae8-978038e6927d"
+    },
+    {
+      "name" : "github.com/gorilla/mux",
+      "version" : "v1.8.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "8b8d1aa9f911d61d9294df61a23c15e5903dd7071714ebe474d21e1433f99282"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/gorilla/mux@v1.8.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/gorilla/mux"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "401a60ef-92f1-42ba-b466-f40e1f99369f"
+    },
+    {
+      "name" : "github.com/gregjones/httpcache",
+      "version" : "v0.0.0-20180305231024-9cad4c3443a7",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a5d37a57540159eb72bffd3ec23002a6a547f9e5542e012392eac32eade0a1e3"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/gregjones/httpcache@v0.0.0-20180305231024-9cad4c3443a7?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/gregjones/httpcache"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "320ff85e-61ff-4b52-9312-95f56d1af045"
+    },
+    {
+      "name" : "github.com/grpc-ecosystem/go-grpc-prometheus",
+      "version" : "v1.2.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "3afb36eb11e42aa573b51a48ac5ffdd8172ecae43f616e0d488a681ad7d7361a"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/grpc-ecosystem/go-grpc-prometheus@v1.2.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/grpc-ecosystem/go-grpc-prometheus"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "17d2a89c-84d0-4f42-b55a-38b0b1c8cbc8"
+    },
+    {
+      "name" : "github.com/grpc-ecosystem/grpc-gateway",
+      "version" : "v1.16.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "826706d4a689e7b2e8a615335b41f2f0d98f8673196f8334fa43e92e87d1741a"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/grpc-ecosystem/grpc-gateway@v1.16.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/grpc-ecosystem/grpc-gateway"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "ddb3d296-1837-415f-9fb3-37eced633f4b"
+    },
+    {
+      "name" : "github.com/hashicorp/go-version",
+      "version" : "v1.6.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7de4d37c53678cff7aeeb942c4cfc8f60ef4d6353e44def860ac7698e90879e9"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/hashicorp/go-version@v1.6.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/hashicorp/go-version"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "0f57ada2-ae61-4e68-bbb5-2475d883d975"
+    },
+    {
+      "name" : "github.com/imdario/mergo",
+      "version" : "v0.3.12",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6fa47606c9536c8113a002ca3fb2f152f8a34ec348f5301ef34a4b58dda0fc75"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/imdario/mergo@v0.3.12?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/imdario/mergo"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a"
+    },
+    {
+      "name" : "github.com/inconshreveable/mousetrap",
+      "version" : "v1.1.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c0dfb1e0d546a4cb0eec4ad49ff994237bc4a04e89b75dd7dacd1bab0a7db5cf"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/inconshreveable/mousetrap@v1.1.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/inconshreveable/mousetrap"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "1f803630-19ff-4ece-9c80-78ec687c0ed6"
+    },
+    {
+      "name" : "github.com/jmespath/go-jmespath",
+      "version" : "v0.4.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "04480b9f97298e7f14375980c38363c03ad2df939d79bc84b457bef583e84148"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/jmespath/go-jmespath@v0.4.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/jmespath/go-jmespath"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "ee586b57-8ad3-47d2-9dec-a4dd52fd7592"
+    },
+    {
+      "name" : "github.com/josharian/intern",
+      "version" : "v1.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "be54b8cf9e2849d8e6d1b823462808f86d47a45fad23ef6b1392cbcce83c1e66"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/josharian/intern@v1.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/josharian/intern"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "590efe5e-b3f9-4cb5-ac0f-fbae9fdcabaf"
+    },
+    {
+      "name" : "github.com/json-iterator/go",
+      "version" : "v1.1.12",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "3d5f29788e1ad32b27733ae0f8bb71ca40fc2df298f4c2fabb68e7c5a127ae73"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/json-iterator/go@v1.1.12?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/json-iterator/go"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2f375e17-b974-4b82-bfec-73d9d99c8150"
+    },
+    {
+      "name" : "github.com/kubernetes/kubernetes",
+      "version" : "v1.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d20627aacaf99d98803be88390453b449e8d7b608cca88a7257566e6a5524e21"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/kubernetes/kubernetes@v1.22.3?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/kubernetes/kubernetes"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+    },
+    {
+      "name" : "github.com/leodido/go-urn",
+      "version" : "v1.2.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e81136bcf4f496aa33ddf98e7ac1d989a88587bf3cf6cb02a3618cbcb09f8ae0"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/leodido/go-urn@v1.2.3?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/leodido/go-urn"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c4b507d3-4d48-4fcd-a281-95beff772302"
+    },
+    {
+      "name" : "github.com/liggitt/tabwriter",
+      "version" : "v0.0.0-20181228230101-89fcab3d43de",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f533b77002065ed1219c868bf95f8110447cea82ebbd2fa45a86caa5b26ec9ed"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/liggitt/tabwriter@v0.0.0-20181228230101-89fcab3d43de?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/liggitt/tabwriter"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "481a980b-e4c6-4597-b5a7-7ae9eb0c6ec5"
+    },
+    {
+      "name" : "github.com/lithammer/dedent",
+      "version" : "v1.1.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "54dcc7315081346d63d1f8773abb05464554c12b5d0c0adb8015a83c07df92d6"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/lithammer/dedent@v1.1.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/lithammer/dedent"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "f5f0e0d0-7e8e-4301-83cf-4792606a07fb"
+    },
+    {
+      "name" : "github.com/mailru/easyjson",
+      "version" : "v0.7.6",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f324c85676600a888cd5382aa1e4e5f8b7d4e4983aff12f74211909e298b6270"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/mailru/easyjson@v0.7.6?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/mailru/easyjson"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "a514324e-b47d-4e79-8a42-fd25f9070412"
+    },
+    {
+      "name" : "github.com/mattn/go-runewidth",
+      "version" : "v0.0.7",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "122f0a474e3def11f22893c0bf9f4cd5d902fab39908c049fadddf67eb70239e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/mattn/go-runewidth@v0.0.7?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/mattn/go-runewidth"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "0f91fd4a-9acc-48d2-ba9b-d8c05139eeb0"
+    },
+    {
+      "name" : "github.com/matttproud/golang_protobuf_extensions",
+      "version" : "v1.0.4",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9a60d5a2b5ccecf0862b0f7872ce7391f03d3d2cb9a44bcd5913f4113d13215a"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/matttproud/golang_protobuf_extensions@v1.0.4?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/matttproud/golang_protobuf_extensions"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "39564cf5-eca2-4038-ab8a-06d8116065f3"
+    },
+    {
+      "name" : "github.com/mitchellh/go-wordwrap",
+      "version" : "v1.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e8694727f2d318cac825bc2076a765d9e107f28f84c71ff49bc8abf469ecd2ee"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/mitchellh/go-wordwrap@v1.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/mitchellh/go-wordwrap"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "3732328c-011a-49ec-a869-73bd1c4fe1f5"
+    },
+    {
+      "name" : "github.com/moby/spdystream",
+      "version" : "v0.2.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7235b5cd5cb2a223344fb6fa528c92505ab35cca2a45c910b57c063e206138cf"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/moby/spdystream@v0.2.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/moby/spdystream"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "f5537ee6-80bb-478d-85e0-d95e6fa3cd41"
+    },
+    {
+      "name" : "github.com/moby/term",
+      "version" : "v0.0.0-20210610120745-9d4ed1856297",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c87d12bcbcdc6d9c5c257868db287b0aa7443463107bbdc2c37c28641a4f962d"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/moby/term@v0.0.0-20210610120745-9d4ed1856297?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/moby/term"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "63b33469-d64c-40cb-8fe8-381e3f8582ed"
+    },
+    {
+      "name" : "github.com/modern-go/concurrent",
+      "version" : "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "4d12da67d703ff0f0f561f779ec3d76b556b43a8e5c0be6837c975e1095c35f8"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/modern-go/concurrent@v0.0.0-20180306012644-bacd9c7ef1dd?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/modern-go/concurrent"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "d0f7180b-b737-44ea-bc9e-bc7a7679592d"
+    },
+    {
+      "name" : "github.com/modern-go/reflect2",
+      "version" : "v1.0.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c416a0a0bb45b3de02067b7196e29e696813329bcbc42e2eaf79cc682f46cf43"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/modern-go/reflect2@v1.0.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/modern-go/reflect2"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "aec4262e-61b7-4624-b2c4-3bf6e1dd477b"
+    },
+    {
+      "name" : "github.com/monochromegane/go-gitignore",
+      "version" : "v0.0.0-20200626010858-205db1a8cc00",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9faff68014374566a3b93a1e63a66d65320abf6bfb4e1532e4a2aeb084f4c9cd"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/monochromegane/go-gitignore@v0.0.0-20200626010858-205db1a8cc00?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/monochromegane/go-gitignore"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "fcfeb265-c8c9-445a-aacc-e62dffef86bd"
+    },
+    {
+      "name" : "github.com/munnerz/goautoneg",
+      "version" : "v0.0.0-20191010083416-a7dc8b61c822",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0b7c3d3ea208d35fceab57359d4026f3c30e1dc402f65e6622548c02964cac70"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/munnerz/goautoneg"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2292ed24-b380-42e1-a423-64dbfb3badea"
+    },
+    {
+      "name" : "github.com/mxk/go-flowrate",
+      "version" : "v0.0.0-20140419014527-cca7078d478f",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "cb9fffb98ade2214948372751843222dbc68d4b25a3fc45f0a91faa7298666eb"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/mxk/go-flowrate@v0.0.0-20140419014527-cca7078d478f?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/mxk/go-flowrate"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "882e455d-9767-4b44-87b3-590466658dbb"
+    },
+    {
+      "name" : "github.com/onsi/ginkgo/v2",
+      "version" : "v2.1.4",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "18d6a9a914a2777ce28d9f47efb2ab8151b8ffc2aa8b246cc5c4b17beec0a576"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/onsi/ginkgo/v2@v2.1.4?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/onsi/ginkgo"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "a2185f53-09e9-41dd-87c0-317cab2632f8"
+    },
+    {
+      "name" : "github.com/onsi/gomega",
+      "version" : "v1.19.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e22797eaa4233cffc17c2de6a6c02d2061a5c5358f780dc89e5ffb0ed5f0d6dc"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/onsi/gomega@v1.19.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/onsi/gomega"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "43bbc9da-b02d-497b-8b0b-d87730a84dd4"
+    },
+    {
+      "name" : "github.com/opencontainers/go-digest",
+      "version" : "v1.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6a93945ace755b93e586ec86cb3f4509e78120e50303fea75bc3a2ff23a18795"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/opencontainers/go-digest@v1.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/opencontainers/go-digest"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "a1129c96-12fb-4353-ae20-2acad5a4cbff"
+    },
+    {
+      "name" : "github.com/opencontainers/runc",
+      "version" : "v1.1.12",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "04e22cb01696d4b6b4fea6cd6475ce39aef57597d91103b35bb76a41fde986cb"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/opencontainers/runc@v1.1.12?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/opencontainers/runc"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "53f45117-c5e4-4e4c-8af9-d765812e2140"
+    },
+    {
+      "name" : "github.com/opencontainers/selinux",
+      "version" : "v1.11.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "fb965ba3def0dcb6e66f73dea90b6999390cc2c5b99d123761a2e9b7bb50ee85"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/opencontainers/selinux@v1.11.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/opencontainers/selinux"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "e995e53e-e1a9-4532-a198-b8cb43b36669"
+    },
+    {
+      "name" : "github.com/opentracing/opentracing-go",
+      "version" : "v1.2.1-0.20220228012449-10b1cf09e00b",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "15f1fe56b1c793a2f1b7d1dd552d0f5f34971724b635b64a5efdf71583e89740"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/opentracing/opentracing-go@v1.2.1-0.20220228012449-10b1cf09e00b?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/opentracing/opentracing-go"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "1102117e-617b-470f-9588-d1a1cc60c48f"
+    },
+    {
+      "name" : "github.com/openyurtio/apiserver-network-proxy",
+      "version" : "v0.1.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b8923a2de0079a440bd33575f8d21b811b31d9acb3b0f7cc0366ddd6044eca97"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/openyurtio/apiserver-network-proxy@v0.1.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/openyurtio/apiserver-network-proxy"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "17c574f6-973f-4bf4-bb86-4f04d299ecca"
+    },
+    {
+      "name" : "github.com/peterbourgon/diskv",
+      "version" : "v2.0.1+incompatible",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "5017403943f9a78456a8f060d38f0202fa4a37ebf189a8fa81d514ce19785e62"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/peterbourgon/diskv@v2.0.1%20incompatible?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/peterbourgon/diskv"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "1bccac30-c8ff-4607-ab4b-9ca47ae07e17"
+    },
+    {
+      "name" : "github.com/pkg/errors",
+      "version" : "v0.9.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "14404bc75cd2db5e28c298f2eeab017a2c5b51192e850030acae54c0b193c2de"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/pkg/errors@v0.9.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/pkg/errors"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "cfbab090-46e8-425a-ad67-afcfe25a299f"
+    },
+    {
+      "name" : "github.com/projectcalico/api",
+      "version" : "v0.0.0-20230222223746-44aa60c2201f",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "efe18f3079060b6ae52ff2defe1743281908c21b41b8a538ebb2b180b83c577e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/projectcalico/api@v0.0.0-20230222223746-44aa60c2201f?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/projectcalico/api"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "9196ba6c-72c9-43c5-854b-09b356b23985"
+    },
+    {
+      "name" : "github.com/prometheus/client_golang",
+      "version" : "v1.15.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f2d5e94e625bc87e65c9dcc53e8c52209d09e3a8dd877b7295bbccd710afd0b2"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/prometheus/client_golang@v1.15.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/prometheus/client_golang"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "33dc78e3-2997-43df-a54c-2d56d7b16004"
+    },
+    {
+      "name" : "github.com/prometheus/client_model",
+      "version" : "v0.3.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "501806147a98746fd33c50f5075a20672c03a84930a777c132fa9d890ed77b0e"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/prometheus/client_model@v0.3.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/prometheus/client_model"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "0b6a543c-db73-4c37-b3c5-897a738b1188"
+    },
+    {
+      "name" : "github.com/prometheus/common",
+      "version" : "v0.42.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "10ab1f5c4628e09a563071f9720f8a39459eb894a8bf521df33191f1e788d583"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/prometheus/common@v0.42.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/prometheus/common"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "cabb369f-bc10-41fb-99ca-02681a3525a9"
+    },
+    {
+      "name" : "github.com/prometheus/procfs",
+      "version" : "v0.9.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c33087bc8bcce52c56a98bf08152fbc8963c2f3dcf2a7e3d290b6980c6097e12"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/prometheus/procfs@v0.9.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/prometheus/procfs"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "88333acf-cd3b-4782-9fd8-ff3ea2f0a82f"
+    },
+    {
+      "name" : "github.com/russross/blackfriday",
+      "version" : "v1.5.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "1f2bc2d0045f9d906a9d7c00045792647a4abc91c925f3f3f3518db9e2e3d28a"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/russross/blackfriday@v1.5.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/russross/blackfriday"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "6c91c20f-bc90-4798-a477-103a2a86604e"
+    },
+    {
+      "name" : "github.com/russross/blackfriday/v2",
+      "version" : "v2.1.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "248387e79ff4716c8eba296bf7faa5ae6d0149795daa7ab032c7f7e4b77aee69"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/russross/blackfriday/v2@v2.1.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/russross/blackfriday"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "14273bdd-5ada-4663-ab2d-9a3728ff3f31"
+    },
+    {
+      "name" : "github.com/spf13/cobra",
+      "version" : "v1.7.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "872a969d8b756504a121d74ee640698f7beed39ffefb1ead27a760f040b9ef62"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/spf13/cobra@v1.7.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/spf13/cobra"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "f9821568-9fed-46fb-9033-d122e0b07223"
+    },
+    {
+      "name" : "github.com/spf13/pflag",
+      "version" : "v1.0.5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "8b2f951543823f56bef3216da3f76b836089e6ed3246807b7d9c370cabff2570"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/spf13/pflag@v1.0.5?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/spf13/pflag"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "e74f9fb8-da02-41ca-8484-95ef1d53866d"
+    },
+    {
+      "name" : "github.com/stretchr/objx",
+      "version" : "v0.5.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d73affa1fda6e4518cb1a77961f72a81da9d5ab221bbe10110946147553bcff7"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/stretchr/objx@v0.5.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/stretchr/objx"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c4417934-ece6-4ced-aec7-ba61f349da61"
+    },
+    {
+      "name" : "github.com/stretchr/testify",
+      "version" : "v1.8.4",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "09c5718dfdd0f0f33498750a242767f9e659b66e724307a1479c9e4954107149"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/stretchr/testify@v1.8.4?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/stretchr/testify"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "c89de020-9e20-41b5-9c82-66ae5f189e37"
+    },
+    {
+      "name" : "github.com/vishvananda/netlink",
+      "version" : "v1.2.1-beta.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2e5b2a9749674046c78f42353ae2b2a7ca2d5e9d2bdead263e4ba1c077d2b55b"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/vishvananda/netlink@v1.2.1-beta.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/vishvananda/netlink"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "16ff98a6-87ae-4aa2-ba0c-3f447e8d00da"
+    },
+    {
+      "name" : "github.com/vishvananda/netns",
+      "version" : "v0.0.0-20200728191858-db3c7e526aae",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e21c010547d00857b70b29b466d2b2abb2f5e9e654b582acf816870cdea6027b"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/vishvananda/netns@v0.0.0-20200728191858-db3c7e526aae?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/vishvananda/netns"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2922c630-c741-4b15-bd39-2a32073fdb49"
+    },
+    {
+      "name" : "github.com/x448/float16",
+      "version" : "v0.8.4",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a8bc08d48ef4f8d8d1154477cecd493d40a06825d2877496eb6b80293d664813"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/x448/float16@v0.8.4?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/x448/float16"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "08cef8ef-bbf0-4330-a17a-5a06dd8e09d8"
+    },
+    {
+      "name" : "github.com/xlab/treeprint",
+      "version" : "v0.0.0-20181112141820-a009c3971eca",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d4216537342100bc234bd981014932717eb5e86ce0b2e6143821c0e7e1d29572"
+        }
+      ],
+      "purl" : "pkg:golang/github.com/xlab/treeprint@v0.0.0-20181112141820-a009c3971eca?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/xlab/treeprint"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "726c764d-78d4-424d-b190-45a5b0c2e1d1"
+    },
+    {
+      "name" : "go.etcd.io/etcd/api/v3",
+      "version" : "v3.5.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "1ac5774be39f64438235776d36405247b9202e86c06bf48eead0b145ad06018c"
+        }
+      ],
+      "purl" : "pkg:golang/go.etcd.io/etcd/api/v3@v3.5.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "ac627c3b-8a69-4fb9-9682-6a67fc0f8faa"
+    },
+    {
+      "name" : "go.etcd.io/etcd/client/pkg/v3",
+      "version" : "v3.5.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d9a42fe85e37e989cdec8e156c8f0f3d8ac186ef929ab4da00371ff0c8bfe8f5"
+        }
+      ],
+      "purl" : "pkg:golang/go.etcd.io/etcd/client/pkg/v3@v3.5.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "a93bc836-bad3-456c-9e51-95e588f13d83"
+    },
+    {
+      "name" : "go.etcd.io/etcd/client/v3",
+      "version" : "v3.5.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "eb6121d173aba3eac3c24af2a401837e098d879268abecfe5bd1d97655cccde9"
+        }
+      ],
+      "purl" : "pkg:golang/go.etcd.io/etcd/client/v3@v3.5.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "d1d972c1-37b8-4ff6-b12c-068ca727afdc"
+    },
+    {
+      "name" : "go.opentelemetry.io/contrib",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b9b150527d15099d203f022825f04956978197244cc6ef0c9bf86e29661df69d"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/contrib@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "1dbe2ac1-bc90-46a1-a8d3-04e62ef51f4c"
+    },
+    {
+      "name" : "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b0ee1629d3c0b9d64628f729653e0c267e896839a9c8bacc3c3186c80d52b6d1"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "5b78fe46-8c81-4138-a72e-2b807f41d1f8"
+    },
+    {
+      "name" : "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "4370bdcb35ba23d8ea11cf2c6b0c73c59998e3c7ecf6edb6d0a5eae9de6cdd75"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "9ff1abee-f4c2-42e2-a01e-9f0bdbff1f1b"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "79a3f416abbb4971f0be38aa0eaf37cc899e7a13875fc7684ef53d0305ce37c8"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/exporters/otlp",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "3d3360abd311990aaa258d111156d916fc2460e03ce6f6dd414fe755fc43caa8"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/exporters/otlp@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "917975ea-9e28-47bb-9a53-c0793d1e827c"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/metric",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e24ce15c53fe6ed2a6e23c31a6322a8ece3503b31a9111544bce9ba8b1d3230f"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/metric@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "2adb7a80-4519-4d29-91ae-1baaaf253c8e"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/sdk",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "26cc6d197774e89f23ae7c9aedf748fd4fcc47ac970390ed6d9cbeaa81d096bf"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/sdk@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "48b790bd-f488-4e4a-b87f-f9a89f2a5922"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/sdk/export/metric",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7395518f1097750971d478f3c067501f365a548f366f911b0603aeda58c3f768"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/sdk/export/metric@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "76527d91-7890-41cd-acb8-9e734b7f23bb"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/sdk/metric",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "edaa35c29cc745529fd0e43b188c6240903a5fb0cb5fda35e20995a27ee630af"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/sdk/metric@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "52377fe1-8d26-4303-a1b9-cb7a7bcdd3e7"
+    },
+    {
+      "name" : "go.opentelemetry.io/otel/trace",
+      "version" : "v0.20.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d432fa11751d720f7982e921b9146f2c33bfe17e531e1ff9748579da5aad9dbc"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/otel/trace@v0.20.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a"
+    },
+    {
+      "name" : "go.opentelemetry.io/proto/otlp",
+      "version" : "v0.7.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "af03903c2b8a00a9b018aab669536760889b23ac2757b12fce07d30b371d1a0f"
+        }
+      ],
+      "purl" : "pkg:golang/go.opentelemetry.io/proto/otlp@v0.7.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "000570d7-b587-440e-9351-276a6212c745"
+    },
+    {
+      "name" : "go.starlark.net",
+      "version" : "v0.0.0-20200306205701-8dd3e2ee1dd5",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f8536dac54e6570d18646a41197e7a5c379edf7d6de8901778ad9b73284b38e7"
+        }
+      ],
+      "purl" : "pkg:golang/go.starlark.net@v0.0.0-20200306205701-8dd3e2ee1dd5?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "ea3a8603-a892-4897-991f-f9fb957785b7"
+    },
+    {
+      "name" : "go.uber.org/atomic",
+      "version" : "v1.9.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "102984f019ff5854d8c045bf6e9283dccf15b51ff34156dabc0a1a942d4f6321"
+        }
+      ],
+      "purl" : "pkg:golang/go.uber.org/atomic@v1.9.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "a3a4bc8e-3811-426d-88b3-eae6cfc6bd33"
+    },
+    {
+      "name" : "go.uber.org/multierr",
+      "version" : "v1.6.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "cba20f152b530084f962d97bfd76261efcd743b4b783f21e656f61c99e6d870e"
+        }
+      ],
+      "purl" : "pkg:golang/go.uber.org/multierr@v1.6.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "3b49bca6-60d3-4a04-93f9-1def5b07423e"
+    },
+    {
+      "name" : "go.uber.org/zap",
+      "version" : "v1.24.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "16225de65d5438b8f4c0281b484d2bc305c7cc4740652ea18a24a7c4937f0fad"
+        }
+      ],
+      "purl" : "pkg:golang/go.uber.org/zap@v1.24.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "c09a9596-5274-458d-9567-1a4f6d81e320"
+    },
+    {
+      "name" : "golang.org/x/crypto",
+      "version" : "v0.21.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "5f7d7efabcd551d2a15f9b16992385671c7c516fe5756c79e5c6dfd3c88d00c0"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/crypto@v0.21.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "75dddd49-0a35-4c6b-b801-efdef2751b0c"
+    },
+    {
+      "name" : "golang.org/x/net",
+      "version" : "v0.22.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f6c18b871ee24481c4897d28009dcc459314084949832ec1af59cef8030ddd37"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/net@v0.22.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "b1adabd9-6dbc-4d44-89a8-278d54f0422a"
+    },
+    {
+      "name" : "golang.org/x/oauth2",
+      "version" : "v0.7.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a9eeacd3351794f5fcd3f7484f1df8e3485667b1b03308030f2ad21933c91bf8"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/oauth2@v0.7.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "d8cc553a-738b-422c-8c76-cc4fb9fadf3b"
+    },
+    {
+      "name" : "golang.org/x/sync",
+      "version" : "v0.3.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7ed09880cc7acd3fdab0752b3f0f012cbb1c62d1b39ec2c09e3ab9447f4feba1"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/sync@v0.3.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d"
+    },
+    {
+      "name" : "golang.org/x/sys",
+      "version" : "v0.18.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0c1741de78928ce03f3b46e509906a0de7f258d62f78060c345d56ba6d03610e"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/sys@v0.18.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+    },
+    {
+      "name" : "golang.org/x/term",
+      "version" : "v0.18.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "15c1e36570ccc48f263379f0857f4794aa29e02d1842f09509dc18976c0eb44f"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/term@v0.18.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "cb4247dc-1208-49cd-8bef-f06ed5569f5a"
+    },
+    {
+      "name" : "golang.org/x/text",
+      "version" : "v0.14.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "49c5f9c357936b742a4fca22ebece23fb7535754b6f802d4d1b23ed335ca5a24"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/text@v0.14.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "00ca9b46-664b-4839-b15e-f24c453b4697"
+    },
+    {
+      "name" : "golang.org/x/time",
+      "version" : "v0.5.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "a3b72acba6a62bfe7661c00a20f94cddaf85a63df9cef463d933fe7b5c4549f9"
+        }
+      ],
+      "purl" : "pkg:golang/golang.org/x/time@v0.5.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "318ec5ba-5208-435b-bf02-3882c41d2b62"
+    },
+    {
+      "name" : "gomodules.xyz/jsonpatch/v2",
+      "version" : "v2.2.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "e294f8dfd415f372fe1bd164702ae263a124a5c2baafa6caf80e45054308eea6"
+        }
+      ],
+      "purl" : "pkg:golang/gomodules.xyz/jsonpatch/v2@v2.2.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "b12b24fd-0ca5-4312-8009-d53fe1e03025"
+    },
+    {
+      "name" : "google.golang.org/appengine",
+      "version" : "v1.6.7",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "159475ab47b1830c733f3a7f685f9571c1ab49fc5f3e9901aa320812adebbba7"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/appengine@v1.6.7?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "f4a768b0-eb28-4630-8758-b49ecc4349c2"
+    },
+    {
+      "name" : "google.golang.org/genproto",
+      "version" : "v0.0.0-20230526161137-0005af68ea54",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f4d5a541f63678f7a34e67f0507d4e5b09b39c56bed2429c1c63c3bdc3f36bd3"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/genproto@v0.0.0-20230526161137-0005af68ea54?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43"
+    },
+    {
+      "name" : "google.golang.org/genproto/googleapis/api",
+      "version" : "v0.0.0-20230525234035-dd9d682886f9",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9bcbf5c4b2cbccc7b59b93fe8024c5f27241f5ea706505011119b6d0ecb5a684"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/genproto/googleapis/api@v0.0.0-20230525234035-dd9d682886f9?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "2f0c96bf-93a2-43ae-8b49-706ff35cf9de"
+    },
+    {
+      "name" : "google.golang.org/genproto/googleapis/rpc",
+      "version" : "v0.0.0-20230525234030-28d5490b6b19",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d270c3a33a00535f506f61f085769d53c39cb223bfd3d7274ea854b6ad8c10e3"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/genproto/googleapis/rpc@v0.0.0-20230525234030-28d5490b6b19?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "2243d480-338c-4a77-a377-e72f1489eb20"
+    },
+    {
+      "name" : "google.golang.org/grpc",
+      "version" : "v1.57.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ba935336abf4112fb664e3aa002c15b52dc897c335dbff87cf8d5108fcc08d08"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/grpc@v1.57.1?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "3f1b7b56-085c-4258-b6da-d810c87704af"
+    },
+    {
+      "name" : "google.golang.org/protobuf",
+      "version" : "v1.30.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "90f3e82207f74ec12fae6d0f15ed79250fb9ef4415c58cc4bef1ea0a12be7278"
+        }
+      ],
+      "purl" : "pkg:golang/google.golang.org/protobuf@v1.30.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "42659ac5-6028-4122-9762-2b5e0e116549"
+    },
+    {
+      "name" : "gopkg.in/cheggaaa/pb.v1",
+      "version" : "v1.0.28",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9f5b412679cadabee0f4e5b66ed147f7557dd924d351ebcb5d815bf20cbd10c9"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/cheggaaa/pb.v1@v1.0.28?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/cheggaaa/pb"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "e44d73e3-9e0f-4605-812f-82589ad7eb97"
+    },
+    {
+      "name" : "gopkg.in/inf.v0",
+      "version" : "v0.9.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ef73390a86728b764b30ec83950874df50b1e8df4d0c9d95bdf97be840c08037"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/inf.v0@v0.9.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-inf/inf"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "55f35f74-f015-46e4-84d0-2d15af12e4d5"
+    },
+    {
+      "name" : "gopkg.in/ini.v1",
+      "version" : "v1.66.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "5df47574e62e6f2b4acb84a1cdcd8b1ebac6854d250c27c3186d722cf9a982c2"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/ini.v1@v1.66.2?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-ini/ini"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "42d1e31d-9208-472d-8138-b6901d56b0e6"
+    },
+    {
+      "name" : "gopkg.in/natefinch/lumberjack.v2",
+      "version" : "v2.0.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d4b734ecaafba98e14d983e8b818e908bc698b2c48568c6a5e09172e49c0384f"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/natefinch/lumberjack.v2@v2.0.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/natefinch/lumberjack"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "bce8b682-3c1a-4d8b-a3e9-5adeb7a6bd38"
+    },
+    {
+      "name" : "gopkg.in/square/go-jose.v2",
+      "version" : "v2.6.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "34693be164e73ca04d521373417ecf61c4cb523a2aee6cca93638a6efc24da22"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/square/go-jose.v2@v2.6.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/square/go-jose"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "2cacdede-efbc-4e74-8b49-976fd69825cd"
+    },
+    {
+      "name" : "gopkg.in/yaml.v2",
+      "version" : "v2.4.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0fcc60c04098ec262fc7e6369f8b01cfddc99fd251bf1762cb2a3c0937ee29a6"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/yaml.v2@v2.4.0?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-yaml/yaml"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "42374781-826e-4c37-8966-b944075f4265"
+    },
+    {
+      "name" : "gopkg.in/yaml.v3",
+      "version" : "v3.0.1",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7f1566fc6cc0cc45aa2c7baf72d23dd4a4bd8613669963a85aed174d8252ec20"
+        }
+      ],
+      "purl" : "pkg:golang/gopkg.in/yaml.v3@v3.0.1?goarch=arm64&goos=darwin&type=module",
+      "externalReferences" : [
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/go-yaml/yaml"
+        }
+      ],
+      "type" : "library",
+      "bom-ref" : "bd76ee3c-3601-4085-9a1f-61de909d3156"
+    },
+    {
+      "name" : "k8s.io/api",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c0ea044b61a84a452c76979dd91078cd8ca93ea5adbe9ac6a0a08435338e8cfe"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/api@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "e19c974e-0404-47c6-96ea-ca5aea2700f3"
+    },
+    {
+      "name" : "k8s.io/apiextensions-apiserver",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6ca92eecca9ac086ed4d9734f38059a0c5787f3d1666ebc29c1e44fb2ad05c63"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/apiextensions-apiserver@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "f28b04b9-dfbf-4643-bd63-68cc66f5f290"
+    },
+    {
+      "name" : "k8s.io/apimachinery",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9abbc11b90999c47f082956a59cad12af76c604093ae1011e9c02902076c7e59"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/apimachinery@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "f5014c48-b0f0-4da3-acd7-02c91cfe63e5"
+    },
+    {
+      "name" : "k8s.io/apiserver",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c76d71c8b436aaf3ebe6f8ce4d538169226ef2cbe7536c1f2ce7d28cd24439dc"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/apiserver@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "6f0c5602-71b8-4cec-b468-f7479179d04a"
+    },
+    {
+      "name" : "k8s.io/cli-runtime",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "01e3a0683a5bfe4dfa6a65ac8f2c8853e14ba4bcf3766a0b0f9827dfc7397e2a"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/cli-runtime@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "8db7632f-925e-46df-9f97-38b97252c323"
+    },
+    {
+      "name" : "k8s.io/client-go",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ea89e439273e60d770ab9cd7134c055e272aeb8aebca6fa65f01eefc23d518ee"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/client-go@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8"
+    },
+    {
+      "name" : "k8s.io/cloud-provider",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "66c59d0745a6ca32a513dd3510cd7806e4af9cdf903c6ac21a371f0dcf9be4d2"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/cloud-provider@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "93dfa808-b91d-43ef-944e-735f3d009332"
+    },
+    {
+      "name" : "k8s.io/cluster-bootstrap",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b93af3aaec285ecb2d43a3c279ad1d61b29670f09eb4ca7831912465b4fe122d"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/cluster-bootstrap@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "ded820ab-b737-4326-aab7-442c9d318841"
+    },
+    {
+      "name" : "k8s.io/component-base",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "ffe86bc805b4deedc5a49430c3e19232c02b24d51b1a31faea5ae0c5a4729cb5"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/component-base@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "934fe002-aaab-41fb-a709-2ec224cbf0bd"
+    },
+    {
+      "name" : "k8s.io/component-helpers",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "d3cb67f93f079e3453c033f612b2018471af3dc6097f9cd66965bcde0a251d67"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/component-helpers@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "8ac8f9c6-fb12-4337-83ed-d35a0798999b"
+    },
+    {
+      "name" : "k8s.io/controller-manager",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "9c1286f0cb20b5477fa05699bc4e73018448af8e7e1e7f10907ceae7e0ad3ce1"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/controller-manager@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "9832f783-c462-483b-b227-5232d19352e2"
+    },
+    {
+      "name" : "k8s.io/klog/v2",
+      "version" : "v2.9.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0fb1d5fa7d55e7b5de6749bab5d4647e49ed85468cd3a5456d695d38587c9333"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/klog/v2@v2.9.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "0b569035-da72-4eba-8fa7-1a825547b062"
+    },
+    {
+      "name" : "k8s.io/kube-controller-manager",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0dab5872030a027dbc7b603b3223142e84687eddd268257fa9593e168193530d"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/kube-controller-manager@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "5cfe8732-b294-4643-8e1a-ff28dfcd4681"
+    },
+    {
+      "name" : "k8s.io/kube-openapi",
+      "version" : "v0.0.0-20211115234752-e816edb12b65",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "13727da022e56a86c552ab231bd0df29b3f606683004bda9ee99f4037746f56e"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/kube-openapi@v0.0.0-20211115234752-e816edb12b65?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "3cc39098-916f-452d-9d78-4c8e743684b2"
+    },
+    {
+      "name" : "k8s.io/kubectl",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c738921c7c851e0da7b7dbc4e80d17a96e5d39e3cd4a5cf11bccf7cfe218eb71"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/kubectl@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "e6e8f2b5-fb31-4041-8b60-c25738e779e3"
+    },
+    {
+      "name" : "k8s.io/kubelet",
+      "version" : "v0.22.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "0b6d4a83ae99cef736d6e2484c43e0e2cb4631c499b11d4907eefee94c26f33b"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/kubelet@v0.22.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "4c64c135-eefc-4f78-a480-05a3103873b3"
+    },
+    {
+      "name" : "k8s.io/utils",
+      "version" : "v0.0.0-20210930125809-cb0fa318a74b",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "c3110c19eb4632eaf7275c6e18b418ec6110620f5b6712a7ded2a8e64fde61cb"
+        }
+      ],
+      "purl" : "pkg:golang/k8s.io/utils@v0.0.0-20210930125809-cb0fa318a74b?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "11f80e3f-6cd9-4810-987e-fa69378eacad"
+    },
+    {
+      "name" : "sigs.k8s.io/apiserver-network-proxy/konnectivity-client",
+      "version" : "v0.0.22",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "7e645f97d589e00a499fb2f136e103e26d2dd7caa2bd540ec4fe9a0181bd27a7"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/apiserver-network-proxy/konnectivity-client@v0.0.22?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "201bbda2-6396-42a0-a8d2-c4087c00a11c"
+    },
+    {
+      "name" : "sigs.k8s.io/controller-runtime",
+      "version" : "v0.10.3",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "b394ed9b0fc1e00b886f0ad70f7b1f0645f09cf30c5abaa9563e1646dd5d6a7a"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/controller-runtime@v0.10.3?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "f3ad4e78-ac75-4fc3-9d4b-14002a8cd6ba"
+    },
+    {
+      "name" : "sigs.k8s.io/kustomize/api",
+      "version" : "v0.8.11",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "2f343396ae99d36ddbfa606d73abfbd8dda648762637cc7bb2c81b7ff86fd07f"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/kustomize/api@v0.8.11?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "3dd205a5-fbb8-49e2-869e-e6a261d6a864"
+    },
+    {
+      "name" : "sigs.k8s.io/kustomize/kyaml",
+      "version" : "v0.11.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "f4a86208f29a572b8f72038b25792fcad3af8cc24ba31a63a1d8b271be201ec0"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/kustomize/kyaml@v0.11.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "708b86e1-0427-4540-bac6-b7aee5b4ad85"
+    },
+    {
+      "name" : "sigs.k8s.io/structured-merge-diff/v4",
+      "version" : "v4.1.2",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "1ebfe1b4a1662446ed3204bf503d0dfa0b6072d02acfcd6dde7bbeb0fcf29e7a"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/structured-merge-diff/v4@v4.1.2?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "8875932c-a0ff-4514-8ddc-6e82b1408a73"
+    },
+    {
+      "name" : "sigs.k8s.io/yaml",
+      "version" : "v1.3.0",
+      "hashes" : [
+        {
+          "alg" : "SHA-256",
+          "content" : "6b655c94bcce1abc0e1c3895f047c11a1be31ef3f8e82b56e63e8f3af858186a"
+        }
+      ],
+      "purl" : "pkg:golang/sigs.k8s.io/yaml@v1.3.0?goarch=arm64&goos=darwin&type=module",
+      "type" : "library",
+      "bom-ref" : "df3b1437-644f-4f96-8891-614d13df30fd"
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "b231be36-8996-4026-ba87-b023057e7794",
+      "dependsOn" : [
+        "54520167-064b-485e-8a8a-a6a8652296cc",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "77dd902a-cc31-4875-a265-3005c271ee27",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "c7402be6-43e6-4770-b64a-72eab1c0cd16",
+        "7078a82a-f1b9-409d-8a0c-12e57608aaeb",
+        "1f563af2-c732-4fef-ab0d-44ccc5589463",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "401a60ef-92f1-42ba-b466-f40e1f99369f",
+        "0f57ada2-ae61-4e68-bbb5-2475d883d975",
+        "b6e1a030-7350-41f9-a48c-9f9490fbd0e6",
+        "f5f0e0d0-7e8e-4301-83cf-4792606a07fb",
+        "a2185f53-09e9-41dd-87c0-317cab2632f8",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "e995e53e-e1a9-4532-a198-b8cb43b36669",
+        "17c574f6-973f-4bf4-bb86-4f04d299ecca",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "9196ba6c-72c9-43c5-854b-09b356b23985",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "16ff98a6-87ae-4aa2-ba0c-3f447e8d00da",
+        "ac627c3b-8a69-4fb9-9682-6a67fc0f8faa",
+        "a93bc836-bad3-456c-9e51-95e588f13d83",
+        "d1d972c1-37b8-4ff6-b12c-068ca727afdc",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "e44d73e3-9e0f-4605-812f-82589ad7eb97",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f28b04b9-dfbf-4643-bd63-68cc66f5f290",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "6f0c5602-71b8-4cec-b468-f7479179d04a",
+        "8db7632f-925e-46df-9f97-38b97252c323",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "93dfa808-b91d-43ef-944e-735f3d009332",
+        "ded820ab-b737-4326-aab7-442c9d318841",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "8ac8f9c6-fb12-4337-83ed-d35a0798999b",
+        "9832f783-c462-483b-b227-5232d19352e2",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "5cfe8732-b294-4643-8e1a-ff28dfcd4681",
+        "e6e8f2b5-fb31-4041-8b60-c25738e779e3",
+        "4c64c135-eefc-4f78-a480-05a3103873b3",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "201bbda2-6396-42a0-a8d2-c4087c00a11c",
+        "f3ad4e78-ac75-4fc3-9d4b-14002a8cd6ba"
+      ]
+    },
+    {
+      "ref" : "92625167-89ac-4510-b0ba-7b421e0e1e2f",
+      "dependsOn" : [
+        "264c7d97-8861-41ae-b1e8-d92336fb2766",
+        "d96917a6-5286-441d-bdeb-d18b37545e45",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "264c7d97-8861-41ae-b1e8-d92336fb2766",
+      "dependsOn" : [
+        "92625167-89ac-4510-b0ba-7b421e0e1e2f"
+      ]
+    },
+    {
+      "ref" : "0eab0a8e-4dd9-4572-9a36-715dbbe9f015",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "15a29ccd-16d4-456e-b362-96dc841e0977",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "4c6c1764-199a-4d88-b07b-af09385ecbad",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "19a8ae5d-ec6e-4ecb-9482-92a86c93b7cb",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "0ce0f994-0c55-4e3a-8cc8-ecc7690af5a1",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "54520167-064b-485e-8a8a-a6a8652296cc",
+      "dependsOn" : [
+        "ee586b57-8ad3-47d2-9dec-a4dd52fd7592",
+        "2f375e17-b974-4b82-bfec-73d9d99c8150",
+        "d0f7180b-b737-44ea-bc9e-bc7a7679592d",
+        "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+        "1102117e-617b-470f-9588-d1a1cc60c48f",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "a3a4bc8e-3811-426d-88b3-eae6cfc6bd33",
+        "42d1e31d-9208-472d-8138-b6901d56b0e6",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "921126bd-5545-4740-932e-8f1664f62192",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "5d431fa9-1b1b-42ea-bbf1-5bbce8cbf2ce",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "620f9f47-13cc-419c-a255-d4b5a285d230",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "d8ba055a-d74d-4f82-b517-1b86ced24ca9",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "15ff2dd1-6938-4959-9803-e9f79cc27d1a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "bfc8b460-23e2-49b4-b5af-b30c37c86395",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "cdeceed4-6be1-4d59-83e5-00701a7e385a",
+      "dependsOn" : [
+        "14273bdd-5ada-4663-ab2d-9a3728ff3f31"
+      ]
+    },
+    {
+      "ref" : "7d3088c1-5a22-48c0-9ae6-c315492e2672",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2e986b2d-11a3-44da-bf89-18bc464f18de",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "77dd902a-cc31-4875-a265-3005c271ee27",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "7b191174-4c8e-4099-91bd-193da9f9f6a0",
+        "afb3e446-a986-43ba-96ae-0a14e442839c",
+        "db154fe0-00eb-4d43-99b7-27fbacd478ba",
+        "e1b88f45-1b60-4ec1-8b3b-caebde1b39f4",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "c4b507d3-4d48-4fcd-a281-95beff772302",
+        "c4417934-ece6-4ced-aec7-ba61f349da61",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "08cef8ef-bbf0-4330-a17a-5a06dd8e09d8",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c3674294-d6d5-43ec-a8f4-8499eb097689",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c7f23003-4feb-442e-bdc2-307dea3d7d69",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "8d12a536-39e2-45ba-bfaf-57285615098c",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2b055e61-9592-4097-8dd3-a8e944f6fda4",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "ed88032e-4d7e-49c1-818e-a2c3f27f4be2",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "40f0bafe-1b48-4bdb-b37b-fd35403e931a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "7b191174-4c8e-4099-91bd-193da9f9f6a0",
+      "dependsOn" : [
+        "08cef8ef-bbf0-4330-a17a-5a06dd8e09d8"
+      ]
+    },
+    {
+      "ref" : "b1f05a20-00ce-41f9-bce8-ff775a60dce7",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c7402be6-43e6-4770-b64a-72eab1c0cd16",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c"
+      ]
+    },
+    {
+      "ref" : "e7a8449b-f055-49c4-ab65-85d03426205a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "1be89645-b277-476d-bff7-7453c9157a68",
+      "dependsOn" : [
+        "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+        "a514324e-b47d-4e79-8a42-fd25f9070412",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "f54dfa9f-7e0d-466c-9bf3-da67514b585b",
+      "dependsOn" : [
+        "19a8ae5d-ec6e-4ecb-9482-92a86c93b7cb",
+        "0ce0f994-0c55-4e3a-8cc8-ecc7690af5a1",
+        "1be89645-b277-476d-bff7-7453c9157a68",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "a514324e-b47d-4e79-8a42-fd25f9070412",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "afb3e446-a986-43ba-96ae-0a14e442839c",
+      "dependsOn" : [
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "db154fe0-00eb-4d43-99b7-27fbacd478ba",
+      "dependsOn" : [
+        "afb3e446-a986-43ba-96ae-0a14e442839c"
+      ]
+    },
+    {
+      "ref" : "e1b88f45-1b60-4ec1-8b3b-caebde1b39f4",
+      "dependsOn" : [
+        "afb3e446-a986-43ba-96ae-0a14e442839c",
+        "db154fe0-00eb-4d43-99b7-27fbacd478ba",
+        "c4b507d3-4d48-4fcd-a281-95beff772302",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "7078a82a-f1b9-409d-8a0c-12e57608aaeb",
+      "dependsOn" : [
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "318ec5ba-5208-435b-bf02-3882c41d2b62"
+      ]
+    },
+    {
+      "ref" : "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "1f563af2-c732-4fef-ab0d-44ccc5589463",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "d96917a6-5286-441d-bdeb-d18b37545e45",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2afa02e6-354f-46f7-859b-3678a5eccc47",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "62865945-890d-4000-98bd-005ea0486c00",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "11647e80-6d1c-4edb-a54d-1f3cf4d25133",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "401a60ef-92f1-42ba-b466-f40e1f99369f",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "320ff85e-61ff-4b52-9312-95f56d1af045",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "17d2a89c-84d0-4f42-b55a-38b0b1c8cbc8",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "ddb3d296-1837-415f-9fb3-37eced633f4b",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "0f57ada2-ae61-4e68-bbb5-2475d883d975",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a",
+      "dependsOn" : [
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "1f803630-19ff-4ece-9c80-78ec687c0ed6",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "ee586b57-8ad3-47d2-9dec-a4dd52fd7592",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "590efe5e-b3f9-4cb5-ac0f-fbae9fdcabaf",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2f375e17-b974-4b82-bfec-73d9d99c8150",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "d0f7180b-b737-44ea-bc9e-bc7a7679592d",
+        "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6",
+      "dependsOn" : [
+        "19a8ae5d-ec6e-4ecb-9482-92a86c93b7cb",
+        "5d431fa9-1b1b-42ea-bbf1-5bbce8cbf2ce",
+        "bfc8b460-23e2-49b4-b5af-b30c37c86395",
+        "cdeceed4-6be1-4d59-83e5-00701a7e385a",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "2e986b2d-11a3-44da-bf89-18bc464f18de",
+        "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "ed88032e-4d7e-49c1-818e-a2c3f27f4be2",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "d96917a6-5286-441d-bdeb-d18b37545e45",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "2f375e17-b974-4b82-bfec-73d9d99c8150",
+        "f5f0e0d0-7e8e-4301-83cf-4792606a07fb",
+        "2292ed24-b380-42e1-a423-64dbfb3badea",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "a1129c96-12fb-4353-ae20-2acad5a4cbff",
+        "53f45117-c5e4-4e4c-8af9-d765812e2140",
+        "e995e53e-e1a9-4532-a198-b8cb43b36669",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "0b6a543c-db73-4c37-b3c5-897a738b1188",
+        "cabb369f-bc10-41fb-99ca-02681a3525a9",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "16ff98a6-87ae-4aa2-ba0c-3f447e8d00da",
+        "a93bc836-bad3-456c-9e51-95e588f13d83",
+        "d1d972c1-37b8-4ff6-b12c-068ca727afdc",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+        "000570d7-b587-440e-9351-276a6212c745",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "cb4247dc-1208-49cd-8bef-f06ed5569f5a",
+        "318ec5ba-5208-435b-bf02-3882c41d2b62",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "2cacdede-efbc-4e74-8b49-976fd69825cd",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f28b04b9-dfbf-4643-bd63-68cc66f5f290",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "6f0c5602-71b8-4cec-b468-f7479179d04a",
+        "8db7632f-925e-46df-9f97-38b97252c323",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "93dfa808-b91d-43ef-944e-735f3d009332",
+        "ded820ab-b737-4326-aab7-442c9d318841",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "8ac8f9c6-fb12-4337-83ed-d35a0798999b",
+        "9832f783-c462-483b-b227-5232d19352e2",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "5cfe8732-b294-4643-8e1a-ff28dfcd4681",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "e6e8f2b5-fb31-4041-8b60-c25738e779e3",
+        "4c64c135-eefc-4f78-a480-05a3103873b3",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "c4b507d3-4d48-4fcd-a281-95beff772302",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "481a980b-e4c6-4597-b5a7-7ae9eb0c6ec5",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "f5f0e0d0-7e8e-4301-83cf-4792606a07fb",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "a514324e-b47d-4e79-8a42-fd25f9070412",
+      "dependsOn" : [
+        "590efe5e-b3f9-4cb5-ac0f-fbae9fdcabaf"
+      ]
+    },
+    {
+      "ref" : "0f91fd4a-9acc-48d2-ba9b-d8c05139eeb0",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "39564cf5-eca2-4038-ab8a-06d8116065f3",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d"
+      ]
+    },
+    {
+      "ref" : "3732328c-011a-49ec-a869-73bd1c4fe1f5",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "f5537ee6-80bb-478d-85e0-d95e6fa3cd41",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "63b33469-d64c-40cb-8fe8-381e3f8582ed",
+      "dependsOn" : [
+        "0eab0a8e-4dd9-4572-9a36-715dbbe9f015",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "d0f7180b-b737-44ea-bc9e-bc7a7679592d",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "fcfeb265-c8c9-445a-aacc-e62dffef86bd",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2292ed24-b380-42e1-a423-64dbfb3badea",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "882e455d-9767-4b44-87b3-590466658dbb",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "a2185f53-09e9-41dd-87c0-317cab2632f8",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "a2185f53-09e9-41dd-87c0-317cab2632f8",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "a1129c96-12fb-4353-ae20-2acad5a4cbff",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "53f45117-c5e4-4e4c-8af9-d765812e2140",
+      "dependsOn" : [
+        "bfc8b460-23e2-49b4-b5af-b30c37c86395",
+        "cdeceed4-6be1-4d59-83e5-00701a7e385a",
+        "7d3088c1-5a22-48c0-9ae6-c315492e2672",
+        "e995e53e-e1a9-4532-a198-b8cb43b36669",
+        "14273bdd-5ada-4663-ab2d-9a3728ff3f31",
+        "16ff98a6-87ae-4aa2-ba0c-3f447e8d00da",
+        "2922c630-c741-4b15-bd39-2a32073fdb49",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "e995e53e-e1a9-4532-a198-b8cb43b36669",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "1102117e-617b-470f-9588-d1a1cc60c48f",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "17c574f6-973f-4bf4-bb86-4f04d299ecca",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "1f803630-19ff-4ece-9c80-78ec687c0ed6",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "201bbda2-6396-42a0-a8d2-c4087c00a11c"
+      ]
+    },
+    {
+      "ref" : "1bccac30-c8ff-4607-ab4b-9ca47ae07e17",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "cfbab090-46e8-425a-ad67-afcfe25a299f",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "9196ba6c-72c9-43c5-854b-09b356b23985",
+      "dependsOn" : [
+        "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+        "f54dfa9f-7e0d-466c-9bf3-da67514b585b",
+        "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a",
+        "a514324e-b47d-4e79-8a42-fd25f9070412",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "3cc39098-916f-452d-9d78-4c8e743684b2"
+      ]
+    },
+    {
+      "ref" : "33dc78e3-2997-43df-a54c-2d56d7b16004",
+      "dependsOn" : [
+        "921126bd-5545-4740-932e-8f1664f62192",
+        "620f9f47-13cc-419c-a255-d4b5a285d230",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "2f375e17-b974-4b82-bfec-73d9d99c8150",
+        "39564cf5-eca2-4038-ab8a-06d8116065f3",
+        "d0f7180b-b737-44ea-bc9e-bc7a7679592d",
+        "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+        "0b6a543c-db73-4c37-b3c5-897a738b1188",
+        "cabb369f-bc10-41fb-99ca-02681a3525a9",
+        "88333acf-cd3b-4782-9fd8-ff3ea2f0a82f",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "0b6a543c-db73-4c37-b3c5-897a738b1188",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47"
+      ]
+    },
+    {
+      "ref" : "cabb369f-bc10-41fb-99ca-02681a3525a9",
+      "dependsOn" : [
+        "921126bd-5545-4740-932e-8f1664f62192",
+        "620f9f47-13cc-419c-a255-d4b5a285d230",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "39564cf5-eca2-4038-ab8a-06d8116065f3",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "0b6a543c-db73-4c37-b3c5-897a738b1188",
+        "88333acf-cd3b-4782-9fd8-ff3ea2f0a82f",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "88333acf-cd3b-4782-9fd8-ff3ea2f0a82f",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "6c91c20f-bc90-4798-a477-103a2a86604e",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "14273bdd-5ada-4663-ab2d-9a3728ff3f31",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "f9821568-9fed-46fb-9033-d122e0b07223",
+      "dependsOn" : [
+        "cdeceed4-6be1-4d59-83e5-00701a7e385a",
+        "1f803630-19ff-4ece-9c80-78ec687c0ed6",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c4417934-ece6-4ced-aec7-ba61f349da61",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "c89de020-9e20-41b5-9c82-66ae5f189e37",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c4417934-ece6-4ced-aec7-ba61f349da61",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "16ff98a6-87ae-4aa2-ba0c-3f447e8d00da",
+      "dependsOn" : [
+        "2922c630-c741-4b15-bd39-2a32073fdb49",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "2922c630-c741-4b15-bd39-2a32073fdb49",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "08cef8ef-bbf0-4330-a17a-5a06dd8e09d8",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "726c764d-78d4-424d-b190-45a5b0c2e1d1",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "ac627c3b-8a69-4fb9-9682-6a67fc0f8faa",
+      "dependsOn" : [
+        "15ff2dd1-6938-4959-9803-e9f79cc27d1a",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "ddb3d296-1837-415f-9fb3-37eced633f4b",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "3f1b7b56-085c-4258-b6da-d810c87704af"
+      ]
+    },
+    {
+      "ref" : "a93bc836-bad3-456c-9e51-95e588f13d83",
+      "dependsOn" : [
+        "bfc8b460-23e2-49b4-b5af-b30c37c86395",
+        "c09a9596-5274-458d-9567-1a4f6d81e320",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "d1d972c1-37b8-4ff6-b12c-068ca727afdc",
+      "dependsOn" : [
+        "17d2a89c-84d0-4f42-b55a-38b0b1c8cbc8",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "ac627c3b-8a69-4fb9-9682-6a67fc0f8faa",
+        "a93bc836-bad3-456c-9e51-95e588f13d83",
+        "c09a9596-5274-458d-9567-1a4f6d81e320",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "1dbe2ac1-bc90-46a1-a8d3-04e62ef51f4c",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "5b78fe46-8c81-4138-a72e-2b807f41d1f8",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "1dbe2ac1-bc90-46a1-a8d3-04e62ef51f4c",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+        "3f1b7b56-085c-4258-b6da-d810c87704af"
+      ]
+    },
+    {
+      "ref" : "9ff1abee-f4c2-42e2-a01e-9f0bdbff1f1b",
+      "dependsOn" : [
+        "2b055e61-9592-4097-8dd3-a8e944f6fda4",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "1dbe2ac1-bc90-46a1-a8d3-04e62ef51f4c",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a"
+      ]
+    },
+    {
+      "ref" : "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a"
+      ]
+    },
+    {
+      "ref" : "917975ea-9e28-47bb-9a53-c0793d1e827c",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+        "76527d91-7890-41cd-acb8-9e734b7f23bb",
+        "52377fe1-8d26-4303-a1b9-cb7a7bcdd3e7",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+        "000570d7-b587-440e-9351-276a6212c745",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21"
+      ]
+    },
+    {
+      "ref" : "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a"
+      ]
+    },
+    {
+      "ref" : "76527d91-7890-41cd-acb8-9e734b7f23bb",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922"
+      ]
+    },
+    {
+      "ref" : "52377fe1-8d26-4303-a1b9-cb7a7bcdd3e7",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "2adb7a80-4519-4d29-91ae-1baaaf253c8e",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+        "76527d91-7890-41cd-acb8-9e734b7f23bb"
+      ]
+    },
+    {
+      "ref" : "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21"
+      ]
+    },
+    {
+      "ref" : "000570d7-b587-440e-9351-276a6212c745",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "ddb3d296-1837-415f-9fb3-37eced633f4b",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "ea3a8603-a892-4897-991f-f9fb957785b7",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "a3a4bc8e-3811-426d-88b3-eae6cfc6bd33",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "3b49bca6-60d3-4a04-93f9-1def5b07423e",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "a3a4bc8e-3811-426d-88b3-eae6cfc6bd33"
+      ]
+    },
+    {
+      "ref" : "c09a9596-5274-458d-9567-1a4f6d81e320",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "a3a4bc8e-3811-426d-88b3-eae6cfc6bd33",
+        "3b49bca6-60d3-4a04-93f9-1def5b07423e",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156"
+      ]
+    },
+    {
+      "ref" : "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+      "dependsOn" : [
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "cb4247dc-1208-49cd-8bef-f06ed5569f5a",
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+      "dependsOn" : [
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "cb4247dc-1208-49cd-8bef-f06ed5569f5a",
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+      "dependsOn" : [
+        "264c7d97-8861-41ae-b1e8-d92336fb2766",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "cb4247dc-1208-49cd-8bef-f06ed5569f5a",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "00ca9b46-664b-4839-b15e-f24c453b4697",
+      "dependsOn" : [
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b"
+      ]
+    },
+    {
+      "ref" : "318ec5ba-5208-435b-bf02-3882c41d2b62",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "b12b24fd-0ca5-4312-8009-d53fe1e03025",
+      "dependsOn" : [
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37"
+      ]
+    },
+    {
+      "ref" : "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "00ca9b46-664b-4839-b15e-f24c453b4697"
+      ]
+    },
+    {
+      "ref" : "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+      "dependsOn" : [
+        "92625167-89ac-4510-b0ba-7b421e0e1e2f",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "2f0c96bf-93a2-43ae-8b49-706ff35cf9de",
+        "2243d480-338c-4a77-a377-e72f1489eb20",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "2f0c96bf-93a2-43ae-8b49-706ff35cf9de",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "2243d480-338c-4a77-a377-e72f1489eb20",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "2243d480-338c-4a77-a377-e72f1489eb20",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "3f1b7b56-085c-4258-b6da-d810c87704af",
+      "dependsOn" : [
+        "92625167-89ac-4510-b0ba-7b421e0e1e2f",
+        "264c7d97-8861-41ae-b1e8-d92336fb2766",
+        "620f9f47-13cc-419c-a255-d4b5a285d230",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "2f0c96bf-93a2-43ae-8b49-706ff35cf9de",
+        "2243d480-338c-4a77-a377-e72f1489eb20",
+        "42659ac5-6028-4122-9762-2b5e0e116549"
+      ]
+    },
+    {
+      "ref" : "42659ac5-6028-4122-9762-2b5e0e116549",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39"
+      ]
+    },
+    {
+      "ref" : "e44d73e3-9e0f-4605-812f-82589ad7eb97",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "55f35f74-f015-46e4-84d0-2d15af12e4d5",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "42d1e31d-9208-472d-8138-b6901d56b0e6",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "bce8b682-3c1a-4d8b-a3e9-5adeb7a6bd38",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2cacdede-efbc-4e74-8b49-976fd69825cd",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "42374781-826e-4c37-8966-b944075f4265",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "bd76ee3c-3601-4085-9a1f-61de909d3156",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+      "dependsOn" : [
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5"
+      ]
+    },
+    {
+      "ref" : "f28b04b9-dfbf-4643-bd63-68cc66f5f290",
+      "dependsOn" : [
+        "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "a93bc836-bad3-456c-9e51-95e588f13d83",
+        "d1d972c1-37b8-4ff6-b12c-068ca727afdc",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "6f0c5602-71b8-4cec-b468-f7479179d04a",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "2f375e17-b974-4b82-bfec-73d9d99c8150",
+        "f5537ee6-80bb-478d-85e0-d95e6fa3cd41",
+        "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+        "882e455d-9767-4b44-87b3-590466658dbb",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "55f35f74-f015-46e4-84d0-2d15af12e4d5",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "6f0c5602-71b8-4cec-b468-f7479179d04a",
+      "dependsOn" : [
+        "4c6c1764-199a-4d88-b07b-af09385ecbad",
+        "bfc8b460-23e2-49b4-b5af-b30c37c86395",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "1be89645-b277-476d-bff7-7453c9157a68",
+        "f54dfa9f-7e0d-466c-9bf3-da67514b585b",
+        "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "17d2a89c-84d0-4f42-b55a-38b0b1c8cbc8",
+        "2292ed24-b380-42e1-a423-64dbfb3badea",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "ac627c3b-8a69-4fb9-9682-6a67fc0f8faa",
+        "a93bc836-bad3-456c-9e51-95e588f13d83",
+        "d1d972c1-37b8-4ff6-b12c-068ca727afdc",
+        "5b78fe46-8c81-4138-a72e-2b807f41d1f8",
+        "9ff1abee-f4c2-42e2-a01e-9f0bdbff1f1b",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "917975ea-9e28-47bb-9a53-c0793d1e827c",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+        "c09a9596-5274-458d-9567-1a4f6d81e320",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "c660be2b-2ec6-4f0d-b50f-1ff32c11c83d",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "bce8b682-3c1a-4d8b-a3e9-5adeb7a6bd38",
+        "2cacdede-efbc-4e74-8b49-976fd69825cd",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "201bbda2-6396-42a0-a8d2-c4087c00a11c",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "8db7632f-925e-46df-9f97-38b97252c323",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "1be89645-b277-476d-bff7-7453c9157a68",
+        "f54dfa9f-7e0d-466c-9bf3-da67514b585b",
+        "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "481a980b-e4c6-4597-b5a7-7ae9eb0c6ec5",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "3dd205a5-fbb8-49e2-869e-e6a261d6a864",
+        "708b86e1-0427-4540-bac6-b7aee5b4ad85",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "d96917a6-5286-441d-bdeb-d18b37545e45",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "62865945-890d-4000-98bd-005ea0486c00",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "320ff85e-61ff-4b52-9312-95f56d1af045",
+        "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a",
+        "1bccac30-c8ff-4607-ab4b-9ca47ae07e17",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "cb4247dc-1208-49cd-8bef-f06ed5569f5a",
+        "318ec5ba-5208-435b-bf02-3882c41d2b62",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "93dfa808-b91d-43ef-944e-735f3d009332",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "6f0c5602-71b8-4cec-b468-f7479179d04a",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "9832f783-c462-483b-b227-5232d19352e2",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad"
+      ]
+    },
+    {
+      "ref" : "ded820ab-b737-4326-aab7-442c9d318841",
+      "dependsOn" : [
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "75dddd49-0a35-4c6b-b801-efdef2751b0c",
+        "2cacdede-efbc-4e74-8b49-976fd69825cd",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "0b569035-da72-4eba-8fa7-1a825547b062"
+      ]
+    },
+    {
+      "ref" : "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+      "dependsOn" : [
+        "0eab0a8e-4dd9-4572-9a36-715dbbe9f015",
+        "5d431fa9-1b1b-42ea-bbf1-5bbce8cbf2ce",
+        "e7a8449b-f055-49c4-ab65-85d03426205a",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "39564cf5-eca2-4038-ab8a-06d8116065f3",
+        "63b33469-d64c-40cb-8fe8-381e3f8582ed",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "0b6a543c-db73-4c37-b3c5-897a738b1188",
+        "cabb369f-bc10-41fb-99ca-02681a3525a9",
+        "88333acf-cd3b-4782-9fd8-ff3ea2f0a82f",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "9ff1abee-f4c2-42e2-a01e-9f0bdbff1f1b",
+        "26fd8ba8-3cfe-4dc0-aae4-d972b2347a21",
+        "917975ea-9e28-47bb-9a53-c0793d1e827c",
+        "48b790bd-f488-4e4a-b87f-f9a89f2a5922",
+        "29d7121f-6b73-4dc3-b072-e7ed3eb9d36a",
+        "c09a9596-5274-458d-9567-1a4f6d81e320",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "a71817a2-93e6-4e8a-b5b5-d5a3aa629c43",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad"
+      ]
+    },
+    {
+      "ref" : "8ac8f9c6-fb12-4337-83ed-d35a0798999b",
+      "dependsOn" : [
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad"
+      ]
+    },
+    {
+      "ref" : "9832f783-c462-483b-b227-5232d19352e2",
+      "dependsOn" : [
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "d8cc553a-738b-422c-8c76-cc4fb9fadf3b",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "6f0c5602-71b8-4cec-b468-f7479179d04a",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad"
+      ]
+    },
+    {
+      "ref" : "0b569035-da72-4eba-8fa7-1a825547b062",
+      "dependsOn" : [
+        "e7a8449b-f055-49c4-ab65-85d03426205a"
+      ]
+    },
+    {
+      "ref" : "5cfe8732-b294-4643-8e1a-ff28dfcd4681",
+      "dependsOn" : [
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "93dfa808-b91d-43ef-944e-735f3d009332",
+        "9832f783-c462-483b-b227-5232d19352e2"
+      ]
+    },
+    {
+      "ref" : "3cc39098-916f-452d-9d78-4c8e743684b2",
+      "dependsOn" : [
+        "4c6c1764-199a-4d88-b07b-af09385ecbad",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "9a7eed9e-d54a-441f-8a88-73467e8701e7",
+        "f54dfa9f-7e0d-466c-9bf3-da67514b585b",
+        "d06c92f7-b6a7-49a2-b628-72bc267a2c8f",
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "4b4dbe1e-47ab-45ac-bd18-73153e4dc7ce",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "2292ed24-b380-42e1-a423-64dbfb3badea",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "00ca9b46-664b-4839-b15e-f24c453b4697",
+        "42659ac5-6028-4122-9762-2b5e0e116549",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "bd76ee3c-3601-4085-9a1f-61de909d3156",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "e6e8f2b5-fb31-4041-8b60-c25738e779e3",
+      "dependsOn" : [
+        "15a29ccd-16d4-456e-b362-96dc841e0977",
+        "d8ba055a-d74d-4f82-b517-1b86ced24ca9",
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "2e986b2d-11a3-44da-bf89-18bc464f18de",
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "c7f23003-4feb-442e-bdc2-307dea3d7d69",
+        "8d12a536-39e2-45ba-bfaf-57285615098c",
+        "40f0bafe-1b48-4bdb-b37b-fd35403e931a",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "adc876ee-e8e8-4e4b-8ae8-978038e6927d",
+        "481a980b-e4c6-4597-b5a7-7ae9eb0c6ec5",
+        "f5f0e0d0-7e8e-4301-83cf-4792606a07fb",
+        "3732328c-011a-49ec-a869-73bd1c4fe1f5",
+        "63b33469-d64c-40cb-8fe8-381e3f8582ed",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "a1129c96-12fb-4353-ae20-2acad5a4cbff",
+        "6c91c20f-bc90-4798-a477-103a2a86604e",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "8db7632f-925e-46df-9f97-38b97252c323",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "8ac8f9c6-fb12-4337-83ed-d35a0798999b",
+        "0b569035-da72-4eba-8fa7-1a825547b062",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "708b86e1-0427-4540-bac6-b7aee5b4ad85",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "4c64c135-eefc-4f78-a480-05a3103873b3",
+      "dependsOn" : [
+        "9b22579d-9f93-4a38-9a2d-0d34971a926a",
+        "b1adabd9-6dbc-4d44-89a8-278d54f0422a",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd"
+      ]
+    },
+    {
+      "ref" : "11f80e3f-6cd9-4810-987e-fa69378eacad",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "0b569035-da72-4eba-8fa7-1a825547b062"
+      ]
+    },
+    {
+      "ref" : "201bbda2-6396-42a0-a8d2-c4087c00a11c",
+      "dependsOn" : [
+        "2afa02e6-354f-46f7-859b-3678a5eccc47",
+        "3f1b7b56-085c-4258-b6da-d810c87704af",
+        "0b569035-da72-4eba-8fa7-1a825547b062"
+      ]
+    },
+    {
+      "ref" : "f3ad4e78-ac75-4fc3-9d4b-14002a8cd6ba",
+      "dependsOn" : [
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "ed88032e-4d7e-49c1-818e-a2c3f27f4be2",
+        "e7a8449b-f055-49c4-ab65-85d03426205a",
+        "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a",
+        "43bbc9da-b02d-497b-8b0b-d87730a84dd4",
+        "33dc78e3-2997-43df-a54c-2d56d7b16004",
+        "0b6a543c-db73-4c37-b3c5-897a738b1188",
+        "c09a9596-5274-458d-9567-1a4f6d81e320",
+        "c12fa2c3-9ac0-4a64-94e7-89db84e3374b",
+        "318ec5ba-5208-435b-bf02-3882c41d2b62",
+        "b12b24fd-0ca5-4312-8009-d53fe1e03025",
+        "f4a768b0-eb28-4630-8758-b49ecc4349c2",
+        "e19c974e-0404-47c6-96ea-ca5aea2700f3",
+        "f28b04b9-dfbf-4643-bd63-68cc66f5f290",
+        "f5014c48-b0f0-4da3-acd7-02c91cfe63e5",
+        "eb8bdb6e-cdda-4bfb-bb78-886b3a0bf1a8",
+        "934fe002-aaab-41fb-a709-2ec224cbf0bd",
+        "11f80e3f-6cd9-4810-987e-fa69378eacad",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "3dd205a5-fbb8-49e2-869e-e6a261d6a864",
+      "dependsOn" : [
+        "c3674294-d6d5-43ec-a8f4-8499eb097689",
+        "b1f05a20-00ce-41f9-bce8-ff775a60dce7",
+        "11647e80-6d1c-4edb-a54d-1f3cf4d25133",
+        "9d4b1c7a-802c-4a5d-8d56-4ff391125f7a",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "3cc39098-916f-452d-9d78-4c8e743684b2",
+        "708b86e1-0427-4540-bac6-b7aee5b4ad85",
+        "df3b1437-644f-4f96-8891-614d13df30fd"
+      ]
+    },
+    {
+      "ref" : "708b86e1-0427-4540-bac6-b7aee5b4ad85",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "b1f05a20-00ce-41f9-bce8-ff775a60dce7",
+        "55e19cc8-99d9-4f9b-8467-3cad6b525d39",
+        "a514324e-b47d-4e79-8a42-fd25f9070412",
+        "fcfeb265-c8c9-445a-aacc-e62dffef86bd",
+        "cfbab090-46e8-425a-ad67-afcfe25a299f",
+        "f9821568-9fed-46fb-9033-d122e0b07223",
+        "e74f9fb8-da02-41ca-8484-95ef1d53866d",
+        "c4417934-ece6-4ced-aec7-ba61f349da61",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "726c764d-78d4-424d-b190-45a5b0c2e1d1",
+        "ea3a8603-a892-4897-991f-f9fb957785b7",
+        "42374781-826e-4c37-8966-b944075f4265",
+        "3cc39098-916f-452d-9d78-4c8e743684b2"
+      ]
+    },
+    {
+      "ref" : "8875932c-a0ff-4514-8ddc-6e82b1408a73",
+      "dependsOn" : [
+        "9c47f4b2-1739-436a-97c4-ae2f8c825e0d",
+        "2f375e17-b974-4b82-bfec-73d9d99c8150",
+        "d0f7180b-b737-44ea-bc9e-bc7a7679592d",
+        "aec4262e-61b7-4624-b2c4-3bf6e1dd477b",
+        "c89de020-9e20-41b5-9c82-66ae5f189e37",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    },
+    {
+      "ref" : "df3b1437-644f-4f96-8891-614d13df30fd",
+      "dependsOn" : [
+        "f893b7c8-9925-4327-b1f3-1746f42a0ac7",
+        "42374781-826e-4c37-8966-b944075f4265"
+      ]
+    }
+  ],
+  "vulnerabilities" : [
+    {
+      "bom-ref" : "1ceded7b-f710-4673-b005-2c0df088de19",
+      "id" : "CVE-2023-47108",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        770
+      ],
+      "description" : "OpenTelemetry-Go Contrib is a collection of third-party packages for OpenTelemetry-Go. Prior to version 0.46.0, the grpc Unary Server Interceptor out of the box adds labels `net.peer.sock.addr` and `net.peer.sock.port` that have unbound cardinality. It leads to the server's potential memory exhaustion when many malicious requests are sent. An attacker can easily flood the peer address and port for requests. Version 0.46.0 contains a fix for this issue. As a workaround to stop being affected, a view removing the attributes can be used. The other possibility is to disable grpc metrics instrumentation by passing `otelgrpc.WithMeterProvider` option with `noop.NewMeterProvider`.",
+      "published" : "2023-11-10T19:15:00Z",
+      "updated" : "2023-11-20T19:34:00Z",
+      "affects" : [
+        {
+          "ref" : "5b78fe46-8c81-4138-a72e-2b807f41d1f8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "320dd332-569c-45a9-9e40-ea505795cbad",
+      "id" : "CVE-2024-24786",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "severity" : "unknown",
+          "method" : "other"
+        }
+      ],
+      "description" : "The protojson.Unmarshal function can enter an infinite loop when unmarshaling certain forms of invalid JSON. This condition can occur when unmarshaling into a message which contains a google.protobuf.Any value, or when the UnmarshalOptions.DiscardUnknown option is set.",
+      "published" : "2024-03-05T23:15:00Z",
+      "updated" : "2024-05-01T17:15:00Z",
+      "affects" : [
+        {
+          "ref" : "42659ac5-6028-4122-9762-2b5e0e116549"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "33f020aa-361e-4c48-a21b-baad18348c01",
+      "id" : "CVE-2020-8561",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:P/I:N/A:N)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.1,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:L/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        610
+      ],
+      "description" : "A security issue was discovered in Kubernetes where actors that control the responses of MutatingWebhookConfiguration or ValidatingWebhookConfiguration requests are able to redirect kube-apiserver requests to private networks of the apiserver. If that user can view kube-apiserver logs when the log level is set to 10, they can view the redirected responses and headers in the logs.",
+      "published" : "2021-09-20T17:15:00Z",
+      "updated" : "2021-11-06T03:04:00Z",
+      "affects" : [
+        {
+          "ref" : "6f0c5602-71b8-4cec-b468-f7479179d04a"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "33f020aa-361e-4c48-a21b-baad18348c01",
+      "id" : "CVE-2020-8561",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:P/I:N/A:N)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.1,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:L/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        610
+      ],
+      "description" : "A security issue was discovered in Kubernetes where actors that control the responses of MutatingWebhookConfiguration or ValidatingWebhookConfiguration requests are able to redirect kube-apiserver requests to private networks of the apiserver. If that user can view kube-apiserver logs when the log level is set to 10, they can view the redirected responses and headers in the logs.",
+      "published" : "2021-09-20T17:15:00Z",
+      "updated" : "2021-11-06T03:04:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "f2a4624c-b23e-48ca-b179-b2372477bc50",
+      "id" : "CVE-2021-25740",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 3.5,
+          "severity" : "low",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:M/Au:S/C:P/I:N/A:N)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 3.1,
+          "severity" : "low",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        610
+      ],
+      "description" : "A security issue was discovered with Kubernetes that could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack.",
+      "published" : "2021-09-20T17:15:00Z",
+      "updated" : "2021-11-06T02:49:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "124f2d17-8024-4ad7-8549-ace69787100d",
+      "id" : "CVE-2021-25743",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 2.1,
+          "severity" : "low",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:H/Au:S/C:N/I:P/A:N)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 3.0,
+          "severity" : "low",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:H/PR:L/UI:R/S:C/C:N/I:L/A:N"
+        }
+      ],
+      "description" : "kubectl does not neutralize escape, meta or control sequences contained in the raw data it outputs to a terminal. This includes but is not limited to the unstructured string fields in objects such as Events.",
+      "published" : "2022-01-07T00:15:00Z",
+      "updated" : "2022-02-28T15:22:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "8475494b-7f51-413b-8a47-4ae88bb993da",
+      "id" : "CVE-2021-25749",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description" : "Windows workloads can run as ContainerAdministrator even when those workloads set the runAsNonRoot option to true.",
+      "published" : "2023-05-24T17:15:00Z",
+      "updated" : "2023-06-01T13:14:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "74b243f3-5b66-468e-aed8-0f524a7e7068",
+      "id" : "CVE-2022-3162",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        22
+      ],
+      "description" : "Users authorized to list or watch one type of namespaced custom resource cluster-wide can read custom resources of a different type in the same API group without authorization. Clusters are impacted by this vulnerability if all of the following are true: 1. There are 2+ CustomResourceDefinitions sharing the same API group 2. Users have cluster-wide list or watch authorization on one of those custom resources. 3. The same users are not authorized to read another custom resource in the same API group.",
+      "published" : "2023-03-01T19:15:00Z",
+      "updated" : "2023-05-11T15:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "a89dacdb-5e34-4132-ac2b-ef6868466bd7",
+      "id" : "CVE-2022-3172",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.2,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:L/A:N"
+        }
+      ],
+      "cwes" : [
+        918
+      ],
+      "description" : "A security issue was discovered in kube-apiserver that allows an aggregated API server to redirect client traffic to any URL. This could lead to the client performing unexpected actions as well as forwarding the client's API server credentials to third parties.",
+      "published" : "2023-11-03T20:15:00Z",
+      "updated" : "2023-12-21T22:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "33776226-582c-4eb2-9a29-5af279d9e125",
+      "id" : "CVE-2022-3294",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description" : "Users may have access to secure endpoints in the control plane network. Kubernetes clusters are only affected if an untrusted user can modify Node objects and send proxy requests to them. Kubernetes supports node proxying, which allows clients of kube-apiserver to access endpoints of a Kubelet to establish connections to Pods, retrieve container logs, and more. While Kubernetes already validates the proxying address for Nodes, a bug in kube-apiserver made it possible to bypass this validation. Bypassing this validation could allow authenticated requests destined for Nodes to to the API server's private network.",
+      "published" : "2023-03-01T19:15:00Z",
+      "updated" : "2023-05-05T20:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "75857108-bb4f-4650-b291-22b56e340ebd",
+      "id" : "CVE-2023-2431",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 5.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N"
+        }
+      ],
+      "description" : "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement. Pods that use localhost type for seccomp profile but specify an empty profile field, are affected by this issue. In this scenario, this vulnerability allows the pod to run in unconfined (seccomp disabled) mode. This bug affects Kubelet.",
+      "published" : "2023-06-16T08:15:00Z",
+      "updated" : "2023-07-01T06:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "d2dca24e-5899-476e-9160-e8e0fde9022c",
+      "id" : "CVE-2023-2727",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N"
+        }
+      ],
+      "description" : "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
+      "published" : "2023-07-03T21:15:00Z",
+      "updated" : "2023-08-03T15:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "2ff68414-fc8c-42f5-9a80-d52f41aaca34",
+      "id" : "CVE-2023-3676",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        20
+      ],
+      "description" : "A security issue was discovered in Kubernetes where a user that can create pods on Windows nodes may be able to escalate to admin privileges on those nodes. Kubernetes clusters are only affected if they include Windows nodes.",
+      "published" : "2023-10-31T21:15:00Z",
+      "updated" : "2023-11-30T22:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "f64da0ec-787c-48e5-85e3-65aceab7b887",
+      "id" : "CVE-2023-3893",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description" : "A security issue was discovered in Kubernetes where a user that can create pods on Windows nodes running kubernetes-csi-proxy may be able to escalate to admin privileges on those nodes. Kubernetes clusters are only affected if they include Windows nodes running kubernetes-csi-proxy.",
+      "published" : "2023-11-03T18:15:00Z",
+      "updated" : "2023-12-21T22:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "8b8480d5-a8e4-4aec-a8be-466c68889502",
+      "id" : "CVE-2023-3955",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        20
+      ],
+      "description" : "A security issue was discovered in Kubernetes where a user that can create pods on Windows nodes may be able to escalate to admin privileges on those nodes. Kubernetes clusters are only affected if they include Windows nodes.",
+      "published" : "2023-10-31T21:15:00Z",
+      "updated" : "2023-12-21T22:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "6d5582a9-3e5f-44bd-95da-8ce95886ecef",
+      "id" : "CVE-2023-5528",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description" : "A security issue was discovered in Kubernetes where a user that can create pods and persistent volumes on Windows nodes may be able to escalate to admin privileges on those nodes. Kubernetes clusters are only affected if they are using an in-tree storage plugin for Windows nodes.",
+      "published" : "2023-11-14T21:15:00Z",
+      "updated" : "2024-01-19T16:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "e86659a5-583f-4a58-bb3d-9560d68df3f0",
+      "id" : "CVE-2024-3177",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "severity" : "unknown",
+          "method" : "other"
+        }
+      ],
+      "description" : "A security issue was discovered in Kubernetes where users may be able to launch containers that bypass the mountable secrets policy enforced by the ServiceAccount admission plugin when using containers, init containers, and ephemeral containers with the envFrom field populated. The policy ensures pods running with a service account may only reference secrets specified in the service account’s secrets field. Kubernetes clusters are only affected if the ServiceAccount admission plugin and the kubernetes.io/enforce-mountable-secrets annotation are used together with containers, init containers, and ephemeral containers with the envFrom field populated.",
+      "published" : "2024-04-22T23:15:00Z",
+      "updated" : "2024-05-01T19:15:00Z",
+      "affects" : [
+        {
+          "ref" : "b6e1a030-7350-41f9-a48c-9f9490fbd0e6"
+        }
+      ]
+    }
+  ]
+}

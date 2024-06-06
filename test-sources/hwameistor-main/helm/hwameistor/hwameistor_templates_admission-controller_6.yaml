@@ -1,0 +1,12 @@
+# Source: hwameistor/templates/admission-controller.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-admission-controller
+  namespace: default
+spec:
+  selector:
+    app: hwameistor-admission-controller
+  ports:
+    - port: 443
+      targetPort: admission-api

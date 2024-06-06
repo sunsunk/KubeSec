@@ -1,0 +1,224 @@
+# Source: spiderpool/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name:  spiderpool-agent
+  namespace: default
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-agent
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: spiderpool
+      app.kubernetes.io/instance: my-release
+      app.kubernetes.io/component: spiderpool-agent
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: spiderpool
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/component: spiderpool-agent
+    spec:
+      serviceAccountName: spiderpool-agent
+      priorityClassName: system-node-critical
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      restartPolicy: Always
+      tolerations:
+      - operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+              # Compatible with Kubernetes 1.12.x and 1.13.x
+              - matchExpressions:
+                  - key: beta.kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+      initContainers:
+        - name: install-plugins
+          image: "ghcr.io/spidernet-io/spiderpool/spiderpool-plugins:v0.9.2"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: INSTALL_CNI_PLUGINS
+            value: "false"
+          - name: INSTALL_OVS_PLUGIN
+            value: "true"
+          - name: INSTALL_RDMA_PLUGIN
+            value: "true"
+          - name: INSTALL_IB_SRIOV_PLUGIN
+            value: "true"
+          - name: INSTALL_IPOIB_PLUGIN
+            value: "true"
+          command:
+            - "/bin/sh"
+            - "entrypoint.sh"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: cni-bin-path
+              mountPath: /host/opt/cni/bin
+        - name: multus-cni
+          imagePullPolicy: IfNotPresent
+          image: "ghcr.io/k8snetworkplumbingwg/multus-cni:v3.9.3"
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              ITEM="multus"
+              rm -f /host/opt/cni/bin/${ITEM}.old || true
+              ( [ -f "/host/opt/cni/bin/${ITEM}" ] && mv /host/opt/cni/bin/${ITEM} /host/opt/cni/bin/${ITEM}.old ) || true
+              cp /usr/src/multus-cni/bin/${ITEM} /host/opt/cni/bin/${ITEM}
+              rm -f /host/opt/cni/bin/${ITEM}.old &>/dev/null  || true
+              sed -i 's/sleep infinity/echo \"exit...\"/g'  entrypoint.sh
+              ./entrypoint.sh --multus-conf-file=/tmp/multus-conf/00-multus.conf \
+                --cni-version=0.3.1
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: cni
+              mountPath: /host/etc/cni/net.d
+            - name: cni-bin-path
+              mountPath: /host/opt/cni/bin
+              mountPropagation: Bidirectional
+            - name: multus-cfg
+              mountPath: /tmp/multus-conf
+      containers:
+      - name: spiderpool-agent
+        image: "ghcr.io/spidernet-io/spiderpool/spiderpool-agent:v0.9.0"
+        imagePullPolicy: IfNotPresent
+        command:
+        - /usr/bin/spiderpool-agent
+        args:
+        - daemon
+        - --config-path=/tmp/spiderpool/config-map/conf.yml
+        startupProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/startup
+            port: 5710
+            scheme: HTTP
+          failureThreshold: 60
+          periodSeconds: 2
+          successThreshold: 1
+        livenessProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/liveness
+            port: 5710
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 6
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            host: "127.0.0.1"
+            path: /v1/runtime/readiness
+            port: 5710
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        lifecycle:
+          postStart:
+            # Move an eventual old existing binary out of the way, we can't delete it as it might be in use right now
+            exec:
+              command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                BIN_LIST="spiderpool coordinator ifacer"
+                for ITEM in ${BIN_LIST} ; do
+                	rm -f /host/opt/cni/bin/${ITEM}.old || true
+                	( [ -f "/host/opt/cni/bin/${ITEM}" ] && mv /host/opt/cni/bin/${ITEM} /host/opt/cni/bin/${ITEM}.old ) || true
+                	cp /usr/bin/${ITEM} /host/opt/cni/bin/${ITEM}
+                	rm -f /host/opt/cni/bin/${ITEM}.old &>/dev/null  || true
+                done
+          preStop:
+            exec:
+              command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                /usr/bin/spiderpool-agent shutdown
+        env:
+        - name: SPIDERPOOL_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPIDERPOOL_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SPIDERPOOL_LOG_LEVEL
+          value: "info"
+        - name: SPIDERPOOL_ENABLED_METRIC
+          value: "false"
+        - name: SPIDERPOOL_ENABLED_DEBUG_METRIC
+          value: "false"
+        - name: SPIDERPOOL_METRIC_HTTP_PORT
+          value: "5711"
+        - name: SPIDERPOOL_HEALTH_PORT
+          value: "5710"
+        - name: SPIDERPOOL_GOPS_LISTEN_PORT
+          value: "5712"
+        volumeMounts:
+        - name: config-path
+          mountPath: /tmp/spiderpool/config-map
+          readOnly: true
+        - name: cni-bin-path
+          mountPath: /host/opt/cni/bin
+        - name: ipam-unix-socket-dir
+          mountPath: /var/run/spidernet
+      volumes:
+        # To read the configuration from the config map
+      - name: config-path
+        configMap:
+          defaultMode: 0400
+          name: spiderpool-conf
+      - name: cni-bin-path
+        hostPath:
+          path:  /opt/cni/bin
+          type: DirectoryOrCreate
+        # To create unix socket dir in the host
+      - name: ipam-unix-socket-dir
+        hostPath:
+          path: /var/run/spidernet
+          type: DirectoryOrCreate
+        # multus
+      - name: cni
+        hostPath:
+          path: /etc/cni/net.d
+      - name: multus-cfg
+        configMap:
+          name: spiderpool-multus
+          items:
+            - key: cni-conf.json
+              path: 00-multus.conf

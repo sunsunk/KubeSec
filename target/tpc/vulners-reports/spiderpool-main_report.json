@@ -1,0 +1,420 @@
+[
+    {
+        "id": "CVE-2023-41332",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 3.5,
+                "severity": "low",
+                "method": "CVSSv3",
+                "vector": "CVSS:3.0/AV:A/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L"
+            }
+        ],
+        "cwes": [
+            755
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. In Cilium clusters where Cilium's Layer 7 proxy has been disabled, creating workloads with `policy.cilium.io/proxy-visibility` annotations (in Cilium >= v1.13) or `io.cilium.proxy-visibility` annotations (in Cilium <= v1.12) causes the Cilium agent to segfault on the node to which the workload is assigned. Existing traffic on the affected node will continue to flow, but the Cilium agent on the node will not able to process changes to workloads running on the node. This will also prevent workloads from being able to start on the affected node. The denial of service will be limited to the node on which the workload is scheduled, however an attacker may be able to schedule workloads on the node of their choosing, which could lead to targeted attacks. This issue has been resolved in Cilium versions 1.14.2, 1.13.7, and 1.12.14. Users unable to upgrade can avoid this denial of service attack by enabling the Layer 7 proxy.",
+        "published": "2023-09-27T15:19:00Z",
+        "updated": "2023-09-29T13:56:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2023-41333",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 8.1,
+                "severity": "high",
+                "method": "CVSSv3",
+                "vector": "CVSS:3.0/AV:A/AC:L/PR:H/UI:N/S:C/C:N/I:H/A:H"
+            }
+        ],
+        "cwes": [
+            306
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. An attacker with the ability to create or modify CiliumNetworkPolicy objects in a particular namespace is able to affect traffic on an entire Cilium cluster, potentially bypassing policy enforcement in other namespaces. By using a crafted `endpointSelector` that uses the `DoesNotExist` operator on the `reserved:init` label, the attacker can create policies that bypass namespace restrictions and affect the entire Cilium cluster. This includes potentially allowing or denying all traffic. This attack requires API server access, as described in the Kubernetes API Server Attacker section of the Cilium Threat Model. This issue has been resolved in Cilium versions 1.14.2, 1.13.7, and 1.12.14. As a workaround an admission webhook can be used to prevent the use of `endpointSelectors` that use the `DoesNotExist` operator on the `reserved:init` label in CiliumNetworkPolicies.",
+        "published": "2023-09-27T15:19:00Z",
+        "updated": "2023-09-30T02:01:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-25630",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. For Cilium users who are using CRDs to store Cilium state (the default configuration) and Wireguard transparent encryption, traffic to/from the Ingress and health endpoints is not encrypted. This issue affects Cilium v1.14 before v1.14.7 and has been patched in Cilium v1.14.7. There is no workaround to this issue.",
+        "published": "2024-02-20T18:15:00Z",
+        "updated": "2024-02-20T19:50:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-25631",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. For Cilium users who have enabled an external kvstore and Wireguard transparent encryption, traffic between pods in the affected cluster is not encrypted. This issue affects Cilium v1.14 before v1.14.7 and has been patched in Cilium v1.14.7. There is no workaround to this issue.",
+        "published": "2024-02-20T18:15:00Z",
+        "updated": "2024-02-20T19:50:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-28248",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. Starting in version 1.13.9 and prior to versions 1.13.13, 1.14.8, and 1.15.2, Cilium's HTTP policies are not consistently applied to all traffic in the scope of the policies, leading to HTTP traffic being incorrectly and intermittently forwarded when it should be dropped. This issue has been patched in Cilium 1.15.2, 1.14.8, and 1.13.13. There are no known workarounds for this issue.",
+        "published": "2024-03-18T22:15:00Z",
+        "updated": "2024-03-19T13:26:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-28249",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. Prior to versions 1.13.13, 1.14.8, and 1.15.2, in Cilium clusters with IPsec enabled and traffic matching Layer 7 policies, IPsec-eligible traffic between a node's Envoy proxy and pods on other nodes is sent unencrypted and IPsec-eligible traffic between a node's DNS proxy and pods on other nodes is sent unencrypted. This issue has been resolved in Cilium 1.15.2, 1.14.8, and 1.13.13. There is no known workaround for this issue.",
+        "published": "2024-03-18T22:15:00Z",
+        "updated": "2024-03-19T13:26:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-28250",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. Starting in version 1.14.0 and prior to versions 1.14.8 and 1.15.2, In Cilium clusters with WireGuard enabled and traffic matching Layer 7 policies Wireguard-eligible traffic that is sent between a node's Envoy proxy and pods on other nodes is sent unencrypted and Wireguard-eligible traffic that is sent between a node's DNS proxy and pods on other nodes is sent unencrypted. This issue has been resolved in Cilium 1.14.8 and 1.15.2 in in native routing mode (`routingMode=native`) and in Cilium 1.14.4 in tunneling mode (`routingMode=tunnel`). Not that in tunneling mode, `encryption.wireguard.encapsulate` must be set to `true`. There is no known workaround for this issue.",
+        "published": "2024-03-18T22:15:00Z",
+        "updated": "2024-03-19T13:26:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-28860",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "Cilium is a networking, observability, and security solution with an eBPF-based dataplane. Users of IPsec transparent encryption in Cilium may be vulnerable to cryptographic attacks that render the transparent encryption ineffective. In particular, Cilium is vulnerable to chosen plaintext, key recovery, replay attacks by a man-in-the-middle attacker. These attacks are possible due to an ESP sequence number collision when multiple nodes are configured with the same key. Fixed versions of Cilium use unique keys for each IPsec tunnel established between nodes, resolving all of the above attacks. This vulnerability is fixed in 1.13.13, 1.14.9, and 1.15.3.",
+        "published": "2024-03-27T19:15:00Z",
+        "updated": "2024-03-28T02:01:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "github.com/cilium/cilium",
+                    "version": "v1.14.1",
+                    "purl": "pkg:golang/github.com/cilium/cilium@v1.14.1?goarch=arm64&goos=darwin&type=module",
+                    "externalReferences": [
+                        {
+                            "type": "vcs",
+                            "url": "https://github.com/cilium/cilium"
+                        }
+                    ],
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2020-8561",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 4.0,
+                "severity": "medium",
+                "method": "CVSSv2",
+                "vector": "(AV:N/AC:L/Au:S/C:P/I:N/A:N)"
+            },
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 4.1,
+                "severity": "medium",
+                "method": "CVSSv3",
+                "vector": "CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:L/I:N/A:N"
+            }
+        ],
+        "cwes": [
+            610
+        ],
+        "description": "A security issue was discovered in Kubernetes where actors that control the responses of MutatingWebhookConfiguration or ValidatingWebhookConfiguration requests are able to redirect kube-apiserver requests to private networks of the apiserver. If that user can view kube-apiserver logs when the log level is set to 10, they can view the redirected responses and headers in the logs.",
+        "published": "2021-09-20T17:15:00Z",
+        "updated": "2021-11-06T03:04:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "k8s.io/kubernetes",
+                    "version": "v1.29.0",
+                    "purl": "pkg:golang/k8s.io/kubernetes@v1.29.0?goarch=arm64&goos=darwin&type=module",
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2021-25740",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 3.5,
+                "severity": "low",
+                "method": "CVSSv2",
+                "vector": "(AV:N/AC:M/Au:S/C:P/I:N/A:N)"
+            },
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "score": 3.1,
+                "severity": "low",
+                "method": "CVSSv3",
+                "vector": "CVSS:3.0/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N"
+            }
+        ],
+        "cwes": [
+            610
+        ],
+        "description": "A security issue was discovered with Kubernetes that could enable users to send network traffic to locations they would otherwise not have access to via a confused deputy attack.",
+        "published": "2021-09-20T17:15:00Z",
+        "updated": "2021-11-06T02:49:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "k8s.io/kubernetes",
+                    "version": "v1.29.0",
+                    "purl": "pkg:golang/k8s.io/kubernetes@v1.29.0?goarch=arm64&goos=darwin&type=module",
+                    "type": "library"
+                }
+            ]
+        ]
+    },
+    {
+        "id": "CVE-2024-3177",
+        "source": {
+            "name": "NVD",
+            "url": "https://nvd.nist.gov/"
+        },
+        "ratings": [
+            {
+                "source": {
+                    "name": "NVD",
+                    "url": "https://nvd.nist.gov/"
+                },
+                "severity": "unknown",
+                "method": "other"
+            }
+        ],
+        "description": "A security issue was discovered in Kubernetes where users may be able to launch containers that bypass the mountable secrets policy enforced by the ServiceAccount admission plugin when using containers, init containers, and ephemeral containers with the envFrom field populated. The policy ensures pods running with a service account may only reference secrets specified in the service account’s secrets field. Kubernetes clusters are only affected if the ServiceAccount admission plugin and the kubernetes.io/enforce-mountable-secrets annotation are used together with containers, init containers, and ephemeral containers with the envFrom field populated.",
+        "published": "2024-04-22T23:15:00Z",
+        "updated": "2024-05-01T19:15:00Z",
+        "affect_components": [
+            [
+                {
+                    "name": "k8s.io/kubernetes",
+                    "version": "v1.29.0",
+                    "purl": "pkg:golang/k8s.io/kubernetes@v1.29.0?goarch=arm64&goos=darwin&type=module",
+                    "type": "library"
+                }
+            ]
+        ]
+    }
+]

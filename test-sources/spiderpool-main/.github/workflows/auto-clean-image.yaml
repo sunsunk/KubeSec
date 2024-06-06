@@ -1,0 +1,36 @@
+name: Auto Clean ImageCI
+
+on:
+  schedule:
+    # once for a week
+    - cron: "0 20 * * 0"
+  workflow_dispatch:
+
+jobs:
+  prune-controller-ci:
+    uses: ./.github/workflows/call-clean-ghcr.yaml
+    with:
+      image_name: spiderpool-controller-ci
+      older_than: "2"
+    secrets: inherit
+
+  prune-agent-ci:
+    uses: ./.github/workflows/call-clean-ghcr.yaml
+    with:
+      image_name: spiderpool-agent-ci
+      older_than: "2"
+    secrets: inherit
+
+  prune-controller-beta:
+    uses: ./.github/workflows/call-clean-ghcr.yaml
+    with:
+      image_name: spiderpool-controller-beta
+      older_than: "2"
+    secrets: inherit
+
+  prune-agent-beta:
+    uses: ./.github/workflows/call-clean-ghcr.yaml
+    with:
+      image_name: spiderpool-agent-beta
+      older_than: "2"
+    secrets: inherit

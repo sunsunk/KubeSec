@@ -1,0 +1,28 @@
+# Source: spiderpool/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: spiderpool-controller
+  namespace: "default"
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-controller
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: webhook
+      port: 5722
+      targetPort: webhook
+      protocol: TCP
+    - name: http
+      port: 5720
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-controller

@@ -1,4 +1,0 @@
-./dateset/openyurt-master/go.mod
-go.mod path: ./target/sboms/openyurt-master.bom.json
-Processing openyurt-master....
-openyurt-master BOM generation completed successfully.

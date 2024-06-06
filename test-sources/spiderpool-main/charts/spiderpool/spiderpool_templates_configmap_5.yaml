@@ -1,0 +1,22 @@
+# Source: spiderpool/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spiderpool-conf
+  namespace: default
+  labels:
+    helm.sh/chart: spiderpool-0.9.0
+    app.kubernetes.io/name: spiderpool
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/component: spiderpool-controller
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  conf.yml: |
+    ipamUnixSocketPath: /var/run/spidernet/spiderpool.sock
+    enableIPv4: true
+    enableIPv6: true
+    enableStatefulSet: true
+    enableKubevirtStaticIP: true
+    enableSpiderSubnet: true
+    clusterSubnetDefaultFlexibleIPNumber: 1

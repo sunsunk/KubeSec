@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-admission-controller
+  namespace: dynamic_parameters
+  labels:
+    app: hwameistor-admission-controller
+spec:
+  replicas: dynamic_parameters
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-admission-controller
+  template:
+    metadata:
+      labels:
+        app: hwameistor-admission-controller
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: server
+          args:
+            - --cert-dir=/etc/webhook/certs
+            - --tls-private-key-file=tls.key
+            - --tls-cert-file=tls.crt
+          image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WEBHOOK_NAMESPACE
+              value: dynamic_parameters
+            - name: MUTATE_CONFIG
+              value: hwameistor-admission-mutate
+            - name: WEBHOOK_SERVICE
+              value: hwameistor-admission-controller
+            - name: MUTATE_PATH
+              value: /mutate
+            - name: FAILURE_POLICY
+              value: dynamic_parameters
+          resources: 
+          ports:
+            - containerPort: 18443
+              name: admission-api
+          volumeMounts:
+            - name: admission-controller-tls-certs
+              mountPath: /etc/webhook/certs
+      volumes:
+       - name: admission-controller-tls-certs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-admission-controller
+  namespace: dynamic_parameters
+spec:
+  selector:
+    app: hwameistor-admission-controller
+  ports:
+    - port: 443
+      targetPort: admission-api
+
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: hwameistor-admission-mutate
+
+---
