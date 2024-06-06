@@ -1,15 +1,7 @@
 import json
 project  = set()
 loaded_data = []
-# def check_rules(rules, data):
-#     flag = False
-#     for item in data:
-#         for rule_key, rule_values in rules.items():
-#             for data_key, data_value in item.items():
-#                 if rule_key in data_key and set(rule_values) & set(data_value):
-#                     flag = True
-#                     return flag
-#     return flag
+
 def check_rules(rules, data):
     flag = False
     for item in data:
@@ -37,7 +29,6 @@ with open(file_path, "r") as json_file:
         data = json.loads(line)
         loaded_data.append(data)
 
-# 示例规则字典
 # rules = {'pods':['create','delete'],'secrets':['list'],'*':['list','create','delete']}
 rules = {'*':['list']}
 # rules = {'secrets':['list']}
@@ -45,7 +36,6 @@ rules = {'*':['list']}
 # rules = {'nodes':['patch']}
 file_path = 'other_cR_' + class_name+'.json'
 
-# 打印读取的数据
 for data in loaded_data:
     if 'clusterRole' in data:
         r_rules = (data['clusterRole']['rules'])

@@ -28,7 +28,6 @@ class Parse:
         r_item['label_class'] = class_value
         if namespace:
             r_item['namespace'] = namespace
-        #提取资源与动作
         rules = []
         rules_ = doc.get('rules', [])
         for rule in rules_:
