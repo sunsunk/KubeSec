@@ -22,7 +22,7 @@ headers = {
 response = requests.get(url, params=params, headers=headers)
 
 if response.status_code == 200:
-    file_name = "bom.json"  # 文件保存的名称
+    file_name = "bom.json"  
     with open(file_name, "wb") as file:
         file.write(response.content)
     print(f"File downloaded and saved as {file_name}")

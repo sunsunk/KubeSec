@@ -3,19 +3,22 @@ import sys
 import time
 import os
 
-error_download = []
-
+'''
+寻找mod
+'''
 def find_go_mod_files(directory):
     for root, dirs, files in os.walk(directory):
         if "go.mod" in files:
             go_mod_path = os.path.join(root, "go.mod")
             return go_mod_path
     return None
-
+'''
+获取所有project 的uuid
+'''
 def get_projects():
     url = "http://localhost:8080/api/v1/project"
     headers = {
-        "X-Api-Key": "your-api-key"  
+        "X-Api-Key": "odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ"  # 替换为你的有效 API 密钥
     }
     response = requests.get(url, headers=headers)
     
@@ -30,24 +33,28 @@ def get_projects():
     else:
         print(f"Failed to retrieve projects. Error: {response.text}")
         return {}
-
+'''
+删除指定uuid的project
+'''
 def delete_project(project_uuid):
     url = f"http://localhost:8080/api/v1/project/{project_uuid}"
     headers = {
         "Content-Type": "application/json",
-        "X-Api-Key": "your-api-key"  
+        "X-Api-Key": "odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ"  # 替换为你的有效 API 密钥
     }
     response = requests.delete(url, headers=headers)
     if response.status_code == 204:
         print("Project deleted successfully.")
     else:
         print(f"Failed to delete project. Error: {response.text}")
-
+'''
+创建一个project
+'''
 def create_project(project_name, project_version):
     url = "http://localhost:8080/api/v1/project"
     headers = {
         "Content-Type": "application/json",
-        "X-Api-Key": "your-api-key"  
+        "X-Api-Key": "odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ"  # 替换为你的有效 API 密钥
     }
     data = {
         "name": project_name,
@@ -58,7 +65,9 @@ def create_project(project_name, project_version):
         print("Project created successfully.")
     else:
         print(f"Failed to create project. Error: {response.text}")
-
+'''
+获得项目列表
+'''
 def find_project(directory):
     project_name = []
     for entry in os.scandir(directory):
@@ -66,17 +75,21 @@ def find_project(directory):
             subdir = entry.name
             project_name.append(subdir)
     return project_name
+'''
+上传bom
 
+'''
 def upload_bom(project_name,project_uuid):
     url = 'http://localhost:8080/api/v1/bom'
     headers = {
-        "X-Api-Key":"your-api-key",
+        "X-Api-Key":"odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ",
         'Accept': 'application/json, text/plain, */*',
         'Referer': f'http://localhost:8080/projects/{project_uuid}/components'
     }
-    file_path = f"../boms/graduated/{project_name}.bom.json"
+    file_path = f"../../target/sboms/{project_name}.bom.json"
     print(file_path)
     if os.path.exists(file_path):
+        # 文件存在，执行相关操作
         files = {
             'project': (None, f'{project_uuid}'),
             'bom': (f'{project_name}.bom.json', open(file_path, 'rb'), 'application/json')
@@ -84,10 +97,9 @@ def upload_bom(project_name,project_uuid):
         response = requests.post(url, headers=headers, files=files)
         print(response.status_code)
         print(response)
-    else:
-        # 文件不存在，将路径记录到 error.txt 文件中
-        with open("error.txt", "a") as error_file:
-            error_file.write(f"File not found: {file_path}\n")
+    # else:
+    #     with open("error.txt", "a") as error_file:
+    #         error_file.write(f"File not found: {file_path}\n")
 '''
 获取漏洞报告
 '''
@@ -103,7 +115,7 @@ def download_vulnerability_report(project_name,project_id,out_path):
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
         'Accept-Encoding': 'gzip, deflate, br',
-        "X-Api-Key":"your-api-key",
+        "X-Api-Key":"odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ",
         'Referer': f'http://localhost:8080/projects/{project_id}/components',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
@@ -113,27 +125,13 @@ def download_vulnerability_report(project_name,project_id,out_path):
     response = requests.get(url, params=params, headers=headers)
 
     if response.status_code == 200:
-        file_name = out_path  
+        file_name = out_path  # 文件保存的名称
         with open(file_name, "wb") as file:
             file.write(response.content)
         print(f"Download succeed,output to {out_path}")
         return file_name
-    else:
-        error_download.append(project_name)
-        print(f"Request failed with status code: {response.status_code}")
-        return None
+    # else:
+    #     error_download.append(project_name)
+    #     print(f"Request failed with status code: {response.status_code}")
+    #     return None
 
-
-
-projects_dict = get_projects()
-
-sys.stdout = open('../logs/download_vulner.txt', 'w')
-
-for project_name,project_uuid in projects_dict.items():
-    upload_bom(project_name,project_uuid)
-    print("Waiting 5 seconds...")
-    time.sleep(5)
-
-for project_name,project_uuid in projects_dict.items():
-    download_vulnerability_report(project_name,project_uuid,f"../vulners-boms/{project_name}.vulner.json")
-print(error_download)

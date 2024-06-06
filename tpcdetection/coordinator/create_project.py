@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+
 created = []
 failed_create = []
 
@@ -12,12 +13,11 @@ def find_project(directory):
             project_name.append(subdir)
     return project_name
 
-
 def create_project(project_name, project_version):
     url = "http://localhost:8080/api/v1/project"
     headers = {
         "Content-Type": "application/json",
-        "X-Api-Key": "your-api-key"  
+        "X-Api-Key": "odt_tcPxgVCu19r3OL7ytm2vveMas89eaSOZ"  # 替换为你的有效 API 密钥
     }
     data = {
         "name": project_name,
@@ -30,10 +30,14 @@ def create_project(project_name, project_version):
     else:
         print(f"Failed to create project. Error: {response.text}")
         failed_create.append(project_name)
-        
-directory_path = "../cncf-project/graduated"
-projects = find_project(directory_path)       
-for project in projects:
-    create_project(project,"latest")
-print(f"succeed:{len(created)}")
-print(f"failed create projects::{failed_create}")
+
+def create_projects(directory_path, project_version="latest"):
+    projects = find_project(directory_path)
+    for project in projects:
+        create_project(project, project_version)
+    print(f"Succeeded: {len(created)}")
+    print(f"Failed: {failed_create}")
+
+# # 示例用法
+# directory_path = "../../dateset"
+# create_projects(directory_path)
