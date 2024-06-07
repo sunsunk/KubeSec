@@ -17,8 +17,9 @@ go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
 ```
 
 2. **deploloy Dependency-Track**
-   Deploy Dependency-Track via Docker,We provide the corresponding docker-compose.yaml for your quick deployment
-  
+   
+  Deploy Dependency-Track via Docker,We provide the corresponding docker-compose.yaml for your quick deployment
+   
     ```yaml
     version: '3.7'
     volumes:
@@ -81,7 +82,7 @@ go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
 
 run command:
 
-```
+```python
 python kubesec.py $TPAs_Directory
 ```
 
