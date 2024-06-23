@@ -1,0 +1,43 @@
+name: Github Pages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.md'
+      - 'docs/**'
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    permissions:
+      contents: write
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          fetch-depth: 0
+      - name: Copy new docs to gh-pages
+        run: |
+          git checkout gh-pages
+          git checkout ${GITHUB_REF##*/} ADOPTERS.md
+          git checkout ${GITHUB_REF##*/} README.md
+          git checkout ${GITHUB_REF##*/} CONTRIBUTING.md
+          git checkout ${GITHUB_REF##*/} CHANGELOG.md
+          git checkout ${GITHUB_REF##*/} docs
+      - name: Push to gh-pages
+        uses: EndBug/add-and-commit@cb9365b1224471398bf1e715f0ca9684ce94ceac
+        with:
+          author_name: ${{ github.actor }}
+          author_email: ${{ github.actor }}@users.noreply.github.com
+          message: "Documentation sync from master"
+          branch: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

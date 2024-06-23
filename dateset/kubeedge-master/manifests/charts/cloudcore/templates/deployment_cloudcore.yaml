@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: dynamic_parameters
+  labels: dynamic_parameters
+  name: cloudcore
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels: dynamic_parameters
+  strategy: dynamic_parameters
+  template:
+    metadata:
+      labels: dynamic_parameters
+    spec:
+      hostNetwork: dynamic_parameters
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector: dynamic_parameters
+      restartPolicy: Always
+      affinity: dynamic_parameters
+      tolerations: dynamic_parameters
+      serviceAccount: cloudcore
+      imagePullSecrets: dynamic_parameters 
+      containers:
+      - name: cloudcore
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        ports:
+        - containerPort: 10000
+          name: cloudhub
+          protocol: TCP
+        - containerPort: 10001
+          name: cloudhub-quic
+          protocol: TCP
+        - containerPort: 10002
+          name: cloudhub-https
+          protocol: TCP
+        - containerPort: 10003
+          name: cloudstream
+          protocol: TCP
+        - containerPort: 10004
+          name: tunnelport
+          protocol: TCP
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/kubeedge/config
+        - name: certs
+          mountPath: /etc/kubeedge
+        - name: sock
+          mountPath: /var/lib/kubeedge
+        - mountPath: /etc/localtime
+          name: host-time
+          readOnly: true
+        securityContext: dynamic_parameters
+        resources: dynamic_parameters
+      volumes:
+      - name: conf
+        configMap:
+          name: cloudcore
+      - name: certs
+        secret:
+          secretName: cloudcore
+          items:
+          - key: stream.crt
+            path: certs/stream.crt
+          - key: stream.key
+            path: certs/stream.key
+          - key: streamCA.crt
+            path: ca/streamCA.crt
+      - name: sock
+        hostPath:
+          path: /var/lib/kubeedge
+          type: DirectoryOrCreate
+      - hostPath:
+          path: /etc/localtime
+          type: ""
+        name: host-time
+
+---

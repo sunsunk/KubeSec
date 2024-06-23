@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - name: http
+              containerPort: dynamic_parameters
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---
+
+---

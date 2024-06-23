@@ -1,0 +1,2 @@
+const SNOT = "snot";
+const BADGER = ("badger " + SNOT);

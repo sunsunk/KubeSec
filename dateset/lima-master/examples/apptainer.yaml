@@ -1,0 +1,45 @@
+# A template to use Apptainer instead of containerd & nerdctl
+# $ limactl start ./apptainer.yaml
+# $ limactl shell apptainer apptainer run -u -B $HOME:$HOME docker://alpine
+
+images:
+# Try to use release-yyyyMMdd image if available. Note that release-yyyyMMdd will be removed after several months.
+- location: "https://cloud-images.ubuntu.com/releases/22.04/release-20240308/ubuntu-22.04-server-cloudimg-amd64.img"
+  arch: "x86_64"
+  digest: "sha256:42dcf9757e75c3275486b397a752fb535c7cd8e5232ee5ee349554b7a55f1702"
+- location: "https://cloud-images.ubuntu.com/releases/22.04/release-20240308/ubuntu-22.04-server-cloudimg-arm64.img"
+  arch: "aarch64"
+  digest: "sha256:0f5f68b9b74686b8a847024364031e2b95e4d3855e5177a99b33d7c55e45907f"
+# Fallback to the latest release image.
+# Hint: run `limactl prune` to invalidate the cache
+- location: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
+  arch: "x86_64"
+- location: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-arm64.img"
+  arch: "aarch64"
+
+mounts:
+- location: "~"
+- location: "/tmp/lima"
+  writable: true
+containerd:
+  system: false
+  user: false
+provision:
+- mode: system
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    command -v apptainer >/dev/null 2>&1 && exit 0
+    # add the "Official PPA for Apptainer"
+    add-apt-repository -y ppa:apptainer/ppa
+    apt-get update
+    apt-get install -y apptainer
+probes:
+- script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    if ! timeout 30s bash -c "until command -v apptainer >/dev/null 2>&1; do sleep 3; done"; then
+      echo >&2 "apptainer is not installed yet"
+      exit 1
+    fi
+  hint: See "/var/log/cloud-init-output.log" in the guest

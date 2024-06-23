@@ -1,0 +1,31 @@
+before_script:
+  - cd $CI_PROJECT_DIR
+
+stages:
+  - build
+  - unit_test
+  - ltptest
+
+build:
+  stage: build
+  tags:
+    - cfs
+  script:
+    - docker/run_docker.sh -b
+
+unit_test:
+  stage: unit_test
+  tags:
+    - cfs
+  script:
+    - docker/run_docker.sh -t
+
+ltptest:
+  stage: ltptest
+  tags:
+    - cfs
+  script:
+    - docker/run_docker.sh --clean
+    - rm -rf docker/docker_data/*
+    - docker/run_docker.sh -l
+

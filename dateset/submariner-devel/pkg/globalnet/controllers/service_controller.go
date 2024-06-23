@@ -1,0 +1,136 @@
+/*
+SPDX-License-Identifier: Apache-2.0
+
+Copyright Contributors to the Submariner project.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package controllers
+
+import (
+	"github.com/pkg/errors"
+	"github.com/submariner-io/admiral/pkg/federate"
+	"github.com/submariner-io/admiral/pkg/syncer"
+	"github.com/submariner-io/admiral/pkg/util"
+	submarinerv1 "github.com/submariner-io/submariner/pkg/apis/submariner.io/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/cache"
+)
+
+func NewServiceController(config *syncer.ResourceSyncerConfig, podControllers *IngressPodControllers, serviceExportSyncer syncer.Interface,
+	gipSyncer syncer.Interface,
+) (Interface, error) {
+	// We'll panic if config is nil, this is intentional
+	var err error
+
+	logger.Info("Creating Service controller")
+
+	controller := &serviceController{
+		baseSyncerController: newBaseSyncerController(),
+		podControllers:       podControllers,
+		serviceExportSyncer:  serviceExportSyncer,
+		gipSyncer:            gipSyncer,
+	}
+
+	controller.resourceSyncer, err = syncer.NewResourceSyncer(&syncer.ResourceSyncerConfig{
+		Name:            "Service syncer",
+		ResourceType:    &corev1.Service{},
+		SourceClient:    config.SourceClient,
+		SourceNamespace: corev1.NamespaceAll,
+		RestMapper:      config.RestMapper,
+		Federator:       federate.NewUpdateStatusFederator(config.SourceClient, config.RestMapper, corev1.NamespaceAll),
+		Scheme:          config.Scheme,
+		Transform:       controller.process,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "error creating the syncer")
+	}
+
+	_, gvr, err := util.ToUnstructuredResource(&submarinerv1.GlobalIngressIP{}, config.RestMapper)
+	if err != nil {
+		return nil, errors.Wrap(err, "error converting resource")
+	}
+
+	controller.ingressIPs = config.SourceClient.Resource(*gvr).Namespace(corev1.NamespaceAll)
+
+	return controller, nil
+}
+
+func (c *serviceController) Start() error {
+	err := c.baseSyncerController.Start()
+	if err != nil {
+		return err
+	}
+
+	c.reconcile(c.ingressIPs, "" /* labelSelector */, "", /* fieldSelector */
+		func(obj *unstructured.Unstructured) runtime.Object {
+			name, exists, _ := unstructured.NestedString(obj.Object, "spec", "serviceRef", "name")
+			if exists {
+				return &corev1.Service{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      name,
+						Namespace: obj.GetNamespace(),
+					},
+					Spec: corev1.ServiceSpec{
+						Type: corev1.ServiceTypeClusterIP,
+					},
+				}
+			}
+
+			return nil
+		})
+
+	return nil
+}
+
+func (c *serviceController) process(from runtime.Object, _ int, op syncer.Operation) (runtime.Object, bool) {
+	service := from.(*corev1.Service)
+
+	if service.Spec.Type != corev1.ServiceTypeClusterIP {
+		return nil, false
+	}
+
+	key, _ := cache.MetaNamespaceKeyFunc(service)
+	logger.Infof("Service %q %sd", key, op)
+
+	switch op {
+	case syncer.Create:
+		// For Create, requeue the associated ServiceExport, if any, to re-create the GlobalIngressIP.
+		c.serviceExportSyncer.RequeueResource(service.Name, service.Namespace)
+	case syncer.Delete:
+		return c.onDelete(service)
+	case syncer.Update:
+		c.gipSyncer.RequeueResource(service.Name, service.Namespace)
+	}
+
+	return nil, false
+}
+
+func (c *serviceController) onDelete(service *corev1.Service) (runtime.Object, bool) {
+	c.podControllers.stopAndCleanup(service.Name, service.Namespace)
+
+	if service.Spec.ClusterIP == corev1.ClusterIPNone {
+		return nil, false
+	}
+
+	return &submarinerv1.GlobalIngressIP{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      service.Name,
+			Namespace: service.Namespace,
+		},
+	}, false
+}

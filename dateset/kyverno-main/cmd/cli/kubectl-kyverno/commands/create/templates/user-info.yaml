@@ -1,0 +1,17 @@
+# list of roles
+roles:
+  - dynamic_parameters
+
+# list of cluster roles
+clusterRoles:
+  - dynamic_parameters
+
+userInfo:
+  # user name
+  username: dynamic_parameters
+
+  # list of groups
+  groups:
+    - dynamic_parameters
+
+---

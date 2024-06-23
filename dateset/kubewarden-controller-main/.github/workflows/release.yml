@@ -1,0 +1,168 @@
+name: kubewarden-controller release
+on:
+  push:
+    tags:
+      - "v*"
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    permissions: read-all
+
+  build:
+    name: Build container image, sign it, and generate SBOMs
+    uses: ./.github/workflows/container-build.yml
+    permissions:
+      id-token: write
+      packages: write
+
+  crds:
+    name: Build CRDs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Golang
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Generate CRDs
+        run: |
+          make generate-crds
+          tar -czf CRDS.tar.gz -C generated-crds $(ls generated-crds)
+      - name: Upload CRDs as artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: CRDS
+          path: CRDS.tar.gz
+
+  release:
+    name: Create release
+
+    needs:
+      - ci
+      - crds
+      - build
+
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Retrieve tag name
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo TAG_NAME=$(echo ${{ github.ref_name }}) >> $GITHUB_ENV
+
+      - name: Get latest release tag
+        id: get_last_release_tag
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            let release = await github.rest.repos.getLatestRelease({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+            });
+
+            if (release.status  === 200 ) {
+              core.setOutput('old_release_tag', release.data.tag_name)
+              return
+            }
+            core.setFailed("Cannot find latest release")
+
+      - name: Get release ID from the release created by release drafter
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            let releases = await github.rest.repos.listReleases({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+            });
+            for (const release of releases.data) {
+              if (release.draft) {
+                      core.info(release)
+                      core.exportVariable('RELEASE_ID', release.id)
+                      return
+              }
+            }
+            core.setFailed(`Draft release not found`)
+
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          pattern: sbom-*
+          merge-multiple: true
+
+      - name: Download CRDs artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: CRDS
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: Upload release assets
+        id: upload_release_assets
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            let fs = require('fs');
+            let path = require('path');
+
+            let files = [
+              'kubewarden-controller-sbom-amd64.spdx',
+              'kubewarden-controller-sbom-amd64.spdx.cert',
+              'kubewarden-controller-sbom-amd64.spdx.sig',
+              'kubewarden-controller-sbom-arm64.spdx',
+              'kubewarden-controller-sbom-arm64.spdx.cert',
+              'kubewarden-controller-sbom-arm64.spdx.sig',
+              "CRDS.tar.gz"]
+            const {RELEASE_ID} = process.env
+
+            for (const file of files) {
+              let file_data = fs.readFileSync(file);
+
+              let response = await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: `${RELEASE_ID}`,
+                name: path.basename(file),
+                data: file_data,
+              });
+              // store the crds asset id used it in the helm chart update
+              if (file === "CRDS.tar.gz") {
+                core.setOutput('crds_asset_id', response.data.id)
+              }
+            }
+
+      - name: Publish release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const {RELEASE_ID} = process.env
+            const {TAG_NAME} = process.env
+            isPreRelease = ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: `${RELEASE_ID}`,
+              draft: false,
+              tag_name: `${TAG_NAME}`,
+              name: `${TAG_NAME}`,
+              prerelease: isPreRelease,
+              make_latest: !isPreRelease
+            });
+
+      - name: Trigger chart update
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        with:
+          token: ${{ secrets.WORKFLOW_PAT }}
+          repository: "${{github.repository_owner}}/helm-charts"
+          event-type: update-chart
+          client-payload: '{"version": "${{ github.ref_name }}", "oldVersion": "${{ steps.get_last_release_tag.outputs.old_release_tag }}", "repository": "${{ github.repository }}", "crds_asset_id": "${{steps.upload_release_assets.outputs.crds_asset_id}}"}'

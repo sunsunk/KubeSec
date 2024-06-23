@@ -1,0 +1,36 @@
+name: build_tool
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - tool/**
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  tool:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: 
+          - actions-gh-release
+          - actions-plan-preview
+          - codegen
+          - piped-base
+          - piped-base-okd
+          - firestore-emulator
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Determine version
+        run: echo "PIPECD_VERSION=$(git describe --tags --always --abbrev=7)" >> $GITHUB_ENV
+
+      - name: Build ${{ matrix.image }} image
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 #v5.0.0
+        with:
+          context: tool/${{ matrix.image }}
+          tags: ${{ env.REGISTRY }}/pipe-cd/${{ matrix.image }}:${{ env.PIPECD_VERSION }}

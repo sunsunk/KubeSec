@@ -1,0 +1,12 @@
+# Source: piraeus/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-release-piraeus
+  labels:
+    helm.sh/chart: piraeus-2.4.1
+    app.kubernetes.io/component: piraeus-operator
+    app.kubernetes.io/name: piraeus-datastore
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "v2.4.1"
+    app.kubernetes.io/managed-by: Helm

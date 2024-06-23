@@ -1,0 +1,130 @@
+# Source: kube-ovn/templates/pre-delete-hook.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-ovn-pre-delete-hook
+  namespace: kube-system
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded
+
+---
+# Source: kube-ovn/templates/pre-delete-hook.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.k8s.io/system-only: "true"
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": hook-succeeded
+  name: system:kube-ovn-pre-delete-hook
+rules:
+  - apiGroups:
+      - kubeovn.io
+    resources:
+      - subnets
+    verbs:
+      - get
+      - list
+      - patch
+
+---
+# Source: kube-ovn/templates/pre-delete-hook.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-ovn-pre-delete-hook
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": hook-succeeded
+roleRef:
+  name: system:kube-ovn-pre-delete-hook
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: kube-ovn-pre-delete-hook
+    namespace: kube-system
+
+---
+# Source: kube-ovn/templates/pre-delete-hook.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "kube-ovn-pre-delete-hook"
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/version: 1.13.0
+    helm.sh/chart: "kube-ovn-1.13.0"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  completions: 1
+  template:
+    metadata:
+      name: "my-release"
+      labels:
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/instance: "my-release"
+        helm.sh/chart: "kube-ovn-1.13.0"
+        app: kube-ovn-pre-delete-hook
+        component: job
+    spec:
+      tolerations:
+        - key: ""
+          operator: "Exists"
+          effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - kube-ovn-pre-delete-hook
+                  - key: component
+                    operator: In
+                    values:
+                      - job
+      restartPolicy: Never
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: "linux"
+      serviceAccount: kube-ovn-pre-delete-hook
+      serviceAccountName: kube-ovn-pre-delete-hook
+      containers:
+        - name: remove-subnet-finalizer
+          image: "docker.io/kubeovn/kube-ovn:v1.13.0"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - sh
+            - -c
+            - /kube-ovn/remove-subnet-finalizer.sh 2>&1 | tee -a /var/log/kube-ovn/remove-subnet-finalizer.log
+          volumeMounts:
+            - mountPath: /var/log/kube-ovn
+              name: kube-ovn-log
+      volumes:
+        - name: kube-ovn-log
+          hostPath:
+            path: /var/log/kube-ovn

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserNotificationsController creates snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="d-none d-md-flex justify-content-center align-items-center w-100"
+  >
+    <div
+      aria-atomic="true"
+      aria-live="assertive"
+      class="position-fixed toast fade border border-3 bg-white opacity-0 toast notificationCard"
+      role="alert"
+    />
+  </div>
+</DocumentFragment>
+`;

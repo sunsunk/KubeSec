@@ -1,0 +1,33 @@
+.table {
+  table-layout: fixed;
+}
+
+.body {
+  background-color: var(--bs-white);
+}
+
+.releasedCell {
+  width: 30%;
+}
+
+.tableTitle:hover {
+  background-color: inherit !important;
+}
+
+.text {
+  font-size: 0.9rem;
+}
+
+.badge {
+  background-color: var(--color-black-15) !important;
+  color: var(--color-font);
+}
+
+.icon {
+  font-size: 0.7rem;
+}
+
+.btn {
+  font-size: 0.65rem;
+  line-height: 0.65rem;
+}

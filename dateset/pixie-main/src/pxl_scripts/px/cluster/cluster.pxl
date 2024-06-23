@@ -1,0 +1,181 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+''' Cluster Overview
+
+This view lists the namespaces and the nodes that are available on the current cluster.
+
+'''
+import px
+import pxviews
+
+
+def nodes_for_cluster(start_time: str):
+    ''' Gets a list of nodes in the current cluster since `start_time`.
+    Args:
+    @start_time Start time of the data to examine.
+    '''
+    df = pxviews.container_process_summary(px.now() + px.parse_duration(start_time), px.now())
+    agg = df.groupby(['node', 'pod']).agg()
+    pod_per_node_count = agg.groupby('node').agg(pod_count=('pod', px.count))
+    df = df.groupby(['node']).agg(
+        cpu_usage=('cpu_usage', px.sum),
+    )
+    df.cpu_usage = px.Percent(df.cpu_usage)
+    output = df.merge(pod_per_node_count, how='right', left_on='node', right_on='node',
+                      suffixes=['', '_x'])
+    return output[['node', 'cpu_usage', 'pod_count']]
+
+
+def pods_for_cluster(start_time: str):
+    ''' A list of pods in the cluster.
+    Args:
+    @start_time: The timestamp of data to start at.
+    '''
+    df = pxviews.pod_resource_stats(px.now() + px.parse_duration(start_time), px.now())
+    df.start_time = df.pod_start_time
+    df.status = df.pod_status
+    return df[[
+        'pod', 'cpu_usage', 'total_disk_read_throughput',
+        'total_disk_write_throughput', 'container_count',
+        'node', 'start_time', 'status',
+    ]]
+
+
+def namespaces_for_cluster(start_time: str):
+    ''' Gets a overview of namespaces in the current cluster since `start_time`.
+    Args:
+    @start_time Start time of the data to examine.
+    '''
+    df = pxviews.container_process_summary(px.now() + px.parse_duration(start_time), px.now())
+    agg = df.groupby(['service', 'pod', 'namespace']).agg()
+    pod_count = agg.groupby(['namespace', 'pod']).agg()
+    pod_count = pod_count.groupby('namespace').agg(pod_count=('pod', px.count))
+    svc_count = agg.groupby(['namespace', 'service']).agg()
+    svc_count = svc_count.groupby('namespace').agg(service_count=('service', px.count))
+    pod_and_svc_count = pod_count.merge(svc_count, how='inner',
+                                        left_on='namespace', right_on='namespace',
+                                        suffixes=['', '_x'])
+    df = df.groupby(['namespace']).agg(
+        vsize=('vsize', px.sum),
+        rss=('rss', px.sum),
+    )
+    output = df.merge(pod_and_svc_count, how='inner', left_on='namespace',
+                      right_on='namespace', suffixes=['', '_y'])
+    return output[['namespace', 'pod_count', 'service_count', 'vsize', 'rss']]
+
+
+def services_for_cluster(start_time: str):
+    ''' Get an overview of the services in the current cluster.
+    Args:
+    @start_time: The timestamp of data to start at.
+    '''
+    pod_count = pxviews.container_process_summary(px.now() + px.parse_duration(start_time), px.now())
+    pod_count = pod_count.groupby(['service', 'pod', 'namespace']).agg()
+    pod_count = pod_count[pod_count.service != '']
+    pod_count = pod_count.groupby('service').agg(pod_count=('pod', px.count))
+
+    service_let = service_let_summary(start_time)
+    df = pod_count.merge(
+        service_let,
+        how="left",
+        left_on="service",
+        right_on="service",
+        suffixes=["", "_x"],
+    )
+    return df[['service', 'pod_count', 'http_latency_in', 'http_req_throughput_in', 'http_error_rate_in',
+               'inbound_conns', 'outbound_conns']]
+
+
+def service_let_summary(start_time: str):
+    ''' Compute a summary of traffic by requesting service, for requests
+        on services in the current cluster.
+    Args:
+    @start_time: The timestamp of data to start at.
+    '''
+    conn_stats_df = pxviews.connection_throughput_stats(start_time, px.now()).drop('time_')
+    conn_stats_df.service = conn_stats_df.ctx['service']
+    conn_stats_df = conn_stats_df.groupby(['service']).agg(
+        inbound_conn_throughput=('inbound_conn_throughput', px.sum),
+        outbound_conn_throughput=('outbound_conn_throughput', px.sum),
+    )
+
+    window = px.DurationNanos(px.now() - (px.now() + px.parse_duration(start_time)))
+    conn_stats_df.inbound_conns = conn_stats_df.inbound_conn_throughput / window
+    conn_stats_df.outbound_conns = conn_stats_df.outbound_conn_throughput / window
+
+    http_stats_df = pxviews.inbound_http_summary(start_time=start_time, end_time=px.now())
+    http_stats_df.service = http_stats_df.ctx['service']
+
+    http_stats_df = http_stats_df.groupby(['service']).agg(
+        http_req_count_in=('num_requests', px.sum),
+        http_error_count_in=('num_errors', px.sum),
+        # TODO usse a combine_quantiles UDF to merge quantiles
+        http_latency_in=('latency_quantiles', px.any),
+    )
+
+    # Compute throughput values.
+    http_stats_df.http_req_throughput_in = http_stats_df.http_req_count_in / window
+    http_stats_df.http_error_rate_in = px.Percent(
+        px.select(
+            http_stats_df.http_req_count_in != 0,
+            http_stats_df.http_error_count_in / http_stats_df.http_req_count_in,
+            0.0,
+        )
+    )
+
+    # Merge conn_stats_df and http_stats_df.
+    df = conn_stats_df.merge(http_stats_df,
+                             how='left',
+                             left_on='service',
+                             right_on='service',
+                             suffixes=['', '_x'])
+
+    return df[['service', 'http_latency_in', 'http_req_throughput_in', 'http_error_rate_in',
+               'inbound_conns', 'outbound_conns']]
+
+
+def service_let_graph(start_time: str):
+    ''' Compute a summary of traffic by requesting service, for requests on services
+        in the current cluster.
+    Args:
+    @start_time: The timestamp of data to start at.
+    '''
+    df = pxviews.http_graph(start_time, px.now())
+    df.window = px.DurationNanos(px.now() - px.parse_time(start_time))
+    # Compute statistics about each edge of the service graph.
+    df.request_throughput = df.num_requests / df.window
+    df.inbound_throughput = df.req_bytes / df.window
+    df.outbound_throughput = df.resp_bytes / df.window
+    df.throughput_total = df.num_requests
+    df.error_rate = px.Percent(df.num_errors / df.num_requests)
+
+    return df[[
+        'responder_pod',
+        'requestor_pod',
+        'responder_service',
+        'requestor_service',
+        'responder_ip',
+        'requestor_ip',
+        'latency_p50',
+        'latency_p90',
+        'latency_p99',
+        'request_throughput',
+        'error_rate',
+        'inbound_throughput',
+        'outbound_throughput',
+        'throughput_total'
+    ]]

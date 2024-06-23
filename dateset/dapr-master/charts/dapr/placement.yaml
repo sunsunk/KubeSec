@@ -1,0 +1,47 @@
+# Source: dapr/charts/dapr_rbac/templates/placement.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dapr-placement
+  namespace: default
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+
+---
+# Source: dapr/charts/dapr_rbac/templates/placement.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-placement
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+rules: []
+
+---
+# Source: dapr/charts/dapr_rbac/templates/placement.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-placement
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+subjects:
+- kind: ServiceAccount
+  name: dapr-placement
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dapr-placement

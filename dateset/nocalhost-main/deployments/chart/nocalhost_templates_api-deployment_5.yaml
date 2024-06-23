@@ -1,0 +1,49 @@
+# Source: nocalhost/templates/api-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nocalhost-api
+  labels:
+    app: nocalhost-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nocalhost-api
+  template:
+    metadata:
+      labels:
+        app: nocalhost-api
+    spec:
+      securityContext:
+        {}
+      containers:
+        - name: nocalhost-api
+          securityContext:
+            {}
+          image: "nocalhost-docker.pkg.coding.net/nocalhost/public/nocalhost-api:v0.6.18"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          command: [ "/app/nocalhost-api", "-c", "/app/config/config.yaml"]
+          volumeMounts:
+          - name: config-volume
+            mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nocalhost-api-config

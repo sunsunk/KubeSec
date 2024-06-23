@@ -1,0 +1,35 @@
+[package]
+name = "kube-derive"
+description = "Custom derives for the kube kubernetes crates"
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+keywords = ["kubernetes", "macro", "customresource", "crd"]
+categories = ["api-bindings", "encoding"]
+
+[lints]
+workspace = true
+
+[dependencies]
+proc-macro2.workspace = true
+quote.workspace = true
+syn = { workspace = true, features = ["extra-traits"] }
+serde_json.workspace = true
+darling.workspace = true
+
+[lib]
+proc-macro = true
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_yaml.workspace = true
+kube = { path = "../kube", version = "<1.0.0, >=0.61.0", features = ["derive", "client"] }
+k8s-openapi = { workspace = true, features = ["latest"] }
+schemars = { workspace = true, features = ["chrono"] }
+chrono.workspace = true
+trybuild.workspace = true
+assert-json-diff.workspace = true

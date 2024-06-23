@@ -1,0 +1,18 @@
+---
+# Lists of referenceable services.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-service-config
+data:
+  PL_AUTH_SERVICE: kubernetes:///auth-service.plc-staging:50100
+  PL_API_SERVICE_HTTP: api-service.plc-staging.svc.cluster.local:51200
+  PL_PLUGIN_SERVICE: kubernetes:///plugin-service.plc-staging:50600
+  PL_PROFILE_SERVICE: kubernetes:///profile-service.plc-staging:51500
+  PL_PROJECT_MANAGER_SERVICE: kubernetes:///project-manager-service.plc-staging:50300
+  PL_VZMGR_SERVICE: kubernetes:///vzmgr-service.plc-staging:51800
+  PL_ARTIFACT_TRACKER_SERVICE: kubernetes:///artifact-tracker-service.plc-staging:50750
+  PL_ELASTIC_SERVICE: https://pl-elastic-es-http.plc-staging:9200
+  PL_SCRIPTMGR_SERVICE: kubernetes:///scriptmgr-service.plc-staging:52000
+  PL_CRON_SCRIPT_SERVICE: kubernetes:///cron-script-service.plc-staging:50700
+  PL_CONFIG_MANAGER_SERVICE: kubernetes:///config-manager-service.plc-staging:50500

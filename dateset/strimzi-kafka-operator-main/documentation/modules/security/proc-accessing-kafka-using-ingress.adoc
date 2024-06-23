@@ -1,0 +1,165 @@
+// Module included in the following assemblies:
+//
+// assembly-configuring-kafka-listeners.adoc
+
+[id='proc-accessing-kafka-using-ingress-{context}']
+= Accessing Kafka using an Ingress NGINX Controller for Kubernetes
+
+[role="_abstract"]
+Use an {NginxIngressController} to access a Strimzi Kafka cluster from clients outside the Kubernetes cluster. 
+
+To be able to use an Ingress NGINX Controller for Kubernetes, add configuration for an `ingress` type listener in the `Kafka` custom resource. 
+When applied, the configuration creates a dedicated ingress and service for an external bootstrap and each broker in the cluster. 
+Clients connect to the bootstrap ingress, which routes them through the bootstrap service to connect to a broker. 
+Per-broker connections are then established using DNS names, which route traffic from the client to the broker through the broker-specific ingresses and services.
+
+To connect to a broker, you specify a hostname for the ingress bootstrap address, as well as the certificate used for TLS encryption.
+For access using an ingress, the port used in the Kafka client is typically 443.
+
+The procedure shows basic `ingress` listener configuration.
+TLS encryption (`tls`) must be enabled.
+You can also specify a client authentication mechanism (`authentication`).
+Add additional configuration using `configuration` properties.
+For example, you can use the `class` configuration property with `ingress` listeners to specify the ingress controller used.   
+
+For more information on listener configuration, see the link:{BookURLConfiguring}#type-GenericKafkaListener-reference[`GenericKafkaListener` schema reference^].
+
+.TLS passthrough
+
+Make sure that you enable TLS passthrough in your Ingress NGINX Controller for Kubernetes deployment.
+Kafka uses a binary protocol over TCP, but the Ingress NGINX Controller for Kubernetes is designed to work with a HTTP protocol. 
+To be able to route TCP traffic through ingresses, Strimzi uses TLS passthrough with Server Name Indication (SNI).
+
+SNI helps with identifying and passing connection to Kafka brokers.
+In passthrough mode, TLS encryption is always used.
+Because the connection passes to the brokers, the listeners use the TLS certificates signed by the internal cluster CA and not the ingress certificates.
+To configure listeners to use your own listener certificates, xref:proc-installing-certs-per-listener-{context}[use the `brokerCertChainAndKey` property]. 
+
+For more information about enabling TLS passthrough, see the {NginxIngressControllerTLSPassthrough}.
+
+.Prerequisites
+
+* An Ingress NGINX Controller for Kubernetes is running with TLS passthrough enabled
+* A running Cluster Operator
+
+In this procedure, the Kafka cluster name is `my-cluster`.
+The name of the listener is `external2`.
+
+.Procedure
+
+. Configure a `Kafka` resource with an external listener set to the `ingress` type.
++
+Specify an ingress hostname for the bootstrap service and each of the Kafka brokers in the Kafka cluster.
+Add any hostname to the `bootstrap` and `broker-<index>` prefixes that identify the bootstrap and brokers.
++
+For example:
++
+[source,yaml,subs=attributes+]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+metadata:
+  labels:
+    app: my-cluster
+  name: my-cluster
+  namespace: myproject
+spec:
+  kafka:
+    # ...
+    listeners:
+      - name: external2
+        port: 9094
+        type: ingress
+        tls: true # <1>
+        authentication:
+          type: tls
+        configuration:
+          bootstrap:
+            host: bootstrap.myingress.com
+          brokers:
+          - broker: 0
+            host: broker-0.myingress.com
+          - broker: 1
+            host: broker-1.myingress.com
+          - broker: 2
+            host: broker-2.myingress.com
+          class: nginx  # <2>
+    # ...
+  zookeeper:
+    # ...
+----
+<1> For `ingress` type listeners, TLS encryption must be enabled (`true`).
+<2> (Optional) Class that specifies the ingress controller to use. You might need to add a class if you have not set up a default and a class name is missing in the ingresses created. 
+
+. Create or update the resource.
++
+[source,shell,subs=+quotes]
+----
+kubectl apply -f _<kafka_configuration_file>_
+----
++
+A cluster CA certificate to verify the identity of the kafka brokers is created in the secret `my-cluster-cluster-ca-cert`.
++
+`ClusterIP` type services are created for each Kafka broker, as well as an external bootstrap service.
++
+An `ingress` is also created for each service, with a DNS address to expose them using the Ingress NGINX Controller for Kubernetes.
++
+.Ingresses created for the bootstrap and brokers
+[source,shell]
+----
+NAME                                  CLASS  HOSTS                    ADDRESS       PORTS
+my-cluster-kafka-external2-0          nginx  broker-0.myingress.com   192.168.49.2  80,443
+my-cluster-kafka-external2-1          nginx  broker-1.myingress.com   192.168.49.2  80,443
+my-cluster-kafka-external2-2          nginx  broker-2.myingress.com   192.168.49.2  80,443
+my-cluster-kafka-external2-bootstrap  nginx  bootstrap.myingress.com  192.168.49.2  80,443
+----
++
+The DNS addresses used for client connection are propagated to the `status` of each ingress.
++
+.Status for the bootstrap ingress
+[source,yaml]
+----
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.168.49.2
+ # ...
+----
+
+. Use a target broker to check the client-server TLS connection on port 443 using the OpenSSL `s_client`.  
++
+[source,shell]
+----
+openssl s_client -connect broker-0.myingress.com:443 -servername broker-0.myingress.com -showcerts
+----
++
+The server name is the SNI for passing the connection to the broker. 
++
+If the connection is successful, the certificates for the broker are returned.
++
+.Certificates for the broker
+[source,shell,subs=attributes+]
+----
+Certificate chain
+ 0 s:O = io.strimzi, CN = my-cluster-kafka
+   i:O = io.strimzi, CN = cluster-ca v0
+----
+
+. Extract the cluster CA certificate.
++
+[source,shell,subs=+quotes]
+kubectl get secret my-cluster-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
+
+
+. Configure your client to connect to the brokers.
+
+.. Specify the bootstrap host (from the listener `configuration`) and port 443 in your Kafka client as the bootstrap address to connect to the Kafka cluster. For example, `bootstrap.myingress.com:443`.
+
+.. Add the extracted certificate to the truststore of your Kafka client to configure a TLS connection.
++
+If you enabled a client authentication mechanism, you will also need to configure it in your client.
+
+NOTE: If you are using your own listener certificates, check whether you need to add the CA certificate to the client's truststore configuration. 
+If it is a public (external) CA, you usually won't need to add it.
+
+

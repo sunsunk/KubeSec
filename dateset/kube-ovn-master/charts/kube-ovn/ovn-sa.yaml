@@ -1,0 +1,42 @@
+# Source: kube-ovn/templates/ovn-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovn
+  namespace: dynamic_parameters
+imagePullSecrets:
+- name: dynamic_parameters
+
+---
+# Source: kube-ovn/templates/ovn-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovn-ovs
+  namespace: dynamic_parameters
+
+---
+# Source: kube-ovn/templates/ovn-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-ovn-cni
+  namespace: dynamic_parameters
+
+---
+# Source: kube-ovn/templates/ovn-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-ovn-app
+  namespace: dynamic_parameters
+
+---
+# Source: kube-ovn/templates/ovn-sa.yaml
+---
+
+---
+# Source: kube-ovn/templates/ovn-sa.yaml
+---
+
+---

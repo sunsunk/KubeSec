@@ -1,0 +1,28 @@
+comment:
+  require_changes: false
+  layout: "diff,files"
+
+coverage:
+  range: 70..100
+  round: up
+  precision: 1
+  # https://docs.codecov.com/docs/commit-status
+  status:
+    project:
+      default: false
+    patch:
+      default:
+        threshold: 1%
+        informational: true
+
+#flags:
+#  kube:
+#    paths: ["kube"]
+#  core:
+#    paths: ["kube-core"]
+#  client:
+#    paths: ["kube-client"]
+#  runtime:
+#    paths: ["kube-runtime"]
+#  derive:
+#    paths: ["kube-derive"]

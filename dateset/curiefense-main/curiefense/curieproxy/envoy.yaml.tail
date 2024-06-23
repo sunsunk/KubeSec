@@ -1,0 +1,31 @@
+  clusters:
+  - name: target_site_a
+    connect_timeout: 25s
+    type: strict_dns # static
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: target_site_a
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: TARGET_ADDRESS_A
+                port_value: TARGET_PORT_A
+  - name: target_site_b
+    connect_timeout: 25s
+    type: strict_dns # static
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: target_site_b
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: TARGET_ADDRESS_B
+                port_value: TARGET_PORT_B

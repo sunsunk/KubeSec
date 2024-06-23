@@ -1,0 +1,29 @@
+version: v2beta1
+name: hot-reload-container-restart
+
+vars:
+  IMAGE: myusername/devspace
+
+images:
+  my-image:
+    image: ${IMAGE}
+    rebuildStrategy: ignoreContextChanges
+
+deployments:
+  my-deployment:
+    helm:
+      values:
+        containers:
+        - image: ${IMAGE}
+
+dev:
+  my-dev:
+    imageSelector: ${IMAGE}
+    command: ["go", "run", "main.go"] # Needed so that DevSpace knows which command to restart
+    logs: {}
+    ports:
+    - port: 8080
+    sync:
+    - path: ./
+      onUpload:
+        restartContainer: true

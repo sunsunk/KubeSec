@@ -1,0 +1,4 @@
+match event of
+  case %[] => "array"
+  case _ => "else"
+end

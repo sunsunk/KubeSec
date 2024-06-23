@@ -1,0 +1,10 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: test-kafka-connect
+spec:
+  image: foo
+  replicas: oops, this is not an int
+  bootstrapServers: kafka:9092
+  config:
+    name: bar

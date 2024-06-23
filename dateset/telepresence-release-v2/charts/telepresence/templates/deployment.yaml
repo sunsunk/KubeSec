@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          env:
+          - name: LOG_LEVEL
+            value: dynamic_parameters
+          - name: REGISTRY
+            value: "dynamic_parameters"
+          - name: SERVER_PORT
+            value: dynamic_parameters
+          - name: POD_CIDR_STRATEGY
+            value: dynamic_parameters
+          - name: POD_CIDRS
+            value: "dynamic_parameters"
+          - name: MUTATOR_WEBHOOK_PORT
+            value: dynamic_parameters
+          - name: AGENT_INJECTOR_SECRET
+            value: dynamic_parameters
+          - name: TRACING_GRPC_PORT
+            value: dynamic_parameters
+          - name: AGENT_REST_API_PORT
+            value: dynamic_parameters
+          - name: GRPC_MAX_RECEIVE_SIZE
+            value: dynamic_parameters
+          - name: AGENT_ARRIVAL_TIMEOUT
+            value: dynamic_parameters
+        Traffic agent injector configuration
+          - name: AGENT_INJECT_POLICY
+            value: dynamic_parameters
+          - name: AGENT_INJECTOR_NAME
+            value:  dynamic_parameters
+        Traffic agent configuration
+          - name: AGENT_LOG_LEVEL
+            value: dynamic_parameters
+          - name: AGENT_PORT
+            value: dynamic_parameters
+          - name: AGENT_APP_PROTO_STRATEGY
+            value: dynamic_parameters
+          - name: AGENT_APP_PROTO_STRATEGY
+            value: dynamic_parameters
+          - name: AGENT_RESOURCES
+            value: 'dynamic_parameters'
+          - name: AGENT_RESOURCES
+            value: 'dynamic_parameters'
+          - name: AGENT_INIT_RESOURCES
+            value: 'dynamic_parameters'
+          - name: AGENT_INIT_RESOURCES
+            value: 'dynamic_parameters'
+          - name: AGENT_IMAGE_NAME
+            value: dynamic_parameters
+          - name: AGENT_IMAGE_NAME
+            value: dynamic_parameters
+          - name: AGENT_IMAGE_TAG
+            value: dynamic_parameters
+          - name: AGENT_IMAGE_TAG
+            value: dynamic_parameters
+          - name: AGENT_REGISTRY
+            value: dynamic_parameters
+          - name: AGENT_REGISTRY
+            value: dynamic_parameters
+          - name: AGENT_IMAGE_PULL_SECRETS
+            value: 'dynamic_parameters'
+          - name: AGENT_IMAGE_PULL_POLICY
+            value: dynamic_parameters
+          - name: PROMETHEUS_PORT
+            value: "dynamic_parameters"
+          - name: MANAGER_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: MANAGED_NAMESPACES
+            value: "dynamic_parameters"
+          - name: SCOUT_DISABLE
+            value: "1"
+        Client configuration
+          - name: CLIENT_CONNECTION_TTL
+            value: dynamic_parameters
+          - name: CLIENT_ROUTING_ALSO_PROXY_SUBNETS
+            value: "dynamic_parameters"
+          - name: CLIENT_ROUTING_NEVER_PROXY_SUBNETS
+            value: "dynamic_parameters"
+          - name: CLIENT_ROUTING_ALSO_PROXY_SUBNETS
+            value: "dynamic_parameters"
+          - name: CLIENT_ROUTING_NEVER_PROXY_SUBNETS
+            value: "dynamic_parameters"
+          - name: CLIENT_ROUTING_ALLOW_CONFLICTING_SUBNETS
+            value: "dynamic_parameters"
+          - name: CLIENT_DNS_EXCLUDE_SUFFIXES
+            value: "dynamic_parameters"
+          - name: CLIENT_DNS_INCLUDE_SUFFIXES
+            value: "dynamic_parameters"
+          ports:
+          - name: api
+            containerPort: dynamic_parameters
+          - name: https
+            containerPort: dynamic_parameters
+          - name: prometheus
+            containerPort: dynamic_parameters
+          - name: grpc-trace
+            containerPort: dynamic_parameters
+          livenessProbe:
+          readinessProbe:
+          resources:
+          volumeMounts:
+      nodeSelector:
+      affinity:
+      tolerations:
+      priorityClassName: dynamic_parameters
+      volumes:
+      serviceAccount: traffic-manager
+      serviceAccountName: traffic-manager
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

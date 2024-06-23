@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-ingester
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  strategy:
+  template:
+    metadata:
+      name: dynamic_parameters-ingester
+      annotations:
+        checksum/config: dynamic_parameters
+      labels:
+        
+    spec:
+      terminationGracePeriodSeconds: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 2000
+      tolerations:
+      containers:
+        - name: armada-scheduler-ingester
+          imagePullPolicy: IfNotPresent
+          image: dynamic_parameters:dynamic_parameters
+          args:
+            - --config
+            - /config/application_config.yaml
+          env:
+          resources:
+          ports:
+            - containerPort: dynamic_parameters
+              protocol: TCP
+              name: pprof
+            - containerPort: dynamic_parameters
+              protocol: TCP
+              name: metrics
+          volumeMounts:
+            - name: user-config
+              mountPath: /config/application_config.yaml
+              subPath: dynamic_parameters
+              readOnly: true
+            - name: pulsar-token
+              mountPath: "/pulsar/tokens"
+              readOnly: true
+            - name: pulsar-ca
+              mountPath: "/pulsar/ca"
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - dynamic_parameters-ingester
+                topologyKey: kubernetes.io/hostname
+      volumes:
+        - name: user-config
+          secret:
+            secretName: dynamic_parameters
+        - name: pulsar-token
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: TOKEN
+                path: pulsar-token
+        - name: pulsar-ca
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: ca.crt
+                path: ca.crt
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

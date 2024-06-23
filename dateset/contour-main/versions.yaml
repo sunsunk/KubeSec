@@ -1,0 +1,709 @@
+metadata:
+  name: Contour
+  description: "Contour is a Kubernetes ingress controller using Envoy proxy."
+  website: "https://projectcontour.io"
+  repository: "https://github.com/projectcontour/contour"
+versions:
+  - version: main
+    supported: "false"
+    dependencies:
+      envoy: "1.29.2"
+      kubernetes:
+        - "1.29"
+        - "1.28"
+        - "1.27"
+      gateway-api:
+        - "1.0.0"
+  - version: v1.28.2
+    supported: "true"
+    dependencies:
+      envoy: "1.29.2"
+      kubernetes:
+        - "1.29"
+        - "1.28"
+        - "1.27"
+      gateway-api:
+        - "1.0.0"
+  - version: v1.28.1
+    supported: "false"
+    dependencies:
+      envoy: "1.29.1"
+      kubernetes:
+        - "1.29"
+        - "1.28"
+        - "1.27"
+      gateway-api:
+        - "1.0.0"
+  - version: v1.28.0
+    supported: "false"
+    dependencies:
+      envoy: "1.29.1"
+      kubernetes:
+        - "1.29"
+        - "1.28"
+        - "1.27"
+      gateway-api:
+        - "1.0.0"
+  - version: v1.27.1
+    supported: "true"
+    dependencies:
+      envoy: "1.28.1"
+      kubernetes:
+        - "1.28"
+        - "1.27"
+        - "1.26"
+      gateway-api:
+        - "0.8.1"
+  - version: v1.27.0
+    supported: "false"
+    dependencies:
+      envoy: "1.28.0"
+      kubernetes:
+        - "1.28"
+        - "1.27"
+        - "1.26"
+      gateway-api:
+        - "0.8.1"
+  - version: v1.26.2
+    supported: "true"
+    dependencies:
+      envoy: "1.27.3"
+      kubernetes:
+        - "1.28"
+        - "1.27"
+        - "1.26"
+      gateway-api:
+        - "0.8.1"
+  - version: v1.26.1
+    supported: "false"
+    dependencies:
+      envoy: "1.27.2"
+      kubernetes:
+        - "1.28"
+        - "1.27"
+        - "1.26"
+      gateway-api:
+        - "0.8.1"
+  - version: v1.26.0
+    supported: "false"
+    dependencies:
+      envoy: "1.27.0"
+      kubernetes:
+        - "1.28"
+        - "1.27"
+        - "1.26"
+      gateway-api:
+        - "0.8.0"
+  - version: v1.25.3
+    supported: "false"
+    dependencies:
+      envoy: "1.26.6"
+      kubernetes:
+        - "1.27"
+        - "1.26"
+        - "1.25"
+      gateway-api:
+        - "0.6.2"
+  - version: v1.25.2
+    supported: "false"
+    dependencies:
+      envoy: "1.26.4"
+      kubernetes:
+        - "1.27"
+        - "1.26"
+        - "1.25"
+      gateway-api:
+        - "0.6.2"
+  - version: v1.25.1
+    supported: "false"
+    dependencies:
+      envoy: "1.26.4"
+      kubernetes:
+        - "1.27"
+        - "1.26"
+        - "1.25"
+      gateway-api:
+        - "0.6.2"
+  - version: v1.25.0
+    supported: "false"
+    dependencies:
+      envoy: "1.26.1"
+      kubernetes:
+        - "1.27"
+        - "1.26"
+        - "1.25"
+      gateway-api:
+        - "0.6.2"
+  - version: v1.24.6
+    supported: "false"
+    dependencies:
+      envoy: "1.25.11"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.5
+    supported: "false"
+    dependencies:
+      envoy: "1.25.9"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.4
+    supported: "false"
+    dependencies:
+      envoy: "1.25.6"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.3
+    supported: "false"
+    dependencies:
+      envoy: "1.25.4"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.2
+    supported: "false"
+    dependencies:
+      envoy: "1.25.2"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.1
+    supported: "false"
+    dependencies:
+      envoy: "1.25.1"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: "N/A"
+  - version: v1.24.0
+    supported: "false"
+    dependencies:
+      envoy: "1.25.0"
+      kubernetes:
+        - "1.26"
+        - "1.25"
+        - "1.24"
+      gateway-api:
+        - "0.6.0"
+      contour-operator: v1.24.0
+  - version: v1.23.6
+    supported: "false"
+    dependencies:
+      envoy: "1.24.10"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.5
+    supported: "false"
+    dependencies:
+      envoy: "1.24.5"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.4
+    supported: "false"
+    dependencies:
+      envoy: "1.24.3"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.3
+    supported: "false"
+    dependencies:
+      envoy: "1.24.2"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.2
+    supported: "false"
+    dependencies:
+      envoy: "1.24.1"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.1
+    supported: "false"
+    dependencies:
+      envoy: "1.24.1"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: "N/A"
+  - version: v1.23.0
+    supported: "false"
+    dependencies:
+      envoy: "1.24.0"
+      kubernetes:
+        - "1.25"
+        - "1.24"
+        - "1.23"
+      gateway-api:
+        - "0.5.1"
+      contour-operator: v1.23.0
+  - version: v1.22.6
+    supported: "false"
+    dependencies:
+      envoy: "1.23.7"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: "N/A"
+  - version: v1.22.5
+    supported: "false"
+    dependencies:
+      envoy: "1.23.5"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: "N/A"
+  - version: v1.22.4
+    supported: "false"
+    dependencies:
+      envoy: "1.23.4"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: "N/A"
+  - version: v1.22.3
+    supported: "false"
+    dependencies:
+      envoy: "1.23.3"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: "N/A"
+  - version: v1.22.2
+    supported: "false"
+    dependencies:
+      envoy: "1.23.3"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: "N/A"
+  - version: v1.22.1
+    supported: "false"
+    dependencies:
+      envoy: "1.23.1"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: v1.22.1
+  - version: v1.22.0
+    supported: "false"
+    dependencies:
+      envoy: "1.23.0"
+      kubernetes:
+        - "1.24"
+        - "1.23"
+        - "1.22"
+      gateway-api:
+        - "0.5.0"
+      contour-operator: v1.22.0
+  - version: v1.21.3
+    supported: "false"
+    dependencies:
+      envoy: "1.22.6"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.3"
+      contour-operator: "N/A"
+  - version: v1.21.2
+    supported: "false"
+    dependencies:
+      envoy: "1.22.6"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.3"
+      contour-operator: "N/A"
+  - version: v1.21.1
+    supported: "false"
+    dependencies:
+      envoy: "1.22.2"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.3"
+      contour-operator: v1.21.1
+  - version: v1.21.0
+    supported: "false"
+    dependencies:
+      envoy: "1.22.0"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.3"
+      contour-operator: v1.21.0
+  - version: v1.20.2
+    supported: "false"
+    dependencies:
+      envoy: "1.21.3"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.1"
+      contour-operator: v1.20.2
+  - version: v1.20.1
+    supported: "false"
+    dependencies:
+      envoy: "1.21.1"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.1"
+      contour-operator: v1.20.1
+  - version: v1.20.0
+    supported: "false"
+    dependencies:
+      envoy: "1.21.0"
+      kubernetes:
+        - "1.23"
+        - "1.22"
+        - "1.21"
+      gateway-api:
+        - "0.4.1"
+      contour-operator: v1.20.0
+  - version: v1.19.1
+    supported: "false"
+    dependencies:
+      envoy: "1.19.1"
+      kubernetes:
+        - "1.22"
+        - "1.21"
+        - "1.20"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.19.1
+  - version: v1.19.0
+    supported: "false"
+    dependencies:
+      envoy: "1.19.1"
+      kubernetes:
+        - "1.22"
+        - "1.21"
+        - "1.20"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: main
+  - version: v1.18.3
+    supported: "false"
+    dependencies:
+      envoy: "1.19.1"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.18.3
+  - version: v1.18.2
+    supported: "false"
+    dependencies:
+      envoy: "1.19.1"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.18.2
+  - version: v1.18.1
+    supported: "false"
+    dependencies:
+      envoy: "1.19.1"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.18.1
+  - version: v1.18.0
+    supported: "false"
+    dependencies:
+      envoy: "1.19.0"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.18.0
+  - version: v1.17.2
+    supported: "false"
+    dependencies:
+      envoy: "1.18.4"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: NA
+  - version: v1.17.1
+    supported: "false"
+    dependencies:
+      envoy: "1.18.3"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: NA
+  - version: v1.17.0
+    supported: "false"
+    dependencies:
+      envoy: "1.18.3"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.17.0
+  - version: v1.16.1
+    supported: "false"
+    dependencies:
+      envoy: "1.18.4"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: NA
+  - version: v1.16.0
+    supported: "false"
+    dependencies:
+      envoy: "1.18.3"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.16.0
+  - version: v1.15.2
+    supported: "false"
+    dependencies:
+      envoy: "1.18.4"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: NA
+  - version: v1.15.1
+    supported: "false"
+    dependencies:
+      envoy: "1.18.3"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.15.1
+  - version: v1.15.0
+    supported: "false"
+    dependencies:
+      envoy: "1.18.2"
+      kubernetes:
+        - "1.21"
+        - "1.20"
+        - "1.19"
+      gateway-api:
+        - "0.3.0"
+      contour-operator: v1.15.0
+  - version: v1.14.2
+    supported: "false"
+    dependencies:
+      envoy: "1.17.4"
+      kubernetes:
+        - "1.20"
+        - "1.19"
+        - "1.18"
+      gateway-api:
+        - "0.2.0"
+      contour-operator: NA
+  - version: 1.14.1
+    supported: "false"
+    dependencies:
+      envoy: "1.17.2"
+      kubernetes:
+        - "1.20"
+        - "1.19"
+        - "1.18"
+      gateway-api:
+        - "0.2.0"
+      contour-operator: v1.14.1
+  - version: v1.14.0
+    supported: "false"
+    dependencies:
+      envoy: "1.17.1"
+      kubernetes:
+        - "1.20"
+        - "1.19"
+        - "1.18"
+      gateway-api:
+        - "0.2.0"
+      contour-operator: v1.14.0
+  - version: 1.13.1
+    supported: "false"
+    dependencies:
+      envoy: "1.17.1"
+      kubernetes:
+        - "1.20"
+        - "1.19"
+        - "1.18"
+      gateway-api:
+        - "0.2.0"
+      contour-operator: v1.13.1
+  - version: v1.13.0
+    supported: "false"
+    dependencies:
+      envoy: "1.17.0"
+      kubernetes:
+        - "1.20"
+        - "1.19"
+        - "1.18"
+      gateway-api:
+        - "0.2.0"
+      contour-operator: v1.13.0
+  - version: v1.12.0
+    supported: "false"
+    dependencies:
+      envoy: "1.17.0"
+      kubernetes:
+        - "1.19"
+        - "1.18"
+        - "1.17"
+      gateway-api:
+        - NA
+      contour-operator: v1.12.0
+  - version: v1.11.0
+    supported: "false"
+    dependencies:
+      envoy: "1.16.2"
+      kubernetes:
+        - "1.19"
+        - "1.18"
+        - "1.17"
+      gateway-api:
+        - NA
+      contour-operator: v1.11.0
+  - version: v1.10.1
+    supported: "false"
+    dependencies:
+      envoy: "1.16.2"
+      kubernetes:
+        - "1.19"
+        - "1.18"
+        - "1.17"
+      gateway-api:
+        - NA
+      contour-operator: NA
+  - version: v1.10.0
+    supported: "false"
+    dependencies:
+      envoy: "1.16.0"
+      kubernetes:
+        - "1.19"
+        - "1.18"
+        - "1.17"
+      gateway-api:
+        - NA
+      contour-operator: NA
+  - version: v1.9.0
+    supported: "false"
+    dependencies:
+      envoy: "1.15.1"
+      kubernetes:
+        - "1.18"
+        - "1.17"
+        - "1.16"
+      gateway-api:
+        - NA
+      contour-operator: NA
+

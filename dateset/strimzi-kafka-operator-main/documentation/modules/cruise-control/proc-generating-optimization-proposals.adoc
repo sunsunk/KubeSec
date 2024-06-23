@@ -1,0 +1,260 @@
+// Module included in the following assemblies:
+//
+// assembly-cruise-control-concepts.adoc
+
+[id='proc-generating-optimization-proposals-{context}']
+= Generating optimization proposals
+
+[role="_abstract"]
+When you create or update a `KafkaRebalance` resource, Cruise Control generates an xref:con-optimization-proposals-{context}[optimization proposal] for the Kafka cluster based on the configured xref:con-optimization-goals-{context}[optimization goals].
+Analyze the information in the optimization proposal and decide whether to approve it.
+You can use the results of the optimization proposal to rebalance your Kafka cluster.
+
+You can run the optimization proposal in one of the following modes:
+
+* `full` (default)
+* `add-brokers`
+* `remove-brokers`
+
+The mode you use depends on whether you are rebalancing across all the brokers already running in the Kafka cluster;
+or you want to rebalance after scaling up or before scaling down your Kafka cluster.
+For more information, see xref:con-optimization-proposals-modes-{context}[Rebalancing modes with broker scaling].
+
+.Prerequisites
+
+* You have xref:proc-configuring-deploying-cruise-control-{context}[deployed Cruise Control] to your Strimzi cluster.
+* You have configured optimization goals and, optionally, capacity limits on broker resources.
+
+For more information on configuring Cruise Control, see xref:proc-configuring-deploying-cruise-control-{context}[].
+
+.Procedure
+
+. Create a `KafkaRebalance` resource and specify the appropriate mode.
++
+`full` mode (default)::
++
+--
+To use the _default optimization goals_ defined in the `Kafka` resource, leave the `spec` property empty.
+Cruise Control rebalances a Kafka cluster in `full` mode by default.
+
+.Example configuration with full rebalancing by default
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec: {}
+----
+
+You can also run a full rebalance by specifying the `full` mode through the `spec.mode` property.
+
+.Example configuration specifying `full` mode
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  mode: full
+----
+--
+`add-brokers` mode::
++
+--
+If you want to rebalance a Kafka cluster after scaling up, specify the `add-brokers` mode.
+
+In this mode, existing replicas are moved to the newly added brokers.
+You need to specify the brokers as a list.
+
+.Example configuration specifying `add-brokers` mode
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  mode: add-brokers
+  brokers: [3, 4] <1>
+----
+<1> List of newly added brokers added by the scale up operation. This property is mandatory.
+--
+
+`remove-brokers` mode::
++
+--
+If you want to rebalance a Kafka cluster before scaling down, specify the `remove-brokers` mode.
+
+In this mode, replicas are moved off the brokers that are going to be removed.
+You need to specify the brokers that are being removed as a list.
+
+.Example configuration specifying `remove-brokers` mode
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  mode: remove-brokers
+  brokers: [3, 4] <1>
+----
+<1> List of brokers to be removed by the scale down operation. This property is mandatory.
+--
++
+NOTE: The following steps and the steps to approve or stop a rebalance are the same regardless of the rebalance mode you are using.
+
+. To configure _user-provided optimization goals_ instead of using the default goals, add the `goals` property and enter one or more goals.
++
+In the following example, rack awareness and replica capacity are configured as user-provided optimization goals:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  goals:
+    - RackAwareGoal
+    - ReplicaCapacityGoal
+----
+
+. To ignore the configured hard goals, add the `skipHardGoalCheck: true` property:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  goals:
+    - RackAwareGoal
+    - ReplicaCapacityGoal
+  skipHardGoalCheck: true
+----
+
+. (Optional) To approve the optimization proposal automatically, set the `strimzi.io/rebalance-auto-approval` annotation to `true`:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaRebalanceApiVersion}
+kind: KafkaRebalance
+metadata:
+  name: my-rebalance
+  labels:
+    strimzi.io/cluster: my-cluster
+  annotations:
+    strimzi.io/rebalance-auto-approval: "true"
+spec:
+  goals:
+    - RackAwareGoal
+    - ReplicaCapacityGoal
+  skipHardGoalCheck: true
+----
+
+. Create or update the resource:
++
+[source,shell,subs="+quotes"]
+----
+kubectl apply -f _<kafka_rebalance_configuration_file>_
+----
++
+The Cluster Operator requests the optimization proposal from Cruise Control.
+This might take a few minutes depending on the size of the Kafka cluster.
+
+. If you used the automatic approval mechanism, wait for the status of the optimization proposal to change to `Ready`.
+If you haven't enabled the automatic approval mechanism, wait for the status of the optimization proposal to change to `ProposalReady`:
++
+[source,shell,subs="+quotes"]
+----
+kubectl get kafkarebalance -o wide -w -n _<namespace>_
+----
++
+--
+`PendingProposal`:: A `PendingProposal` status means the rebalance operator is polling the Cruise Control API to check if the optimization proposal is ready.
+`ProposalReady`:: A `ProposalReady` status means the optimization proposal is ready for review and approval.
+--
++
+When the status changes to `ProposalReady`, the optimization proposal is ready to approve.
+
+. Review the optimization proposal.
++
+The optimization proposal is contained in the `Status.Optimization Result` property of the `KafkaRebalance` resource.
++
+[source,shell,subs="+quotes"]
+----
+kubectl describe kafkarebalance _<kafka_rebalance_resource_name>_
+----
++
+.Example optimization proposal
+[source,shell,subs="+quotes"]
+----
+Status:
+  Conditions:
+    Last Transition Time:  2020-05-19T13:50:12.533Z
+    Status:                ProposalReady
+    Type:                  State
+  Observed Generation:     1
+  Optimization Result:
+    Data To Move MB:  0
+    Excluded Brokers For Leadership:
+    Excluded Brokers For Replica Move:
+    Excluded Topics:
+    Intra Broker Data To Move MB:         0
+    Monitored Partitions Percentage:      100
+    Num Intra Broker Replica Movements:   0
+    Num Leader Movements:                 0
+    Num Replica Movements:                26
+    On Demand Balancedness Score After:   81.8666802863978
+    On Demand Balancedness Score Before:  78.01176356230222
+    Recent Windows:                       1
+  Session Id:                             05539377-ca7b-45ef-b359-e13564f1458c
+----
++
+The properties in the `Optimization Result` section describe the pending cluster rebalance operation.
+For descriptions of each property, see xref:contents-optimization-proposals[Contents of optimization proposals].
+
+.Insufficient CPU capacity
+
+If a Kafka cluster is overloaded in terms of CPU utilization, you might see an insufficient CPU capacity error in the `KafkaRebalance` status.
+It's worth noting that this utilization value is unaffected by the `excludedTopics` configuration.
+Although optimization proposals will not reassign replicas of excluded topics, their load is still considered in the utilization calculation.
+
+.Example CPU utilization error
+[source,shell,subs="+quotes"]
+----
+com.linkedin.kafka.cruisecontrol.exception.OptimizationFailureException:
+[CpuCapacityGoal] Insufficient capacity for cpu (Utilization 615.21, Allowed Capacity 420.00, Threshold: 0.70). Add at least 3 brokers with the same cpu capacity (100.00) as broker-0. Add at least 3 brokers with the same cpu capacity (100.00) as broker-0.
+----
+
+[NOTE]
+====
+The error shows CPU capacity as a percentage rather than the number of CPU cores. 
+For this reason, it does not directly map to the number of CPUs configured in the Kafka custom resource.
+It is like having a single _virtual_ CPU per broker, which has the cycles of the CPUs configured in `Kafka.spec.kafka.resources.limits.cpu`.
+This has no effect on the rebalance behavior, since the ratio between CPU utilization and capacity remains the same.
+====
+
+.What to do next
+
+xref:proc-approving-optimization-proposal-{context}[]
+
+[role="_additional-resources"]
+.Additional resources
+* xref:con-optimization-proposals-{context}[]

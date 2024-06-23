@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters-dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+      release: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        release: dynamic_parameters
+    spec:
+      containers:
+        - name: dynamic_parameters
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          securityContext:
+            runAsNonRoot: true
+          args:
+          - -config=/config/config.json
+          - -strict=dynamic_parameters
+          volumeMounts:
+          - name: config
+            mountPath: /config
+            readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /dir
+              port: 14000
+              scheme: HTTPS
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            failureThreshold: 10
+            successThreshold: 1
+          resources:
+      volumes:
+      - name: config
+        configMap:
+          name: dynamic_parameters
+      nodeSelector:
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
+
+---

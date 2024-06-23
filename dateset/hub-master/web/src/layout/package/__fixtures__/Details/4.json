@@ -1,0 +1,11 @@
+{
+  "packageId": "id",
+  "name": "chartmuseum",
+  "repository": {
+    "repositoryid": "id",
+    "kind": 0,
+    "name": "incubator",
+    "organizationName": "helm",
+    "organizationDisplayName": "Helm"
+  }
+}

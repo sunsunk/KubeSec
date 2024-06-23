@@ -1,0 +1,70 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: dynamic_parameters
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+    spec:
+      serviceAccountName: dynamic_parameters
+      containers:
+      - args:
+        - -c
+        - |-
+          /opt/easegress/bin/easegress-server \
+            -f /opt/eg-config/easegress-server.yaml \
+            --initial-object-config-files /opt/eg-config/controller.yaml \
+            --initial-cluster $(EG_NAME)=http://localhost:2380
+        command:
+        - /bin/sh
+        env:
+        - name: EG_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: ingress-easegress
+        resources:
+          limits:
+            cpu: 1200m
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: /opt/eg-config/easegress-server.yaml
+          name: dynamic_parameters
+          subPath: easegress-server.yaml
+        - mountPath: /opt/eg-config/controller.yaml
+          name: dynamic_parameters
+          subPath: controller.yaml
+        - mountPath: /opt/easegress/data
+          name: ingress-data-volume
+      restartPolicy: Always
+      volumes:
+        name: ingress-data-volume
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: easegress-server.yaml
+            path: easegress-server.yaml
+          - key: controller.yaml
+            path: controller.yaml
+          name: dynamic_parameters
+        name: dynamic_parameters
+
+---
+
+---

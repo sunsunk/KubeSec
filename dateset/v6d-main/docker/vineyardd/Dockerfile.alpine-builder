@@ -1,0 +1,212 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+ARG PLATFORM=x86_64
+ARG ARCH=amd64
+FROM amd64/centos:7 as base_x86_64
+FROM arm64v8/centos:7 as base_aarch64
+
+ARG PLATFORM
+FROM base_$PLATFORM
+
+# target: ghcr.io/v6d-io/v6d/vineyardd-alpine-builder:builder-latest_$PLATFORM
+
+SHELL ["/bin/bash", "-c"]
+
+ARG PLATFORM
+ENV PLATFORM $PLATFORM
+ARG ARCH
+ENV ARCH $ARCH
+
+ENV DEVTOOLSET_ROOTPATH="/opt/rh/devtoolset-10/root"
+ENV LD_LIBRARY_PATH_ARG="${DEVTOOLSET_ROOTPATH}/usr/lib64:${DEVTOOLSET_ROOTPATH}/usr/lib:${DEVTOOLSET_ROOTPATH}/usr/lib64/dyninst:${DEVTOOLSET_ROOTPATH}/usr/lib/dyninst:/usr/local/lib64:/usr/local/lib"
+
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
+
+# install base repo and deps
+RUN echo "multilib_policy=best" >> /etc/yum.conf && \
+	echo "skip_missing_names_on_install=False" >> /etc/yum.conf \
+	sed -i '/^override_install_langs=/d' /etc/yum.conf \
+	echo "exclude = d36uatko69830t.cloudfront.net" >> /etc/yum/pluginconf.d/fastestmirror.conf \
+    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+	yum-config-manager --enable extras && \
+	yum -y update && \
+	yum -y install yum-utils autoconf automake curl centos-release-scl-rh m4 make wget && \
+    yum -y install devtoolset-10-binutils devtoolset-10-gcc devtoolset-10-gcc-c++ && \
+    localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    yum clean all && \
+	rm -rf /var/cache/yum
+
+ENV BASH_ENV=/opt/rh/devtoolset-10/enable
+ENV ENV=/opt/rh/devtoolset-10/enable
+ENV PROMPT_COMMAND=". /opt/rh/devtoolset-10/enable"
+
+# install cmake
+RUN cd /tmp && \
+    wget -q https://cmake.org/files/v3.19/cmake-3.19.5-Linux-$PLATFORM.sh && \
+    bash cmake-3.19.5-Linux-$PLATFORM.sh --skip-license --prefix=/usr && \
+    rm cmake-3.19.5-Linux-$PLATFORM.sh
+
+# install apache-arrow
+RUN cd /tmp && \
+    wget -q https://github.com/apache/arrow/archive/refs/tags/apache-arrow-11.0.0.tar.gz && \
+    tar zxf apache-arrow-11.0.0.tar.gz && \
+    cd arrow-apache-arrow-11.0.0 && \
+    mkdir build && \
+    cd build && \
+    cmake ../cpp \
+        -DCMAKE_BUILD_TYPE=MinSizeRel \
+        -DARROW_COMPUTE=ON \
+        -DARROW_SIMD_LEVEL=NONE \
+        -DARROW_RUNTIME_SIMD_LEVEL=NONE \
+        -DARROW_WITH_UTF8PROC=OFF \
+        -DARROW_CSV=ON \
+        -DARROW_CUDA=OFF \
+        -DARROW_DATASET=OFF \
+        -DARROW_FILESYSTEM=ON \
+        -DARROW_FLIGHT=OFF \
+        -DARROW_GANDIVA=OFF \
+        -DARROW_GANDIVA_JAVA=OFF \
+        -DARROW_HDFS=OFF \
+        -DARROW_HIVESERVER2=OFF \
+        -DARROW_JSON=OFF \
+        -DARROW_ORC=OFF \
+        -DARROW_PARQUET=OFF \
+        -DARROW_PLASMA=OFF \
+        -DARROW_PLASMA_JAVA_CLIENT=OFF \
+        -DARROW_PYTHON=OFF \
+        -DARROW_S3=OFF \
+        -DARROW_WITH_BROTLI=OFF \
+        -DARROW_WITH_BZ2=OFF \
+        -DARROW_WITH_GRPC=OFF \
+        -DARROW_WITH_LZ4=OFF \
+        -DARROW_WITH_RE2=OFF \
+        -DARROW_WITH_SNAPPY=OFF \
+        -DARROW_WITH_ZLIB=OFF \
+        -DARROW_WITH_ZSTD=OFF \
+        -DARROW_IPC=ON \
+        -DARROW_BUILD_BENCHMARKS=OFF \
+        -DARROW_BUILD_EXAMPLES=OFF \
+        -DARROW_BUILD_INTEGRATION=OFF \
+        -DARROW_BUILD_UTILITIES=OFF \
+        -DARROW_BUILD_TESTS=OFF \
+        -DARROW_ENABLE_TIMING_TESTS=OFF \
+        -DARROW_FUZZING=OFF \
+        -DARROW_USE_ASAN=OFF \
+        -DARROW_USE_TSAN=OFF \
+        -DARROW_USE_UBSAN=OFF \
+        -DARROW_JEMALLOC=OFF \
+        -DARROW_BUILD_SHARED=OFF \
+        -DARROW_BUILD_STATIC=ON && \
+    make install -j`nproc` && \
+    cd /tmp && \
+    rm -rf apache-arrow-11.0.0.tar.gz arrow-apache-arrow-11.0.0/
+
+# install boost
+RUN cd /tmp && \
+    wget -q https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz && \
+    tar zxf boost_1_75_0.tar.gz && \
+    cd boost_1_75_0 && \
+    ./bootstrap.sh && \
+    ./b2 install -j`nproc` link=static runtime-link=static variant=release threading=multi \
+        --with-atomic \
+        --with-chrono \
+        --with-date_time \
+        --with-filesystem \
+        --with-random \
+        --with-system \
+        --with-thread && \
+    cd /tmp && \
+    rm -rf boost_1_75_0.tar.gz boost_1_75_0
+
+# install gflags
+RUN cd /tmp && \
+    wget -q https://github.com/gflags/gflags/archive/v2.2.2.tar.gz -O gflags-v2.2.2.tar.gz && \
+    tar zxf gflags-v2.2.2.tar.gz && \
+    cd gflags-2.2.2 && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF \
+             -DBUILD_TESTING=OFF && \
+    make install -j`nproc` && \
+    cd /tmp && \
+    rm -rf gflags-v2.2.2.tar.gz gflags-2.2.2
+
+# install glog
+RUN cd /tmp && \
+    wget -q https://github.com/google/glog/archive/v0.5.0.tar.gz -O glog-v0.5.0.tar.gz && \
+    tar zxf glog-v0.5.0.tar.gz && \
+    cd glog-0.5.0/ && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF \
+             -DBUILD_TESTING=OFF \
+             -DWITH_GTEST=OFF && \
+    make install -j`nproc` && \
+    cd /tmp && \
+    rm -rf glog-v0.5.0.tar.gz glog-0.5.0
+
+# install libz
+#
+# note: remove shared libs
+RUN cd /tmp && \
+    wget -q https://zlib.net/zlib-1.2.13.tar.gz && \
+    tar zxf zlib-1.2.13.tar.gz && \
+    cd zlib-1.2.13 && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF && \
+    make install -j`nproc` && \
+    rm -rf /usr/local/lib/libz.so* && \
+    cd /tmp && \
+    rm -rf zlib-1.2.13.tar.gz zlib-1.2.13
+
+# install openssl: boringssl doesn't bring headers when installing
+RUN cd /tmp && \
+    wget -q --no-check-certificate https://www.openssl.org/source/openssl-1.1.1j.tar.gz && \
+    tar zxf openssl-1.1.1j.tar.gz && \
+    cd openssl-1.1.1j && \
+    ./config -no-shared -no-tests && \
+    make -j`nproc` && make install -j`nproc` || true && \
+    cd /tmp && \
+    rm -rf openssl-1.1.1j.tar.gz openssl-1.1.1j
+
+# install protobuf & grpc: v1.36.x
+RUN cd /tmp && \
+    wget -q https://github.com/unsafecoerce/git-submodules-tarball/releases/download/grpc%2Fgrpc-v1.36.x/grpc-grpc-1.36.x.tar.gz && \
+    tar zxf grpc-grpc-1.36.x.tar.gz && \
+    cd grpc-grpc-1.36.x && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF \
+             -DgRPC_INSTALL=ON \
+             -DgRPC_BUILD_TESTS=OFF \
+             -DgRPC_BUILD_CSHARP_EXT=OFF \
+             -DgRPC_BUILD_GRPC_CSHARP_PLUGIN=OFF \
+             -DgRPC_BUILD_GRPC_NODE_PLUGIN=OFF \
+             -DgRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN=OFF \
+             -DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
+             -DgRPC_BUILD_GRPC_PYTHON_PLUGIN=OFF \
+             -DgRPC_BUILD_GRPC_RUBY_PLUGIN=OFF \
+             -DgRPC_SSL_PROVIDER=package \
+             -DgRPC_ZLIB_PROVIDER=package \
+             -DgRPC_BACKWARDS_COMPATIBILITY_MODE=ON && \
+    make install -j`nproc` && \
+    cd /tmp && \
+    rm -rf grpc-grpc-1.36.x.tar.gz grpc-grpc-1.36.x/

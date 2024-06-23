@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    release: "dynamic_parameters"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      release: "dynamic_parameters"
+  template:
+    metadata:
+      annotations:
+        revision: "dynamic_parameters"
+      labels:
+        release: "dynamic_parameters"
+    spec:
+      containers:
+      - name: default
+        image: "dynamic_parameters"
+
+---
+
+---

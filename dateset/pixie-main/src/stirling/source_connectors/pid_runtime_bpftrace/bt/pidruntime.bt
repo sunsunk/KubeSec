@@ -1,0 +1,38 @@
+/*
+ * This code runs using bpf in the Linux kernel.
+ * Copyright 2018- The Pixie Authors.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ */
+
+tracepoint:sched:sched_switch
+{
+  // Calculate run-time of previously running process.
+  $descheduled_pid_start_time = @start_time[args->prev_pid];
+  if ($descheduled_pid_start_time) {
+    delete(@start_time[args->prev_pid]);
+    $runtime = nsecs - $descheduled_pid_start_time;
+    @names[args->prev_pid] = args->prev_comm;
+    @total_time[args->prev_pid] = @total_time[args->prev_pid] + $runtime;
+  }
+
+  // Record start time of the newly scheduled process.
+  @start_time[args->next_pid] = nsecs;
+
+  // Also record the current time as a timestamp.
+  @time[0] = nsecs;
+}

@@ -1,0 +1,17 @@
+{
+  "packages": [],
+  "facets": [
+    {
+      "title": "Kind",
+      "filterKey": "kind",
+      "options": [
+        {
+          "id": 0,
+          "name": "Chart",
+          "total": 7
+        }
+      ]
+    }
+  ],
+  "paginationTotalCount": "0"
+}

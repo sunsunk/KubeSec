@@ -1,0 +1,58 @@
+[
+  {
+    "desc": "Testing skipping thresholds",
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdskip"
+    },
+    "delay": 0,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdskip"
+    },
+    "delay": 0,
+    "pass": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdskip"
+    },
+    "delay": 0,
+    "pass": false
+  },
+  {
+    "desc": "Testing no skipping thresholds",
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdnoskip"
+    },
+    "delay": 0,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdnoskip"
+    },
+    "delay": 0,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "25.65.8.125",
+      ":method": "GET",
+      ":path": "/limits/thresholdnoskip"
+    },
+    "delay": 0,
+    "pass": false
+  }
+]

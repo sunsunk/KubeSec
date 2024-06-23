@@ -1,0 +1,89 @@
+[package]
+authors = ["The Tremor Team"]
+build = "build.rs"
+description = "Tremor Script Interpreter"
+documentation = "https://docs.rs/tremor-script"
+edition = "2021"
+license = "Apache-2.0"
+name = "tremor-script"
+readme = "README.md"
+repository = "https://github.com/tremor-rs/tremor-runtime"
+version = "0.13.0-rc.16"
+
+[package.metadata.docs.rs]
+default-target = "x86_64-unknown-linux-gnu"
+
+# Additional `RUSTFLAGS` to set (default: none)
+rustc-args = ["-C target-feature=+avx,+avx2,+sse4.2"]
+
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+name = "tremor_script"
+
+[dependencies]
+atty = "0.2"
+beef = { version = "0.5", features = ["impl_serde"] }
+byteorder = "1"
+chrono = "0.4"
+chrono-tz = "0.8"
+cidr-utils = "0.5"
+codespan = "0.11"
+dissect = "0.7"
+distance = "0.4"
+downcast-rs = "1.2"
+error-chain = "0.12"
+glob = "0.3"
+grok = "2"
+sha2 = "0.10"
+halfbrown = "0.2"
+hdrhistogram = "7"
+hostname = "0.3"
+jumphash = "0.1"
+lalrpop-util = "0.20"
+lazy_static = "1.4"
+matches = "0.1"
+percent-encoding = "2"
+rand = { version = "0.8", features = ["small_rng"] }
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+simd-json = { version = "0.13", features = ["known-key"] }
+simd-json-derive = "0.13"
+value-trait = "0.8"
+sketches-ddsketch = "0.2"
+strip-ansi-escapes = "0.2"
+termcolor = "1.4"
+tremor-common = { version = "0.13.0-rc.16", path = "../tremor-common" }
+tremor-influx = { version = "0.13.0-rc.16", path = "../tremor-influx" }
+tremor-value = { version = "0.13.0-rc.16", path = "../tremor-value" }
+tremor-codec = { version = "0.13.0-rc.16", path = "../tremor-codec" }
+tremor-kv = "0.6"
+unicode-xid = "0.2"
+url = "2"
+xz2 = "0.1"
+
+[build-dependencies]
+lalrpop = "0.20"
+chrono-tz = "0.8"
+
+[dev-dependencies]
+criterion = "0.5"
+float-cmp = "0.9"
+matches = "0.1"
+pretty_assertions = "1"
+proptest = "1"
+tempfile = "3"
+test-case = "3"
+
+[features]
+# this is required for the erlang EQC tests of the language
+erlang-float-testing = []
+# This is required for the language server to prevent unbounded growth of the area
+arena-delete = []
+
+[[bench]]
+name = "array_flatten"
+harness = false
+
+[[bench]]
+name = "arithmetics"
+harness = false

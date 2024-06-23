@@ -1,0 +1,65 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.services;
+
+option go_package = "configmanagerpb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "src/api/proto/uuidpb/uuid.proto";
+import "src/api/proto/vizierconfigpb/vizier_types.proto";
+
+// ConfigManagerService provides configuration specs from the Cloud.
+service ConfigManagerService {
+  // GetConfigForVizier provides yaml names and content that can be used to deploy Vizier
+  rpc GetConfigForVizier(ConfigForVizierRequest) returns (ConfigForVizierResponse);
+  // GetConfigForOperator provides the key for the operator that is used to send errors and
+  // stacktraces to Sentry
+  rpc GetConfigForOperator(ConfigForOperatorRequest) returns (ConfigForOperatorResponse);
+}
+
+// ConfigForVizierRequest is a request for Vizier yamls given a set of specs.
+message ConfigForVizierRequest {
+  // Namespace of the Vizier.
+  string namespace = 1;
+  // Specs that describe how the Vizier should be configured.
+  vizierconfigpb.VizierSpec vz_spec = 2;
+  // Kubernetes version of the cluster Vizier is running on.
+  string k8s_version = 3 [ (gogoproto.customname) = "K8sVersion" ];
+  // ID of the Vizier (Cluster ID).
+  uuidpb.UUID vizier_id = 4 [ (gogoproto.customname) = "VizierID" ];
+}
+
+// ConfigForVizierResponse is the response to a ConfigForVizierRequest.
+message ConfigForVizierResponse {
+  // A map from YAML name to content, containing yamls which can be used to deploy Vizier.
+  map<string, string> nameToYamlContent = 1;
+  // sentry_dsn contains the key for viziers to send errors and traces.
+  string sentry_dsn = 2 [ (gogoproto.customname) = "SentryDSN" ];
+}
+
+// ConfigForOperatorRequest is a request for the Operator Sentry DSN.
+message ConfigForOperatorRequest {}
+
+// ConfigForOperatorResponse is the response to a ConfigForOperatorRequest.
+message ConfigForOperatorResponse {
+  // sentry_operator_dsn contains the key for the operator to send errors and traces.
+  string sentry_operator_dsn = 1 [ (gogoproto.customname) = "SentryOperatorDSN" ];
+}

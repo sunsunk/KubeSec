@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InProductionButton creates snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="d-none d-lg-block position-relative ms-2"
+  >
+    <div
+      class="position-relative undefined"
+    >
+      <div
+        data-testid="elementWithTooltip"
+      >
+        <button
+          aria-expanded="true"
+          aria-label="Open organizations menu"
+          class="btn btn-outline-primary p-0 position-relative lh-1 fs-5 iconWrapper"
+          type="button"
+        >
+          <div
+            class="d-flex align-items-center justify-content-center"
+          >
+            <svg
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 7.00002C16.4183 7.00002 20 10.5817 20 15C20 19.4183 16.4183 23 12 23C7.58172 23 4 19.4183 4 15C4 10.5817 7.58172 7.00002 12 7.00002ZM12 9.00002C8.68629 9.00002 6 11.6863 6 15C6 18.3137 8.68629 21 12 21C15.3137 21 18 18.3137 18 15C18 11.6863 15.3137 9.00002 12 9.00002ZM12 10.5L13.3225 13.1797L16.2798 13.6094L14.1399 15.6953L14.645 18.6406L12 17.25L9.35497 18.6406L9.86012 15.6953L7.72025 13.6094L10.6775 13.1797L12 10.5ZM18 2.00002V5.00002L16.6366 6.13758C15.5305 5.55773 14.3025 5.17887 13.0011 5.04951L13 1.99902L18 2.00002ZM11 1.99902L10.9997 5.04943C9.6984 5.17866 8.47046 5.55738 7.36441 6.13706L6 5.00002V2.00002L11 1.99902Z"
+              />
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      class="dropdown-menu dropdown-menu-end p-0 dropdown show"
+      role="menu"
+    >
+      <div
+        class="dropdown-arrow arrow darkArrow"
+      />
+      <div>
+        <div
+          class="p-3 border-bottom border-1 title"
+        >
+          Select which of your organizations are using this package in production
+        </div>
+        <div
+          class="overflow-auto buttonsWrapper"
+        >
+          <button
+            aria-label="Delete Artifact Hub organization from package's production users list"
+            class="dropdownItem dropdownItem btn p-3 rounded-0 w-100"
+          >
+            <div
+              class="d-flex flex-row align-items-start w-100 justify-content-between"
+            >
+              <div
+                class="me-3 position-relative"
+              >
+                <span
+                  class=""
+                >
+                  <svg
+                    class="text-success"
+                    fill="currentColor"
+                    height="1em"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 48c110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200-110.532 0-200-89.451-200-200 0-110.532 89.451-200 200-200m140.204 130.267l-22.536-22.718c-4.667-4.705-12.265-4.736-16.97-.068L215.346 303.697l-59.792-60.277c-4.667-4.705-12.265-4.736-16.97-.069l-22.719 22.536c-4.705 4.667-4.736 12.265-.068 16.971l90.781 91.516c4.667 4.705 12.265 4.736 16.97.068l172.589-171.204c4.704-4.668 4.734-12.266.067-16.971z"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div
+                class="d-flex flex-column flex-grow-1 growWidth"
+              >
+                <div
+                  class="d-flex flex-row align-items-center"
+                >
+                  <div
+                    class="me-2"
+                  >
+                    <div
+                      class="d-flex align-items-center justify-content-center overflow-hidden imageWrapper"
+                    >
+                      <img
+                        alt="Artifact Hub"
+                        aria-hidden="true"
+                        class="m-auto image"
+                        src="/image/29a1adeb-4184-4ac1-8727-7307e14dd3e1"
+                        srcset="/image/29a1adeb-4184-4ac1-8727-7307e14dd3e1@1x 1x, /image/29a1adeb-4184-4ac1-8727-7307e14dd3e1@2x 2x, /image/29a1adeb-4184-4ac1-8727-7307e14dd3e1@3x 3x, /image/29a1adeb-4184-4ac1-8727-7307e14dd3e1@4x 4x"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="h6 mb-0 mw-100 text-truncate"
+                  >
+                    Artifact Hub
+                  </div>
+                </div>
+              </div>
+            </div>
+          </button>
+          <button
+            aria-label="Add Org test organization to package's production users list"
+            class="dropdownItem dropdownItem btn p-3 rounded-0 w-100"
+          >
+            <div
+              class="d-flex flex-row align-items-start w-100 justify-content-between"
+            >
+              <div
+                class="me-3 position-relative"
+              >
+                <span
+                  class=""
+                >
+                  <svg
+                    fill="currentColor"
+                    height="1em"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200z"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div
+                class="d-flex flex-column flex-grow-1 growWidth"
+              >
+                <div
+                  class="d-flex flex-row align-items-center"
+                >
+                  <div
+                    class="me-2"
+                  >
+                    <div
+                      class="d-flex align-items-center justify-content-center overflow-hidden imageWrapper"
+                    >
+                      <img
+                        alt="Org test"
+                        aria-hidden="true"
+                        class="m-auto image"
+                        src="/image/e1414600-6bbf-48a2-bf2b-dd1089bae95c"
+                        srcset="/image/e1414600-6bbf-48a2-bf2b-dd1089bae95c@1x 1x, /image/e1414600-6bbf-48a2-bf2b-dd1089bae95c@2x 2x, /image/e1414600-6bbf-48a2-bf2b-dd1089bae95c@3x 3x, /image/e1414600-6bbf-48a2-bf2b-dd1089bae95c@4x 4x"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="h6 mb-0 mw-100 text-truncate"
+                  >
+                    Org test
+                  </div>
+                </div>
+              </div>
+            </div>
+          </button>
+          <button
+            aria-label="Add test1 organization to package's production users list"
+            class="dropdownItem dropdownItem btn p-3 rounded-0 w-100"
+          >
+            <div
+              class="d-flex flex-row align-items-start w-100 justify-content-between"
+            >
+              <div
+                class="me-3 position-relative"
+              >
+                <span
+                  class=""
+                >
+                  <svg
+                    fill="currentColor"
+                    height="1em"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200z"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div
+                class="d-flex flex-column flex-grow-1 growWidth"
+              >
+                <div
+                  class="d-flex flex-row align-items-center"
+                >
+                  <div
+                    class="me-2"
+                  >
+                    <div
+                      class="d-flex align-items-center justify-content-center overflow-hidden imageWrapper"
+                    >
+                      <svg
+                        class="orgIcon"
+                        fill="currentColor"
+                        height="1em"
+                        stroke="currentColor"
+                        stroke-width="0"
+                        viewBox="0 0 24 24"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M0 0h24v24H0z"
+                          fill="none"
+                        />
+                        <path
+                          d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div
+                    class="h6 mb-0 mw-100 text-truncate"
+                  >
+                    test1
+                  </div>
+                </div>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

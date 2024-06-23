@@ -1,0 +1,59 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: v6d-workflow-demo-job2
+  namespace: vineyard-job
+spec:
+  parallelism: 3
+  template:
+    metadata:
+      annotations:
+        # The label is limited to 63 characters, so we need to use the annotation here
+        scheduling.k8s.v6d.io/required: v6d-workflow-demo-job1
+      labels:
+        app: v6d-workflow-demo-job2
+        # this label represents the vineyardd's name that need to be used
+        scheduling.k8s.v6d.io/vineyardd-namespace: vineyard-system
+        scheduling.k8s.v6d.io/vineyardd: vineyardd-sample
+        scheduling.k8s.v6d.io/job: v6d-workflow-demo-job2
+    spec:
+      restartPolicy: Never
+      schedulerName: vineyard-scheduler
+      containers:
+      - name: job2
+        image: localhost:5001/workflow-job2
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JOB_NAME
+          value: v6d-workflow-demo-job2
+        # pass node name to the environment
+        - name: NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        # TODO: could we make it more native?
+        envFrom:
+          - configMapRef:
+              name: v6d-workflow-demo-job1
+        volumeMounts:
+        - mountPath: /var/run
+          name: vineyard-sock
+      volumes:
+      - name: vineyard-sock
+        hostPath:
+          path: /var/run/vineyard-kubernetes/vineyard-system/vineyardd-sample

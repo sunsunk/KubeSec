@@ -1,0 +1,7 @@
+^Defaulted container "minio" out of: minio, minio-init \(init\)
+^ You are running an older version of MinIO released 1 year ago
+^ Update: Run `mc admin update`
+^API: http://\S+:9000  http://127.0.0.1:9000
+^Console: http://\S+:9001 http://127.0.0.1:9001
+^Documentation: https://docs.min.io
+^WARNING: Detected default credentials 'minioadmin:minioadmin', we recommend that you change these values with 'MINIO_ROOT_USER' and 'MINIO_ROOT_PASSWORD' environment variables

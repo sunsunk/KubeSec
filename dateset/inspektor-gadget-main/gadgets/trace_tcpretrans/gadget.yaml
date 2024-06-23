@@ -1,0 +1,73 @@
+name: trace tcpretrans
+description: trace TCP retransmissions
+homepageURL: https://inspektor-gadget.io/
+documentationURL: https://inspektor-gadget.io/docs
+sourceURL: https://github.com/inspektor-gadget/inspektor-gadget/
+tracers:
+  tcpretrans:
+    mapName: events
+    structName: event
+structs:
+  event:
+    fields:
+    - name: timestamp
+      attributes:
+        template: timestamp
+    - name: src
+      attributes:
+        minWidth: 24
+        maxWidth: 50
+    - name: dst
+      attributes:
+        minWidth: 24
+        maxWidth: 50
+    - name: task
+      attributes:
+        template: comm
+    - name: pid
+      attributes:
+        template: pid
+    - name: tid
+      description: 'TODO: Fill field description'
+      attributes:
+        hidden: true
+        template: pid
+    - name: uid
+      attributes:
+        template: uid
+    - name: gid
+      description: 'TODO: Fill field description'
+      attributes:
+        template: uid
+    - name: tcpflags
+      description: 'TODO: Fill field description'
+      attributes:
+        width: 16
+        alignment: left
+        ellipsis: end
+    - name: reason
+      description: 'TODO: Fill field description'
+      attributes:
+        width: 16
+        alignment: left
+        ellipsis: end
+    - name: netns
+      description: Network namespace inode id
+      attributes:
+        template: ns
+    - name: type
+      description: Type of the retransmission, either RETRANS or LOSS
+      attributes:
+        width: 7
+        alignment: left
+        ellipsis: end
+    - name: mntns_id
+      description: Mount namespace inode id
+      attributes:
+        template: ns
+    - name: state
+      description: 'TODO: Fill field description'
+      attributes:
+        width: 16
+        alignment: left
+        ellipsis: end

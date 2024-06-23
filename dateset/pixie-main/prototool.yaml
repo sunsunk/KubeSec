@@ -1,0 +1,13 @@
+---
+excludes:
+- bazel-bin
+- bazel-out
+- bazel-pixielabs
+- bazel-testlogs
+- src/ui/node_modules
+- src/ui/offline_package_cache
+- third_party
+protoc:
+  version: 3.8.0
+  includes:
+  - third_party

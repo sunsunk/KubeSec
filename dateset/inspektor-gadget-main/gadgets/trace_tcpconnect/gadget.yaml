@@ -1,0 +1,45 @@
+name: trace tcpconnect
+description: trace tcp connections
+homepageURL: https://inspektor-gadget.io/
+documentationURL: https://inspektor-gadget.io/docs
+sourceURL: https://github.com/inspektor-gadget/inspektor-gadget/
+tracers:
+  tcpconnect:
+    mapName: events
+    structName: event
+structs:
+  event:
+    fields:
+    - name: timestamp
+      attributes:
+        template: timestamp
+    - name: pid
+      attributes:
+        template: pid
+    - name: task
+      attributes:
+        template: comm
+    - name: uid
+      attributes:
+        template: uid
+    - name: gid
+      attributes:
+        template: uid
+    - name: src
+      attributes:
+        minWidth: 24
+        maxWidth: 50
+    - name: dst
+      attributes:
+        minWidth: 24
+        maxWidth: 50
+    - name: latency
+      description: 'TODO: Fill field description'
+      attributes:
+        width: 16
+        alignment: left
+        hidden: true
+    - name: mntns_id
+      description: Mount namespace inode id
+      attributes:
+        template: ns

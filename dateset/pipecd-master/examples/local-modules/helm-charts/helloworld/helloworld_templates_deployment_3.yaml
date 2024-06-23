@@ -1,0 +1,48 @@
+# Source: helloworld/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release-helloworld
+  labels:
+    helm.sh/chart: helloworld-0.1.0
+    app.kubernetes.io/name: helloworld
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: helloworld
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: helloworld
+        app.kubernetes.io/instance: my-release
+    spec:
+      serviceAccountName: my-release-helloworld
+      securityContext:
+        {}
+      containers:
+        - name: helloworld
+          securityContext:
+            {}
+          image: "gcr.io/pipecd/helloworld:"
+          imagePullPolicy: IfNotPresent
+          args:
+            - server
+          ports:
+            - name: http
+              containerPort: 9085
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            {}

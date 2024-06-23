@@ -1,0 +1,84 @@
+[package]
+authors = ["The Tremor Team"]
+description = "Tremor CLI Tool"
+edition = "2021"
+license = "Apache-2.0"
+name = "tremor-cli"
+version = "0.13.0-rc.16"
+
+[package.metadata.docs.rs]
+default-target = "x86_64-unknown-linux-gnu"
+
+[build-dependencies]
+lalrpop = "0.20"
+matches = "0.1.10"
+
+[dev-dependencies]
+temp-dir = "0.1"
+criterion = "0.5"
+float-cmp = "0.9"
+matches = "0.1"
+pretty_assertions = "1.4"
+
+[dependencies]
+tokio = { version = "1.34", features = ["full"] }
+anyhow = "1"
+clap = { version = "4", features = ["color", "derive"] }
+clap_complete = "4"
+difference = "2"
+env_logger = "0.10"
+futures = "0.3"
+halfbrown = "0.2"
+http-types = "2"
+log = "0.4"
+log4rs = "1"
+serde = "1"
+serde_yaml = "0.9"
+signal-hook = "0.3"
+signal-hook-tokio = { version = "0.3", features = ["futures-v0_3"] }
+simd-json = { version = "0.13", features = ["known-key"] }
+# We need to stay with 0.2 for now as there are reasons that can be named for the need to be able to
+# compile and run on operating systems that are a decade old. (insert apropriate ammount rage)
+snmalloc-rs = { version = "0.3" }
+surf = { version = "=2.3.2", default-features = false, features = [
+  "encoding",
+  "h1-client-rustls",
+  "middleware-logger",
+] }
+tremor-api = { version = "0.13.0-rc.16", path = "../tremor-api" }
+tremor-codec = { version = "0.13.0-rc.16", path = "../tremor-codec" }
+tremor-interceptor = { version = "0.13.0-rc.16", path = "../tremor-interceptor" }
+tremor-common = { version = "0.13.0-rc.16", path = "../tremor-common" }
+tremor-pipeline = { version = "0.13.0-rc.16", path = "../tremor-pipeline" }
+tremor-runtime = { version = "0.13.0-rc.16", path = "../" }
+tremor-script = { version = "0.13.0-rc.16", path = "../tremor-script" }
+tremor-value = { version = "0.13.0-rc.16", path = "../tremor-value" }
+url = "2"
+error-chain = "0.12"
+globwalk = "0.8"
+port_scanner = "0.1"
+shell-words = "1"
+tch = { version = "0.13", optional = true }
+termcolor = "1.4"
+
+[[bin]]
+name = "tremor"
+path = "src/main.rs"
+test = false
+
+[features]
+#
+# We use *empty* feature dependencies so that we can switch allocators
+# via feature flags. We *require* no default features so that that mechanism
+# in src/alloc.rs works effectively in practice.
+#
+# It is an error to configure defaults in tremor.cli at this time until rust
+# allows switching allocators at compile time - this is currently not well
+# supported via the global_allocator attribute nor via cfg attributes that
+# levarage features
+#
+
+snmalloc = []
+bert = ["tremor-runtime/bert", "tch"]
+default = []
+stdalloc = []

@@ -1,0 +1,327 @@
+version: "3.7"
+services:
+
+  curieproxyenvoy:
+    container_name: curieproxyenvoy
+    hostname: curieproxyenvoy
+    image: "curiefense/curieproxy-envoy:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - curieproxy_config:/cf-config
+      - ./filebeat/ilm.json:/usr/share/filebeat/ilm.json
+      - ./filebeat/template.json:/usr/share/filebeat/template.json
+    environment:
+      - ENVOY_UID
+      - TARGET_ADDRESS_A=${TARGET_ADDRESS_A:-echo}
+      - TARGET_PORT_A=${TARGET_PORT_A:-8080}
+      - TARGET_ADDRESS_B=${TARGET_ADDRESS_B:-juiceshop}
+      - TARGET_PORT_B=${TARGET_PORT_B:-3000}
+      - XFF_TRUSTED_HOPS
+      - ENVOY_LOG_LEVEL
+      - FILEBEAT
+      - FILEBEAT_LOG_LEVEL
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-http://elasticsearch:9200}
+      - KIBANA_URL=${KIBANA_URL:-http://kibana:5601}
+    networks:
+      curiemesh:
+        aliases:
+          - curieproxy
+    ports:
+      - "30081:80"
+      - "30082:81"
+      - "30444:443"
+      - "30445:444"
+      - "8001:8001"
+    secrets:
+      - curieproxysslcrt
+      - curieproxysslkey
+
+  curieproxyngx:
+    container_name: curieproxyngx
+    hostname: curieproxyngx
+    image: "curiefense/curieproxy-nginx:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - curieproxy_config:/cf-config
+      - ./filebeat/ilm.json:/usr/share/filebeat/ilm.json
+      - ./filebeat/template.json:/usr/share/filebeat/template.json
+
+    environment:
+      - XFF_TRUSTED_HOPS=${XFF_TRUSTED_HOPS:-1}
+      - TARGET_ADDRESS_A=${TARGET_ADDRESS_A:-echo}
+      - TARGET_PORT_A=${TARGET_PORT_A:-8080}
+      - TARGET_ADDRESS_B=${TARGET_ADDRESS_B:-juiceshop}
+      - TARGET_PORT_B=${TARGET_PORT_B:-3000}
+      - FILEBEAT=${FILEBEAT:-yes}
+      - NGINX_CONFIGURATION_TEMPLATE=${NGINX_CONFIGURATION_TEMPLATE:-yes}
+      - FILEBEAT_LOG_LEVEL
+      - AGGREGATED_LOG_FILE=${AGGREGATED_LOG_FILE:-/var/log/nginx.metrics.json.log}
+      - NGINX_ACCESS_LOG=${NGINX_ACCESS_LOG:-/var/log/nginx.access.json.log}
+      - NGINX_ERROR_LOG=${NGINX_ERROR_LOG:-/var/log/nginx.error.log}
+      - CF_LOG_LEVEL=${CF_LOG_LEVEL:-error}
+      - NGINX_LOG_LEVEL=${NGINX_LOG_LEVEL:-error}
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-http://elasticsearch:9200}
+      - KIBANA_URL=${KIBANA_URL:-http://kibana:5601}
+    networks:
+      curiemesh:
+        aliases:
+          - curieproxy
+    ports:
+      - "31081:31081"
+      - "31082:31082"
+      - "31444:31083"
+      - "31445:31084"
+      - "8999:8999"
+    secrets:
+      - curieproxysslcrt
+      - curieproxysslkey
+
+  confserver:
+    container_name: confserver
+    hostname: confserver
+    image: "curiefense/confserver:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - persistent_confdb:/cf-persistent-config
+      - local_bucket:/bucket
+    tty: true
+    environment:
+      - SWAGGER_BASE_PATH=${SWAGGER_BASE_PATH:-/api/v3}
+      - CURIE_BUCKET_LINK
+      - INIT_GIT_ON_STARTUP=${INIT_GIT_ON_STARTUP:-yes}
+      - BOOTSTRAP_BUCKET_ON_STARTUP=${BOOTSTRAP_BUCKET_ON_STARTUP:-yes}
+      - IF_NO_CONFIG_INIT_FROM=${IF_NO_CONFIG_INIT_FROM:-/bootstrap/confdb-initial-data/}
+    networks:
+      - confnet
+    ports:
+      - "30000:80"
+    secrets:
+      - s3cfg
+  #      - gc
+  #      - azr
+
+  juiceshop:
+    container_name: juiceshop
+    hostname: juiceshop
+    image: "bkimminich/juice-shop"
+    restart: always
+    tty: true
+    networks:
+      curiemesh:
+        aliases:
+          - juiceshop
+    ports:
+      - "3000:3000"
+
+  curiesync:
+    container_name: curiesync
+    hostname: curiesync
+    image: "curiefense/curiesync:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - local_bucket:/bucket
+      - curieproxy_config:/cf-config
+    tty: true
+    environment:
+      - CURIE_BUCKET_LINK
+      - RUN_MODE=${RUN_MODE:-PERIODIC_SYNC}
+      - CONFIGCHANGE=/init/configchange-docker.sh
+    networks:
+      - curiemesh
+    secrets:
+      - s3cfg
+#      - gc
+#      - azr
+
+  trafficmetricsexporter:
+    container_name: trafficmetricsexporter
+    hostname: trafficmetricsexporter
+    image: "curiefense/traffic-metrics-exporter:${DOCKER_TAG}"
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      - PROMETHEUS_DISABLE_CREATED_SERIES=${PROMETHEUS_DISABLE_CREATED_SERIES:-true}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/}
+      - MONGODB_METRICS_DB=${MONGODB_METRICS_DB:-curiemetrics}
+      - MONGODB_METRICS_COLLECTION=${MONGODB_METRICS_COLLECTION:-metrics1s}
+      - METRICS_URI=${METRICS_URI:-http://curieproxyngx:8999/}
+    networks:
+      - curiemesh
+
+  redis:
+    container_name: redis
+    hostname: redis
+    image: "curiefense/redis:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - persistent_redis:/data
+    networks:
+      curiemesh:
+        aliases:
+          - redis
+    ports:
+      - "6379:6379"
+
+  echo:
+    container_name: echo
+    hostname: echo
+    image: jmalloc/echo-server
+    restart: always
+    networks:
+      curiemesh:
+        aliases:
+          - echo
+    ports:
+      - "8080:8080"
+
+  uiserver:
+    container_name: uiserver
+    hostname: uiserver
+    image: "curiefense/uiserver:main"
+    restart: always
+    networks:
+      - confnet
+    ports:
+      - "30080:80"
+      - "30443:443"
+    secrets:
+      - uisslcrt
+      - uisslkey
+
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    image: "curiefense/prometheus:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - persistent_prometheus:/var/run/prometheus
+    ports:
+      - 9090:9090
+    networks:
+      - curiemesh
+
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: "curiefense/grafana:${DOCKER_TAG}"
+    restart: always
+    volumes:
+      - persistent_grafana:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - curiemesh
+      - confnet
+    ports:
+      - 30300:3000
+
+  elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    restart: always
+    volumes:
+      - persistent_elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - node.name=es
+      - cluster.name=curiefense-es-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    networks:
+      - curiemesh
+    ports:
+      - 9200:9200
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    restart: always
+    environment:
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-http://elasticsearch:9200}
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS:-http://elasticsearch:9200}
+      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-false}
+      - TELEMETRY_OPTIN=${TELEMETRY_OPTIN:-false}
+    networks:
+      - curiemesh
+    ports:
+      - 5601:5601
+
+  mongodb:
+    container_name: mongodb
+    hostname: mongodb
+    image: docker.io/bitnami/mongodb:6.0
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+    networks:
+      - curiemesh
+
+networks:
+  curiemesh:
+    name: curiemesh
+    driver: bridge
+  confnet:
+    name: confnet
+    driver: bridge
+
+volumes:
+  # persistent volumes
+  persistent_confdb:
+  persistent_elasticsearch:
+  persistent_grafana:
+  persistent_redis:
+  persistent_prometheus:
+  # used for single-node dev or demo deployments.
+  # Replaced with an S3/GC/AZE bucket in larger deployments
+  local_bucket:
+  # shared between curiesync and curieproxy
+  curieproxy_config:
+  mongodb_data:
+    driver: local
+
+secrets:
+  s3cfg:
+    file: "curiesecrets/s3cfg"
+
+  uisslcrt:
+    file: "curiesecrets/uiserver_ssl/ui.crt"
+  uisslkey:
+    file: "curiesecrets/uiserver_ssl/ui.key"
+  curieproxysslcrt:
+    file: "curiesecrets/curieproxy_ssl/site.crt"
+  curieproxysslkey:
+    file: "curiesecrets/curieproxy_ssl/site.key"
+
+
+  # curieproxy-extproc:
+  #   container_name: curieproxyextproc
+  #   hostname: curieproxyextproc
+  #   image: "curiefense/curieproxy-extproc:${DOCKER_TAG}"
+  #   restart: always
+  #   volumes:
+  #     - curieproxy_config:/cf-config
+  #   environment:
+  #     - ENVOY_UID
+  #     - TARGET_ADDRESS_A=echo
+  #     - TARGET_PORT_A=8080
+  #     - TARGET_ADDRESS_B=juiceshop
+  #     - TARGET_PORT_B=3000
+  #     - XFF_TRUSTED_HOPS
+  #     - ENVOY_LOG_LEVEL
+  #   networks:
+  #     curiemesh:
+  #       aliases:
+  #         - curieproxyextproc
+  #   ports:
+  #     - "32081:80"
+  #   secrets:
+  #     - curieproxysslcrt
+  #     - curieproxysslkey

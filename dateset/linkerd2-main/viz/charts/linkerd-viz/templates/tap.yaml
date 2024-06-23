@@ -1,0 +1,140 @@
+---
+###
+### Tap
+###
+kind: Service
+apiVersion: v1
+metadata:
+  name: tap
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: viz
+    component: tap
+    namespace: dynamic_parameters
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  type: ClusterIP
+  selector:
+    linkerd.io/extension: viz
+    component: tap
+  ports:
+  - name: grpc
+    port: 8088
+    targetPort: 8088
+  - name: apiserver
+    port: 443
+    targetPort: apiserver
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    linkerd.io/inject: enabled
+    config.linkerd.io/proxy-await: "enabled"
+  labels:
+    linkerd.io/extension: viz
+    app.kubernetes.io/name: tap
+    app.kubernetes.io/part-of: Linkerd
+    app.kubernetes.io/version: dynamic_parameters
+    component: tap
+    namespace: dynamic_parameters
+  name: tap
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      linkerd.io/extension: viz
+      component: tap
+      namespace: dynamic_parameters
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      annotations:
+        checksum/config: dynamic_parameters
+        
+        linkerd.io/inject: enabled
+        config.alpha.linkerd.io/proxy-wait-before-exit-seconds: "0"
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        linkerd.io/extension: viz
+        component: tap
+        namespace: dynamic_parameters
+    spec:
+      
+      
+      
+      containers:
+      - args:
+        - api
+        - -api-namespace=dynamic_parameters
+        - -log-level=dynamic_parameters
+        - -log-format=dynamic_parameters
+        - -identity-trust-domain=dynamic_parameters
+        - -enable-pprof=dynamic_parameters
+        - -ignore-headers=dynamic_parameters
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 9998
+          initialDelaySeconds: 10
+        name: tap
+        ports:
+        - containerPort: 8088
+          name: grpc
+        - containerPort: 8089
+          name: apiserver
+        - containerPort: 9998
+          name: admin-http
+        readinessProbe:
+          failureThreshold: 7
+          httpGet:
+            path: /ready
+            port: 9998
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: dynamic_parameters
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /var/run/linkerd/tls
+          name: tls
+          readOnly: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: tap
+      volumes:
+      - name: tls
+        secret:
+          secretName: tap-k8s-tls
+---
+kind: PodDisruptionBudget
+apiVersion: policy/v1
+metadata:
+  name: tap
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: viz
+    component: tap
+    namespace: dynamic_parameters
+  annotations:
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      linkerd.io/extension: viz
+      component: tap
+
+---

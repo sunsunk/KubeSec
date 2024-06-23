@@ -1,0 +1,14 @@
+.bannerWrapper {
+  max-height: 0;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.loaded {
+  max-height: 1500px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerWrapper {
+    transition: max-height 3s ease-in-out;
+  }
+}

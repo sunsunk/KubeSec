@@ -1,0 +1,58 @@
+name: Offline Changelog
+
+on:
+  release:
+    types:
+      - published
+
+permissions:  # added using https://github.com/step-security/secure-workflows
+  contents: read
+
+jobs:
+  chanagelog-pr:
+    permissions:
+      contents: write  # for peter-evans/create-pull-request to create branch
+      pull-requests: write  # for peter-evans/create-pull-request to create a PR
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          fetch-depth: 0
+      - uses: heinrichreimer/github-changelog-generator-action@981f332491452b16b2127a8bbe19358fdde7e60d
+        with:
+          token: ${{ secrets.CR_TOKEN }}
+          project: k8gb
+          output: CHANGELOG-latest.md
+          pullRequests: true
+          author: true
+          issues: true
+          issuesWoLabels: true
+          prWoLabels: true
+          onlyLastTag: true
+          compareLink: true
+          filterByMilestone: true
+          unreleased: false
+      - name: Prepend the latest changes to CHANGELOG.md
+        run: |
+          mv CHANGELOG.md CHANGELOG-old.md
+          cat CHANGELOG-latest.md | sed -e'$d' > CHANGELOG.md
+          cat CHANGELOG-old.md | sed -e'1,2d' >> CHANGELOG.md
+          rm CHANGELOG-old.md CHANGELOG-latest.md
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@8500972a1322d52aebd0e3050bc201599f71661f
+        with:
+          title: "Update Offline Changelog"
+          branch: offline_changelog
+          delete-branch: true
+          base: master
+          signoff: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send http get to doc.crds.dev to index a new version
+        run: |
+          curl -sL https://doc.crds.dev/github.com/k8gb-io/k8gb@${{ github.event.release.tag_name }} | grep -A2 'class="container"'

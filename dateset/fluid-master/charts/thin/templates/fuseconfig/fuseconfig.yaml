@@ -1,0 +1,50 @@
+{{- if eq .Values.fuse.configStorage "configmap"}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "thin.fullname" . }}-fuse-conf
+  labels:
+    app: {{ template "thin.name" . }}
+    chart: {{ template "thin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: thin-fuse
+    {{- include "library.fluid.labels" . | nindent 4 }}
+  ownerReferences:
+  {{- if .Values.owner.enabled }}
+    - apiVersion: {{ .Values.owner.apiVersion }}
+      blockOwnerDeletion: {{ .Values.owner.blockOwnerDeletion }}
+      controller: {{ .Values.owner.controller }}
+      kind: {{ .Values.owner.kind }}
+      name: {{ .Values.owner.name }}
+      uid: {{ .Values.owner.uid }}
+  {{- end }}
+data:
+  config.json: |
+    {{ .Values.fuse.configValue }}
+{{- else if eq .Values.fuse.configStorage "secret" }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "thin.fullname" . }}-fuse-conf
+  labels:
+    app: {{ template "thin.name" . }}
+    chart: {{ template "thin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: thin-fuse
+    {{- include "library.fluid.labels" . | nindent 4 }}
+  ownerReferences:
+  {{- if .Values.owner.enabled }}
+    - apiVersion: {{ .Values.owner.apiVersion }}
+      blockOwnerDeletion: {{ .Values.owner.blockOwnerDeletion }}
+      controller: {{ .Values.owner.controller }}
+      kind: {{ .Values.owner.kind }}
+      name: {{ .Values.owner.name }}
+      uid: {{ .Values.owner.uid }}
+  {{- end }}
+type: Opaque
+stringData:
+  config.json: |
+    {{ .Values.fuse.configValue }}
+{{- end -}}

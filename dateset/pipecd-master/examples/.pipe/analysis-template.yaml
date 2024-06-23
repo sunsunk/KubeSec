@@ -1,0 +1,40 @@
+apiVersion: pipecd.dev/v1beta1
+kind: AnalysisTemplate
+spec:
+  metrics:
+    http_error_rate:
+      strategy: THRESHOLD
+      interval: 5m
+      provider: my-prometheus
+      expected:
+        max: 0
+      query: |
+        sum by (job) (rate(http_requests_total{status=~"5.*", job="{{ .App.Name }}"}[5m]))
+        /
+        sum by (job) (rate(http_requests_total{job="{{ .App.Name }}"}[5m]))
+
+    http_request_duration_99th_quantile:
+      strategy: CANARY_BASELINE
+      interval: 5m
+      provider: my-prometheus
+      expected:
+        max: 0.5
+      query: |
+        histogram_quantile(
+          0.99,
+          sum without (instance, job) (rate(http_request_duration_seconds_bucket{job="{{ .AppCustomArgs.job }}"}[5m]))
+        )
+
+    container_cpu_usage_seconds_total:
+      interval: 5m
+      strategy: PREVIOUS
+      provider: my-prometheus
+      failureLimit: 2
+      deviation: HIGH
+      query: |
+        sum by (job) (
+          rate(container_cpu_usage_seconds_total{
+            namespace="{{ .K8s.Namespace }}",
+            pod="{{ .App.Name }}-[0-9a-zA-Z]+(-[0-9a-zA-Z]+)"
+          }[5m]) * 100
+        )

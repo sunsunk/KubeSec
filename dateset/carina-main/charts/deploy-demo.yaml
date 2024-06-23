@@ -1,0 +1,56 @@
+# Source: carina-csi-driver/templates/tests/deploy-demo.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamic_parameters-testpvc
+  namespace: dynamic_parameters
+  annotations:
+    helm.sh/hook: test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: dynamic_parameters
+  volumeMode: Filesystem
+
+---
+# Source: carina-csi-driver/templates/tests/deploy-demo.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-deploy-demo-test
+  namespace: dynamic_parameters
+  labels:
+    app: web-server
+    storageclass: dynamic_parameters
+  annotations:
+    carina.storage.io/allow-pod-migration-if-node-notready: "true"
+    helm.sh/hook: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+      storageclass: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: web-server
+        storageclass: dynamic_parameters
+      annotations:
+        carina.storage.io/allow-pod-migration-if-node-notready: "true"
+    spec:
+      containers:
+        - name: web-server
+          image: nginx:latest
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: mypvc
+              mountPath: /var/lib/www/html
+      volumes:
+        - name: mypvc
+          persistentVolumeClaim:
+            claimName: dynamic_parameters-testpvc
+            readOnly: false

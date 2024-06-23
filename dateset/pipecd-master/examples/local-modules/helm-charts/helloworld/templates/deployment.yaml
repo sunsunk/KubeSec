@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+            - server
+          ports:
+            - name: http
+              containerPort: 9085
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---
+
+---

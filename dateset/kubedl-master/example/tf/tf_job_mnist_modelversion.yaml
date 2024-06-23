@@ -1,0 +1,35 @@
+apiVersion: "training.kubedl.io/v1alpha1"
+kind: "TFJob"
+metadata:
+  name: "tf-distributed"
+spec:
+  cleanPodPolicy: None
+  # modelVersion defines the location where the model is stored.
+  modelVersion:
+    modelName: mymodel
+    # The dockerhub repo to push the generated image
+    imageRepo: jianhe6/mymodel
+    storage:
+      # Use hostpath, NFS is also supported.
+      localStorage:
+        # The host dir for THIS model version, each modelVersion should have its own unique parent folder, in this case, 'mymodelversion1'
+        path: /models/mymodelversion1
+        # The mount path inside the training container.
+        mountPath: /kubedl-model
+        # The node for storing the model
+        nodeName: kind-control-plane
+  tfReplicaSpecs:
+    Worker:
+      replicas: 3
+      restartPolicy: Never
+      template:
+        spec:
+          containers:
+            - name: tensorflow
+              image: kubedl/tf-mnist-estimator-api:v0.1
+              imagePullPolicy: Always
+              command:
+                - "python"
+                - "/keras_model_to_estimator.py"
+                - "/tmp/tfkeras_example/" # model checkpoint dir
+                - "/kubedl-model"         # export dir for the saved_model format

@@ -1,0 +1,32 @@
+# Source: carina-csi-driver/templates/mutatingwebhooks.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: my-release-hook
+  namespace: default
+webhooks:
+  - name: pod-hook.carina.storage.io
+    namespaceSelector:
+      matchExpressions:
+      - key: carina.storage.io/webhook
+        operator: NotIn
+        values: ["ignore"]
+    clientConfig:
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lRT2dWRks4WHVjTERxNWdqZ2lYd0t3akFOQmdrcWhraUc5dzBCQVFzRkFEQVYKTVJNd0VRWURWUVFERXdwemRtTXRZMkYwTFdOaE1CNFhEVEkwTURRd01qQXlOVFF6TmxvWERUTTBNRE16TVRBeQpOVFF6Tmxvd0ZURVRNQkVHQTFVRUF4TUtjM1pqTFdOaGRDMWpZVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFECmdnRVBBRENDQVFvQ2dnRUJBT09LT3J0OThVR2daZk5KcEhtOC9Nb2RrVys5Y3N5aEJWTDhnMU11eUNEcHRwaGoKZ0YzNytTTVMrL3hxQmY0Qk1TWGhQYStBK1FFb1FoV3QvZkRRc3k5WHhZdVVUajhSZjhUOTg0NndpTUFEZW9pRgpoRzBYdUs5bTFtZllUb0IyUzI2T3R2TjZ0b3Vza1Z3bjhiZ2k3VUs0cG1GOUZPOS80RHZsQWwvaWpUd3BhS0ZrCmVzVTh4dHJzdmRtSTRmN1hRNVczYkk5aXhGQk5uQU8xRFVDQ3pIcUJpeGN0QVhBVHJXcTZjZEQzY0F3ZjNqQkIKYlBpUTc3V0xVTVVNL0w0aUgrN3psditYWHV2TzhLcnNIYi9SQnVSTnpNdHJXM2xLR1lKVFREalJhSVJXV2VpTQpjRm4zdE5vZ0txeXhPVnJ3d3F0MWsvL2NBR1BqdzZOSE5GZk9FZVVDQXdFQUFhTmhNRjh3RGdZRFZSMFBBUUgvCkJBUURBZ0trTUIwR0ExVWRKUVFXTUJRR0NDc0dBUVVGQndNQkJnZ3JCZ0VGQlFjREFqQVBCZ05WSFJNQkFmOEUKQlRBREFRSC9NQjBHQTFVZERnUVdCQlNzQUg4TXFLbjFJdnZqdEV4TFZxUjRaV1IwSERBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUFSWlV5Y3ZVbWVPY0ZINlJCK054WSt5YTRpYlVwWXRINU5YM1dhU0FmNjJJSTE1czYvamRFCnRpZ01DZGJzNC9vMDhia0lUTmlQQTVBSnBvbTQrWjZNVEJycXpBeU9GNzk1dnNoWW9waXRXTUNWWWFLQUhzNysKQnNJWktaRi91L0xwcHIvam11ZzErT3BRQzN5WWRUYmF4ZmI1ZmU5RDdhT0NVc3ZtZzBFcUVRVENSVjk5VXNYUApnSjNmbnF2RURDT2pWNjIvQVpnQ2JwcVc1OHFsOUpwOEUvbWl6VlRoRDhLSGNlSHg1SDliaHYwS1JmQWoyWVc0Ckd0aVlwSVVZcjZDU1U1QjJkYmd4RytoNUR1cTh1b1BkOXhiejdMKzlCRDVkR1JwajI1MTB2dG0vVlFSUnR6QnMKRE1TZWtEWHUvTHh3d3BqRjlkZzlaOTZCbmU3ekFiTHNoZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+      service:
+        name: my-release-controller
+        namespace: default
+        path: /pod/mutate
+        port: 443
+    failurePolicy: Ignore
+    matchPolicy: Exact
+    objectSelector: {}
+    reinvocationPolicy: Never
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 30

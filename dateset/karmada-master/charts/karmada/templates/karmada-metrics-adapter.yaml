@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-metrics-adapter
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  selector:
+    matchLabels:
+      
+  replicas: dynamic_parameters
+  strategy:
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+        
+    spec:
+      
+      automountServiceAccountToken: false
+      containers:
+        - name: dynamic_parameters-aggregated-apiserver
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            
+            - name: apiserver-cert
+              mountPath: /etc/kubernetes/pki
+              readOnly: true
+          command:
+            - /bin/karmada-metrics-adapter
+            - --kubeconfig=/etc/kubeconfig
+            - --authentication-kubeconfig=/etc/kubeconfig
+            - --authorization-kubeconfig=/etc/kubeconfig
+            - --tls-cert-file=/etc/kubernetes/pki/karmada.crt
+            - --tls-private-key-file=/etc/kubernetes/pki/karmada.key
+            - --audit-log-path=-
+            - --audit-log-maxage=0
+            - --audit-log-maxbackup=0
+            - --tls-min-version=VersionTLS13
+          resources:
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            timeoutSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+      nodeSelector:
+      affinity:
+      tolerations:
+      volumes:
+        
+        - name: apiserver-cert
+          secret:
+            secretName: dynamic_parameters-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynamic_parameters-metrics-adapter
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 443
+  selector:
+    
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: dynamic_parameters-metrics-adapter
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  selector:
+    matchLabels:
+      
+
+
+---

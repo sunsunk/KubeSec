@@ -1,0 +1,8 @@
+{
+  "packageId": "id",
+  "name": "test",
+  "normalizedName": "test",
+  "displayName": "Pretty name",
+  "description": "desc",
+  "appVersion": "1.0.0"
+}

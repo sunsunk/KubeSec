@@ -1,0 +1,49 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+*.swp
+_build/
+tmp/
+.vscode/
+bin/
+.DS_Store
+.idea
+*.swp
+*.swo
+*~
+coverage.txt
+
+# Kubernetes Generated files - skip generated files, except for vendored files
+!vendor/**/zz_generated.*
+
+## website ##
+
+# Dependencies
+docs/node_modules
+
+# Production
+docs/build
+
+# Generated files
+docs/.docusaurus
+docs/.cache-loader
+
+# Misc
+docs/.DS_Store
+docs/.env.local
+docs/.env.development.local
+docs/.env.test.local
+docs/.env.production.local
+
+docs/npm-debug.log*
+docs/yarn-debug.log*
+docs/yarn-error.log*

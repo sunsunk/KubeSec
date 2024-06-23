@@ -1,0 +1,8 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "ETag": "\"a7efa1d0ddef5388659563b15ad0799d\"",
+        "ServerSideEncryption": "AES256"
+    }
+}

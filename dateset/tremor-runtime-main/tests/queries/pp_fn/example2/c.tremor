@@ -1,0 +1,10 @@
+# c.tremor
+const INT_MAP = {
+  "🔧": 1,
+  "🏫": 2,
+  "👷": 3,
+};
+
+fn map(r) with
+  INT_MAP[r]
+end

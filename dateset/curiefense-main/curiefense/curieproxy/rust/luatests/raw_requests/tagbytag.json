@@ -1,0 +1,38 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/dqsqsdqsdcqsd",
+      "user-agent": "dummy",
+      "x-forwarded-for": "82.13.14.15"
+    },
+    "ip": "82.13.14.15",
+    "name": "test tag by tag",
+    "response": {
+      "action": "custom_response",
+      "status": 503,
+      "block_mode": true,
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "all",
+        "ip:82-13-14-15",
+        "network:82-13-12-0-22",
+        "sante",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "tagbyiptag",
+        "contentfilterid:--default--",
+        "bot",
+        "status:503",
+        "status-class:5xx"
+      ]
+    }
+  }
+]

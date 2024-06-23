@@ -1,0 +1,11 @@
+# Deploy applicaiton that using local terraform models from the same Git repository.
+apiVersion: pipecd.dev/v1beta1
+kind: TerraformApp
+spec:
+  name: local-module
+  labels:
+    env: example
+    team: infra
+  description: |
+    This app demonstrates how to use a local terraform module which is placed in the same Git repository.\
+    References: [adding a new app](https://pipecd.dev/docs/user-guide/managing-application/adding-an-application/), [app configuration](https://pipecd.dev/docs/user-guide/configuration-reference/)

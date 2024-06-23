@@ -1,0 +1,509 @@
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks"
+  labels:
+    app: "microcks"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: "microcks"
+      container: spring
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: "microcks"
+        container: spring
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: spring
+        image: quay.io/microcks/microcks:1.9.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+          - name: JAVA_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=2"
+          - name: JAVA_MAJOR_VERSION
+            value: "11"
+          - name: SPRING_PROFILES_ACTIVE
+            value: prod
+          - name: SPRING_DATA_MONGODB_URI
+            value: mongodb://${SPRING_DATA_MONGODB_USER}:${SPRING_DATA_MONGODB_PASSWORD}@microcks-mongodb:27017/${SPRING_DATA_MONGODB_DATABASE}
+          - name: SPRING_DATA_MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: "microcks-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: "microcks-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_DATABASE
+            value: microcks
+          - name: POSTMAN_RUNNER_URL
+            value: http://microcks-postman-runtime:8080
+          - name: TEST_CALLBACK_URL
+            value: http://microcks:8080
+          - name: KEYCLOAK_ENABLED
+            value: "true"
+          - name: KEYCLOAK_URL
+            value: https://keycloak-microcks.192.168.99.100.nip.io
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: "microcks-kafka-kafka-bootstrap:9092"
+          - name: SERVICES_UPDATE_INTERVAL
+            value: 0 0 0/2 * * *
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 25
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 35
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        volumeMounts:
+          - name: "microcks-config"
+            mountPath: "/deployments/config"
+          - name: "microcks-grpc-certs"
+            mountPath: "/deployments/config/grpc"
+        terminationMessagePath: "/dev/termination-log"
+      volumes:
+        - name: "microcks-config"
+          configMap:
+            name: "microcks-config"
+        - name: "microcks-grpc-certs"
+          secret:
+            secretName: "microcks-microcks-grpc-secret"
+
+---
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-postman-runtime"
+  labels:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: "microcks-postman-runtime"
+      container: postman-runtime
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: "microcks-postman-runtime"
+        container: postman-runtime
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: postman-runtime
+        image: quay.io/microcks/microcks-postman-runtime:latest
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        env:
+        - name: LOG_LEVEL
+          value: info
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 4
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        terminationMessagePath: "/dev/termination-log"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+
+---
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-mongodb"
+  labels:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+    
+  annotations:
+    
+
+  creationTimestamp:
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: mongodb
+      container: mongodb
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: mongodb
+        container: mongodb
+        group: microcks
+        
+      annotations:
+        
+    spec:
+      securityContext:
+        runAsUser: 184
+        runAsGroup: 184
+        fsGroup: 184
+      containers:
+      - name: mongodb
+        image: centos/mongodb-36-centos7:latest
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 3
+          exec:
+            command:
+            - "/bin/sh"
+            - "-i"
+            - "-c"
+            - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+              --eval="quit()"
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 30
+          tcpSocket:
+            port: 27017
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: "microcks-mongodb-connection"
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "microcks-mongodb-connection"
+        - name: MONGODB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: adminPassword
+              name: "microcks-mongodb-connection"
+        - name: MONGODB_DATABASE
+          value: "microcks"
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        volumeMounts:
+        - name: "microcks-mongodb-data"
+          mountPath: "/var/lib/mongodb/data"
+        terminationMessagePath: "/dev/termination-log"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities: {}
+          privileged: false
+      volumes:
+      - name: "microcks-mongodb-data"
+        persistentVolumeClaim:
+          claimName: "microcks-mongodb"
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+
+---
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-keycloak"
+  labels:
+    app: "microcks"
+    container: keycloak
+    group: microcks
+    
+  annotations:
+    
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: keycloak
+      container: keycloak
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: keycloak
+        container: keycloak
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: keycloak-server
+        image: quay.io/keycloak/keycloak:22.0.3
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 400m
+            memory: 512Mi
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: jolokia
+          containerPort: 8778
+          protocol: TCP
+        args:
+        - 'start'
+        - '--features=token-exchange'
+        - '--db=$(KC_DB)'
+        - '--db-url-host=$(KC_DB_URL_HOST)'
+        - '--db-username=$(KC_DB_USER)'
+        - '--db-password=$(KC_DB_PASSWORD)'
+        - '--hostname=keycloak-microcks.192.168.99.100.nip.io'
+        - '--health-enabled=true'
+        - '--import-realm'
+        env:
+        - name: INTERNAL_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: "microcks-keycloak-admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "microcks-keycloak-admin"
+        - name: OPERATING_MODE
+          value: clustered
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgresUsername
+              name: "microcks-keycloak-admin"
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgresPassword
+              name: "microcks-keycloak-admin"
+        - name: KC_DB_URL_DATABASE
+          value: root
+        - name: KC_DB_URL_HOST
+          value: "microcks-keycloak-postgresql"
+        - name: KC_PROXY
+          value: "edge"
+        livenessProbe:
+          httpGet:
+            path: "/health/live"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 2
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: "/health/ready"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
+        volumeMounts:
+        - name: microcks-keycloak-config
+          mountPath: "/opt/keycloak/data/import"
+        securityContext:
+          privileged: false
+      volumes:
+      - name: "microcks-keycloak-config"
+        configMap:
+          name: "microcks-keycloak-config"
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+
+---
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-keycloak-postgresql"
+  labels:
+    app: "microcks"
+    container: keycloak-postgresql
+    group: microcks
+    
+  annotations:
+    
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: keycloak-postgresql
+      container: keycloak-postgresql
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: keycloak-postgresql
+        container: keycloak-postgresql
+        group: microcks
+        
+      annotations:
+        
+    spec:
+      securityContext:
+        runAsUser: 26
+        runAsGroup: 26
+        fsGroup: 26
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: keycloak-postgresql
+        image: centos/postgresql-95-centos7:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          exec:
+            command:
+            - "/bin/sh"
+            - "-i"
+            - "-c"
+            - psql 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE}
+              -c 'SELECT 1'
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 30
+          tcpSocket:
+            port: 5432
+        env:
+        - name: POSTGRESQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgresUsername
+              name: "microcks-keycloak-admin"
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgresPassword
+              name: "microcks-keycloak-admin"
+        - name: POSTGRESQL_DATABASE
+          value: root
+        - name: POSTGRESQL_MAX_CONNECTIONS
+          value: '100'
+        - name: POSTGRESQL_SHARED_BUFFERS
+          value: 12MB
+        volumeMounts:
+          - name: "microcks-keycloak-postgresql-data"
+            mountPath: "/var/lib/pgsql/data"
+      volumes:
+      - name: "microcks-keycloak-postgresql-data"
+        persistentVolumeClaim:
+          claimName: "microcks-keycloak-postgresql"

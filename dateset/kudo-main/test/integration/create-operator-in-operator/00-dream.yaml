@@ -1,0 +1,54 @@
+## operator-in-operator is the umbrella operator that tests the creation of instances within an operator
+apiVersion: kudo.dev/v1beta1
+kind: Operator
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: operator-in-operator
+---
+apiVersion: kudo.dev/v1beta1
+kind: OperatorVersion
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: operator-in-operator-v1
+spec:
+  version: "1.0.0"
+  connectionString: ""
+  operator:
+    name: operator-in-operator
+    kind: Operator
+  templates:
+    operator.yaml: |
+      apiVersion: kudo.dev/v1beta1
+      kind: Instance
+      metadata:
+        name: inner-instance
+        labels:
+          kudo.dev/operator: configmap-operator
+      spec:
+        operatorVersion:
+          kind: OperatorVersion
+          name: configmap-operator-1.0
+          namespace: default
+        parameters:
+          PARAM: "xxx"
+  tasks:
+    - name: operator
+      kind: Apply
+      spec:
+        resources:
+          - operator.yaml
+  parameters:
+    - name: Param
+      description: "Sample parameter"
+      default: "dream-in-a-dream"
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: dependencies
+          steps:
+            - name: operator
+              tasks:
+                - operator

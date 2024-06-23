@@ -1,0 +1,219 @@
+name: Litmus-CI
+on:
+  issue_comment:
+    types: [created]
+    branches:
+      - master
+
+jobs:
+  # Job for finding last commit sha of pull-request
+  find-latest-commit-sha:
+    if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run-e2e')
+    runs-on: ubuntu-latest
+    outputs:
+      commit-sha: ${{ steps.getcommit.outputs.sha }}
+    steps:
+      - uses: octokit/request-action@v2.x
+        id: get_PR_commits
+        with:
+          route: GET /repos/:repo/pulls/:pull_number/commits
+          repo: ${{ github.repository }}
+          pull_number: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: set commit to output
+        id: getcommit
+        run: |
+          prsha=$(echo $response | jq '.[-1].sha'  | tr -d '"')
+          echo "sha=$prsha" >> $GITHUB_OUTPUT
+        env:
+          response: ${{ steps.get_PR_commits.outputs.data }}
+
+  find-changes:
+    if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run-e2e')
+    runs-on: ubuntu-latest
+    needs: find-latest-commit-sha
+    # Set job outputs to values from filter step
+    outputs:
+      changed-paths: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.find-latest-commit-sha.outputs.commit-sha }}
+          fetch-depth: 0
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          ref: ${{ needs.find-latest-commit-sha.outputs.commit-sha }}
+          filters: |
+            frontend:
+              - 'litmus-portal/frontend/**'
+            graphql-server:
+              - 'litmus-portal/graphql-server/**'
+            authentication:
+              - 'litmus-portal/authentication/**'
+
+  docker-build-image:
+    if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run-e2e')
+    runs-on: ubuntu-latest
+    needs: [find-latest-commit-sha, find-changes]
+    strategy:
+      # Matrix of changed directories for building images in parallel
+      matrix:
+        path: ${{ fromJSON(needs.find-changes.outputs.changed-paths) }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.find-latest-commit-sha.outputs.commit-sha }}
+          fetch-depth: 0
+
+      - name: Building Docker-Image for ${{ matrix.path }}
+        run: |
+          chmod 755 ./.github/filter_and_build.sh
+          ./.github/filter_and_build.sh
+        env:
+          directory: ${{ matrix.path }}
+
+      - name: upload docker artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Docker-Images
+          path: Images
+
+  tests:
+    if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run-e2e')
+    needs: [docker-build-image]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout litmus-E2E Repository
+        uses: actions/checkout@v2
+        with:
+          repository: litmuschaos/litmus-e2e
+          path: litmus-e2e
+
+      - name: Notification for Starting Testing.
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: "${{ github.event.comment.id }}"
+          body: |
+            ****
+            **Test Status:** The testing has been started please wait for the results ...
+
+      - name: Setting up KinD Cluster
+        run: kind create cluster --wait 5m
+
+      - name: Configuring and Testing the Cluster Installation
+        run: |
+          kubectl cluster-info --context kind-kind
+          kubectl get nodes
+          kubectl get pods -n kube-system
+
+      - name: download docker artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Docker-Images
+          path: Images
+
+      # Loading all build images of changed components in KIND Cluster
+      - name: loading the docker build artifacts into KIND Cluster
+        run: |
+          ls -1 Images/*.tar | xargs --no-run-if-empty -L 1 kind load image-archive
+
+      - name: Deploying the litmus-portal for E2E testing
+        run: |
+          wget https://raw.githubusercontent.com/litmuschaos/litmus/master/litmus-portal/cluster-k8s-manifest.yml
+          sed -i 's/Always/IfNotPresent/g' cluster-k8s-manifest.yml
+          kubectl apply -f cluster-k8s-manifest.yml
+          kubectl get pods -n litmus
+          kubectl get deployments -o wide -n litmus
+          source ./litmus-e2e/litmus/utils.sh
+          verify_all_components frontend,server litmus
+          wait_for_pods litmus 720
+
+      - name: Getting the ENV variables for using while testing
+        run: |
+          export NODE_NAME=$(kubectl -n litmus get pod  -l "component=litmusportal-frontend" -o=jsonpath='{.items[*].spec.nodeName}')
+          export NODE_IP=$(kubectl -n litmus get nodes $NODE_NAME -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
+          export NODE_PORT=$(kubectl -n litmus get -o jsonpath="{.spec.ports[0].nodePort}" services litmusportal-frontend-service)
+          export AccessURL="http://$NODE_IP:$NODE_PORT"
+          echo "URL=$AccessURL" >> $GITHUB_ENV
+
+      - name: Portal Authentication Tests
+        if: always()
+        uses: cypress-io/github-action@v2
+        continue-on-error: false
+        with:
+          spec: cypress/integration/Basic_Setup/**/*.spec.js
+          working-directory: litmus-e2e/Cypress/
+          config-file: cypress.prod.json
+          env: true
+        env:
+          CYPRESS_BASE_URL: ${{ env.URL }}
+
+      - name: Verifying Execution Plane components
+        if: always()
+        run: |
+          source ./litmus-e2e/litmus/utils.sh
+          verify_all_components ${COMPONENTS} litmus
+          wait_for_pods litmus 720
+        env:
+          COMPONENTS: subscriber,chaos-exporter,chaos-operator-ce,event-tracker,workflow-controller
+
+      - name: Post Authentication Tests
+        if: always()
+        uses: cypress-io/github-action@v2
+        continue-on-error: false
+        with:
+          spec: cypress/integration/Parallel_Tests/**/*.spec.js
+          working-directory: litmus-e2e/Cypress/
+          config-file: cypress.prod.json
+          env: true
+        env:
+          CYPRESS_BASE_URL: ${{ env.URL }}
+
+      - name: Check the test run
+        if: always()
+        run: |
+          echo "TEST_RUN=true" >> $GITHUB_ENV
+
+      - name: Check for all the jobs are succeeded
+        if: ${{ success() && env.TEST_RUN == 'true' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: "${{ github.event.comment.id }}"
+          body: |
+            **Test Result:** All tests are passed
+            **Run ID:** [${{ env.RUN_ID }}](https://github.com/litmuschaos/litmus/actions/runs/${{ env.RUN_ID }})
+          reactions: hooray
+        env:
+          RUN_ID: ${{ github.run_id }}
+
+      - name: Check for any job failed
+        if: ${{ failure() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: "${{ github.event.comment.id }}"
+          body: |
+            **Test Failed:** Some tests are failed please check
+            **Run ID:** [${{ env.RUN_ID }}](https://github.com/litmuschaos/litmus/actions/runs/${{ env.RUN_ID }})
+          reactions: confused
+        env:
+          RUN_ID: ${{ github.run_id }}
+
+      - name: Check if any test ran or not
+        if: env.TEST_RUN != 'true'
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: "${{ github.event.comment.id }}"
+          body: |
+            **Test Result:** No test found
+            **Run ID:** [${{ env.RUN_ID }}](https://github.com/litmuschaos/litmus/actions/runs/${{ env.RUN_ID }})
+          reactions: eyes
+        env:
+          RUN_ID: ${{ github.run_id }}
+
+      - name: Deleting KinD cluster
+        if: always()
+        run: kind delete cluster

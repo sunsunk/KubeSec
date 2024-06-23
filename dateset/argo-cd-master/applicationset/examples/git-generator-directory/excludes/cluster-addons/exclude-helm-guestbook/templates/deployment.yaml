@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+      release: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        release: dynamic_parameters
+    spec:
+      containers:
+        - name: dynamic_parameters
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---
+
+---
+
+---

@@ -1,0 +1,37 @@
+name: Lint
+
+on:
+  push:
+    branches: [main, release-*]
+  pull_request:
+    branches: [main, release-*]
+
+env:
+  GO_VERSION: '1.21'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Golangci lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.54
+          args: --verbose
+
+      - name: Markdown lint
+        uses: docker://avtodev/markdown-lint:v1
+        with:
+          config: '.markdownlint.yml'
+          args: '**/*.md'
+          ignore: 'deploy/helm-charts manager/console CHANGELOG.md build'

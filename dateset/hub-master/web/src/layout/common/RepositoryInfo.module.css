@@ -1,0 +1,62 @@
+.link {
+  top: -1px;
+}
+
+.dropdown {
+  width: 350px;
+  font-size: 0.85rem;
+  margin-top: 23px;
+}
+
+.content {
+  padding: 0.75rem 1.25rem;
+}
+
+.labelContent {
+  color: var(--gray-dark);
+  font-size: 0.85rem;
+}
+
+.infoIcon {
+  min-width: 1rem;
+  top: 2px;
+}
+
+.repoIconMini {
+  height: 12px;
+}
+
+.arrow {
+  width: 0.8rem !important;
+  height: 0.4rem !important;
+  right: 10px !important;
+  top: -6px !important;
+}
+
+.arrow::after {
+  border-color: transparent !important;
+}
+
+.arrow::before {
+  border-bottom-color: var(--color-1-900) !important;
+}
+
+.icon {
+  top: -2px;
+}
+
+.repoLabel {
+  top: -4px;
+}
+
+@media only screen and (max-width: 575.98px) {
+  .dropdown {
+    display: none !important;
+  }
+}
+
+@media (hover: hover) {
+  .link:hover {
+    text-decoration: underline;
+  }
+}

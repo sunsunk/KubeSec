@@ -1,0 +1,72 @@
+name: Deploy Microsite
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-microsite-and-storybook:
+    permissions:
+      contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192
+      DOCUSAURUS_SSR_CONCURRENCY: 5
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: use node.js 18.x
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      # We avoid caching in this workflow, as we're running an install of both the top-level
+      # dependencies and the microsite. We leave it to the main master workflow to produce the
+      # cache, as that results in a smaller bundle.
+      - name: top-level yarn install
+        run: yarn install --immutable
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+      - name: storybook yarn install
+        run: yarn install --immutable
+        working-directory: storybook
+
+      - name: build API reference
+        run: yarn build:api-docs
+
+      - name: build microsite
+        run: yarn build
+        working-directory: microsite
+
+      - name: build storybook
+        run: yarn build-storybook
+        working-directory: storybook
+
+      - name: move storybook dist into microsite
+        run: mv storybook/dist/ microsite/build/storybook
+
+      - name: Check the build output
+        run: ls microsite/build && ls microsite/build/storybook
+
+      - name: Deploy both microsite and storybook to gh-pages
+        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # v4.5.0
+        with:
+          branch: gh-pages
+          folder: microsite/build

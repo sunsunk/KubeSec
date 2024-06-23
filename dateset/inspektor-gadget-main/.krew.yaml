@@ -1,0 +1,114 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: gadget
+  annotations:
+    # List of annotations for Artifact Hub
+    # https://artifacthub.io/docs/topics/annotations/krew/
+    # https://artifacthub.io/packages/krew/krew-index/gadget
+    artifacthub.io/category: monitoring-logging
+    artifacthub.io/displayName: Inspektor Gadget kubectl plugin
+    artifacthub.io/keywords: |
+      - ebpf
+      - tracing
+      - networking
+      - security
+    artifacthub.io/license: Apache-2.0
+    artifacthub.io/links: |
+      - name: homepage
+        url: https://inspektor-gadget.io/
+      - name: repository
+        url: https://github.com/inspektor-gadget/inspektor-gadget/
+      - name: support
+        url: https://github.com/inspektor-gadget/inspektor-gadget/issues
+    artifacthub.io/readme: |
+      Inspektor Gadget is a collection of tools (or gadgets) to debug and
+      inspect Kubernetes resources and applications.
+
+      ## Install
+
+      ```bash
+      $ kubectl krew install gadget
+      $ kubectl gadget deploy
+      ```
+
+      ## Run built-in gadgets
+
+      ```bash
+      $ kubectl gadget trace exec
+      ```
+
+      ## Run image-based gadgets
+
+      ```bash
+      $ kubectl gadget deploy --experimental
+      $ kubectl gadget run ghcr.io/inspektor-gadget/gadget/trace_open:latest
+      ```
+    # artifacthub.io/changes:
+    # artifacthub.io/maintainers:
+    # artifacthub.io/provider:
+    # artifacthub.io/recommendations:
+    # artifacthub.io/screenshots:
+spec:
+  version: {{ .TagName }}
+  homepage: https://github.com/inspektor-gadget/inspektor-gadget
+  shortDescription: Gadgets for debugging and introspecting apps
+  description: |
+    Inspektor Gadget is a collection of tools (or gadgets) to debug and inspect
+    Kubernetes resources and applications. It manages the packaging, deployment
+    and execution of eBPF programs in a Kubernetes cluster, including many based
+    on BCC tools, as well as some developed specifically for use in Inspektor
+    Gadget. It automatically maps low-level kernel primitives to high-level
+    Kubernetes resources, making it easier and quicker to find the relevant
+    information.
+
+    Inspektor Gadget is deployed to each node as a privileged DaemonSet.
+    It uses in-kernel eBPF helper programs to monitor events mainly related to
+    syscalls from userspace programs in a pod. The eBPF programs are run by
+    the kernel and gather the log data. Inspektor Gadget's userspace utilities
+    fetch the log data from ring buffers and display it. What eBPF programs are
+    and how Inspektor Gadget uses them is briefly explained in the architecture
+    document:
+    https://github.com/inspektor-gadget/inspektor-gadget/blob/main/docs/architecture.md
+  caveats: |
+    Inspektor Gadget needs to be deployed to each node:
+
+    $ kubectl gadget deploy
+
+    Read the documentation available at https://github.com/inspektor-gadget/inspektor-gadget
+    to get more information about the server side installation process.
+  platforms:
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    {{addURIAndSha "https://github.com/inspektor-gadget/inspektor-gadget/releases/download/{{ .TagName }}/kubectl-gadget-linux-amd64-{{ .TagName }}.tar.gz" .TagName }}
+    bin: kubectl-gadget
+
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    {{addURIAndSha "https://github.com/inspektor-gadget/inspektor-gadget/releases/download/{{ .TagName }}/kubectl-gadget-linux-arm64-{{ .TagName }}.tar.gz" .TagName }}
+    bin: kubectl-gadget
+
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    {{addURIAndSha "https://github.com/inspektor-gadget/inspektor-gadget/releases/download/{{ .TagName }}/kubectl-gadget-darwin-amd64-{{ .TagName }}.tar.gz" .TagName }}
+    bin: kubectl-gadget
+
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    {{addURIAndSha "https://github.com/inspektor-gadget/inspektor-gadget/releases/download/{{ .TagName }}/kubectl-gadget-darwin-arm64-{{ .TagName }}.tar.gz" .TagName }}
+    bin: kubectl-gadget
+
+  - selector:
+      matchLabels:
+        os: windows
+        arch: amd64
+    {{addURIAndSha "https://github.com/inspektor-gadget/inspektor-gadget/releases/download/{{ .TagName }}/kubectl-gadget-windows-amd64-{{ .TagName }}.tar.gz" .TagName }}
+    bin: kubectl-gadget.exe

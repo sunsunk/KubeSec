@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: user-load
+  name: user-load
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: user-load
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: user-load
+    spec:
+      containers:
+      - name: user-load
+        image: weaveworksdemos/load-test:0.1.1
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do locust --host http://front-end.sock-shop.svc.cluster.local -f /config/locustfile.py --clients 5 --hatch-rate 5 --num-request 100 --no-web; done"]
+        imagePullPolicy: Always
+        

@@ -1,0 +1,7 @@
+{
+  "comment": "exemplar with invalid scientific notation float for exemplar value",
+  "type": "text",
+  "file": "metrics",
+  "shouldParse": false
+}
+

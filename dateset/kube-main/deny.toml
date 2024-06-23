@@ -1,0 +1,81 @@
+# examples sometimes lag behind as they use higher level dependencies
+# we exclude these from the check because they are not part of our
+# actual dependency tree
+exclude = ["kube-examples"]
+
+[advisories]
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+vulnerability = "deny"
+unmaintained = "warn"
+yanked = "warn"
+notice = "warn"
+
+
+[licenses]
+# See https://spdx.org/licenses/ for list of possible licenses
+# [possible values: any SPDX 3.11 short identifier (+ optional exception)].
+
+confidence-threshold = 1.0
+copyleft = "deny"
+default = "deny"
+unlicensed = "deny"
+
+# We are beholden to https://github.com/cncf/foundation/blob/master/allowed-third-party-license-policy.md#approved-licenses-for-allowlist
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "ISC",
+    "LicenseRef-ring",
+]
+
+exceptions = [
+    # The Unicode-DFS--2016 license is necessary for unicode-ident because they
+    # use data from the unicode tables to generate the tables which are
+    # included in the application. We do not distribute those data files so
+    # this is not a problem for us. See https://github.com/dtolnay/unicode-ident/pull/9/files
+    # for more details.
+    { allow = ["Unicode-DFS-2016"], name = "unicode-ident" }
+
+]
+
+[[licenses.clarify]]
+name = "ring"
+expression = "LicenseRef-ring"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+[bans]
+multiple-versions = "deny"
+
+[[bans.skip]]
+name = "hermit-abi"
+
+[[bans.skip]]
+# Needs a complicated upgrade
+name = "syn"
+
+[[bans.skip]]
+# waiting for pem to bump base64
+# https://github.com/jcreekmore/pem-rs/blob/master/Cargo.toml#L16
+name = "base64"
+
+[[bans.skip]]
+# latest via openssl->hyper-openssl (we have latest)
+# newer via tower-http (we have latest)
+name = "bitflags"
+
+[[bans.skip]]
+# deep in dependency tree, only dual use via dev dependency
+name = "redox_syscall"
+
+[[bans.skip-tree]]
+name = "windows-sys"

@@ -1,0 +1,6 @@
+#! variables that need to be externally configurable
+#! are specified in a data values schema file
+
+#@ load("@ytt:data", "data")
+
+list_with_a_map: #@ data.values.my_map

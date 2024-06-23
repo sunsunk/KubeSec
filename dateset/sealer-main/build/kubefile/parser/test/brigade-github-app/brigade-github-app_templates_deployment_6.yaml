@@ -1,0 +1,71 @@
+# Source: brigade-github-app/templates/deployment.yaml
+# Copyright © 2022 Alibaba Group Holding Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release-brigade-github-app
+  labels:
+    app: my-release-brigade-github-app
+    chart: "brigade-github-app-0.8.0"
+    release: "my-release"
+    heritage: "Helm"
+    role: gateway
+    type: github-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-release-brigade-github-app
+      role: gateway
+      release: "my-release"
+      type: github-app
+  template:
+    metadata:
+      labels:
+        app: my-release-brigade-github-app
+        role: gateway
+        release: "my-release"
+        type: github-app
+    spec:
+      serviceAccountName: my-release-brigade-github-app
+      containers:
+      - name: brigade-github-app
+        image: "brigadecore/brigade-github-app:v0.4.1"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: BRIGADE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: BRIGADE_AUTHORS
+            value: "OWNER,MEMBER,COLLABORATOR"
+          - name: BRIGADE_EVENTS
+            value: "*"
+          - name: GATEWAY_CONFIG
+            value: "/etc/brigade-github-app/key.pem"
+          - name: APP_ID
+            value: ""
+          - name: CHECK_SUITE_ON_PR
+            value: "true"
+        volumeMounts:
+          - name: github-config
+            mountPath: /etc/brigade-github-app
+      volumes:
+        - name: github-config
+          secret:
+            secretName: my-release-brigade-github-app

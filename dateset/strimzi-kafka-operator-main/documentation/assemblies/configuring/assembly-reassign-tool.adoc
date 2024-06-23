@@ -1,0 +1,37 @@
+// This assembly is included in the following assemblies:
+//
+// deploying.adoc
+
+[id='assembly-reassign-tool-{context}']
+= Using the partition reassignment tool
+
+[role="_abstract"]
+You can use the `kafka-reassign-partitions.sh` tool for the following:
+
+* Adding or removing brokers
+* Reassigning partitions across brokers
+* Changing the replication factor of topics 
+
+However, while `kafka-reassign-partitions.sh` supports these operations, it is generally easier with Cruise Control. 
+Cruise Control can move topics from one broker to another without any downtime, and it is the most efficient way to reassign partitions.
+
+To use the `kafka-reassign-partitions.sh` tool, run it as a separate interactive pod rather than within the broker container.
+Running the Kafka `bin/` scripts within the broker container may cause a JVM to start with the same settings as the Kafka broker, which can potentially cause disruptions.
+By running the `kafka-reassign-partitions.sh` tool in a separate pod, you can avoid this issue.
+Running a pod with the `-ti` option creates an interactive pod with a terminal for running shell commands inside the pod.
+
+.Running an interactive pod with a terminal 
+[source,shell,subs="+quotes,attributes"]
+----
+kubectl run helper-pod -ti --image={DockerKafkaImageCurrent} --rm=true --restart=Never -- bash
+----
+
+include::../../modules/configuring/con-partition-reassignment.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-generating-reassignment-json-files.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-scaling-up-a-kafka-cluster.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-scaling-down-a-kafka-cluster.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-changing-topic-replicas.adoc[leveloffset=+1]

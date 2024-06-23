@@ -1,0 +1,184 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.carnot.udfspb;
+
+option go_package = "udfspb";
+
+import "src/carnot/planpb/plan.proto";
+import "src/shared/types/typespb/types.proto";
+import "src/table_store/schemapb/schema.proto";
+
+// UDASpec stores the specification of a single UDA.
+message UDASpec {
+  // The name of the function.
+  string name = 1;
+  // Will be an empty list if there is no init function.
+  repeated px.types.DataType init_arg_types = 2;
+  // The argument types of the update function. UDAs are allowed to overload
+  // based on these types.
+  repeated px.types.DataType update_arg_types = 3;
+  // The argument types of the finalize return.
+  px.types.DataType finalize_type = 4;
+  // Whether the UDA function can be run as part of a partial aggregate.
+  bool supports_partial = 5;
+}
+
+// The places that the UDF can execute.
+enum UDFSourceExecutor {
+  UDF_UNSPECIFIED = 0;
+  UDF_ALL = 1;
+  UDF_PEM = 2;
+  UDF_KELVIN = 3;
+}
+
+// ScalarUDFSpec stores the specification of a single UDF.
+message ScalarUDFSpec {
+  // The name of the function.
+  string name = 1;
+  // Will be an empty list if there is no init function.
+  repeated px.types.DataType init_arg_types = 2;
+  // The argument types of the exec args. UDFs are allowed to overload based on
+  // these types.
+  repeated px.types.DataType exec_arg_types = 3;
+  // The return type of the exec function.
+  px.types.DataType return_type = 4;
+  // Which agents the UDF should execute on.
+  UDFSourceExecutor executor = 5;
+}
+
+// UDFInfo stores all the registered UDF/UDAs in the system.
+message UDFInfo {
+  // A list of the UDAs.
+  repeated UDASpec udas = 1;
+  // A list of the ScalarUDFs.
+  repeated ScalarUDFSpec scalar_udfs = 2;
+  // A description of the UDTFs.
+  repeated UDTFSourceSpec udtfs = 3;
+  // A list of type inference rules for semantic types.
+  repeated SemanticInferenceRule semantic_type_rules = 4;
+}
+
+// The type of the table func to write.
+enum UDTFSourceExecutor {
+  UDTF_UNSPECIFIED = 0;
+  UDTF_ALL_AGENTS = 1;
+  UDTF_ALL_PEM = 2;
+  UDTF_ALL_KELVIN = 3;
+  UDTF_SUBSET_PEM = 4;
+  UDTF_SUBSET_KELVIN = 5;
+  UDTF_ONE_KELVIN = 6;
+}
+
+// UDTFSourceSpec stores the information necessary to execute a UDTFSource.
+message UDTFSourceSpec {
+  // Argument object that contains name, and arg_type and the list.
+  message Arg {
+    string name = 1;
+    px.types.DataType arg_type = 2;
+    px.types.SemanticType semantic_type = 3;
+    // Optional value.
+    px.carnot.planpb.ScalarValue default_value = 4;
+  }
+  // Name of the UDTFSource.
+  string name = 1;
+  // The types of the arguments of the UDTFSource. Must be the same length as
+  // arg_names.
+  repeated Arg args = 2;
+  // Which agents the table function should execute on.
+  UDTFSourceExecutor executor = 3;
+  // The relation that this UDTF generates.
+  px.table_store.schemapb.Relation relation = 4;
+}
+
+enum UDFExecType {
+  SCALAR_UDF = 0;
+  UDA = 1;
+}
+
+message SemanticInferenceRule {
+  string name = 1;
+  UDFExecType udf_exec_type = 2;
+  // Note that for all arg types (init, update or exec), ST_NONE will match any
+  // semantic type.
+  repeated px.types.SemanticType init_arg_types = 3;
+  // If this applies to a UDA then this will only have update_arg_types.
+  // If it applies to a UDF then this will only have exec_arg_types.
+  repeated px.types.SemanticType update_arg_types = 4;
+  repeated px.types.SemanticType exec_arg_types = 5;
+  // This might turn into a repeated or something in the future, if we support
+  // non-scalar udfs/udas.
+  px.types.SemanticType output_type = 6;
+}
+
+// IdentDoc is a documentation for a single identifier (argument or return value).
+message IdentDoc {
+  string ident = 1;
+  string desc = 2;
+  types.DataType type = 3;
+}
+
+// Documentation specific to a scalar UDF.
+message ScalarDoc {
+  // Documentation for a list of args.
+  repeated IdentDoc args = 1;
+  // Documentation for the return value.
+  IdentDoc retval = 2;
+}
+
+// Example documentation.
+message ExampleDoc {
+  // The value in markdown format.
+  string value = 1;
+}
+
+// Documentation specific to a UDA.
+message UDADoc {
+  // Documentation for the update arg used.
+  repeated IdentDoc update_args = 1;
+  // Documentation for the result.
+  IdentDoc result = 2;
+}
+
+// Doc is documentation of single UDF.
+message Doc {
+  // Name is the full name. For example: add:(INT64,INT64):FLOAT64.
+  // Corresponds to a UDF that takes in two INT64s and returns a FLOAT64.
+  string name = 1;
+  // The short description.
+  string brief = 2;
+  // The long form description if it exists.
+  string desc = 3;
+  // A list of examples, if any.
+  repeated ExampleDoc examples = 4;
+  // Specific documentation for each type of UDF that we support.
+  oneof u {
+    // Docs for a scalar UDF.
+    ScalarDoc scalar_udf_doc = 5;
+    // Docs for a UDA.
+    UDADoc uda_doc = 6;
+  }
+}
+
+// Docs is the container message holding all the UDF documentation.
+message Docs {
+  // List of UDFs and their corresponding docs.
+  repeated Doc udf = 1;
+}

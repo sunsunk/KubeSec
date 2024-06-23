@@ -1,0 +1,39 @@
+[
+  {
+    "response": {
+      "tags": [
+        "geo-region:california",
+        "ip:8-8-4-4",
+        "geo-subregion:94043",
+        "args:0",
+        "geo-continent-code:na",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "contentfilterid:--default--",
+        "headers:1",
+        "bot",
+        "contentfiltername:default-contentfilter",
+        "aclid:--default--",
+        "cookies:0",
+        "geo-continent-name:north-america",
+        "geo-hosting",
+        "host:localhost:30081",
+        "geo-asn:15169",
+        "network:8-8-4-0-24",
+        "all",
+        "geo-city:mountain-view",
+        "securitypolicy-entry:default",
+        "geo-org:google-llc",
+        "geo-country:united-states"
+      ],
+      "action": "pass"
+    },
+    "name": "test asn tagging",
+    "headers": {
+      "x-forwarded-for": "8.8.4.4",
+      ":path": "/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

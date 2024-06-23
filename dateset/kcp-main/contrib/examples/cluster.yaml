@@ -1,0 +1,6 @@
+apiVersion: workload.kcp.io/v1alpha1
+kind: SyncTarget
+metadata:
+  name: local
+spec:
+  kubeconfig: |

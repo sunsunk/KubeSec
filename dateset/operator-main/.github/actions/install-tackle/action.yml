@@ -1,0 +1,49 @@
+name: Install tackle operator
+description: |
+  Install Tackle Operator.
+inputs: 
+  operator-bundle-image:
+    description: "image url for operator bundle container image"
+    required: false
+    default: "quay.io/konveyor/tackle2-operator-bundle:latest"
+  hub-image:
+    description: "image url for tackle-hub"
+    required: false
+    default: "quay.io/konveyor/tackle2-hub:latest"
+  ui-image:
+    description: "image url for tackle-ui"
+    required: false
+    default: "quay.io/konveyor/tackle2-ui:latest"
+  addon-analyzer-image:
+    description: "image url for analyzer addon"
+    required: false
+    default: "quay.io/konveyor/tackle2-addon-analyzer:latest"
+  image-pull-policy:
+    description: "Image Pull Policy"
+    required: false
+    default: "Always"
+  analyzer-container-cpu:
+    description: "The CPU request value for the analyzer task containers"
+    required: false
+    default: 0
+  analyzer-container-memory:
+    description: "The memory request value for the analyzer task containers"
+    required: false
+    default: 0
+runs:
+  using: "composite"
+  steps:
+  # TODO(djzager): Need to figure out overriding operator image
+  # or maybe just installing manager via kustomize.
+  - name: Install tackle
+    run: |
+      export OPERATOR_BUNDLE_IMAGE="${{ inputs.operator-bundle-image }}"
+      export HUB_IMAGE="${{ inputs.hub-image }}"
+      export UI_IMAGE="${{ inputs.ui-image }}"
+      export ADDON_ANALYZER_IMAGE="${{ inputs.addon-analyzer-image }}"
+      export IMAGE_PULL_POLICY="${{ inputs.image-pull-policy }}"
+      export ANALYZER_CONTAINER_REQUESTS_MEMORY="${{ inputs.analyzer-container-memory }}"
+      export ANALYZER_CONTAINER_REQUESTS_CPU="${{ inputs.analyzer-container-cpu }}"
+      make install-tackle
+    working-directory: ${{ github.action_path }}/../../..
+    shell: bash

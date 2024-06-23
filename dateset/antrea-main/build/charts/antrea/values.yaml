@@ -1,0 +1,440 @@
+# -- Container image to use for Antrea components.
+# DEPRECATED: use agentImage and controllerImage instead.
+image: {}
+# -- Container image to use for the antrea-agent component.
+agentImage:
+  repository: "antrea/antrea-agent-ubuntu"
+  pullPolicy: "IfNotPresent"
+  tag: ""
+# -- Container image to use for the antrea-controller component.
+controllerImage:
+  repository: "antrea/antrea-controller-ubuntu"
+  pullPolicy: "IfNotPresent"
+  tag: ""
+
+# -- Determines how traffic is encapsulated. It must be one of "encap",
+# "noEncap", "hybrid", or "networkPolicyOnly".
+trafficEncapMode: "encap"
+# -- Tunnel protocol used for encapsulating traffic across Nodes. It must be one
+# of "geneve", "vxlan", "gre", "stt".
+tunnelType: "geneve"
+# -- TunnelPort is the destination port for UDP and TCP based tunnel protocols
+# (Geneve, VXLAN, and STT). If zero, it will use the assigned IANA port for the
+# protocol, i.e. 6081 for Geneve, 4789 for VXLAN, and 7471 for STT.
+tunnelPort: 0
+# -- TunnelCsum determines whether to compute UDP encapsulation header (Geneve
+# or VXLAN) checksums on outgoing packets. For Linux kernel before Mar 2021, UDP
+# checksum must be present to trigger GRO on the receiver for better performance
+# of Geneve and VXLAN tunnels. The issue has been fixed by
+# https://github.com/torvalds/linux/commit/89e5c58fc1e2857ccdaae506fb8bc5fed57ee063,
+# thus computing UDP checksum is no longer necessary.
+# It should only be set to true when you are using an unpatched Linux kernel and
+# observing poor transfer performance.
+tunnelCsum: false
+# -- Determines how tunnel traffic is encrypted. Currently encryption only works
+# with encap mode. It must be one of "none", "ipsec", "wireGuard".
+trafficEncryptionMode: "none"
+# -- Enable bridging mode of Pod network on Nodes, in which the Node's transport
+# interface is connected to the OVS bridge.
+enableBridgingMode: false
+# -- Disable TX checksum offloading for container network interfaces. It's
+# supposed to be set to true when the datapath doesn't support TX checksum
+# offloading, which causes packets to be dropped due to bad checksum. It affects
+# Pods running on Linux Nodes only.
+disableTXChecksumOffload: false
+# -- Whether or not to SNAT (using the Node IP) the egress traffic from a Pod to
+# the external network.
+noSNAT: false
+# -- Name of the interface antrea-agent will create and use for host <-> Pod
+# communication.
+hostGateway: "antrea-gw0"
+# -- Name of the interface on Node which is used for tunneling or routing the
+# traffic across Nodes.
+transportInterface: ""
+# -- Network CIDRs of the interface on Node which is used for tunneling or
+# routing the traffic across Nodes.
+transportInterfaceCIDRs: []
+
+multicast:
+  # -- To enable Multicast, you need to set "enable" to true, and ensure that the
+  # Multicast feature gate is also enabled (which is the default).
+  enable: false
+  # -- Names of the interfaces on Nodes that are used to forward multicast traffic.
+  multicastInterfaces: []
+  # -- The versions of IGMP queries antrea-agent sends to Pods.
+  # Valid versions are 1, 2 and 3.
+  igmpQueryVersions: [1,2,3]
+  # -- The interval at which the antrea-agent sends IGMP queries to Pods.
+  # Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  igmpQueryInterval: "125s"
+
+# -- Default MTU to use for the host gateway interface and the network interface
+# of each Pod. By default, antrea-agent will discover the MTU of the Node's
+# primary interface and adjust it to accommodate for tunnel encapsulation
+# overhead if applicable.
+defaultMTU: 0
+
+# -- packetInRate defines the OVS controller packet rate limits for different
+# features. All features will apply this rate-limit individually on packet-in
+# messages sent to antrea-agent. The number stands for the rate as packets per
+# second(pps) and the burst size will be automatically set to twice the rate.
+# When the rate and burst size are exceeded, new packets will be dropped.
+packetInRate: 500
+
+ovs:
+  # -- Name of the OVS bridge antrea-agent will create and use.
+  bridgeName: "br-int"
+  # -- Enable hardware offload for the OVS bridge (required additional
+  # configuration).
+  hwOffload: false
+
+wireGuard:
+  # -- Port for WireGuard to send and receive traffic.
+  port: 51820
+
+ipsec:
+  # -- The authentication mode to use for IPsec. Must be one of "psk" or "cert".
+  authenticationMode: "psk"
+  # -- Preshared Key (PSK) for IKE authentication. It will be stored in a secret
+  # and passed to antrea-agent as an environment variable.
+  psk: "changeme"
+  # CSR signer configuration when the authenticationMode is "cert".
+  csrSigner:
+    # -- Enable auto approval of Antrea signer for IPsec certificates.
+    autoApprove: true
+    # -- Whether or not to use auto-generated self-signed CA.
+    selfSignedCA: true
+
+egress:
+  # -- CIDR ranges to which outbound Pod traffic will not be SNAT'd by Egresses.
+  exceptCIDRs: []
+  # -- The maximum number of Egress IPs that can be assigned to a Node. It is
+  # useful when the Node network restricts the number of secondary IPs a Node
+  # can have, e.g. EKS. It must not be greater than 255.
+  maxEgressIPsPerNode: 255
+
+nodePortLocal:
+  # -- Enable the NodePortLocal feature.
+  enable: false
+  # -- Port range used by NodePortLocal when creating Pod port mappings.
+  portRange: "61000-62000"
+
+antreaProxy:
+  # -- To disable AntreaProxy, set this to false.
+  enable: true
+  # -- Proxy all Service traffic, for all Service types, regardless of where it
+  # comes from.
+  proxyAll: false
+  # -- String array of values which specifies the host IPv4/IPv6 addresses for
+  # NodePort. By default, all host addresses are used.
+  nodePortAddresses: []
+  # -- List of Services which should be ignored by AntreaProxy.
+  skipServices: []
+  # -- When set to false, AntreaProxy no longer load-balances traffic destined
+  # to the External IPs of LoadBalancer Services.
+  proxyLoadBalancerIPs: true
+  # -- The value of the "service.kubernetes.io/service-proxy-name" label for
+  # AntreaProxy to match. If it is set, then AntreaProxy will only handle Services
+  # with the label that equals the provided value. If it is not set, then AntreaProxy
+  # will only handle Services without the "service.kubernetes.io/service-proxy-name"
+  # label, but ignore Services with the label no matter what is the value.
+  serviceProxyName: ""
+  # -- Determines how external traffic is processed when it's load balanced
+  # across Nodes by default. It must be one of "nat" or "dsr".
+  defaultLoadBalancerMode: "nat"
+
+nodeIPAM:
+  # -- Enable Node IPAM in Antrea
+  enable: false
+  # -- CIDR ranges to use when allocating Pod IP addresses.
+  clusterCIDRs: []
+  # -- IPv4 CIDR ranges reserved for Services.
+  serviceCIDR: ""
+  # -- IPv6 CIDR ranges reserved for Services.
+  serviceCIDRv6: ""
+  # -- Mask size for IPv4 Node CIDR in IPv4 or dual-stack cluster.
+  nodeCIDRMaskSizeIPv4: 24
+  # -- Mask size for IPv6 Node CIDR in IPv6 or dual-stack cluster.
+  nodeCIDRMaskSizeIPv6: 64
+
+auditLogging:
+  # -- MaxSize is the maximum size in MB of a log file before it gets rotated.
+  maxSize: 500
+  # -- MaxBackups is the maximum number of old log files to retain. If set to 0,
+  # all log files will be retained (unless MaxAge causes them to be deleted).
+  maxBackups: 3
+  # -- MaxAge is the maximum number of days to retain old log files based on the
+  # timestamp encoded in their filename. If set to 0, old log files are not
+  # removed based on age.
+  maxAge: 28
+  # -- Compress enables gzip compression on rotated files.
+  compress: true
+
+# -- Address of Kubernetes apiserver, to override any value provided in
+# kubeconfig or InClusterConfig.
+kubeAPIServerOverride: ""
+# -- Address of DNS server, to override the kube-dns Service. It's used to
+# resolve hostnames in a FQDN policy.
+dnsServerOverride: ""
+# -- IPv4 CIDR range used for Services. Required when AntreaProxy is disabled.
+serviceCIDR: ""
+# -- IPv6 CIDR range used for Services. Required when AntreaProxy is disabled.
+serviceCIDRv6: ""
+
+# -- Comma-separated list of cipher suites that will be used by the Antrea
+# APIservers. If empty, the default Go Cipher Suites will be used. See
+# https://golang.org/pkg/crypto/tls/#pkg-constants.
+tlsCipherSuites: ""
+# -- TLS min version from: VersionTLS10, VersionTLS11, VersionTLS12,
+# VersionTLS13.
+tlsMinVersion: ""
+
+# -- File path of the certificate bundle for all the signers that is recognized
+# for incoming client certificates.
+clientCAFile: ""
+
+# -- To explicitly enable or disable a FeatureGate and bypass the Antrea
+# defaults, add an entry to the dictionary with the FeatureGate's name as the
+# key and a boolean as the value.
+featureGates: {}
+
+secondaryNetwork:
+  # -- Configuration of OVS bridges for secondary network. At the moment, at
+  # most one OVS bridge can be specified. If the specified bridge does not exist
+  # on the Node, antrea-agent will create it based on the configuration.
+  # The following configuration specifies an OVS bridge with name "br1" and a
+  # physical interface "eth1":
+  # [{bridgeName: "br1", physicalInterfaces: ["eth1"]}]
+  ovsBridges: []
+
+agent:
+  # -- Port for the antrea-agent APIServer to serve on.
+  apiPort: 10350
+  # -- Enable metrics exposure via Prometheus.
+  enablePrometheusMetrics: true
+  # -- Annotations to be added to antrea-agent Pods.
+  podAnnotations: {}
+  # -- Labels to be added to antrea-agent Pods.
+  podLabels: {}
+  # -- Tolerations for the antrea-agent Pods.
+  tolerations:
+    # Mark it as a critical add-on.
+    - key: CriticalAddonsOnly
+      operator: Exists
+    # Make sure it gets scheduled on all Nodes.
+    - effect: NoSchedule
+      operator: Exists
+    # Make sure it doesn't get evicted.
+    - effect: NoExecute
+      operator: Exists
+  # -- Node selector for the antrea-agent Pods.
+  nodeSelector:
+    kubernetes.io/os: linux
+  # -- Prority class to use for the antrea-agent Pods.
+  priorityClassName: "system-node-critical"
+  # -- Affinity for the antrea-agent Pods.
+  affinity: {}
+  # -- DNS Policy for the antrea-agent Pods. If empty, the Kubernetes default
+  # will be used.
+  dnsPolicy: ""
+  # -- Update strategy for the antrea-agent DaemonSet.
+  updateStrategy:
+    type: RollingUpdate
+  # -- Additional volumes for antrea-agent Pods.
+  extraVolumes: []
+  # -- Do not try to load any of the required Kernel modules (e.g., openvswitch)
+  # during initialization of the antrea-agent. Most users should never need to
+  # set this to true, but it may be required with some specific distributions.
+  # Note that we will never try to load a module if we can detect that it is
+  # "built-in", regardless of this value.
+  dontLoadKernelModules: false
+  installCNI:
+    # -- Extra environment variables to be injected into install-cni.
+    extraEnv: {}
+    # -- Resource requests and limits for the install-cni initContainer.
+    resources:
+      requests:
+        cpu: "100m"
+    securityContext:
+      # -- Run the install-cni container as privileged.
+      privileged: false
+      # -- Capabilities for the install-cni initContainer.
+      capabilities:
+        # Used to load the Wireguard and OVS kernel modules.
+        - SYS_MODULE
+  antreaAgent:
+    # -- Extra environment variables to be injected into antrea-agent.
+    extraEnv: {}
+    # -- Max size in MBs of any single log file.
+    logFileMaxSize: 100
+    # -- Max number of log files.
+    logFileMaxNum: 4
+    # -- Extra command-line arguments for antrea-agent.
+    extraArgs: []
+    # -- Additional volumeMounts for the antrea-agent container.
+    extraVolumeMounts: []
+    # -- Resource requests and limits for the antrea-agent container.
+    resources:
+      requests:
+        cpu: "200m"
+    securityContext:
+      # -- Run the antrea-agent container as privileged. Currently we require
+      # this to be true (for sysctl configurations), but we may support running
+      # as non-privileged in the future.
+      privileged: true
+      # -- Capabilities for the antrea-agent container.
+      capabilities: []
+  antreaOVS:
+    # -- Extra environment variables to be injected into antrea-ovs.
+    extraEnv: {}
+    # -- Max size in MBs of any single log file.
+    logFileMaxSize: 100
+    # -- Max number of log files.
+    logFileMaxNum: 4
+    # -- Extra command-line arguments for antrea-ovs.
+    extraArgs: []
+    # -- Resource requests and limits for the antrea-ovs container.
+    resources:
+      requests:
+        cpu: "200m"
+    securityContext:
+      # -- Run the antrea-ovs container as privileged.
+      privileged: false
+      # -- Capabilities for the antrea-ovs container.
+      capabilities:
+        # These are the capabilities required by the OVS daemons.
+        - SYS_NICE
+        - NET_ADMIN
+        - SYS_ADMIN
+        - IPC_LOCK
+  antreaIPsec:
+    # -- Resource requests and limits for the antrea-ipsec container (when IPsec
+    # is enabled).
+    resources:
+      requests:
+        cpu: "50m"
+    securityContext:
+      # -- Run the antrea-ipsec container as privileged.
+      privileged: false
+      # -- Capabilities for the antrea-ipsec container.
+      capabilities:
+        - NET_ADMIN
+
+controller:
+  # -- Port for the antrea-controller APIServer to serve on.
+  apiPort: 10349
+  # -- NodePort for the antrea-controller APIServer to server on.
+  apiNodePort: 0
+  # -- Enable metrics exposure via Prometheus.
+  enablePrometheusMetrics: true
+  # -- Annotations to be added to antrea-controller Pod.
+  podAnnotations: {}
+  # -- Labels to be added to antrea-controller Pod.
+  podLabels: {}
+  # -- Indicates whether to use auto-generated self-signed TLS certificates. If
+  # false, a Secret named "antrea-controller-tls" must be provided with the
+  # following keys: ca.crt, tls.crt, tls.key.
+  selfSignedCert: true
+  # -- Tolerations for the antrea-controller Pod.
+  tolerations:
+    # Mark it as a critical add-on.
+    - key: CriticalAddonsOnly
+      operator: Exists
+    # Allow it to schedule onto master nodes.
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    # Control-plane taint for Kubernetes >= 1.24.
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+    # Evict it immediately once Node is detected unreachable.
+    # Must be set explicitly, otherwise DefaultTolerationSeconds plugin will
+    # add a default toleration with tolerationSeconds of 300s.
+    - key: node.kubernetes.io/unreachable
+      effect: NoExecute
+      operator: Exists
+      tolerationSeconds: 0
+  # -- Node selector for the antrea-controller Pod.
+  nodeSelector:
+    kubernetes.io/os: linux
+  # -- Prority class to use for the antrea-controller Pod.
+  priorityClassName: "system-cluster-critical"
+  # -- Affinity for the antrea-controller Pod.
+  affinity: {}
+  antreaController:
+    # -- Extra environment variables to be injected into antrea-controller.
+    extraEnv: {}
+    # -- Max size in MBs of any single log file.
+    logFileMaxSize: 100
+    # -- Max number of log files.
+    logFileMaxNum: 4
+    # -- Extra command-line arguments for antrea-controller.
+    extraArgs: []
+    # -- Resource requests and limits for the antrea-controller container.
+    resources:
+      requests:
+        cpu: "200m"
+
+flowExporter:
+  # -- Enable the flow exporter feature.
+  enable: false
+  # -- IPFIX collector address as a string with format <HOST>:[<PORT>][:<PROTO>].
+  # If the collector is running in-cluster as a Service, set <HOST> to
+  # <Service namespace>/<Service name>.
+  flowCollectorAddr: "flow-aggregator/flow-aggregator:4739:tls"
+  # -- Determines how often the flow exporter polls for new connections.
+  flowPollInterval: "5s"
+  # -- timeout after which a flow record is sent to the collector for active
+  # flows.
+  activeFlowExportTimeout: "5s"
+  # -- timeout after which a flow record is sent to the collector for idle
+  # flows.
+  idleFlowExportTimeout: "15s"
+
+cni:
+  # -- Chained plugins to use alongside antrea-cni.
+  plugins:
+    portmap: true
+    bandwidth: true
+  # -- Installation path of CNI binaries on the host.
+  hostBinPath: "/opt/cni/bin"
+  # -- CNI binaries shipped with Antrea for which installation should be
+  # skipped.
+  skipBinaries: []
+
+webhooks:
+  labelsMutator:
+    # -- Mutate all namespaces to add the "antrea.io/metadata.name" label.
+    enable: false
+
+# -- Global log verbosity switch for all Antrea components.
+logVerbosity: 0
+
+# Configure Multicluster defaults for both Antrea Controller and Agent.
+multicluster:
+  # -- Enable Antrea Multi-cluster Gateway to support cross-cluster traffic.
+  enableGateway: false
+  # -- The Namespace where Antrea Multi-cluster Controller is running.
+  # The default is antrea-agent's Namespace.
+  namespace: ""
+  # -- Enable Multi-cluster NetworkPolicy.
+  # Multi-cluster Gateway must be enabled to enable StretchedNetworkPolicy.
+  enableStretchedNetworkPolicy: false
+  # -- Enable Multi-cluster Pod to Pod connectivity.
+  enablePodToPodConnectivity: false
+  # -- Determines how cross-cluster traffic is encrypted. It can be one of
+  # "none" (default) or "wireGuard". When set to "none", cross-cluster traffic
+  # will not be encrypted. When set to "wireGuard", cross-cluster traffic will
+  # be sent over encrypted WireGuard tunnels. "wireGuard" requires Multi-cluster
+  # Gateway to be enabled. Note that when using WireGuard for cross-cluster
+  # traffic, encryption is no longer supported for in-cluster traffic.
+  trafficEncryptionMode: "none"
+  # WireGuard tunnel configuration for cross-cluster traffic.
+  wireGuard:
+    # -- WireGuard tunnel port for cross-cluster traffic.
+    port: 51821
+
+testing:
+  # -- Enable code coverage measurement (used when testing Antrea only).
+  coverage: false
+  simulator:
+    enable: false

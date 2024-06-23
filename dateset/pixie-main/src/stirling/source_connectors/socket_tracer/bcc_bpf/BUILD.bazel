@@ -1,0 +1,92 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# SPDX-License-Identifier: MIT
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:cc_resource.bzl", "pl_bpf_cc_resource")
+load("//bazel:pl_build_system.bzl", "pl_cc_test")
+
+package(default_visibility = ["//src/stirling:__subpackages__"])
+
+cc_library(
+    name = "headers",
+    hdrs = [
+        "go_http2_trace.c",
+        "go_tls_trace.c",
+        "go_trace_common.h",
+        "grpc_c_trace.c",
+        "macros.h",
+        "node_openssl_trace.c",
+        "openssl_trace.c",
+        "protocol_inference.h",
+    ],
+    deps = [
+        "//src/stirling/bpf_tools/bcc_bpf:headers",
+        "//src/stirling/bpf_tools/bcc_bpf_intf:headers",
+        "//src/stirling/source_connectors/socket_tracer/bcc_bpf_intf:headers",
+        "//src/stirling/upid:headers",
+    ],
+)
+
+# To examine the preprocessing output, build :socket_trace_bpf_preprocess.
+pl_bpf_cc_resource(
+    name = "socket_trace",
+    src = "socket_trace.c",
+    # Uncomment to enable debug printks.
+    # defines = ["BPF_DEBUG"],
+    defines = select({
+        "@platforms//cpu:aarch64": ["TARGET_ARCH_AARCH64"],
+        "@platforms//cpu:x86_64": ["TARGET_ARCH_X86_64"],
+    }),
+    deps = [
+        ":headers",
+        "//src/stirling/bpf_tools/bcc_bpf/system-headers",
+    ],
+)
+
+pl_cc_test(
+    name = "protocol_inference_test",
+    srcs = [
+        "protocol_inference.h",
+        "protocol_inference_test.cc",
+    ],
+    # PROTOCOL_LIST: Requires update on new protocols.
+    defines = [
+        "ENABLE_HTTP_TRACING=true",
+        "ENABLE_CQL_TRACING=true",
+        "ENABLE_MUX_TRACING=true",
+        "ENABLE_PGSQL_TRACING=true",
+        "ENABLE_MYSQL_TRACING=true",
+        "ENABLE_KAFKA_TRACING=true",
+        "ENABLE_DNS_TRACING=true",
+        "ENABLE_REDIS_TRACING=true",
+        "ENABLE_NATS_TRACING=true",
+        "ENABLE_MONGO_TRACING=true",
+        "ENABLE_AMQP_TRACING=true",
+    ],
+    deps = [
+        "//src/stirling/bpf_tools/bcc_bpf:headers",
+        "//src/stirling/bpf_tools/bcc_bpf_intf:headers",
+        "//src/stirling/source_connectors/socket_tracer/bcc_bpf_intf:headers",
+        "//src/stirling/utils:cc_library",
+    ],
+)

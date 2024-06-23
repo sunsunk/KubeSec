@@ -1,0 +1,156 @@
+
+# "Setup minikube as CI step in GitHub Actions"
+# https://minikube.sigs.k8s.io/docs/tutorials/setup_minikube_in_github_actions/
+# https://github.com/marketplace/actions/setup-minikube
+
+name: Build Container and test
+on:
+  pull_request:
+    paths:
+    - 'backend/**'
+    - 'frontend/**'
+    - Makefile
+    - '.github/**'
+    - Dockerfile
+    - Dockerfile.plugins
+    - 'e2e-tests/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: build discover and deploy
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+    - name: Start cluster
+      uses: medyagh/setup-minikube@master
+      # now you can run kubectl to see the pods in the cluster
+    - name: Try the cluster!
+      run: kubectl get pods -A
+    - name: Restore image-cache Folder
+      id: cache-image-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/image-cache
+        # cache the container image. All the paths this PR depends on except the e2e-tests folder for the key.
+        key: ${{ runner.os }}-image-${{ hashFiles('backend/pkg/**', 'backend/cmd/**', 'frontend/src/**', 'frontend/package.json', 'frontend/package-lock.json', 'Makefile', '.github/**', 'Dockerfile', 'Dockerfile.plugins') }}
+    - name: Restore Cached Docker Images
+      if: steps.cache-image-restore.outputs.cache-hit == 'true'
+      run: |
+        export SHELL=/bin/bash
+        eval $(minikube -p minikube docker-env)
+        docker load -i ~/image-cache/headlamp-plugins-test.tar
+        docker load -i ~/image-cache/headlamp.tar
+    - name: Make a .plugins folder for testing later
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      run: |
+        echo "Extract pod-counter plugin into .plugins folder, which will be copied into image later by 'make image'."
+        cd plugins/examples/pod-counter
+        npm install
+        npm run build
+        cd ../../../
+        cd plugins/headlamp-plugin
+        npm install
+        node bin/headlamp-plugin.js extract ../examples/pod-counter ../../.plugins/
+        cd ../../
+        ls -laR .plugins
+    - name: Remove unnecessary files
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+    - name: Build image
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      run: |
+        export SHELL=/bin/bash
+        eval $(minikube -p minikube docker-env)
+        DOCKER_IMAGE_VERSION=latest make image
+        DOCKER_IMAGE_VERSION=latest DOCKER_PLUGINS_IMAGE_NAME=headlamp-plugins-test make build-plugins-container
+        echo -n "verifying images:"
+        docker images
+    - name: Test .plugins folder
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      run: |
+        export SHELL=/bin/bash
+        eval $(minikube -p minikube docker-env)
+        echo "----------------------------"
+        echo "Test .plugins folder is copied to the right place in the image by 'make image'"
+        echo "--- Files in the image /headlamp/ folder: ---"
+        docker run --rm --entrypoint=/bin/sh ghcr.io/headlamp-k8s/headlamp:latest -c "cd /headlamp/ && find ."
+        echo "----- Checking if the .plugins/ are copied to the right place in the image -----"
+        docker run --rm --entrypoint=/bin/sh ghcr.io/headlamp-k8s/headlamp:latest -c "set -e; (cd /headlamp/plugins && [ -e pod-counter/package.json ] && [ -e pod-counter/main.js ]) || exit 1"
+        echo "----- Checking if the plugins/example folder match copied docker plugins -----"
+        # List contents of /plugins inside the container
+        docker_output=$(docker run --rm --entrypoint=/bin/sh ghcr.io/headlamp-k8s/headlamp-plugins-test:latest -c "set -e; ls /plugins || exit 1")
+
+        # Get the list of folders inside the examples folder
+        examples_folder="plugins/examples"
+        examples_content=$(ls "$examples_folder")
+
+        # Check if the Docker output matches the examples folder content
+        if [[ "$docker_output" == "$examples_content" ]]; then
+          echo "Docker output matches examples folder content"
+        else
+          echo "Docker output does not match examples folder content"
+          echo "Docker output: $docker_output"
+          echo "----------------------------"
+          echo "Examples content: $examples_content"
+          exit 1
+        fi
+    - name: Deploy to cluster
+      run:
+        kubectl apply -f e2e-tests/kubernetes-headlamp-ci.yaml
+    - name: Run e2e tests
+      run: |
+        echo "------------------sleeping 3...------------------"
+        sleep 6
+        minikube service list
+        minikube service headlamp -n kube-system --url
+        kubectl get deployments -n kube-system
+        minikube logs | tail -10
+        echo "------------------waiting for headlamp deployment to be available...------------------"
+        kubectl wait deployment -n kube-system headlamp --for condition=Available=True --timeout=30s
+        minikube service headlamp -n kube-system --url
+        echo "------------------opening the service------------------"
+        export SERVICE_URL=$(minikube service headlamp -n kube-system --url | tail -1)
+        echo $SERVICE_URL
+        curl -L $SERVICE_URL | grep -q "Headlamp: Kubernetes Web UI"        
+        echo "------------------Getting HEADLAMP_TOKEN------------------"
+        kubectl create serviceaccount headlamp-admin --namespace kube-system
+        kubectl create clusterrolebinding headlamp-admin --serviceaccount=kube-system:headlamp-admin --clusterrole=cluster-admin
+        export HEADLAMP_TOKEN=$(kubectl create token headlamp-admin --duration 24h -n kube-system)
+        echo "------------------Running playwright e2e tests------------------"
+        cd e2e-tests
+        npm ci
+        npx playwright install --with-deps
+        HEADLAMP_TEST_URL=$SERVICE_URL npx playwright test
+        exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+          echo "Playwright tests failed with exit code $exit_code"
+          exit 1
+        else
+          echo "Playwright tests passed successfully"
+        fi
+    - name: Save Docker Images to Tar files in image-cache Folder
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      run: |
+        export SHELL=/bin/bash
+        eval $(minikube -p minikube docker-env)
+        mkdir -p ~/image-cache
+        docker save -o ~/image-cache/headlamp-plugins-test.tar ghcr.io/headlamp-k8s/headlamp-plugins-test
+        docker save -o ~/image-cache/headlamp.tar ghcr.io/headlamp-k8s/headlamp
+    - name: Cache image-cache Folder
+      if: steps.cache-image-restore.outputs.cache-hit != 'true'
+      id: cache-image-save
+      uses: actions/cache/save@v4
+      with:
+        path: ~/image-cache
+        key: ${{ steps.cache-image-restore.outputs.cache-primary-key }}
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-tests-report
+        path: e2e-tests/playwright-report/
+        retention-days: 30

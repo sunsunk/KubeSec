@@ -1,0 +1,16 @@
+# Source: carina-csi-driver/templates/rbac-cert.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-cert-secret-binding
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+subjects:
+  - kind: ServiceAccount
+    name: my-release-cert-sa
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io

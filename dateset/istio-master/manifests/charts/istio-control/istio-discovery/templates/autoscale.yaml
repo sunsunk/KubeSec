@@ -1,0 +1,32 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  namespace: dynamic_parameters
+  labels:
+    app: istiod
+    release: dynamic_parameters
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Pilot"
+spec:
+  maxReplicas: dynamic_parameters
+  minReplicas: dynamic_parameters
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: dynamic_parameters
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: dynamic_parameters
+  behavior: dynamic_parameters
+---
+---

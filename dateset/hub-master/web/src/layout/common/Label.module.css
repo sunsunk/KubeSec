@@ -1,0 +1,55 @@
+.labelWrapper {
+  font-size: 0.72rem;
+}
+
+.labelText {
+  background-color: var(--body-light-bg);
+  line-height: 18px;
+  padding: 0 5px;
+  border-color: var(--color-black-15) !important;
+}
+
+.labelTextNoIcon {
+  padding-left: 5px;
+}
+
+.iconWrapper {
+  border-color: var(--color-black-15) !important;
+  height: 20px;
+  line-height: 1rem;
+  color: var(--light-gray);
+  min-width: 20px;
+}
+
+.iconLegend {
+  top: 1px;
+}
+
+.onlyIcon {
+  width: 21px;
+}
+
+.iconWrapper path {
+  stroke: var(--light-gray);
+}
+
+.default .iconWrapper {
+  background-color: var(--light-gray);
+  color: var(--bs-dark);
+}
+
+.warning .iconWrapper {
+  background-color: var(--bs-orange);
+}
+
+.success .iconWrapper {
+  background-color: var(--bs-success);
+}
+
+.danger .iconWrapper {
+  background-color: var(--bs-danger);
+}
+
+.custom .iconWrapper {
+  color: var(--light-gray);
+}

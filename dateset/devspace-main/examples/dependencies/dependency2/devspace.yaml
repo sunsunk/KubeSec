@@ -1,0 +1,14 @@
+version: v1beta11
+deployments:
+- name: nginx
+  helm:
+    componentChart: true
+    values:
+      containers:
+      - image: nginx
+dev:
+  ports:
+  - imageSelector: nginx
+    forward:
+      - port: 8080
+        remotePort: 80

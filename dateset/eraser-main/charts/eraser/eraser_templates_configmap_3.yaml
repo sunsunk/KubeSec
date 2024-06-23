@@ -1,0 +1,51 @@
+# Source: eraser/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eraser-manager-config
+  namespace: "default"
+data:
+  controller_manager_config.yaml: |
+    apiVersion: eraser.sh/v1alpha3
+    components:
+      collector:
+        enabled: true
+        image:
+          tag: v1.4.0-beta.0
+        limit: {}
+        request: {}
+      remover:
+        image:
+          tag: v1.4.0-beta.0
+        limit: {}
+        request: {}
+      scanner:
+        config: ""
+        enabled: true
+        image:
+          tag: v1.4.0-beta.0
+        limit: {}
+        request: {}
+    health: {}
+    kind: EraserConfig
+    leaderElection: {}
+    manager:
+      imageJob:
+        cleanup: {}
+        successRatio: 1
+      logLevel: info
+      nodeFilter:
+        selectors:
+        - eraser.sh/cleanup.filter
+        - kubernetes.io/os=windows
+        type: exclude
+      otlpEndpoint: ""
+      priorityClassName: ""
+      profile: {}
+      pullSecrets: []
+      runtime:
+        address: unix:///run/containerd/containerd.sock
+        name: containerd
+      scheduling: {}
+    metrics: {}
+    webhook: {}

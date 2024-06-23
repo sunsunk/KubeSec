@@ -1,0 +1,68 @@
+# Copyright 2022 Antrea Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# OVS build scripts are only applicable for RHEL 7.x:
+# https://docs.openvswitch.org/en/latest/intro/install/fedora/
+FROM centos:centos7 as ovs-rpms
+
+# Some patches may not apply cleanly if a non-default version is provided.
+# See build/images/deps/ovs-version for the default version.
+ARG OVS_VERSION
+
+# Install RPM tools and generic build dependencies.
+RUN yum update -y && yum install wget git yum-utils python38 rpm-build epel-release -y
+
+COPY apply-patches.sh /
+
+# Download OVS source code
+RUN wget -q -O - https://www.openvswitch.org/releases/openvswitch-$OVS_VERSION.tar.gz  | tar xz -C /tmp
+RUN cd /tmp/openvswitch* && \
+    /apply-patches.sh && \
+    sed -e "s/@VERSION@/$OVS_VERSION/" rhel/openvswitch-fedora.spec.in > /tmp/ovs.spec && \
+    yum-builddep -y /tmp/ovs.spec && ./boot.sh && \
+    ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc && \
+    # logrotate needs to run as the same user as OVS to get the proper permissions of log files.
+    # As Antrea runs OVS as root, we disable libcapng to make logrotate also run as root.
+    # See https://github.com/openvswitch/ovs/blob/v2.17.7/rhel/openvswitch-fedora.spec.in#L26-L27.
+    RPMBUILD_OPT="--without libcapng --without check" make rpm-fedora && mkdir -p /tmp/ovs-rpms && \
+    mv /tmp/openvswitch-$OVS_VERSION/rpm/rpmbuild/RPMS/*/*.rpm  /tmp/ovs-rpms && \
+    rm -rf /tmp/openvswitch*
+
+
+FROM registry.access.redhat.com/ubi8
+
+LABEL maintainer="Antrea <projectantrea-dev@googlegroups.com>"
+LABEL description="A Docker image based on UBI8 which includes Open vSwitch built from source."
+
+# Change Repository from UBI8’s to CentOS because UBI8's repository does not contain
+# enough packages required by OVS installation.
+# Using the official RHEL repository would be the best choice but it's not publicly accessible.
+COPY CentOS.repo /tmp/CentOS.repo
+COPY charon-logging.conf /tmp
+COPY --from=ovs-rpms /tmp/ovs-rpms/* /tmp/ovs-rpms/
+RUN rm -f /etc/yum.repos.d/* && mv /tmp/CentOS.repo /etc/yum.repos.d/CentOS.repo && \
+    curl https://www.centos.org/keys/RPM-GPG-KEY-CentOS-Official -o /etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial && \
+    # Disable the default redhat.repo. This substitutes `subscription-manager config --rhsm.manage_repos=0`
+    # as subscription-manager is not supported running in containers.
+    sed -i.bak "s/^manage_repos = .$/manage_repos = 0/g" /etc/rhsm/rhsm.conf && \
+    yum install /tmp/ovs-rpms/* -y && yum install epel-release -y && \
+    yum install iptables logrotate -y && \
+    mv /etc/logrotate.d/openvswitch /etc/logrotate.d/openvswitch-switch && \
+    sed -i "/rotate /a\    #size 100M" /etc/logrotate.d/openvswitch-switch && \
+    # https://github.com/libreswan/libreswan/blob/main/programs/setup/setup.in
+    # The init system is configured to systemd by default. Change it to namespaces
+    # to spawn the ipsec process directly.
+    sed -i 's/^initsystem=.*$/initsystem="namespaces"/' /usr/libexec/ipsec/setup && \
+    rm /etc/rhsm/rhsm.conf.bak && \
+    rm -rf /tmp/* && yum clean all

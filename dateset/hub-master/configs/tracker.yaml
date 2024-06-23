@@ -1,0 +1,18 @@
+log:
+  level: debug
+  pretty: true
+db:
+  db:
+  host: localhost
+  port: "5432"
+  database: hub
+  user: postgres
+creds:
+  dockerUsername: ""
+  dockerPassword: ""
+tracker:
+  concurrency: 10
+  repositoryTimeout: 15m
+  repositoriesNames: []
+  repositoriesKinds: []
+  bypassDigestCheck: false

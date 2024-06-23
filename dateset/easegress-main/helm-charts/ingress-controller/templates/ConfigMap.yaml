@@ -1,0 +1,30 @@
+apiVersion: v1
+data:
+  easegress-server.yaml: |
+    name: {{ .Release.Name }}
+    cluster-name: easegress-ingress-controller
+    cluster-role: primary
+    api-addr: 0.0.0.0:2381
+    data-dir: /opt/easegress/data
+    log-dir: {{ .Values.log.path }}
+    debug: false
+  controller.yaml: |
+    kind: IngressController
+    name: {{ .Values.controller.name }}
+    {{- if .Values.controller.namespaces }}
+    namespaces:
+    {{- range .Values.controller.namespaces }}
+    - {{ . }}
+    {{- end }}
+    {{- end }}
+    ingressClass: {{ .Values.ingressClass.name }}
+    httpServer:
+      port: 8080
+      https: false
+      keepAlive: true
+      keepAliveTimeout: 60s
+      maxConnections: 10240
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}

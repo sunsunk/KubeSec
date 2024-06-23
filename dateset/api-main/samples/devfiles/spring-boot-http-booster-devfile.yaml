@@ -1,0 +1,82 @@
+schemaVersion: 2.0.0
+metadata:
+  name: spring-boot-http-booster
+  attributes:
+    type: workspace
+projects:
+  - name: spring-boot-http-booster
+    git:
+      remotes:
+        origin: https://github.com/snowdrop/spring-boot-http-booster
+      checkoutFrom:
+        revision: master
+components:
+  - name: maven
+    container:
+      image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+      mountSources: true
+      memoryLimit: 768Mi
+      env:
+        - name: JAVA_OPTS
+          value: >-
+            -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
+            -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4
+            -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true
+            -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss
+        - name: MAVEN_OPTS
+          value: $(JAVA_OPTS)
+      endpoints:
+        - name: tcp-8080
+          targetPort: 8080
+          exposure: public
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+  - name: m2
+    volume:
+      size: 2G
+commands:
+  - id: build 
+    exec:
+      component: maven
+      commandLine: mvn -Duser.home=${HOME} -DskipTests clean install
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'
+      env:
+        - name: MAVEN_OPTS
+          value: "-Xmx200m"
+  - id: run
+    exec:
+      component: maven
+      commandLine: 'mvn -Duser.home=${HOME} spring-boot:run'
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'
+      env:
+        - name: MAVEN_OPTS
+          value: "-Xmx200m"
+  - id: debug
+    exec:
+      component: maven
+      commandLine: >-
+        mvn  -Duser.home=${HOME} spring-boot:run -Drun.jvmArguments="-Xdebug
+        -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'
+  - id: test
+    exec:
+      component: maven
+      commandLine: 'mvn -Duser.home=${HOME} verify'
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'
+      env:
+        - name: MAVEN_OPTS
+          value: "-Xmx200m"
+  - id: dependency-analysis
+    exec:
+      component: maven
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'
+      commandLine: >-
+        ${HOME}/stack-analysis.sh -f
+        ${PROJECTS_ROOT}/spring-boot-http-booster/pom.xml -p
+        ${PROJECTS_ROOT}/spring-boot-http-booster
+  - id: deploy-to-openshift 
+    exec:
+      component: maven
+      commandLine: 'mvn fabric8:deploy -Popenshift -DskipTests'
+      workingDir: '${PROJECTS_ROOT}/spring-boot-http-booster'

@@ -1,0 +1,5 @@
+match true of
+  case true => true
+  case _ => true
+  case _ => false
+end

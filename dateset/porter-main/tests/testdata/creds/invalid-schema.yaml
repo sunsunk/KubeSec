@@ -1,0 +1,7 @@
+schemaType: CredentialSet
+schemaVersion: 0.38.5
+name: mybuns
+credentials:
+  - name: username
+    source:
+      env: USER

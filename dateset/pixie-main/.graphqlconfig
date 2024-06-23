@@ -1,0 +1,4 @@
+{
+  "schemaPath": "src/cloud/api/controllers/schema/01_base_schema.graphql",
+  "includes": ["src/**"]
+}

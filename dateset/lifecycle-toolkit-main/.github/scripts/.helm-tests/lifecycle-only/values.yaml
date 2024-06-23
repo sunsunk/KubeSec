@@ -1,0 +1,19 @@
+global:
+  certManagerEnabled: false
+
+lifecycleOperator:
+  enabled: true
+  promotionTasksEnabled: true
+  lifecycleOperator:
+    image:
+      repository: busybox
+      tag: 1.35
+      imagePullPolicy: Always
+  scheduler:
+    image:
+      tag: v0.0.0
+  deniedNamespaces: ["foo", "bar"]
+
+metricsOperator:
+  enabled: false
+  imagePullSecrets: []

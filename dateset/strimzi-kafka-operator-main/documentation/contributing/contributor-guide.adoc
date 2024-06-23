@@ -1,0 +1,122 @@
+[[contributing-to-docs]]
+= Contributing to the documentation
+
+This section shows you how to contribute to the Strimzi documentation and contains important guidelines for creating accessible content.
+
+[[contribution-getting-started]]
+== Getting started
+
+Before you begin you need to:
+
+. xref:setting-up-git[Install and set up Git]
+
+[[contribution-accessibility]]
+== Accessibility guidelines
+
+Strimzi aims to make its content accessible.
+When contributing to the documentation, ensure that your content adheres to the following guidelines:
+
+* Images:
+** Include a caption
+** Provide alternative text
+** Are described in the surrounding text
+* Images of text are not used (such as with code fragments)
+* Links provide descriptive text about the target (not _click here_)
+* Tables:
+** Include a caption
+** Contain headings
+** Provide a logical reading order
+** Don't contain empty cells
+* Color is not used as the only visual means to convey information (not _check the green text_)
+
+.Example image caption and description
+[source,asciidoc]
+----
+.Operators within the Strimzi architecture
+image:operators.png[Operators within the Strimzi architecture]
+----
+
+.Example table headings
+[source,asciidoc]
+----
+.File connectors
+[cols="2*",options="header"]
+|===
+
+|File Connector
+|Description
+
+|FileStreamSourceConnector
+|Transfers data to your Kafka cluster from a file (the source).
+|===
+----
+
+[[contributing]]
+== Adding or updating content
+
+Once you have your local repository set up and have up-to-date copies of upstream content,
+follow these steps to contribute to the documentation.
+
+You add content to the documentation hosted on GitHub using pull requests (PRs).
+
+Reviewers might be assigned to the PR depending on the changes.
+A review from a Subject Matter Expert (SME) will check the technical aspects of the content.
+The PR might not require an SME review if you're only fixing a typo or broken link.
+
+.Procedure
+. Open your terminal
+. `cd` to the directory where your documentation resides
+. Checkout the main branch
++
+[source]
+----
+$ git checkout main
+----
+. Update your local repository and fork with the upstream content
++
+[source]
+----
+$ git pull upstream main
+$ git push origin main --force
+----
+. Create a new branch for your work (using the issue number is helpful)
++
+[source,options="nowrap",subs="+quotes"]
+----
+$ git checkout -b <branch-name>
+----
+. Make your edits in the editor of your choice
+. Save your changes locally
+. Build your documentation to verify that there are no build errors and that everything looks right
+.. This can be done with the xref:make-tooling[Make tooling]
+. If you are creating new files, add the files to the repository
++
+[source,options="nowrap",subs="+quotes"]
+----
+$ git status
+$ git add <file-name>
+----
+
+. Commit your changes
++
+[source,options="nowrap",subs="+quotes"]
+----
+$ git commit -a -s -m "<message>"
+----
++
+Note that the project requires all commits to be signed off, indicating that _you_ certify the changes with the link:https://developercertificate.org/[developer certificate of origin (DCO)].
+. Push your changes to your fork
++
+[source]
+----
+$ git push origin HEAD
+----
+. If the update is rejected because the commit is behind, merge your changes
++
+[source]
+----
+$ git pull upstream main
+$ git push -f origin HEAD
+----
+. Visit your fork on GitHub
+. Click *Compare & pull request*

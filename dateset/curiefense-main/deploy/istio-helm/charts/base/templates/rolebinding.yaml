@@ -1,0 +1,23 @@
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# DO NOT EDIT!
+# THIS IS A LEGACY CHART HERE FOR BACKCOMPAT
+# UPDATED CHART AT manifests/charts/istio-control/istio-discovery
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: istiod-dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: istiod
+    release: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: istiod-dynamic_parameters
+subjects:
+  - kind: ServiceAccount
+    name: istiod-service-account
+    namespace: dynamic_parameters
+
+---

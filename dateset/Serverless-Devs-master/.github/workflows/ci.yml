@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'docs/**'
+      - '**/**.md'
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [14.x, 16.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install --registry="https://registry.npmjs.org"
+
+      - name: Build
+        run: npm run build
+
+      - name: s config
+        if: matrix.os != 'windows-latest'
+        run: ./bin/s config add --AccessKeyID ${{secrets.ALIYUN_ACCESS_KEY_ID}} --AccessKeySecret ${{secrets.ALIYUN_ACCESS_KEY_SECRET}} --AccountID ${{secrets.ALIYUN_ACCOUNT_ID}} -f -a default
+      
+      - name: s config windows
+        if: matrix.os == 'windows-latest'
+        run: ./bin/s.cmd config add --AccessKeyID ${{secrets.ALIYUN_ACCESS_KEY_ID}} --AccessKeySecret ${{secrets.ALIYUN_ACCESS_KEY_SECRET}} --AccountID ${{secrets.ALIYUN_ACCOUNT_ID}} -f -a default
+
+      - name: Run tests
+        run: npm run test

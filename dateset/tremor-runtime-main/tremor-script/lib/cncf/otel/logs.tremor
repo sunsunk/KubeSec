@@ -1,0 +1,7 @@
+### CNCF OpenTelemetry Log event utilities
+###
+### * [severity](severity.md) - Log severity
+### * [traceflags](traceflags.md) - Log trace flags
+
+use cncf::otel::logs::severity;
+use cncf::otel::logs::traceflags;

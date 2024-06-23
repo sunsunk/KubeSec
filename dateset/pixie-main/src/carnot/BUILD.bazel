@@ -1,0 +1,104 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_binary", "pl_cc_library", "pl_cc_test")
+
+package(default_visibility = [
+    "//src/carnot:__subpackages__",
+    "//src/experimental:__subpackages__",
+])
+
+pl_cc_library(
+    name = "carnot",
+    hdrs = ["carnot.h"],
+    visibility = [
+        "//src/experimental:__subpackages__",
+        "//src/vizier/services/agent:__subpackages__",
+    ],
+    deps = [":cc_library"],
+)
+
+pl_cc_library(
+    name = "cc_library",
+    srcs = glob(
+        [
+            "*.cc",
+            "*.h",
+        ],
+        exclude = [
+            "**/*_test.cc",
+            "**/*_benchmark.cc",
+            "carnot_executable.cc",
+        ],
+    ),
+    deps = [
+        "//src/carnot/exec:cc_library",
+        "//src/carnot/exec/ml:cc_library",
+        "//src/carnot/funcs:cc_library",
+        "//src/carnot/plan:cc_library",
+        "//src/carnot/planner/compiler:cc_library",
+        "//src/carnot/planner/distributed:cc_library",
+        "//src/carnot/planpb:plan_pl_cc_proto",
+        "//src/carnot/queryresultspb:query_results_pl_cc_proto",
+        "//src/carnot/udf:cc_library",
+        "//src/carnot/udfspb:udfs_pl_cc_proto",
+        "//src/shared/types:cc_library",
+        "//src/table_store/table:cc_library",
+        "@com_github_ariafallah_csv_parser//:csv_parser",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+pl_cc_test(
+    name = "carnot_test",
+    srcs = ["carnot_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/carnot/exec:test_utils",
+        "//src/carnot/udf_exporter:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "end_to_end_join_test",
+    srcs = ["end_to_end_join_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/carnot/exec:test_utils",
+        "//src/carnot/udf_exporter:cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "blocking_agg_benchmark",
+    testonly = 1,
+    srcs = ["blocking_agg_benchmark.cc"],
+    deps = [
+        ":cc_library",
+        "//src/carnot/exec:test_utils",
+        "//src/common/benchmark:cc_library",
+        "//src/table_store:test_utils",
+        "@com_github_apache_arrow//:arrow",
+    ],
+)
+
+pl_cc_binary(
+    name = "carnot_executable",
+    srcs = ["carnot_executable.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)

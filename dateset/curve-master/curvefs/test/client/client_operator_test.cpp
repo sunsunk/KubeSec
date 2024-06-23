@@ -1,0 +1,275 @@
+/*
+ *  Copyright (c) 2021 NetEase Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+/**
+ * Project: Curve
+ * Created Date: 2021-09-11
+ * Author: Jingli Chen (Wine93)
+ */
+
+#include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <gtest/gtest.h>
+
+#include "curvefs/src/client/client_operator.h"
+#include "curvefs/test/client/mock_dentry_mamager.h"
+#include "curvefs/test/client/mock_inode_manager.h"
+#include "curvefs/test/client/mock_metaserver_client.h"
+#include "curvefs/test/client/rpcclient/mock_mds_client.h"
+
+namespace curvefs {
+namespace client {
+
+using ::testing::SetArgPointee;
+using ::testing::DoAll;
+using rpcclient::MockMetaServerClient;
+using rpcclient::MockMdsClient;
+
+class ClientOperatorTest : public ::testing::Test {
+ protected:
+    ClientOperatorTest() {
+        fsId_ = 1;
+        fsname_ = "/test";
+        parentId_ = 10;
+        name_ = "A";
+        newParentId_ = 20;
+        newname_ = "B";
+        dentryManager_ = std::make_shared<MockDentryCacheManager>();
+        inodeManager_ = std::make_shared<MockInodeCacheManager>();
+        metaClient_ = std::make_shared<MockMetaServerClient>();
+        mdsClient_ = std::make_shared<MockMdsClient>();
+        renameOp_ = std::make_shared<RenameOperator>(fsId_, fsname_,
+                                                     parentId_, name_,
+                                                     newParentId_, newname_,
+                                                     dentryManager_,
+                                                     inodeManager_,
+                                                     metaClient_,
+                                                     mdsClient_,
+                                                     false);
+    }
+
+    ~ClientOperatorTest() {}
+
+    void SetUp() override { }
+
+    void TearDown() override {}
+
+ protected:
+    uint32_t fsId_;
+    std::string fsname_;
+    uint64_t parentId_;
+    std::string name_;
+    uint64_t newParentId_;
+    std::string newname_;
+    std::shared_ptr<MockDentryCacheManager> dentryManager_;
+    std::shared_ptr<MockInodeCacheManager> inodeManager_;
+    std::shared_ptr<MockMetaServerClient> metaClient_;
+    std::shared_ptr<MockMdsClient> mdsClient_;
+    std::shared_ptr<RenameOperator> renameOp_;
+};
+
+TEST_F(ClientOperatorTest, GetTxId) {
+    // CASE 1: get src txid fail
+    EXPECT_CALL(*metaClient_, GetTxId(_, _, _, _))
+        .WillOnce(Return(MetaStatusCode::UNKNOWN_ERROR));
+    auto rc = renameOp_->GetTxId();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+     // CASE 2: get dst txid fail
+    EXPECT_CALL(*metaClient_, GetTxId(_, _, _, _))
+        .WillOnce(Return(MetaStatusCode::OK))
+        .WillOnce(Return(MetaStatusCode::UNKNOWN_ERROR));
+    rc = renameOp_->GetTxId();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    // CASE 3: get txid success
+    EXPECT_CALL(*metaClient_, GetTxId(_, _, _, _))
+        .WillOnce(Return(MetaStatusCode::OK))
+        .WillOnce(Return(MetaStatusCode::OK));
+    rc = renameOp_->GetTxId();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+TEST_F(ClientOperatorTest, Precheck) {
+    // CASE 1: get src dentry fail
+    EXPECT_CALL(*dentryManager_, GetDentry(_, _, _))
+        .WillOnce(Return(CURVEFS_ERROR::UNKNOWN));
+
+    auto rc = renameOp_->Precheck();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    // CASE 2: get dst dentry fail
+    EXPECT_CALL(*dentryManager_, GetDentry(_, _, _))
+        .WillOnce(Return(CURVEFS_ERROR::OK))
+        .WillOnce(Return(CURVEFS_ERROR::UNKNOWN));
+
+    rc = renameOp_->Precheck();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    // CASE 3: check success
+    EXPECT_CALL(*dentryManager_, GetDentry(_, _, _))
+        .WillOnce(Return(CURVEFS_ERROR::OK))
+        .WillOnce(Return(CURVEFS_ERROR::NOT_EXIST));
+
+    rc = renameOp_->Precheck();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+TEST_F(ClientOperatorTest, PrepareTx) {
+    // CASE 1: PrepareTx fail (same partition)
+    EXPECT_CALL(*metaClient_, GetTxId(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArgPointee<2>(1), Return(MetaStatusCode::OK)));
+    ASSERT_EQ(renameOp_->GetTxId(), CURVEFS_ERROR::OK);
+
+    EXPECT_CALL(*metaClient_, PrepareRenameTx(_))
+        .WillOnce(Return(MetaStatusCode::UNKNOWN_ERROR));
+
+    auto rc = renameOp_->PrepareTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    // CASE 2: PrepareTx success (same partition)
+    EXPECT_CALL(*metaClient_, PrepareRenameTx(_))
+        .WillOnce(Return(MetaStatusCode::OK));
+
+    rc = renameOp_->PrepareTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+
+    // CASE 3: PrepareTx fail (different partition)
+    EXPECT_CALL(*metaClient_, GetTxId(_, _, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(1), Return(MetaStatusCode::OK)))
+        .WillOnce(DoAll(SetArgPointee<2>(2), Return(MetaStatusCode::OK)));
+    ASSERT_EQ(renameOp_->GetTxId(), CURVEFS_ERROR::OK);
+
+    EXPECT_CALL(*metaClient_, PrepareRenameTx(_))
+        .WillOnce(Return(MetaStatusCode::OK))
+        .WillOnce(Return(MetaStatusCode::UNKNOWN_ERROR));
+
+    rc = renameOp_->PrepareTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    EXPECT_CALL(*metaClient_, PrepareRenameTx(_))
+        .WillOnce(Return(MetaStatusCode::UNKNOWN_ERROR));
+
+    rc = renameOp_->PrepareTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::UNKNOWN);
+
+    // CASE 4: PrepareTx success (different partition)
+    EXPECT_CALL(*metaClient_, PrepareRenameTx(_))
+        .Times(2)
+        .WillRepeatedly(Return(MetaStatusCode::OK));
+
+    rc = renameOp_->PrepareTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+TEST_F(ClientOperatorTest, CommitTx) {
+    // CASE 1: CommitTx fail
+    EXPECT_CALL(*mdsClient_, CommitTx(_))
+        .WillOnce(Return(FSStatusCode::UNKNOWN_ERROR));
+
+    auto rc = renameOp_->CommitTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+
+    // CASE 2: CommitTx success
+    EXPECT_CALL(*mdsClient_, CommitTx(_))
+        .WillOnce(Return(FSStatusCode::OK));
+
+    rc = renameOp_->CommitTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+TEST_F(ClientOperatorTest, PrewriteTx) {
+    CURVEFS_ERROR rc = CURVEFS_ERROR::OK;
+    // 1. tso failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::UNKNOWN_ERROR));
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 2. GetPartitionId failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, GetPartitionId(_, _, _))
+        .WillOnce(Return(false))
+        .WillOnce(Return(true))
+        .WillOnce(Return(false));
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 3. PrewriteRenameTx failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, GetPartitionId(_, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(1), Return(true)))
+        .WillOnce(DoAll(SetArgPointee<2>(2), Return(true)));
+    EXPECT_CALL(*metaClient_, PrewriteRenameTx(_, _, _))
+        .WillOnce(Return(MetaStatusCode::STORAGE_INTERNAL_ERROR));
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 4. PrewriteRenameTx key is locked and CheckAndResolveTx failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, GetPartitionId(_, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(1), Return(true)))
+        .WillOnce(DoAll(SetArgPointee<2>(2), Return(true)));
+    EXPECT_CALL(*metaClient_, PrewriteRenameTx(_, _, _))
+        .WillOnce(Return(MetaStatusCode::TX_KEY_LOCKED));
+    EXPECT_CALL(*dentryManager_, CheckAndResolveTx(_, _, _, _))
+        .WillOnce(Return(MetaStatusCode::STORAGE_INTERNAL_ERROR));
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 5. PrewriteRenameTx key is locked and CheckAndResolveTx success
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, GetPartitionId(_, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(1), Return(true)))
+        .WillOnce(DoAll(SetArgPointee<2>(2), Return(true)));
+    EXPECT_CALL(*metaClient_, PrewriteRenameTx(_, _, _))
+        .WillOnce(Return(MetaStatusCode::TX_KEY_LOCKED))
+        .WillOnce(Return(MetaStatusCode::OK))
+        .WillOnce(Return(MetaStatusCode::OK));
+    EXPECT_CALL(*dentryManager_, CheckAndResolveTx(_, _, _, _))
+        .WillOnce(Return(MetaStatusCode::OK));
+    rc = renameOp_->PrewriteTx();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+TEST_F(ClientOperatorTest, CommitTxV2) {
+    CURVEFS_ERROR rc = CURVEFS_ERROR::OK;
+    // 1. tso failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::UNKNOWN_ERROR));
+    rc = renameOp_->CommitTxV2();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 2. CommitTx failed
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, CommitTx(_, _, _))
+        .WillOnce(Return(MetaStatusCode::STORAGE_INTERNAL_ERROR));
+    rc = renameOp_->CommitTxV2();
+    ASSERT_EQ(rc, CURVEFS_ERROR::INTERNAL);
+    // 3. CommitTx success
+    EXPECT_CALL(*mdsClient_, Tso(_, _))
+        .WillOnce(Return(FSStatusCode::OK));
+    EXPECT_CALL(*metaClient_, CommitTx(_, _, _))
+        .WillOnce(Return(MetaStatusCode::OK));
+    rc = renameOp_->CommitTxV2();
+    ASSERT_EQ(rc, CURVEFS_ERROR::OK);
+}
+
+}  // namespace client
+}  // namespace curvefs

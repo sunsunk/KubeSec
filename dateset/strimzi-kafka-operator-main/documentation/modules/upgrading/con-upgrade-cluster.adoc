@@ -1,0 +1,88 @@
+// This module is included in the following assemblies:
+//
+// upgrading/assembly-upgrade.adoc
+
+[id='con-upgrade-cluster-{context}']
+= Upgrading Kubernetes with minimal downtime
+
+[role="_abstract"]
+If you are upgrading Kubernetes, refer to the Kubernetes upgrade documentation to check the upgrade path and the steps to upgrade your nodes correctly.
+Before upgrading Kubernetes, link:{supported-configurations}[check the supported versions for your version of Strimzi^].
+
+When performing your upgrade, ensure the availability of your Kafka clusters by following these steps:
+
+. Configure pod disruption budgets
+. Roll pods using one of these methods:
+.. Use the Strimzi Drain Cleaner (recommended)
+.. Apply an annotation to your pods to roll them manually
+
+For Kafka to stay operational, topics must also be replicated for high availability.
+This requires topic configuration that specifies a replication factor of at least 3 and a minimum number of in-sync replicas to 1 less than the replication factor.
+
+.Kafka topic replicated for high availability
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {KafkaTopicApiVersion}
+kind: KafkaTopic
+metadata:
+  name: my-topic
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 1
+  replicas: 3
+  config:
+    # ...
+    min.insync.replicas: 2
+    # ...
+----
+
+In a highly available environment, the Cluster Operator maintains a minimum number of in-sync replicas for topics during the upgrade process so that there is no downtime.
+
+== Rolling pods using Drain Cleaner
+
+When using the Strimzi Drain Cleaner to evict nodes during Kubernetes upgrade, it annotates pods with a manual rolling update annotation to inform the Cluster Operator to perform a rolling update of the pod that should be evicted and have it moved away from the Kubernetes node that is being upgraded.
+
+For more information, see xref:assembly-drain-cleaner-{context}[].
+
+== Rolling pods manually (alternative to Drain Cleaner)
+
+As an alternative to using the Drain Cleaner to roll pods, you can trigger a manual rolling update of pods through the Cluster Operator.
+Using `Pod` resources, rolling updates restart the pods of resources with new pods.
+To replicate the operation of the Drain Cleaner by keeping topics available, you must also set the `maxUnavailable` value to zero for the pod disruption budget.
+Reducing the pod disruption budget to zero prevents Kubernetes from evicting pods automatically.
+
+.Specifying a pod disruption budget
+[source,yaml,subs=attributes+]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+metadata:
+  name: my-cluster
+  namespace: myproject
+spec:
+  kafka:
+    # ...
+    template:
+      podDisruptionBudget:
+        maxUnavailable: 0
+# ...
+----
+
+You need to watch the pods that need to be drained.
+You then add a pod annotation to make the update.
+
+Here, the annotation updates a Kafka pod named `my-cluster-pool-a-1`.
+
+.Performing a manual rolling update on a Kafka pod
+[source,shell,subs="+quotes"]
+----
+kubectl annotate pod my-cluster-pool-a-1 strimzi.io/manual-rolling-update="true"
+----
+
+[role="_additional-resources"]
+.Additional resources
+* xref:assembly-drain-cleaner-str[Draining pods using the Strimzi Drain Cleaner]
+* xref:proc-manual-rolling-update-pods-str[Performing a rolling update using a pod annotation]
+* link:{BookURLConfiguring}#type-PodDisruptionBudgetTemplate-reference[`PodDisruptionBudgetTemplate` schema reference^]
+* {kubernetes-docs}[Kubernetes documentation^]

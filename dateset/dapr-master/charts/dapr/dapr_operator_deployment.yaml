@@ -1,0 +1,117 @@
+# Source: dapr/charts/dapr_operator/templates/dapr_operator_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dapr-operator
+  namespace: default
+  labels:
+    app: dapr-operator
+    app.kubernetes.io/component: operator
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dapr-operator
+  template:
+    metadata:
+      labels:
+        app: dapr-operator
+        app.kubernetes.io/component: operator
+        app.kubernetes.io/managed-by: helm
+        app.kubernetes.io/name: my-release
+        app.kubernetes.io/part-of: dapr
+        app.kubernetes.io/version: edge
+      annotations:
+        dapr.io/control-plane: operator
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/"
+    spec:
+      containers:
+      - name: dapr-operator
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 5
+        image: "ghcr.io/dapr/operator:edge"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 6500
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        resources:
+          {}
+        volumeMounts:
+        - name: dapr-trust-bundle
+          mountPath: /var/run/secrets/dapr.io/tls
+          readOnly: true
+        - name: dapr-identity-token
+          mountPath: /var/run/secrets/dapr.io/sentrytoken
+          readOnly: true
+        # This is not needed in debug mode because the root FS is writable
+        - name: dapr-operator-tmp
+          mountPath: /tmp
+        command:
+        - "/operator"
+        args:
+        - "--watch-interval"
+        - "0"
+        - "--max-pod-restarts-per-minute"
+        - "20"
+        - "--log-level"
+        - "info"
+        - "--trust-anchors-file"
+        - "/var/run/secrets/dapr.io/tls/ca.crt"
+        - "--enable-metrics"
+        - "--metrics-port"
+        - "9090"
+      serviceAccountName: dapr-operator
+      volumes:
+        - name: dapr-operator-tmp
+          emptyDir:
+            sizeLimit: 2Mi
+            medium: Memory
+        - name: dapr-trust-bundle
+          configMap:
+            name: dapr-trust-bundle
+        - name: dapr-identity-token
+          projected:
+            sources:
+            - serviceAccountToken:
+                path: token
+                expirationSeconds: 600
+                audience: "spiffe://cluster.local/ns/default/dapr-sentry"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                    - linux

@@ -1,0 +1,156 @@
+metadata:
+  labels:
+    service.istio.io/canonical-name: dynamic_parameters
+    service.istio.io/canonical-revision: dynamic_parameters
+    istio.io/rev: dynamic_parameters
+    kubectl.kubernetes.io/default-logs-container: "dynamic_parameters",
+    kubectl.kubernetes.io/default-container: "dynamic_parameters",
+spec:
+  containers:
+  - name: istio-proxy
+    image: "dynamic_parameters"
+    image: "dynamic_parameters"
+    ports:
+    - containerPort: 15090
+      protocol: TCP
+      name: http-envoy-prom
+    args:
+    - proxy
+    - router
+    - --domain
+    - $(POD_NAMESPACE).svc.dynamic_parameters
+    - --proxyLogLevel=dynamic_parameters
+    - --proxyComponentLogLevel=dynamic_parameters
+    - --log_output_level=dynamic_parameters
+    - --stsPort=dynamic_parameters
+    - --log_as_json
+    lifecycle:
+    env:
+    - name: JWT_POLICY
+      value: dynamic_parameters
+    - name: PILOT_CERT_PROVIDER
+      value: dynamic_parameters
+    - name: CA_ADDR
+      value: dynamic_parameters
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: SERVICE_ACCOUNT
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.serviceAccountName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: PROXY_CONFIG
+      value: |
+    - name: ISTIO_META_POD_PORTS
+      value: |-
+        [
+        ]
+    - name: ISTIO_META_APP_CONTAINERS
+      value: "dynamic_parameters"
+    - name: ISTIO_META_CLUSTER_ID
+      value: "dynamic_parameters"
+    - name: ISTIO_META_INTERCEPTION_MODE
+      value: "dynamic_parameters"
+    - name: ISTIO_META_NETWORK
+      value: "dynamic_parameters"
+    - name: ISTIO_META_WORKLOAD_NAME
+      value: "dynamic_parameters"
+    - name: ISTIO_META_OWNER
+      value: kubernetes://apis/dynamic_parameters/namespaces/dynamic_parameters/dynamic_parameterss/dynamic_parameters
+    - name: ISTIO_META_MESH_ID
+      value: "dynamic_parameters"
+    - name: ISTIO_META_MESH_ID
+      value: "dynamic_parameters"
+    - name: TRUST_DOMAIN
+      value: "dynamic_parameters"
+    - name: dynamic_parameters
+      value: "dynamic_parameters"
+    readinessProbe:
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+      initialDelaySeconds: dynamic_parameters
+      periodSeconds: dynamic_parameters
+      timeoutSeconds: 3
+      failureThreshold: dynamic_parameters
+    volumeMounts:
+    - name: workload-socket
+      mountPath: /var/run/secrets/workload-spiffe-uds
+    - name: credential-socket
+      mountPath: /var/run/secrets/credential-uds
+    - name: gke-workload-certificate
+      mountPath: /var/run/secrets/workload-spiffe-credentials
+      readOnly: true
+    - name: workload-certs
+      mountPath: /var/run/secrets/workload-spiffe-credentials
+    - mountPath: /var/run/secrets/istio
+      name: istiod-ca-cert
+    - mountPath: /var/lib/istio/data
+      name: istio-data
+    # SDS channel between istioagent and Envoy
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /var/run/secrets/tokens
+      name: istio-token
+    # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+    - mountPath: /etc/certs/
+      name: istio-certs
+      readOnly: true
+    - name: istio-podinfo
+      mountPath: /etc/istio/pod
+  volumes:
+    name: workload-socket
+    name: credential-socket
+  - name: gke-workload-certificate
+    csi:
+      driver: workloadcertificates.security.cloud.google.com
+    name: workload-certs
+  # SDS channel between istioagent and Envoy
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - name: istio-data
+  - name: istio-podinfo
+    downwardAPI:
+      items:
+        - path: "labels"
+          fieldRef:
+            fieldPath: metadata.labels
+        - path: "annotations"
+          fieldRef:
+            fieldPath: metadata.annotations
+  - name: istio-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: istio-token
+          expirationSeconds: 43200
+          audience: dynamic_parameters
+  - name: istiod-ca-cert
+    configMap:
+      name: istio-ca-root-cert
+  # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+  - name: istio-certs
+    secret:
+      optional: true
+      secretName: istio.default
+      secretName: dynamic_parameters
+  imagePullSecrets:
+    - name: dynamic_parameters
+  securityContext:
+    fsGroup: 1337
+
+---

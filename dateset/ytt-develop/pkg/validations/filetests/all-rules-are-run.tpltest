@@ -1,0 +1,21 @@
+#! test: all rules are evaluated, even when an earlier one fails
+
+#@assert/validate ("custom rule", lambda v: fail("fails")), min=[2,2], max=[0,0], min_len=10, max_len=1
+config: [1,1]
+
++++
+
+ERR:
+  config
+    from: stdin:4
+    - must be: custom rule (by: stdin:3)
+      found: fails
+    - must be: length >= 10 (by: stdin:3)
+      found: length = 2
+    - must be: length <= 1 (by: stdin:3)
+      found: length = 2
+    - must be: a value >= [2, 2] (by: stdin:3)
+      found: value < [2, 2]
+    - must be: a value <= [0, 0] (by: stdin:3)
+      found: value > [0, 0]
+

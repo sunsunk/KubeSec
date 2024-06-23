@@ -1,0 +1,56 @@
+name: 'Collect Logs'
+description: >-
+  Store any log files as artifacts.
+inputs:
+  jobname:
+    default: ${{ github.job }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Gather Logs"
+      shell: bash
+      run: |
+        mkdir -p /tmp/test-logs
+        rsync \
+          --prune-empty-dirs --archive --include='*/' \
+          --include='*.xml' \
+          --include='*.tap' \
+          --include='*.log' \
+          --exclude='*' \
+          . \
+          /tmp/test-logs/checkout
+        if test -d /tmp/cov_html; then
+          rsync \
+            --archive \
+            /tmp/cov_html \
+            /tmp/test-logs/cov_html
+        fi
+        if test -d ~/.cache/telepresence/logs; then
+          rsync \
+            --archive \
+            ~/.cache/telepresence/logs \
+            /tmp/test-logs/telepresence
+        fi
+        if test -f ~/.kube/config; then
+          make tools/bin/kubectl
+          mkdir /tmp/test-logs/cluster
+          tools/bin/kubectl get hosts --all-namespaces -o yaml >/tmp/test-logs/cluster/all-hosts.yaml || true
+          tools/bin/kubectl get pods --all-namespaces      >/tmp/test-logs/cluster/all-pods.txt || true
+          tools/bin/kubectl describe pods --all-namespaces >/tmp/test-logs/cluster/all-pods-described.txt || true
+
+          tools/bin/kubectl get pods --all-namespaces -ocustom-columns="name:.metadata.name,namespace:.metadata.namespace" --no-headers | while read -r name namespace; do
+            echo "Pulling logs for ${name}.${namespace}"
+            tools/bin/kubectl --namespace="$namespace" logs "$name" >"/tmp/test-logs/cluster/pod.${namespace}.${name}.log" || true
+            tools/bin/kubectl exec -n $namespace $name -- tar -czf /tmp/ambassador-config-base.tgz /tmp/ambassador --exclude=secrets-decoded --exclude=webui --exclude=sidecars && kubectl cp -n "$namespace" "$name":/tmp/ambassador-config-base.tgz /tmp/test-logs/cluster/${namespace}-${name}-pod-config-base.tgz || true
+          done
+
+          tools/bin/kubectl cp xfpredirect:/tmp/ambassador/snapshots /tmp/test-logs/cluster/xfpredirect.snapshots || true
+        fi
+        cp /tmp/*.yaml /tmp/test-logs || true
+        cp /tmp/kat-client-*.log /tmp/test-logs || true
+    - name: "Upload Logs"
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs-${{ inputs.jobname }}
+        path: /tmp/test-logs
+        if-no-files-found: ignore

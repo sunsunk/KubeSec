@@ -1,0 +1,51 @@
+# This is a reusable workflow used by master and release CI
+on:
+  workflow_call:
+    inputs:
+      arch:
+        description: x86_64 or aarch64
+        required: true
+        type: string
+      static:
+        description: Falco packages use a static build
+        required: false
+        type: boolean
+        default: false
+      version:
+        description: The Falco version to use when testing packages
+        required: true
+        type: string
+
+jobs:
+  test-packages:
+    # See https://github.com/actions/runner/issues/409#issuecomment-1158849936
+    runs-on: ${{ (inputs.arch == 'aarch64' && 'actuated-arm64-8cpu-16gb') || 'ubuntu-latest' }}
+    steps:
+      - name: Download binary
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: falco-${{ inputs.version }}${{ inputs.static && '-static' || '' }}-${{ inputs.arch }}.tar.gz
+      
+      - name: Install Falco package
+        run: |
+          ls falco-*.tar.gz
+          tar -xvf $(ls falco-*.tar.gz)
+          cd falco-${{ inputs.version }}-${{ inputs.arch }}
+          sudo cp -r * /
+     
+      # We only run driver loader tests on x86_64
+      - name: Install kernel headers for falco-driver-loader tests
+        if: ${{ inputs.arch == 'x86_64' }}
+        run: |
+          sudo apt update -y
+          sudo apt install -y --no-install-recommends linux-headers-$(uname -r)
+          
+      - name: Run tests
+        uses: falcosecurity/testing@main    
+        with:
+          test-falco: 'true'
+          test-falcoctl: 'true'
+          test-k8saudit: 'true'
+          static: ${{ inputs.static && 'true' || 'false' }}
+          test-drivers: ${{ inputs.arch == 'x86_64' && 'true' || 'false' }}
+          show-all: 'true'

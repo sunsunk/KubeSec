@@ -1,0 +1,98 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+import "pkg/model/common.proto";
+
+message Piped {
+    reserved 4, 6;
+
+    message CloudProvider {
+        string name = 1 [(validate.rules).string.min_len = 1];
+        string type = 2 [(validate.rules).string.min_len = 1];
+    }
+
+    message PlatformProvider {
+        string name = 1 [(validate.rules).string.min_len = 1];
+        string type = 2 [(validate.rules).string.min_len = 1];
+    }
+
+    message SecretEncryption {
+        string type = 1 [(validate.rules).string = {in: ["KEY_PAIR", "GCP_KMS", "AWS_KMS", "NONE"]}];
+        string public_key = 2;
+        string encrypt_service_account = 3;
+    }
+
+    enum ConnectionStatus {
+        UNKNOWN = 0;
+        ONLINE = 1;
+        OFFLINE = 2;
+    }
+
+    // The generated unique identifier.
+    string id = 1 [(validate.rules).string.min_len = 1];
+    // The name of the piped.
+    string name = 2 [(validate.rules).string.min_len = 1];
+    // The additional description about the piped.
+    string desc = 3;
+    // The ID of the project this piped belongs to.
+    string project_id = 5 [(validate.rules).string.min_len = 1];
+
+    // Currently running version.
+    string version = 7;
+    // Unix time when the piped is started up.
+    int64 started_at = 8;
+    // List of configured cloud providers.
+    // Deprecated: use PlatformProvider instead.
+    repeated CloudProvider cloud_providers = 9 [deprecated=true];
+    // List of configured repositories.
+    repeated ApplicationGitRepository repositories = 10;
+    // The latest connection status of piped.
+    ConnectionStatus status = 11 [(validate.rules).enum.defined_only = true];
+    // Currently applied config.
+    string config = 12;
+    // List of configured platform providers.
+    repeated PlatformProvider platform_providers = 16;
+    // The public key/service account for encrypting the secret data.
+    SecretEncryption secret_encryption = 21;
+
+    // The list keys can be used to authenticate.
+    repeated PipedKey keys = 20;
+
+    // The desired version of Piped that should be run.
+    // Launcher uses this value to compare with the currently running version
+    // to determine whether Piped should be restarted with another version or not.
+    string desired_version = 30;
+
+    // Whether the piped is disabled or not.
+    bool disabled = 13;
+    // Unix time when the piped is created.
+    int64 created_at = 14 [(validate.rules).int64.gt = 0];
+    // Unix time of the last time when the piped is updated.
+    int64 updated_at = 15 [(validate.rules).int64.gt = 0];
+}
+
+message PipedKey {
+    // The hash value of the key.
+    string hash = 1 [(validate.rules).string.min_len = 1];
+    // The creator of the key.
+    string creator = 2 [(validate.rules).string.min_len = 1];
+    // Unix time when the key is created.
+    int64 created_at = 10 [(validate.rules).int64.gt = 0];
+}

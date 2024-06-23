@@ -1,0 +1,12 @@
+apiVersion: pipecd.dev/v1beta1
+kind: KubernetesApp
+spec:
+  name: kustomize-remote-base
+  labels:
+    env: example
+    team: product
+  input:
+    kustomizeVersion: 3.5.5
+  description: |
+    This app demonstrates how to deploy a Kubernetes app that uses a Kustomize package sourced from another Git repository.\
+    References: [adding a new app](https://pipecd.dev/docs/user-guide/managing-application/adding-an-application/), [app configuration](https://pipecd.dev/docs/user-guide/configuration-reference/)

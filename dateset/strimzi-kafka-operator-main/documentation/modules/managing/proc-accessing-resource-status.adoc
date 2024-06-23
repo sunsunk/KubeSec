@@ -1,0 +1,31 @@
+// Module included in the following assembly:
+//
+// assembly-management-tasks.adoc
+
+[id='proc-accessing-resource-status-{context}']
+= Finding the status of a custom resource
+
+[role="_abstract"]
+Use `kubectl` with the `status` subresource of a custom resource to retrieve information about the resource.
+
+.Prerequisites
+
+* A Kubernetes cluster.
+* The Cluster Operator is running.
+
+.Procedure
+
+* Specify the custom resource and use the `-o jsonpath` option to apply a standard JSONPath expression to select the `status` property:
++
+[source,shell,subs="+quotes,attributes"]
+----
+kubectl get kafka <kafka_resource_name> -o jsonpath='{.status}' | jq
+----
++
+This expression returns all the status information for the specified custom resource. You can use dot notation, such as `status.listeners` or `status.observedGeneration`, to fine-tune the status information you wish to see.
++
+Using the `jq` {JQTool} makes it easier to read the output.
+
+[role="_additional-resources"]
+.Additional resources
+* For more information about using JSONPath, see {K8SJsonPath}.

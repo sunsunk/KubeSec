@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+  labels:
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dynamic_parameters
+      app.kubernetes.io/instance: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dynamic_parameters
+        app.kubernetes.io/instance: dynamic_parameters
+    spec:
+      serviceAccountName: dynamic_parameters
+      containers:
+      - name: k8sgpt-container
+        imagePullPolicy: dynamic_parameters
+        image: dynamic_parameters:dynamic_parameters
+        ports:
+        - containerPort: 8080
+        args: ["serve"]
+        resources:
+        env:
+        - name: K8SGPT_MODEL
+          value: dynamic_parameters
+        - name: K8SGPT_BACKEND
+          value: dynamic_parameters
+        - name: K8SGPT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ai-backend-secret
+              key: secret-key
+        - name: XDG_CONFIG_HOME
+          value: /k8sgpt-config/
+        - name: XDG_CACHE_HOME
+          value: /k8sgpt-config/
+        volumeMounts:
+        - mountPath: /k8sgpt-config
+          name: config
+      volumes:
+        name: config
+
+---

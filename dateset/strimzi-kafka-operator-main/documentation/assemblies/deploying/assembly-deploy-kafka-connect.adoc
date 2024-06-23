@@ -1,0 +1,33 @@
+// This assembly is included in the following assemblies:
+//
+// deploy/assembly-deploy-tasks.adoc
+// assembly-getting-started.adoc
+
+[id='kafka-connect-{context}']
+= Deploying Kafka Connect
+
+[role="_abstract"]
+link:https://kafka.apache.org/documentation/#connect[Kafka Connect^] is an integration toolkit for streaming data between Kafka brokers and other systems using connector plugins.
+Kafka Connect provides a framework for integrating Kafka with an external data source or target, such as a database or messaging system, for import or export of data using connectors.
+Connectors are plugins that provide the connection configuration needed.
+
+In Strimzi, Kafka Connect is deployed in distributed mode.
+Kafka Connect can also work in standalone mode, but this is not supported by Strimzi.
+
+Using the concept of _connectors_, Kafka Connect provides a framework for moving large amounts of data into and out of your Kafka cluster while maintaining scalability and reliability.
+
+The Cluster Operator manages Kafka Connect clusters deployed using the `KafkaConnect` resource and connectors created using the `KafkaConnector` resource.
+
+In order to use Kafka Connect, you need to do the following.
+
+* xref:deploying-kafka-connect-{context}[Deploy a Kafka Connect cluster]
+* xref:using-kafka-connect-with-plug-ins-{context}[Add connectors to integrate with other systems]
+
+NOTE: The term _connector_ is used interchangeably to mean a connector instance running within a Kafka Connect cluster, or a connector class.
+In this guide, the term _connector_ is used when the meaning is clear from the context.
+
+//Procedure to deploy a Kafka Connect cluster
+include::../../modules/deploying/proc-deploy-kafka-connect.adoc[leveloffset=+1]
+//Resources created for Kafka Connect
+include::../../modules/configuring/ref-config-list-of-kafka-connect-resources.adoc[leveloffset=+1]
+

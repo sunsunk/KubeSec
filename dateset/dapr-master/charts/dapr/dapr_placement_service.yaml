@@ -1,0 +1,25 @@
+# Source: dapr/charts/dapr_placement/templates/dapr_placement_service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: dapr-placement-server
+  namespace: default
+  labels:
+    app: dapr-placement-server
+    app.kubernetes.io/component: placement
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  selector:
+    app: dapr-placement-server
+  # placement must be able to resolve pod address to join initial cluster peers
+  # before POD is ready
+  publishNotReadyAddresses: true
+  ports:
+  - name: api
+    port: 50005
+  - name: raft-node
+    port: 8201
+  clusterIP: None

@@ -1,0 +1,89 @@
+# Source: metallb/templates/podmonitor.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters-prometheus
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+# Source: metallb/templates/podmonitor.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters-prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+---
+# Source: metallb/templates/podmonitor.yaml
+---
+
+---
+# Source: metallb/templates/podmonitor.yaml
+---
+
+---
+# Source: metallb/templates/podmonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dynamic_parameters-controller
+  labels:
+    
+    app.kubernetes.io/component: controller
+  annotations:
+spec:
+  jobLabel: dynamic_parameters
+  selector:
+    matchLabels:
+      
+      app.kubernetes.io/component: controller
+  namespaceSelector:
+    matchNames:
+    - dynamic_parameters
+  podMetricsEndpoints:
+  - port: monitoring
+    path: /metrics
+    interval: dynamic_parameters
+    metricRelabelings:
+    relabelings:
+
+---
+# Source: metallb/templates/podmonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: dynamic_parameters-speaker
+  labels:
+    
+    app.kubernetes.io/component: speaker
+  annotations:
+spec:
+  jobLabel: dynamic_parameters
+  selector:
+    matchLabels:
+      
+      app.kubernetes.io/component: speaker
+  namespaceSelector:
+    matchNames:
+    - dynamic_parameters
+  podMetricsEndpoints:
+  - port: monitoring
+    path: /metrics
+    interval: dynamic_parameters
+    metricRelabelings:
+    relabelings:

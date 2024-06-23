@@ -1,0 +1,19 @@
+[Unit]
+Description=Parsec Service
+Documentation=https://parallaxsecond.github.io/parsec-book/parsec_service/install_parsec_linux.html
+
+[Service]
+WorkingDirectory=/home/parsec/
+ExecStart=/usr/libexec/parsec/parsec --config /etc/parsec/config.toml
+# Systemd hardening
+ProtectSystem=full
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictRealtime=true
+
+[Install]
+WantedBy=default.target

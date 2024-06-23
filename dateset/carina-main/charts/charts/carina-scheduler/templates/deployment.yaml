@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          command: ["carina-scheduler"]
+          args:
+          - --config=/etc/kube/scheduler-config.yaml
+          - --v=3
+          volumeMounts:
+            - name: scheduler-config
+              mountPath: /etc/kube/
+            - name: config
+              mountPath: /etc/carina/
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+      volumes:
+        - name: scheduler-config
+          configMap:
+            name: carina-scheduler-config
+        - name: config
+          configMap:
+            name: dynamic_parameters-csi-config
+---
+
+---

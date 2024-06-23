@@ -1,0 +1,21 @@
+apiVersion: v2
+version: 0.21.5
+description: an In-Memory Data Manager for Data-Intensive Analytics
+home: https://v6d.io/
+keywords:
+- data/object manager
+- shared memory
+- cloud native
+maintainers:
+- name: Tao He
+  email: linzhu.ht@alibaba-inc.com
+- name: Shumin Yuan
+  email: yuanshumin.ysm@alibaba-inc.com
+- name: Ye Cao
+  email: caoye.cao@alibaba-inc.com
+name: vineyard
+
+dependencies:
+- name: library
+  version: "0.1.0"
+  repository: "file://../library"

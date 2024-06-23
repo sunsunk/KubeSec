@@ -1,0 +1,33 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/branch/tag/test",
+      "user-agent": "dummy",
+      "x-forwarded-for": "1.2.3.4"
+    },
+    "name": "test for the branch tag presence",
+    "exec": "return function(actual, request_map) return request_map.branch == \"test\" end",
+    "response": {
+      "action": "pass",
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "branch:test",
+        "ip:1-2-3-4",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "bot"
+      ]
+    }
+  }
+]

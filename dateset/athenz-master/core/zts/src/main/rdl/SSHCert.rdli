@@ -1,0 +1,17 @@
+// Copyright The Athenz Authors
+// Licensed under the terms of the Apache version 2.0 license. See LICENSE file for terms.
+
+include "SSHCert.tdl";
+
+resource SSHCertificates POST "/sshcert" {
+    SSHCertRequest certRequest; //ssh certificate request
+    authenticate;
+    expected CREATED;
+    exceptions {
+        ResourceError BAD_REQUEST;
+        ResourceError FORBIDDEN;
+        ResourceError UNAUTHORIZED;
+        ResourceError INTERNAL_SERVER_ERROR;
+        ResourceError TOO_MANY_REQUESTS;
+    }
+}

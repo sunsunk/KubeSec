@@ -1,0 +1,41 @@
+name: upgrade
+on:
+  push:
+    paths:
+      - "manifest_staging/charts/**"
+      - ".github/workflows/upgrade.yaml"
+
+  pull_request:
+    paths:
+      - "manifest_staging/charts/**"
+      - ".github/workflows/upgrade.yaml"
+
+env:
+  REGISTRY: ghcr.io
+
+permissions: read-all
+
+jobs:
+  generate-bucket-id:
+    name: "Generate build id for storage"
+    uses: ./.github/workflows/build-id.yaml
+
+  build-images:
+    name: "Build images for e2e tests"
+    uses: ./.github/workflows/e2e-build.yaml
+    needs:
+      - generate-bucket-id
+    with:
+      bucket-id: ${{ needs.generate-bucket-id.outputs.bucket-id }}
+
+  e2e-test:
+    name: "Run e2e tests"
+    uses: ./.github/workflows/e2e-test.yaml
+    permissions:
+      contents: write
+    needs:
+      - build-images
+      - generate-bucket-id
+    with:
+      upgrade-test: "1"
+      bucket-id: ${{ needs.generate-bucket-id.outputs.bucket-id }}

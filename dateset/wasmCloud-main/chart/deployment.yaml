@@ -1,0 +1,143 @@
+# Source: wasmcloud-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: WASMCLOUD_NATS_HOST
+              value: dynamic_parameters
+            - name: WASMCLOUD_NATS_PORT
+              value: dynamic_parameters
+            - name: NATS_JWT
+              value: dynamic_parameters
+            - name: NATS_SEED
+              value: dynamic_parameters
+            - name: WASMCLOUD_LATTICE_PREFIX
+              value: dynamic_parameters
+            - name: WASMCLOUD_HOST_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: hostSeed
+            - name: WASMCLOUD_CLUSTER_SEED
+              value: dynamic_parameters
+            - name: WASMCLOUD_CLUSTER_ISSUERS
+              value: dynamic_parameters
+            - name: WASMCLOUD_PROV_SHUTDOWN_DELAY_MS
+              value: dynamic_parameters
+            - name: WASMCLOUD_OCI_ALLOW_LATEST
+              value: dynamic_parameters
+            - name: WASMCLOUD_OCI_ALLOWED_INSECURE
+              value: dynamic_parameters
+            - name: WASMCLOUD_JS_DOMAIN
+              value: dynamic_parameters
+            - name: WASMCLOUD_CONFIG_SERVICE
+              value: dynamic_parameters
+            - name: WASMCLOUD_ALLOW_FILE_LOAD
+              value: dynamic_parameters
+            - name: WASMCLOUD_LOG_LEVEL
+              value: dynamic_parameters
+            - name: WASMCLOUD_STRUCTURED_LOGGING_ENABLED
+              value: dynamic_parameters
+            - name: WASMCLOUD_LABEL_dynamic_parameters
+              value: dynamic_parameters
+            - name: WASMCLOUD_CTL_HOST
+              value: dynamic_parameters
+            - name: WASMCLOUD_CTL_PORT
+              value: dynamic_parameters
+            - name: WASMCLOUD_CTL_JWT
+              value: dynamic_parameters
+            - name: WASMCLOUD_CTL_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: controlNatsSeed
+            - name: WASMCLOUD_CTL_TOPIC_PREFIX
+              value: dynamic_parameters
+            - name: WASMCLOUD_CTL_TLS
+              value: dynamic_parameters
+            - name: WASMCLOUD_RPC_HOST
+              value: dynamic_parameters
+            - name: WASMCLOUD_RPC_PORT
+              value: dynamic_parameters
+            - name: WASMCLOUD_RPC_JWT
+              value: dynamic_parameters
+            - name: WASMCLOUD_RPC_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: rpcNatsSeed
+            - name: WASMCLOUD_RPC_TIMEOUT_MS
+              value: dynamic_parameters
+            - name: WASMCLOUD_RPC_TLS
+              value: dynamic_parameters
+            - name: OTEL_TRACES_EXPORTER
+              value: dynamic_parameters
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: dynamic_parameters
+            - name: OCI_REGISTRY
+              value: dynamic_parameters
+            - name: OCI_REGISTRY_USER
+              value: dynamic_parameters
+            - name: OCI_REGISTRY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: registryPassword
+          resources:
+        - name: nats
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+            - "-js"
+            - "-c"
+            - "/nats/nats.conf"
+          ports:
+            - name: client
+              containerPort: 4222
+            - name: clustering
+              containerPort: 6222
+            - name: management
+              containerPort: 8222
+          volumeMounts:
+            - name: leafnode-config
+              mountPath: /nats/nats.conf
+              subPath: nats.conf
+              readOnly: true
+            - name: leafnode-creds
+              mountPath: /nats/nats.creds
+              subPath: nats.creds
+              readOnly: true
+          resources:
+      volumes:
+        - name: leafnode-config
+          configMap:
+            name: dynamic_parameters
+        - name: leafnode-creds
+          secret:
+            secretName: dynamic_parameters-nats
+      nodeSelector:
+      affinity:
+      tolerations:

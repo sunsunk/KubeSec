@@ -1,0 +1,15 @@
+apiVersion: apps/v1beta1
+#@ if True:
+t: #@ 123
+t2:
+  #@ if True
+  t: #@ 456
+  t2: #@ 456
+  #@ end
+#@ end
+
++++
+
+ERR: 
+- got newline, want ':' (hint: missing colon at the end of 'if/for/def' statement?)
+    stdin:6 |   t: #@ 456

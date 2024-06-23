@@ -1,0 +1,61 @@
+# Temporary Build/Output Files
+bin
+build/_output
+build/_test
+_artifacts
+artifacts*.tar.gz
+test/e2e/images
+
+# Created by https://www.gitignore.io/api/go
+### Go ###
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+# Test binary, build with 'go test -c'
+*.test
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+# End of https://www.gitignore.io/api/go
+
+# go.work files
+go.work
+go.work.sum
+
+# Common editor / temporary files
+*~
+*.tmp
+.DS_Store
+
+# Tilt files.
+.tiltbuild
+/tilt.d
+tilt-settings.json
+tilt_config.json
+
+*.crt
+*.key
+
+username
+password
+*-htpasswd
+ironic-auth-config
+ironic-inspector-auth-config
+ironic-rpc-auth-config
+ironic-username
+ironic-password
+ironic-inspector-username
+ironic-inspector-password
+HTTP_BASIC_HTPASSWD
+ironic-deployment/overlays/temp
+config/overlays/temp
+
+# Development containers (https://containers.dev/)
+.devcontainer
+# Python venv
+.venv
+
+# release-notes
+/releasenotes

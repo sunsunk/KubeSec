@@ -1,0 +1,26 @@
+---
+version: 3
+
+project:
+  id: github.com/pixie-io/pixie
+
+paths:
+  exclude:
+  - ./.cache/
+  - ./bazel-bin/
+  - ./bazel-compilation-database-0.5.2/
+  - ./bazel-out/
+  - ./bazel-pixie/
+  - ./bazel-testlogs/
+  - ./external/
+
+targets:
+  only:
+  - type: gomod
+    path: ./
+  - type: setuptools
+  - type: yarn
+    path: ./src/ui/
+  exclude:
+  - type: setuptools
+    path: ./src/datagen/pii/privy

@@ -1,0 +1,57 @@
+name: EQC Tests
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  api:
+    if: github.repository_owner == 'tremor-rs' && github.actor!= 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify valid EQC_LICENSE
+        run: test -n "${{secrets.EQC_LICENSE}}"
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "24"
+          rebar3-version: "3"
+      - name: Install deps
+        run: sudo apt-get -qy update && sudo apt-get install -y libssl-dev libssl1.1
+      - name: install yq
+        run: wget https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_linux_amd64 -O ~/yq && chmod +x ~/yq
+      - name: install EQC
+        run: curl -O http://quviq-licencer.com/downloads/eqcR24.zip && unzip eqcR24.zip && cd Quviq* && erl -noshell -eval 'eqc_install:install()' -eval 'init:stop()'
+      - name: Activate EQC
+        run: test -n "${{secrets.EQC_LICENSE}}" && erl -noshell -eval 'eqc:registration("${{secrets.EQC_LICENSE}}")' -eval "eqc:start()" -eval "init:stop()"
+      - name: generate yaml
+        run: ~/yq -o=json static/openapi.yaml > static/openapi.json
+      - name: Build
+        run: cargo build --all
+      - name: Run eqc tests
+        run: ./.github/checks/eqc.sh
+  tremor-script:
+    if: github.repository_owner == 'tremor-rs' && github.actor!= 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify valid EQC_LICENSE
+        run: test -n "${{secrets.EQC_LICENSE}}"
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "24"
+          rebar3-version: "3"
+      - name: Install deps
+        run: sudo apt-get -qy update && sudo apt-get install -y libssl-dev libssl1.1
+      - name: install EQC
+        run: curl -O http://quviq-licencer.com/downloads/eqcR24.zip && unzip eqcR24.zip && cd Quviq* && erl -noshell -eval 'eqc_install:install()' -eval 'init:stop()'
+      - name: Activate EQC
+        run: erl -noshell -eval 'eqc:registration("${{secrets.EQC_LICENSE}}")' -eval "eqc:start()" -eval "init:stop()"
+      - name: Run
+        run: make -C tremor-script run-eqc

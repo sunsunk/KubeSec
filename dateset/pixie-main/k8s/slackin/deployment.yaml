@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slackin-server
+spec:
+  selector:
+    matchLabels:
+      name: slackin-server
+  template:
+    metadata:
+      labels:
+        name: slackin-server
+    spec:
+      containers:
+      - name: slackin-server
+        # yamllint disable-line rule:line-length
+        image: ghcr.io/pixie-io/slackin:0.1.0@sha256:6811d908c353b4bacb3108d853e60e7b98149a7f6e71c110c2d212e58632271b
+        ports:
+        - containerPort: 58000
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthz
+            port: 58000
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthz
+            port: 58000
+        envFrom:
+        - configMapRef:
+            name: slackin-config
+        env:
+        - name: RECAPTCHA_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: slackin-secrets
+              key: RECAPTCHA_SECRET
+        - name: SLACK_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slackin-secrets
+              key: SLACK_API_TOKEN

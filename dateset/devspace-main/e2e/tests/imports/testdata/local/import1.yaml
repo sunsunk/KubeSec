@@ -1,0 +1,17 @@
+version: v2beta1
+name: import1
+
+imports:
+  - path: import3.yaml
+  - path: import4.yaml
+    enabled: $(is_equal ${BASE} "base")
+
+vars:
+  TOP: import1
+  IMPORT1:
+    value: import1
+
+pipelines:
+  import1:
+    run: |-
+      echo ${IMPORT1}

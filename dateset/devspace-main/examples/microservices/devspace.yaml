@@ -1,0 +1,9 @@
+version: v2beta1
+
+dependencies:
+  node:
+    path: node
+    pipeline: dev
+  php:
+    path: php
+    pipeline: dev

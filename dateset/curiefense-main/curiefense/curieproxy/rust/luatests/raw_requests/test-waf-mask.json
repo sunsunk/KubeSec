@@ -1,0 +1,41 @@
+[
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:maskall",
+        "contentfiltername:mask-all-arguments",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:mask-all-tests",
+        "aclid:--default--",
+        "bot",
+        "cf-rule-category:libinjection",
+        "cf-rule-subcategory:libinjection-xss",
+        "cf-rule-risk:libinjection",
+        "cf-rule-id:libinjection-xss",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "mask all",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/waf\/maskall?a=1&b=%3Cscript%3Edocument.body.innerHTML=",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

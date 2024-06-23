@@ -1,0 +1,47 @@
+// Module included in the following assemblies:
+//
+// deploying/assembly_deploy-tasks-prep.adoc
+
+[id='deploy-prereqs-{context}']
+= Deployment prerequisites
+
+To deploy Strimzi, you will need the following:
+
+ifdef::Downloading[]
+* A Kubernetes {KubernetesVersion} cluster.
++
+* The `kubectl` command-line tool is installed and configured to connect to the running cluster.
+
+For more information on the tools available for running Kubernetes, see {KubeTools} in the Kubernetes documentation.
+
+NOTE: Strimzi supports some features that are specific to OpenShift,
+where such integration benefits OpenShift users and there is no equivalent implementation using standard Kubernetes.
+
+[discrete]
+== `oc` and `kubectl` commands
+
+The `oc` command functions as an alternative to `kubectl`.
+In almost all cases the example `kubectl` commands used in this guide can be done using `oc` simply by replacing the command name (options and arguments remain the same).
+
+In other words, instead of using:
+
+[source,shell,subs=+quotes]
+kubectl apply -f _your-file_
+
+when using OpenShift you can use:
+
+[source,shell,subs=+quotes]
+oc apply -f _your-file_
+
+NOTE: As an exception to this general rule, `oc` uses `oc adm` subcommands for _cluster management_ functionality,
+whereas `kubectl` does not make this distinction.
+For example, the `oc` equivalent of `kubectl taint` is `oc adm taint`.
+
+endif::Downloading[]
+ifndef::Downloading[]
+* An OpenShift {OpenShiftVersion} cluster.
++
+Strimzi is based on {StrimziVersion}.
+
+* The `oc` command-line tool is installed and configured to connect to the running cluster.
+endif::Downloading[]

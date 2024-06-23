@@ -1,0 +1,233 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_bpf_test", "pl_cc_test", "pl_sh_bpf_test", "pl_sh_test")
+load("//src/stirling/source_connectors/perf_profiler/testing:testing.bzl", "agent_libs", "agent_libs_arg")
+
+package(default_visibility = ["//src/stirling:__subpackages__"])
+
+pl_cc_bpf_test(
+    name = "stirling_bpf_test",
+    timeout = "moderate",
+    srcs = ["stirling_bpf_test.cc"],
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = [
+        "//src/stirling:cc_library",
+    ],
+)
+
+pl_cc_bpf_test(
+    name = "bpf_map_leak_bpf_test",
+    timeout = "moderate",
+    srcs = ["bpf_map_leak_bpf_test.cc"],
+    data = [
+        "//src/stirling/testing/demo_apps/leaky_http_server:server",
+        "//src/stirling/testing/demo_apps/leaky_http_unix_socket_server:server",
+    ],
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = [
+        "//src/common/testing/test_utils:cc_library",
+        "//src/stirling:cc_library",
+        "//src/stirling/source_connectors/socket_tracer/testing:cc_library",
+        "//src/stirling/testing:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "stirling_wrapper_size_test",
+    srcs = ["stirling_wrapper_size_test.cc"],
+    data = ["//src/stirling/binaries:stirling_wrapper_core"],
+    tags = [
+        "no_asan",
+        "no_tsan",
+    ],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_wrapper_kprobe_leak_bpf_test",
+    srcs = ["stirling_wrapper_kprobe_leak_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper",
+    ],
+    # Sometimes stirling_wrapper gets stuck after receiving SIGHUP, the test waits for
+    # stirling_wrapper process to exit and eventually times out.
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_wrapper_bpf_test",
+    srcs = ["stirling_wrapper_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+        "$(location //src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_server:golang_1_16_grpc_server_with_certs)",
+        "$(location //src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_client:golang_1_16_grpc_client)",
+        "-stirling_profiler_java_agent_libs %s" % agent_libs_arg,
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper",
+        "//src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_client:golang_1_16_grpc_client",
+        "//src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_server:golang_1_16_grpc_server_with_certs",
+    ] + agent_libs,
+    # TODO(PL-1462): Uprobe attaching sometimes fails.
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_wrapper_bpftrace_bpf_test",
+    srcs = ["stirling_wrapper_bpftrace_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+        "$(location //src/stirling/testing:exec_snoop_bpftrace_script)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper",
+        "//src/stirling/testing:exec_snoop_bpftrace_script",
+    ],
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = [
+        "//src/stirling/scripts:sh_library",
+    ],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_wrapper_container_bpf_test",
+    srcs = ["stirling_wrapper_container_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper_image.tar)",
+        "$(location //src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_server:golang_1_16_grpc_server_with_certs)",
+        "$(location //src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_client:golang_1_16_grpc_client)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper_image.tar",
+        "//src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_client:golang_1_16_grpc_client",
+        "//src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_server:golang_1_16_grpc_server_with_certs",
+    ],
+    flaky = True,
+    tags = [
+        "requires_bpf",
+        "cpu:16",
+        # TODO(oazizi): This test times out in TSAN. Figure out why.
+        # Likely related to the fact that its running though docker.
+        "no_tsan",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_perf_bpf_test",
+    srcs = ["stirling_perf_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper",
+    ],
+    flaky = True,
+    tags = [
+        "requires_bpf",
+        "cpu:16",
+        # Only intention is to run this with opt builds.
+        # Can still run it with -c dbg, but on Jenkins, we only run opt version.
+        "no_asan",
+        "no_tsan",
+        # TODO(oazizi): Re-enable after investigating stirling_wrapper performance issues.
+        "manual",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_bpf_test(
+    name = "stirling_wrapper_jvm_stats_bpf_test",
+    srcs = ["stirling_wrapper_jvm_stats_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper_image.tar)",
+        "$(location //src/stirling/source_connectors/jvm_stats/testing:hello_world_image.tar)",
+        "$(location //src/stirling/source_connectors/jvm_stats/testing:HelloWorld)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper_image.tar",
+        "//src/stirling/source_connectors/jvm_stats/testing:HelloWorld",
+        "//src/stirling/source_connectors/jvm_stats/testing:hello_world_image.tar",
+    ],
+    flaky = True,
+    tags = [
+        "requires_bpf",
+        "cpu:16",
+        # TODO(PP-1742): Test is flaky, especially with ASAN, likely due to timing issues.
+        "manual",
+        "no_asan",
+        "no_tsan",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_test(
+    name = "stirling_signal_test",
+    srcs = ["stirling_signal_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+        "$(location //src/stirling/binaries:stirling_ctrl)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_ctrl",
+        "//src/stirling/binaries:stirling_wrapper",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)
+
+pl_sh_bpf_test(
+    name = "probe_cleaner_bpf_test",
+    srcs = ["probe_cleaner_bpf_test.sh"],
+    args = [
+        "$(location //src/stirling/binaries:stirling_wrapper)",
+        "$(location //src/stirling/bpf_tools:probe_cleaner_standalone)",
+    ],
+    data = [
+        "//src/stirling/binaries:stirling_wrapper",
+        "//src/stirling/bpf_tools:probe_cleaner_standalone",
+    ],
+    flaky = True,
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = ["//src/stirling/scripts:sh_library"],
+)

@@ -1,0 +1,15 @@
+name: nightly-e2e-test
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  validate:
+    uses: kedacore/keda/.github/workflows/template-main-e2e-test.yml@main
+    secrets: inherit
+
+  validate-arm64:
+    uses: kedacore/keda/.github/workflows/template-arm64-smoke-tests.yml@main
+
+  validate-k8s-versions:
+    uses: kedacore/keda/.github/workflows/template-versions-smoke-tests.yml@main

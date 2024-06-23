@@ -1,0 +1,186 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "crdvalidator.antrea.io"
+  labels:
+    app: antrea
+    served-by: antrea-controller
+webhooks:
+  - name: "tiervalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/tier"
+    rules:
+      - operations: ["CREATE", "UPDATE", "DELETE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha1", "v1beta1"]
+        resources: ["tiers"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "acnpvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/acnp"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1beta1"]
+        resources: ["clusternetworkpolicies"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "annpvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/annp"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1beta1"]
+        resources: ["networkpolicies"]
+        scope: "Namespaced"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "anpvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/anp"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["policy.networking.k8s.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["adminnetworkpolicies"]
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "banpvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/banp"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["policy.networking.k8s.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["baselineadminnetworkpolicies"]
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "clustergroupvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/clustergroup"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1beta1"]
+        resources: ["clustergroups"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "groupvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: "kube-system"
+        path: "/validate/group"
+    rules:
+      - operations: [ "CREATE", "UPDATE" ]
+        apiGroups: [ "crd.antrea.io" ]
+        apiVersions: [ "v1beta1" ]
+        resources: [ "groups" ]
+        scope: "Namespaced"
+    admissionReviewVersions: [ "v1", "v1beta1" ]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "externalippoolvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/externalippool"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha2", "v1beta1"]
+        resources: ["externalippools"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "egressvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/egress"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha2"]
+        resources: ["egresses"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "ippoolvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/ippool"
+    rules:
+      - operations: ["CREATE", "UPDATE", "DELETE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha2"]
+        resources: ["ippools"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "supportbundlecollectionvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/supportbundlecollection"
+    rules:
+      - operations: ["UPDATE", "DELETE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["supportbundlecollections"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+  - name: "traceflowvalidator.antrea.io"
+    clientConfig:
+      service:
+        name: "antrea"
+        namespace: {{ .Release.Namespace }}
+        path: "/validate/traceflow"
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["crd.antrea.io"]
+        apiVersions: ["v1alpha1"]
+        resources: ["traceflows"]
+        scope: "Cluster"
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5

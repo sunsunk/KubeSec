@@ -1,0 +1,30 @@
+database: schemahero
+name: users
+requires: []
+schema:
+  timescaledb:
+    hypertable:
+      timeColumnName: created_at
+    primaryKey:
+      - created_at
+      - id
+    columns:
+      - name: created_at
+        type: timestamp without time zone
+        constraints:
+          notNull: true
+      - name: id
+        type: integer
+      - name: login
+        type: varchar(255)
+      - name: name
+        type: varchar(255)
+        constraints:
+          notNull: true
+        default: ethan
+      - name: tz_1
+        type: timestamp
+      - name: tz_2
+        type: timestamp with time zone
+      - name: tz_3
+        type: timestamp without time zone

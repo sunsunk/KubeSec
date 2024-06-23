@@ -1,0 +1,668 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters"
+  labels:
+    app: "dynamic_parameters"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: "dynamic_parameters"
+      container: spring
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: "dynamic_parameters"
+        container: spring
+        group: microcks
+        
+      annotations:
+        checksum/config: dynamic_parameters
+        
+    spec:
+      containers:
+      - name: spring
+        image: dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+          - name: JAVA_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=2"
+          - name: JAVA_MAJOR_VERSION
+            value: "11"
+          - name: SPRING_PROFILES_ACTIVE
+            value: proddynamic_parameters,extradynamic_parameters
+          - name: SPRING_DATA_MONGODB_URI
+          - name: SPRING_DATA_MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: dynamic_parameters
+                key: username
+                name: "dynamic_parameters-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: dynamic_parameters
+                key: password
+                name: "dynamic_parameters-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_DATABASE
+            value: dynamic_parameters
+          - name: POSTMAN_RUNNER_URL
+            value: http://dynamic_parameters-postman-runtime:8080
+          - name: TEST_CALLBACK_URL
+            value: http://dynamic_parameters:8080
+          - name: KEYCLOAK_ENABLED
+            value: "dynamic_parameters"
+          - name: KEYCLOAK_URL
+            value: "dynamic_parameters"
+          - name: KEYCLOAK_PUBLIC_URL
+            value: https://dynamic_parameters
+          - name: KEYCLOAK_URL
+            value: https://dynamic_parameters
+          - name: ASYNC_MINION_URL
+            value: http://dynamic_parameters-async-minion:8080
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: "dynamic_parameters-kafka-kafka-bootstrap:9092"
+            value: "dynamic_parameters"
+          - name: KAFKA_TRUSTSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: "dynamic_parameters-kafka-truststore"
+          - name: KAFKA_KEYSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: "dynamic_parameters-kafka-keystore"
+        resources:
+        livenessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 25
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 35
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        volumeMounts:
+          - name: "dynamic_parameters-config"
+            mountPath: "/deployments/config"
+          - name: "dynamic_parameters-grpc-certs"
+            mountPath: "/deployments/config/grpc"
+          - name: "dynamic_parameters-kafka-truststore"
+            mountPath: "/deployments/config/kafka/truststore"
+          - name: "dynamic_parameters-kafka-keystore"
+            mountPath: "/deployments/config/kafka/keystore"
+          - name: "dynamic_parameters"
+            mountPath: "/deployments/config/custom/secret"
+        terminationMessagePath: "/dev/termination-log"
+      volumes:
+        - name: "dynamic_parameters-config"
+          configMap:
+            name: "dynamic_parameters-config"
+        - name: "dynamic_parameters-grpc-certs"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-kafka-truststore"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-kafka-keystore"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters"
+          secret:
+            secretName: "dynamic_parameters"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters-postman-runtime"
+  labels:
+    app: "dynamic_parameters"
+    container: postman-runtime
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: "dynamic_parameters-postman-runtime"
+      container: postman-runtime
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: "dynamic_parameters-postman-runtime"
+        container: postman-runtime
+        group: microcks
+        
+      annotations:
+        checksum/config: dynamic_parameters
+        
+    spec:
+      containers:
+      - name: postman-runtime
+        image: dynamic_parameters
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        env:
+        - name: LOG_LEVEL
+          value: info
+        resources:
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 4
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        terminationMessagePath: "/dev/termination-log"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters-mongodb"
+  labels:
+    app: "dynamic_parameters"
+    container: mongodb
+    group: microcks
+    
+  annotations:
+    
+
+  creationTimestamp:
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: mongodb
+      container: mongodb
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: mongodb
+        container: mongodb
+        group: microcks
+        
+      annotations:
+        
+    spec:
+      securityContext:
+        runAsUser: 184
+        runAsGroup: 184
+        fsGroup: 184
+      containers:
+      - name: mongodb
+        image: dynamic_parameters
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 3
+          exec:
+            command:
+            - "/bin/sh"
+            - "-i"
+            - "-c"
+            - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+              --eval="quit()"
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 30
+          tcpSocket:
+            port: 27017
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: "dynamic_parameters-mongodb-connection"
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "dynamic_parameters-mongodb-connection"
+        - name: MONGODB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: adminPassword
+              name: "dynamic_parameters-mongodb-connection"
+        - name: MONGODB_DATABASE
+          value: "dynamic_parameters"
+        resources:
+        volumeMounts:
+        - name: "dynamic_parameters-mongodb-data"
+          mountPath: "/var/lib/mongodb/data"
+        terminationMessagePath: "/dev/termination-log"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+      volumes:
+      - name: "dynamic_parameters-mongodb-data"
+        persistentVolumeClaim:
+          claimName: "dynamic_parameters-mongodb"
+        emptyDir:
+          medium: ''
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters-keycloak"
+  labels:
+    app: "dynamic_parameters"
+    container: keycloak
+    group: microcks
+    
+  annotations:
+    
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: keycloak
+      container: keycloak
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: keycloak
+        container: keycloak
+        group: microcks
+        
+      annotations:
+        checksum/config: dynamic_parameters
+        
+    spec:
+      containers:
+      - name: keycloak-server
+        image: dynamic_parameters
+        resources:
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: jolokia
+          containerPort: 8778
+          protocol: TCP
+        args:
+        - 'start'
+        - '--features=token-exchange'
+        - '--db=$(KC_DB)'
+        - '--db-url-host=$(KC_DB_URL_HOST)'
+        - '--db-username=$(KC_DB_USER)'
+        - '--db-password=$(KC_DB_PASSWORD)'
+        - '--hostname=dynamic_parameters'
+        - '--hostname-strict-backchannel=false'
+        - '--hostname=dynamic_parameters'
+        - '--health-enabled=true'
+        - '--import-realm'
+        env:
+        - name: INTERNAL_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              key: dynamic_parameters
+              name: dynamic_parameters
+              key: username
+              name: "dynamic_parameters-keycloak-admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: dynamic_parameters
+              name: dynamic_parameters
+              key: password
+              name: "dynamic_parameters-keycloak-admin"
+        - name: OPERATING_MODE
+          value: clustered
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: dynamic_parameters
+              name: dynamic_parameters
+              key: postgresUsername
+              name: "dynamic_parameters-keycloak-admin"
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: dynamic_parameters
+              name: dynamic_parameters
+              key: postgresPassword
+              name: "dynamic_parameters-keycloak-admin"
+        - name: KC_DB_URL_DATABASE
+          value: root
+        - name: KC_DB_URL_HOST
+          value: "dynamic_parameters-keycloak-postgresql"
+        - name: KC_PROXY
+          value: "edge"
+        livenessProbe:
+          httpGet:
+            path: "/health/live"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 2
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: "/health/ready"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
+        volumeMounts:
+        - name: dynamic_parameters-keycloak-config
+          mountPath: "/opt/keycloak/data/import"
+        securityContext:
+          privileged: false
+      volumes:
+      - name: "dynamic_parameters-keycloak-config"
+        configMap:
+          name: "dynamic_parameters-keycloak-config"
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters-keycloak-postgresql"
+  labels:
+    app: "dynamic_parameters"
+    container: keycloak-postgresql
+    group: microcks
+    
+  annotations:
+    
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: keycloak-postgresql
+      container: keycloak-postgresql
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: keycloak-postgresql
+        container: keycloak-postgresql
+        group: microcks
+        
+      annotations:
+        
+    spec:
+      securityContext:
+        runAsUser: 26
+        runAsGroup: 26
+        fsGroup: 26
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: keycloak-postgresql
+        image: dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          exec:
+            command:
+            - "/bin/sh"
+            - "-i"
+            - "-c"
+              -c 'SELECT 1'
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 30
+          tcpSocket:
+            port: 5432
+        env:
+        - name: POSTGRESQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgresUsername
+              name: "dynamic_parameters-keycloak-admin"
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgresPassword
+              name: "dynamic_parameters-keycloak-admin"
+        - name: POSTGRESQL_DATABASE
+          value: root
+        - name: POSTGRESQL_MAX_CONNECTIONS
+          value: '100'
+        - name: POSTGRESQL_SHARED_BUFFERS
+          value: 12MB
+        volumeMounts:
+          - name: "dynamic_parameters-keycloak-postgresql-data"
+            mountPath: "/var/lib/pgsql/data"
+      volumes:
+      - name: "dynamic_parameters-keycloak-postgresql-data"
+        persistentVolumeClaim:
+          claimName: "dynamic_parameters-keycloak-postgresql"
+        emptyDir:
+          medium: ''
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dynamic_parameters-async-minion"
+  labels:
+    app: "dynamic_parameters"
+    container: async-minion
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dynamic_parameters"
+      deploymentconfig: async-minion
+      container: async-minion
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "dynamic_parameters"
+        deploymentconfig: async-minion
+        container: async-minion
+        group: microcks
+        
+      annotations:
+        checksum/config: dynamic_parameters
+        
+    spec:
+      containers:
+      - name: async-minion
+        image: dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: QUARKUS_PROFILE
+            value: kube
+          - name: KAFKA_TRUSTSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: "dynamic_parameters-kafka-truststore"
+          - name: KAFKA_KEYSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: dynamic_parameters
+                name: "dynamic_parameters-kafka-keystore"
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+          - name: AWS_SESSION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+          - name: AWS_SESSION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: dynamic_parameters
+                key: dynamic_parameters
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: "/q/health/live"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/q/health/ready"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+          - name: "dynamic_parameters-async-minion-config"
+            mountPath: "/deployments/config"
+          - name: "dynamic_parameters-kafka-truststore"
+            mountPath: "/deployments/config/kafka/truststore"
+          - name: "dynamic_parameters-kafka-keystore"
+            mountPath: "/deployments/config/kafka/keystore"
+          - name: "dynamic_parameters-googlepubsub-sa"
+            mountPath: "/deployments/config/googlepubsub/sa"
+          - name: "dynamic_parameters-amazonsqs-creds"
+            mountPath: "/deployments/config/amazon-sqs"
+          - name: "dynamic_parameters-amazonsns-creds"
+            mountPath: "/deployments/config/amazon-sns"
+        terminationMessagePath: "/dev/termination-log"
+      volumes:
+        - name: "dynamic_parameters-async-minion-config"
+          configMap:
+            name: "dynamic_parameters-async-minion-config"
+        - name: "dynamic_parameters-kafka-truststore"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-kafka-keystore"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-googlepubsub-sa"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-amazonsqs-creds"
+          secret:
+            secretName: "dynamic_parameters"
+        - name: "dynamic_parameters-amazonsns-creds"
+          secret:
+            secretName: "dynamic_parameters"
+
+---
+
+---

@@ -1,0 +1,11 @@
+<productname>Strimzi</productname>
+<productnumber>{ProductVersion}</productnumber>
+<subtitle>For Use with Strimzi</subtitle>
+<abstract>
+    <para>This guide provides a comprehensive overview of how to deploy and manage Strimzi. 
+    The guide describes how to install and upgrade Strimzi, configure security features, optimize performance, and monitor operations. 
+ </para>
+</abstract>
+<authorgroup>
+</authorgroup>
+<xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

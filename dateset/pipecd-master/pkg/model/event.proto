@@ -1,0 +1,55 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+
+enum EventStatus {
+    EVENT_NOT_HANDLED = 0;
+    EVENT_SUCCESS = 1;
+    EVENT_FAILURE = 2;
+    EVENT_OUTDATED = 3;
+}
+
+message Event {
+    reserved 7;
+
+    // The generated unique identifier.
+    string id = 1 [(validate.rules).string.min_len = 1];
+    // The name of event.
+    string name = 2 [(validate.rules).string.min_len = 1];
+    // The data of event.
+    string data = 3 [(validate.rules).string.min_len = 1];
+    // The ID of the project this event belongs to.
+    string project_id = 4 [(validate.rules).string.min_len = 1];
+    // The key/value pairs that are attached to event.
+    // This is intended to be used to specify additional attributes of event.
+    map<string,string> labels = 5;
+    // A fixed-length identifier consists of its own name and labels.
+    string event_key = 6 [(validate.rules).string.min_len = 1];
+    // The handle status of event.
+    EventStatus status = 8 [(validate.rules).enum.defined_only = true];
+    string status_description = 9;
+
+    // Unix time when the event was handled.
+    int64 handled_at = 13;
+    // Unix time when the event was created.
+    int64 created_at = 14 [(validate.rules).int64.gt = 0];
+    // Unix time of the last time when the event was updated.
+    int64 updated_at = 15 [(validate.rules).int64.gt = 0];
+}

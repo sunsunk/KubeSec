@@ -1,0 +1,9 @@
+# Source: carina-csi-driver/templates/rbac-cert.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+  name: my-release-cert-sa
+  namespace: default

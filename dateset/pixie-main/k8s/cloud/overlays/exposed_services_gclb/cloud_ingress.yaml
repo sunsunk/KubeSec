@@ -1,0 +1,112 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cloud-ingress
+  annotations:
+    networking.gke.io/v1beta1.FrontendConfig: "frontend-config"
+    networking.gke.io/managed-certificates: cloud-ingress-managed-cert,cloud-ingress-managed-cert-noslackin
+spec:
+  rules:
+  - http:
+      paths:
+      # GCP does not support multiple wildcards so unfortunately we need this for each
+      # GRPC API service.
+      - path: /pl.cloudapi.ArtifactTracker/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.services.VZConnService/
+        pathType: Prefix
+        backend:
+          service:
+            name: vzconn-service
+            port:
+              number: 51600
+      - path: /px.cloudapi.ArtifactTracker/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.APIKeyManager/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.AuthService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.ConfigService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.OrganizationService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.PluginService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.UserService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.VizierClusterInfo/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.VizierDeploymentKeyManager/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.cloudapi.VizierImageAuthorization/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 5555
+      - path: /px.api.vizierpb.VizierService/
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 4444
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cloud-proxy-service
+            port:
+              number: 443

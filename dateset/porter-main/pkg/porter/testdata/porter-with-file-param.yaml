@@ -1,0 +1,28 @@
+schemaVersion: 1.0.0-alpha.1
+name: porter-hello
+version: 0.1.0
+description: "A bundle with a custom action"
+registry: "localhost:5000"
+
+parameters:
+  - name: my-file-param
+    description: "My file param"
+    type: file
+    path: /container/path/to/file
+
+mixins:
+  - exec
+
+install:
+  - exec:
+      description: "cat file"
+      command: bash
+      flags:
+        c: '"cat /container/path/to/file"'
+
+uninstall:
+  - exec:
+      description: "cat file"
+      command: bash
+      flags:
+        c: '"cat /container/path/to/file"'

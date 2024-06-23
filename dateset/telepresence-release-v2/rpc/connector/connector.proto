@@ -1,0 +1,412 @@
+syntax = "proto3";
+package telepresence.connector;
+
+import "common/errors.proto";
+import "common/version.proto";
+import "daemon/daemon.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "manager/manager.proto";
+
+option go_package = "github.com/telepresenceio/telepresence/rpc/v2/connector";
+
+// The Connector service is responsible for connecting to the traffic manager
+// and manage intercepts. It can only run when a Daemon is running.
+service Connector {
+  // Returns version information from the Connector
+  rpc Version(google.protobuf.Empty) returns (telepresence.common.VersionInfo);
+
+  // Returns version information from the Root Daemon
+  rpc RootDaemonVersion(google.protobuf.Empty) returns (telepresence.common.VersionInfo);
+
+  // Returns version information from the Traffic Manager
+  rpc TrafficManagerVersion(google.protobuf.Empty) returns (telepresence.common.VersionInfo);
+
+  // Returns the fully qualified image name of the traffic-agent that the agent-injector is configured to inject.
+  rpc AgentImageFQN(google.protobuf.Empty) returns (telepresence.manager.AgentImageFQN);
+
+  // GetIntercept gets info from intercept name
+  rpc GetIntercept(manager.GetInterceptRequest) returns (manager.InterceptInfo);
+
+  // Connects to the cluster and connects the laptop's network (via
+  // the daemon process) to the cluster's network.  A result code of
+  // UNSPECIFIED indicates that the connection was successfully
+  // initiated; if already connected, then either ALREADY_CONNECTED or
+  // MUST_RESTART is returned, based on whether the current connection
+  // is in agreement with the ConnectionRequest.
+  rpc Connect(ConnectRequest) returns (ConnectInfo);
+
+  // Disconnects the cluster
+  rpc Disconnect(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // GetClusterSubnets gets the outbound info that has been set on daemon
+  rpc GetClusterSubnets(google.protobuf.Empty) returns (ClusterSubnets);
+
+  // Status returns the status of the current connection or DISCONNECTED
+  // if no connection has been established.
+  rpc Status(google.protobuf.Empty) returns (ConnectInfo);
+
+  // Queries the connector whether it is possible to create the given intercept.
+  rpc CanIntercept(CreateInterceptRequest) returns (InterceptResult);
+
+  // Adds an intercept to a workload.  Requires having already called
+  // Connect.
+  rpc CreateIntercept(CreateInterceptRequest) returns (InterceptResult);
+
+  // Deactivates and removes an existent workload intercept.
+  // Requires having already called Connect.
+  rpc RemoveIntercept(telepresence.manager.RemoveInterceptRequest2) returns (InterceptResult);
+
+  rpc UpdateIntercept(telepresence.manager.UpdateInterceptRequest) returns (telepresence.manager.InterceptInfo);
+
+  // Uninstalls traffic-agents from the cluster.
+  // Requires having already called Connect.
+  rpc Uninstall(UninstallRequest) returns (telepresence.common.Result);
+
+  // Returns a list of workloads and their current intercept status.
+  // Requires having already called Connect.
+  rpc List(ListRequest) returns (WorkloadInfoSnapshot);
+
+  // Watch all workloads in the mapped namespaces
+  rpc WatchWorkloads(WatchWorkloadsRequest) returns (stream WorkloadInfoSnapshot);
+
+  // SetLogLevel will temporarily change the log-level of the traffic-manager, traffic-agent, and user and root daemons.
+  rpc SetLogLevel(LogLevelRequest) returns (google.protobuf.Empty);
+
+  // Quits (terminates) the connector process.
+  rpc Quit(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // GatherLogs will acquire logs for the various Telepresence components in kubernetes
+  // (pending the request) and return them to the caller
+  rpc GatherLogs(LogsRequest) returns (LogsResponse);
+
+  // GatherTraces will acquire traces for the various Telepresence components in kubernetes
+  // (pending the request) and save them in a file.
+  rpc GatherTraces(TracesRequest) returns (telepresence.common.Result);
+
+  // AddInterceptor tells the connector that a given process is serving a specific
+  // intercept. The connector must kill this process when the intercept ends
+  rpc AddInterceptor(Interceptor) returns  (google.protobuf.Empty);
+
+  // RemoveInterceptor removes a previously added interceptor
+  rpc RemoveInterceptor(Interceptor)  returns  (google.protobuf.Empty);
+
+  // GetNamespaces gets the mapped namespaces with an optional prefix
+  rpc GetNamespaces(GetNamespacesRequest) returns (GetNamespacesResponse);
+
+  // RemoteMountAvailability checks if remote mounts are possible using the given
+  // mount type and returns an error if its not.
+  rpc RemoteMountAvailability(google.protobuf.Empty) returns (telepresence.common.Result);
+
+  // GetConfig returns the current configuration
+  rpc GetConfig(google.protobuf.Empty) returns (ClientConfig);
+
+  // SetDNSExcludes sets the excludes field of DNSConfig.
+  rpc SetDNSExcludes(daemon.SetDNSExcludesRequest) returns (google.protobuf.Empty);
+
+  // SetDNSMappings sets the Mappings field of DNSConfig.
+  rpc SetDNSMappings(daemon.SetDNSMappingsRequest) returns (google.protobuf.Empty);
+}
+
+// ManagerProxy is a small subset of the traffic-manager API that the
+// user daemon makes available to the root daemon. This API is intended
+// for the root daemon only and should not be used by other external
+// processes.
+service ManagerProxy {
+  // Version returns the version information of the Manager.
+  rpc Version(google.protobuf.Empty) returns (manager.VersionInfo2);
+
+  // GetClientConfig returns the config that connected clients should use for this manager.
+  rpc GetClientConfig(google.protobuf.Empty) returns (manager.CLIConfig);
+
+  // EnsureAgent ensures that an agent is injected to the pods of a workload
+  rpc EnsureAgent(manager.EnsureAgentRequest) returns (google.protobuf.Empty);
+
+  // WatchClusterInfo returns information needed when establishing
+  // connectivity to the cluster.
+  rpc WatchClusterInfo(manager.SessionInfo) returns (stream manager.ClusterInfo);
+
+  // LookupDNS performs a DNS lookup in the cluster. If the caller has intercepts
+  // active, the lookup will be performed from the intercepted pods.
+  rpc LookupDNS(manager.DNSRequest) returns (manager.DNSResponse);
+
+  // A Tunnel represents one single connection where the client or
+  // traffic-agent represents one end (the client-side) and the
+  // traffic-manager represents the other (the server side). The first
+  // message that a client sends when the tunnel is established is will
+  // always contain the session ID, connection ID, and timeouts used by
+  // the dialer endpoints.
+  rpc Tunnel(stream manager.TunnelMessage) returns (stream manager.TunnelMessage);
+}
+
+message Interceptor {
+  // The ID of the intercept that is served by this interceptor process
+  string intercept_id = 1;
+  // The pid of the interceptor process
+  int32  pid = 2;
+  // Name or ID of container, in case the intercept handler runs in Docker
+  string container_name = 3;
+}
+
+// ConnectRequest contains the information needed to connect ot a cluster.
+message ConnectRequest {
+  // The kubernetes flags from the telepresence connect command
+  map<string, string> kube_flags = 1;
+
+  // The kubernetes flags used by a containerized daemon
+  map<string, string> container_kube_flag_overrides = 9;
+
+  repeated string mapped_namespaces = 2;
+  string name = 3;
+  bool is_pod_daemon = 4;
+  repeated string also_proxy = 5; // protolint:disable:this REPEATED_FIELD_NAMES_PLURALIZED
+  repeated string never_proxy = 6; // protolint:disable:this REPEATED_FIELD_NAMES_PLURALIZED
+  repeated string allow_conflicting_subnets = 10;
+  repeated daemon.SubnetViaWorkload subnet_via_workloads = 11;
+  string manager_namespace = 7;
+  map<string, string> environment = 8;
+
+  // Kubeconfig YAML, if not to be loaded from file.
+  optional bytes kubeconfig_data = 12;
+}
+
+message ConnectInfo {
+  enum ErrType {
+    UNSPECIFIED       = 0; // success
+    UNAUTHORIZED      = 1; // not authorized to connect
+    UNAUTHENTICATED   = 5; // not logged in
+    ALREADY_CONNECTED = 2; // success
+    MUST_RESTART      = 7; // would-be-success, but kubeconfig has changed
+
+    // failure: Connect has not yet been called (only returned from Status)
+    DISCONNECTED = 3;
+
+    // failure: error parsing kubeconfig or talking to the cluster; error_text and error_category are set
+    CLUSTER_FAILED = 4;
+
+    // failure: error talking to the in-cluster traffic-manager; error_text and error_category are set
+    TRAFFIC_MANAGER_FAILED = 6;
+
+    // failure: error talking to the on-laptop root daemon; error_text and error_category are set
+    DAEMON_FAILED = 8;
+  }
+  ErrType error = 1;
+
+  // only set for some error codes, see above
+  string error_text = 2;
+  int32 error_category = 12;
+
+  // everything else is only set for error=UNSPECIFIED,
+  // error=ALREADY_CONNECTED, or error=MUST_RESTART.
+
+  string cluster_server = 3;
+  string cluster_context = 4;
+  common.VersionInfo version = 5;
+
+  // The name of the connection
+  string connection_name = 16;
+
+  // The kubernetes flags from the telepresence connect command when the connection was established
+  map<string, string> kube_flags = 17;
+
+  // the namespace that the connector is connected to.
+  string namespace = 6;
+
+  string manager_install_id = 7;
+
+  telepresence.manager.InterceptInfoSnapshot intercepts = 8;
+
+  telepresence.manager.SessionInfo session_info = 10;
+
+  // cluster_id
+  // deprecated. Use manager_install_id
+  string cluster_id = 11;
+
+  daemon.DaemonStatus daemon_status = 13;
+  string manager_namespace = 14;
+
+  repeated string mapped_namespaces = 15;
+  repeated daemon.SubnetViaWorkload subnet_via_workloads = 18;
+
+  reserved 9;
+}
+
+message UninstallRequest {
+  enum UninstallType {
+    UNSPECIFIED = 0;
+
+    // Uninstalls an agent from the named workloads
+    NAMED_AGENTS = 1;
+
+    // Uninstalls all agents
+    ALL_AGENTS = 2;
+  }
+
+  UninstallType uninstall_type = 1;
+  repeated string agents = 2;
+
+  // Namespace of agents to remove.
+  string namespace = 3;
+}
+
+message CreateInterceptRequest {
+  // No need to set spec.client; the connector will fill that in for
+  // you.
+  telepresence.manager.InterceptSpec spec = 1;
+  string mount_point = 2;
+  string agent_image = 3;
+  bool is_pod_daemon = 4;
+  bytes extended_info = 5;
+  int32 local_mount_port = 6;
+}
+
+message ListRequest {
+  enum Filter {
+    UNSPECIFIED = 0;
+    INTERCEPTS = 1;
+    INSTALLED_AGENTS = 2;
+    INTERCEPTABLE = 3;
+    EVERYTHING = 4;
+  }
+  Filter filter = 1;
+
+  // Namespace to list.
+  string namespace = 2;
+}
+
+message WatchWorkloadsRequest {
+  // Namespace to watch.
+  repeated string namespaces = 1;
+}
+
+// WorkloadInfo contains information about a workload
+// https://kubernetes.io/docs/concepts/workloads/
+message WorkloadInfo {
+  // Name of workload
+  string name = 1;
+
+  // Namespace of workload
+  string namespace = 6;
+
+  // Reason why workload cannot be intercepted, or empty if it can.
+  string not_interceptable_reason = 2;
+
+  message Sidecar {
+    bytes json = 1;
+  }
+  // Sidecar
+  Sidecar sidecar = 10;
+
+  // InterceptInfos reported from the traffic manager in case the workload is currently intercepted
+  repeated telepresence.manager.InterceptInfo intercept_infos = 9;
+
+  // Workload Resource type (e.g. Deployment, ReplicaSet, StatefulSet)
+  string workload_resource_type = 5;
+
+  message ServiceReference {
+    string name = 1;
+    string namespace = 2;
+    message Port {
+      string name = 1;
+      int32 port = 2;
+    }
+    repeated Port ports = 4;
+  }
+
+  map<string, ServiceReference> services = 11;
+
+  string uid = 8;
+
+  reserved 4;
+}
+
+message WorkloadInfoSnapshot {
+  repeated WorkloadInfo workloads = 1;
+}
+
+message InterceptResult {
+  telepresence.manager.InterceptInfo intercept_info = 1;
+  telepresence.common.InterceptError error = 2;
+  string error_text = 3;
+  int32 error_category = 7;
+
+  reserved 4;
+
+  // The service uid associated with the workload intercepted
+  string service_uid = 5;
+
+  // The kind of workload in this intercept
+  string workload_kind = 6;
+}
+
+message LogLevelRequest {
+  enum Scope {
+    UNSPECIFIED = 0;
+    LOCAL_ONLY = 1; // applies only to the local daemon processes
+    REMOTE_ONLY = 2; // applies only to traffic-manager and traffic-agents
+  }
+
+  string log_level = 1;
+
+  // The time that this log-level will be in effect before
+  // falling back to the configured log-level.
+  google.protobuf.Duration duration = 2;
+
+  Scope scope = 3;
+}
+
+message LogsRequest {
+  // Whether or not logs from the traffic-manager are desired.
+  bool traffic_manager = 1;
+
+  // Whether or not to get the pod yaml deployed to the cluster.
+  bool get_pod_yaml = 2;
+
+  // The traffic-agent(s) logs are desired from. Can be `all`, `False`,
+  // or substring to filter based on pod names.
+  string agents = 3;
+
+  // Directory that the logs will be exported to
+  string export_dir = 4;
+}
+
+message TracesRequest {
+  // remote_port is the port to connect to on the targets that traces are collected from.
+  int32 remote_port = 1;
+
+  // tracing_file is the file where the traces are stored.
+  string tracing_file = 2;
+}
+
+message LogsResponse {
+  // General error that isn't associated with a pod such as failing to list the pods.
+  string error = 1;
+
+  // pod_info contains one entry per created file name name. The value is either the string
+  // "ok" indicating that the file exists, or an error string with info why it could not
+  // be created.
+  map<string, string> pod_info = 2;
+}
+
+
+message GetNamespacesRequest {
+  bool for_client_access = 1;
+  string prefix = 2;
+}
+
+message GetNamespacesResponse {
+  repeated string namespaces = 2;
+}
+
+message ClientConfig {
+  bytes json = 1;
+}
+
+// ClusterSubnets are the cluster subnets that the daemon has detected that need to be
+// routed
+message ClusterSubnets {
+  // pod_subnets are the subnets that pods go into
+  repeated manager.IPNet pod_subnets = 1;
+  // svc_subnets are subnets that services go into
+  repeated manager.IPNet svc_subnets = 2;
+}

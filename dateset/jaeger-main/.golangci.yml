@@ -1,0 +1,171 @@
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters: [gosec, bodyclose, noctx]
+
+    - path: crossdock
+      linters: [noctx]
+
+    # See https://github.com/jaegertracing/jaeger/issues/4488
+    - path: internal/grpctest/
+      linters: [staticcheck]
+
+    - linters: [gocritic]
+      text: "dupArg"
+    - linters: [gocritic]
+      text: "exitAfterDefer"
+    - linters: [gocritic]
+      text: "appendAssign"
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters:
+  disable:
+    - errcheck
+  enable:
+    # Plain ASCII identifiers.
+    - asciicheck
+
+    # Checks for dangerous unicode character sequences.
+    - bidichk
+
+    # Checks whether HTTP response body is closed successfully.
+    # TODO enable this but maybe find a way to disable in tests.
+    - bodyclose
+
+    # Check whether the function uses a non-inherited context.
+    - contextcheck
+
+    # Check declaration order of types, consts, vars and funcs.
+    - decorder
+
+    # Checks if package imports are in a list of acceptable packages (see cfg below).
+    - depguard
+
+    # Check for two durations multiplied together.
+    - durationcheck
+
+    # Checks `Err-` prefix for var and `-Error` suffix for error type.
+    - errname
+
+    # Suggests to use `%w` for error-wrapping.
+    - errorlint
+
+    # Checks for pointers to enclosing loop variables.
+    - exportloopref
+
+    - gocritic
+    - gofmt
+    - gofumpt
+    - goimports
+
+    # Allow or ban replace directives in go.mod
+    # or force explanation for retract directives.
+    # Maybe enable once we get rid of old sarama.
+    # - gomoddirectives
+
+    - gosec
+
+    # Linter that specializes in simplifying code.
+    - gosimple
+    - govet
+
+    # Detects when assignments to existing variables are not used.
+    - ineffassign
+
+    - misspell
+
+    # Finds naked/bare returns and requires change them.
+    - nakedret
+
+    # Require a bit more explicit returns.
+    - nilerr
+
+    # Finds sending HTTP request without context.Context.
+    - noctx
+
+    # Checks usage of github.com/stretchr/testify.
+    - testifylint
+
+    # TODO consider adding more linters, cf. https://olegk.dev/go-linters-configuration-the-right-version
+
+linters-settings:
+  depguard:
+    rules:
+      disallowed-deps:
+        deny:
+          - pkg: go.uber.org/atomic
+            desc: "Use 'sync/atomic' instead of go.uber.org/atomic"
+          - pkg: io/ioutil
+            desc: "Use os or io instead of io/ioutil"
+          - pkg: github.com/hashicorp/go-multierror
+            desc: "Use errors.Join instead of github.com/hashicorp/go-multierror"
+          - pkg: go.uber.org/multierr
+            desc: "Use errors.Join instead of github.com/hashicorp/go-multierror"
+      # crossdock-go provides assert/require similar to stretchr/testify
+      # but we never want to use them outside of the crossdock tests.
+      disallow-crossdock:
+        deny:
+          - pkg: github.com/crossdock/crossdock-go
+            desc: "Do not refer to crossdock from other packages"
+        files:
+          - "!**/crossdock/**"
+      
+      disallow-uber/goleak:
+        deny:
+         - pkg: go.uber.org/goleak
+           desc: "Use github.com/jaegertracing/jaeger/pkg/testutils"
+        files:
+          - "**_test.go"
+
+  goimports:
+    local-prefixes: github.com/jaegertracing/jaeger
+  gosec:
+    # To specify a set of rules to explicitly exclude.
+    # Available rules: https://github.com/securego/gosec#available-rules
+    excludes:
+      - G104
+      - G107
+      - G404
+      - G601
+  gosimple:
+    go: "1.21"
+  govet:
+    check-shadowing: false
+    enable-all: true
+    disable:
+      # There is rarely performance differences due to padding,
+      # the most noticable impact is memory usage. However,
+      # the main trace data is Protobuf-generated and we ignore
+      # those files from linting, so this linter is not useful.
+      - fieldalignment
+      # Disable shadow
+      - shadow
+  testifylint:
+    disable:
+      - float-compare
+      - go-require
+    enable:
+      - bool-compare
+      - compares
+      - empty
+      - error-is-as
+      - error-nil
+      - expected-actual
+      - len
+      - require-error
+      - suite-dont-use-pkg
+      - suite-extra-assert-call
+
+run:
+  go: "1.21"
+  timeout: 20m
+  skip-dirs-use-default: false
+  skip-dirs:
+    - mocks
+    - thrift-0.9.2
+    - .*-gen
+  skip-files:
+    - ".*.pb.go$"

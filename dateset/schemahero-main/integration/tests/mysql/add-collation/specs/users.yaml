@@ -1,0 +1,16 @@
+database: schemahero
+name: users
+schema:
+  mysql:
+    primaryKey: [id]
+    collation: latin1_swedish_ci
+    columns:
+      - name: id
+        type: integer
+        constraints:
+          notNull: true
+      - name: email
+        type: varchar (255)
+        charset: utf8mb4
+        constraints:
+          notNull: true

@@ -1,0 +1,29 @@
+---
+title: Deploy Path-Based Local Dependencies
+sidebar_label: "from path/"
+---
+
+import ConfigPartialDependencyPath from '../_partials/v2beta1/dependencies/group_path.mdx'
+import ConfigPartialDependencyExecution from '../_partials/v2beta1/dependencies/group_execution.mdx'
+
+
+```yaml
+dependencies:
+  component-1:
+    # Expects a devspace.yaml at ./different/component-1/devspace.yaml
+    path: ./different/component-1
+  component-2:
+    # Direct path to other-devspace.yaml
+    path: ./different/component-1/other-devspace.yaml
+deployments:
+  use-dependency-image:
+    helm:
+      values:
+        containers:
+        - image: ghcr.io/org/project/image
+```
+
+## Configuration
+
+<ConfigPartialDependencyPath/>
+<ConfigPartialDependencyExecution/>

@@ -1,0 +1,23 @@
+# Source: kuma/templates/pre-upgrade-install-crds-job.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kuma-install-crds
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-install"
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+    helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kuma-install-crds
+subjects:
+  - kind: ServiceAccount
+    name: kuma-install-crds
+    namespace: default

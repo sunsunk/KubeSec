@@ -1,0 +1,5 @@
+data/
+openapi-directory-*/
+*.csv
+*.html
+.hypothesis

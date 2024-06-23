@@ -1,0 +1,137 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - env:
+      - CGO_ENABLED=0
+    id: k8gb
+    main: ./main.go
+    binary: bin/k8gb
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Tag }} -X main.commit={{ .Commit }}
+archives:
+  - id: binary
+    format: binary
+    name_template: "{{ .ProjectName }}_{{ .Os }}-{{ .Arch }}"
+  - id: archive
+    format: tar.gz
+    replacements:
+      darwin: macOS
+    files:
+      - LICENSE*
+      - README*
+      - cosign.pub
+      - dist/*.sig
+    format_overrides:
+      - goos: windows
+        format: zip
+dockers:
+- image_templates:
+  - "absaoss/k8gb:v{{ .Version }}-amd64"
+  build_flag_templates:
+  - "--platform=linux/amd64"
+  - &LABEL1
+    "--label=org.opencontainers.image.title=k8gb"
+  - &LABEL2
+    "--label=org.opencontainers.image.description=A cloud native Kubernetes Global Balancer"
+  - &LABEL3
+    "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+  - &LABEL4
+    "--label=org.opencontainers.image.version={{ .Version }}"
+- image_templates:
+  - "absaoss/k8gb:v{{ .Version }}-arm64"
+  goarch: arm64
+  build_flag_templates:
+  - "--platform=linux/arm64"
+  - *LABEL1
+  - *LABEL2
+  - *LABEL3
+  - *LABEL4
+docker_manifests:
+- name_template: absaoss/k8gb:{{ .Tag }}
+  image_templates:
+  - absaoss/k8gb:v{{ .Version }}-amd64
+  - absaoss/k8gb:v{{ .Version }}-arm64
+sboms:
+  - id: archive-sbom
+    cmd: syft
+    args: ["${artifact}", "--file", "${artifact}.sbom.json", "--output", "spdx-json"]
+    documents:
+      - "${artifact}.sbom.json"
+    artifacts: archive
+signs:
+  - id: checksums
+    cmd: cosign
+    stdin: '{{ .Env.COSIGN_PASSWORD }}'
+    output: true
+    artifacts: checksum
+    args:
+      - sign-blob
+      - --key
+      - cosign.key
+      - '--output-certificate=${certificate}'
+      - '--output-signature=${signature}'
+      - '${artifact}'
+  - id: binaries
+    cmd: cosign
+    stdin: '{{ .Env.COSIGN_PASSWORD }}'
+    output: true
+    artifacts: binary
+    args:
+      - sign-blob
+      - --key
+      - cosign.key
+      - '--output-certificate=${certificate}'
+      - '--output-signature=${signature}'
+      - '${artifact}'
+  - id: archives
+    cmd: cosign
+    stdin: '{{ .Env.COSIGN_PASSWORD }}'
+    output: true
+    artifacts: archive
+    args:
+      - sign-blob
+      - --key
+      - cosign.key
+      - '--output-certificate=${certificate}'
+      - '--output-signature=${signature}'
+      - '${artifact}'
+  - id: sboms
+    cmd: cosign
+    stdin: '{{ .Env.COSIGN_PASSWORD }}'
+    output: true
+    artifacts: sbom
+    args:
+      - sign-blob
+      - --key
+      - cosign.key
+      - '--output-certificate=${certificate}'
+      - '--output-signature=${signature}'
+      - '${artifact}'
+
+docker_signs:
+  - cmd: cosign
+    artifacts: all
+    output: true
+    args:
+      - 'sign'
+      - --key
+      - cosign.key
+      - '${artifact}'
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Version }}-{{ .ShortCommit }}"
+release:
+  draft: true
+  extra_files:
+    - glob: "./cosign.pub"
+  footer: |
+    :rocket:

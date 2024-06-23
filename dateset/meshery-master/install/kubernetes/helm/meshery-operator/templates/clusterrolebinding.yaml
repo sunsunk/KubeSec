@@ -1,0 +1,65 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: meshery-leader-election-rolebinding
+  namespace: dynamic_parameters
+  labels:
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: meshery-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: meshery-operator
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: meshery-operator-rolebinding
+  labels:
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: meshery-operator-role
+subjects:
+- kind: ServiceAccount
+  name: meshery-operator
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: meshery-proxy-rolebinding
+  labels:
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: meshery-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: meshery-operator
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: meshery-controller-rolebinding
+  labels:
+  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: meshery-controller-role
+subjects:
+  - kind: ServiceAccount
+    name: meshery-operator
+    namespace: dynamic_parameters
+
+---
+
+---

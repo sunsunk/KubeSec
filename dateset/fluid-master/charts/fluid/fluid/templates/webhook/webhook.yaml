@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluid-webhook
+  namespace: dynamic_parameters
+  labels:
+    control-plane: fluid-webhook
+spec:
+  selector:
+    matchLabels:
+      control-plane: fluid-webhook
+  replicas: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        control-plane: fluid-webhook
+    spec:
+      tolerations:
+      imagePullSecrets:
+      serviceAccountName: fluid-webhook
+      containers:
+      - image: dynamic_parameters
+        name: manager
+        command: ["fluid-webhook", "start"]
+        args:
+          - --development=false
+          - --full-go-profile=false
+          - --pprof-addr=:6060
+        env:
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: TIME_TRACK
+            value: "false"
+          - name: KEY_SERVERLESS_PLATFORM
+            value: dynamic_parameters
+          - name: VALUE_SERVERLESS_PLATFORM
+            value: dynamic_parameters
+          - name: VFUSE_RESOURCE_NAME
+            value: dynamic_parameters
+        ports:
+          - containerPort: 8080
+            name: metrics
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /etc/fluid
+            name: webhook-plugins
+      volumes:
+        - name: webhook-plugins
+          configMap:
+            name: webhook-plugins
+            items:
+              - key: pluginsProfile
+                path: plugins.profile
+                mode: 0444
+
+---
+
+---

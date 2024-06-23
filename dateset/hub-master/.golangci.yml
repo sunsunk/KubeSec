@@ -1,0 +1,36 @@
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - errcheck
+    - errorlint
+    - exportloopref
+    - goconst
+    - gocritic
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+  fast: false
+
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - singleCaseSwitch
+  goconst:
+    min-occurrences: 5
+
+service:
+  golangci-lint-version: 1.51.x

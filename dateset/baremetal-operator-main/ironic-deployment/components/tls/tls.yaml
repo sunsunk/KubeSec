@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ironic
+spec:
+  template:
+    spec:
+      containers:
+      - name: ironic
+        readinessProbe:
+         exec:
+           command: ["sh", "-c", "curl -sSf http://127.0.0.1:6388"]
+        livenessProbe:
+         exec:
+           command: ["sh", "-c", "curl -sSf http://127.0.0.1:6388"]
+        env:
+        - name: IRONIC_REVERSE_PROXY_SETUP
+          value: "true"
+        volumeMounts:
+        - name: cert-ironic-ca
+          mountPath: "/certs/ca/ironic"
+          readOnly: true
+      - name: ironic-httpd
+        livenessProbe:
+         exec:
+           command: ["sh", "-c", "curl -sSfk https://127.0.0.1:6385"]
+        readinessProbe:
+         exec:
+           command: ["sh", "-c", "curl -sSfk https://127.0.0.1:6385"]
+        env:
+        - name: IRONIC_REVERSE_PROXY_SETUP
+          value: "true"
+        volumeMounts:
+        - name: cert-ironic
+          mountPath: "/certs/ironic"
+          readOnly: true
+        - name: cert-ironic-ca
+          mountPath: "/certs/ca/ironic"
+          readOnly: true
+      volumes:
+      - name: cert-ironic-ca
+        secret:
+          secretName: ironic-cacert
+      - name: cert-ironic
+        secret:
+          secretName: ironic-cert

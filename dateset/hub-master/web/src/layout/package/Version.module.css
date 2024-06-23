@@ -1,0 +1,33 @@
+.activeVersionDate {
+  padding-left: 12px;
+}
+
+.badgesWrapper {
+  font-size: 80%;
+}
+
+.badgeDecorator {
+  top: -6px;
+  height: 14px;
+  width: 10px;
+  border-left: 1px solid var(--color-black-25);
+  border-bottom: 1px solid var(--color-black-25);
+}
+
+.badge {
+  border-color: var(--bs-orange) !important;
+  color: var(--bs-orange);
+}
+
+.badge.isHighlighted {
+  border-color: var(--highlighted) !important;
+  color: var(--highlighted);
+}
+
+.spinnerWrapper {
+  margin-top: -3px;
+}
+
+.version {
+  font-size: 0.9rem;
+}

@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters-sds
+  namespace: dynamic_parameters
+  labels:
+    release: dynamic_parameters
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "IngressGateways"
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+---
+
+---
+
+---
+
+---
+
+---
+
+---

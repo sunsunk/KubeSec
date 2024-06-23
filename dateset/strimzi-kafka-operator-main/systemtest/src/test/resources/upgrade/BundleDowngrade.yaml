@@ -1,0 +1,87 @@
+# --- Structure ---
+#  fromVersion: String - From this version we will start downgrade of the CO
+#  toVersion: String - Version we will downgrade to
+#  fromExamples: String - Folder name which contains examples to deploy. Downloaded from "fromUrl"
+#  toExamples: String - Folder name which contains examples to upgrade / downgrade to. Downloaded from "toUrl"
+#  fromUrl: String - url, from which examples are downloaded
+#  toUrl: String - url, from which examples are downloaded during downgrade and replace the original ones
+#  fromKafkaVersionsUrl: String - url, from which kafka-versions.yaml is downloaded
+#  additionalTopics: int - number of additional topics, which will be created
+#  oldestKafka: String - version of Kafka, used in initial deployment of Kafka CR
+#  imagesAfterOperations:  Strings - images that corresponding pods should contain. They are checked after downgrade
+#    zookeeper: 
+#    kafka: 
+#    topicOperator: 
+#    userOperator: 
+#  deployKafkaVersion: String - version of Kafka, used in deployment
+#  client:
+#    continuousClientsMessages: int - message count sent during upgrade
+#  environmentInfo:
+#    maxK8sVersion: String - maximal version of Kubernetes on which the upgrade test runs
+#    status: stable  String - info about stability of the testing environment
+#    flakyEnvVariable: String - name of the environmental variable which is flaky on current environment
+#    reason: String - reason why we skip / not skip the test case (information, not propagated to test itself)
+#  featureGatesBefore: String - FG added to `STRIMZI_FEATURE_GATES` environment variable, on initial deploy of CO
+#  featureGatesAfter: String - FG added to `STRIMZI_FEATURE_GATES` environment variable, on upgrade of CO
+#  filePaths: path to example files for particular resources
+#    kafkaBefore: path to Kafka resource (ZK mode) in the version of Strimzi, from which we are doing the downgrade
+#    kafkaAfter: path to Kafka resource (ZK mode) in the version of Strimzi, to which we are doing the downgrade
+#    kafkaKRaftBefore: path to Kafka and KafkaNodePool resources (KRaft mode), collected in one file, in the version of Strimzi, from which we are doing the downgrade
+#    kafkaKRaftAfter: path to Kafka and KafkaNodePool resources (KRaft mode), collected in one file, in the version of Strimzi, to which we are doing the downgrade
+# --- Structure ---
+- fromVersion: HEAD
+  toVersion: 0.40.0
+  fromExamples: HEAD
+  toExamples: strimzi-0.40.0
+  fromUrl: HEAD
+  toUrl: https://github.com/strimzi/strimzi-kafka-operator/releases/download/0.40.0/strimzi-0.40.0.zip
+  fromKafkaVersionsUrl: HEAD
+  additionalTopics: 2
+  imagesAfterOperations:
+    zookeeper: strimzi/kafka:0.40.0-kafka-3.6.0
+    kafka: strimzi/kafka:0.40.0-kafka-3.6.0
+    topicOperator: strimzi/operator:0.40.0
+    userOperator: strimzi/operator:0.40.0
+  deployKafkaVersion: 3.7.0
+  client:
+    continuousClientsMessages: 500
+  environmentInfo:
+    maxK8sVersion: latest
+    status: stable
+    flakyEnvVariable: none
+    reason: Test is working on all environment used by QE.
+  featureGatesBefore: ""
+  featureGatesAfter: ""
+  filePaths:
+    kafkaBefore: "/examples/kafka/kafka-persistent.yaml"
+    kafkaAfter: "/examples/kafka/kafka-persistent.yaml"
+    kafkaKRaftBefore: "/examples/kafka/kraft/kafka.yaml"
+    kafkaKRaftAfter: "/examples/kafka/kraft/kafka.yaml"
+- fromVersion: HEAD
+  toVersion: 0.40.0
+  fromExamples: HEAD
+  toExamples: strimzi-0.40.0
+  fromUrl: HEAD
+  toUrl: https://github.com/strimzi/strimzi-kafka-operator/releases/download/0.40.0/strimzi-0.40.0.zip
+  fromKafkaVersionsUrl: HEAD
+  additionalTopics: 2
+  imagesAfterOperations:
+    zookeeper: strimzi/kafka:0.40.0-kafka-3.6.0
+    kafka: strimzi/kafka:0.40.0-kafka-3.6.0
+    topicOperator: strimzi/operator:0.40.0
+    userOperator: strimzi/operator:0.40.0
+  deployKafkaVersion: 3.7.0
+  client:
+    continuousClientsMessages: 500
+  environmentInfo:
+    maxK8sVersion: latest
+    status: stable
+    flakyEnvVariable: none
+    reason: Test is working on all environment used by QE.
+  featureGatesBefore: ""
+  featureGatesAfter: "-UnidirectionalTopicOperator"
+  filePaths:
+    kafkaBefore: "/examples/kafka/kafka-persistent.yaml"
+    kafkaAfter: "/examples/kafka/kafka-persistent.yaml"
+    kafkaKRaftBefore: "/examples/kafka/kraft/kafka.yaml"
+    kafkaKRaftAfter: "/examples/kafka/kraft/kafka.yaml"

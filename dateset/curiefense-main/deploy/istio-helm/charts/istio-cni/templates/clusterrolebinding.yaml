@@ -1,0 +1,82 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: istio-cni
+  labels:
+    app: istio-cni
+    release: dynamic_parameters
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Cni"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-cni
+subjects:
+- kind: ServiceAccount
+  name: istio-cni
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: istio-cni-repair-rolebinding
+  labels:
+    k8s-app: istio-cni-repair
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Cni"
+subjects:
+- kind: ServiceAccount
+  name: istio-cni
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-cni-repair-role
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: istio-cni-psp
+  namespace: dynamic_parameters
+  labels:
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Cni"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters
+subjects:
+- kind: ServiceAccount
+  name: istio-cni
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: istio-cni-taint-rolebinding
+  labels:
+    k8s-app: istio-cni-taint
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Cni"
+subjects:
+  - kind: ServiceAccount
+    name: istio-cni
+    namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-cni-taint-role
+
+---
+
+---
+
+---
+
+---
+
+---

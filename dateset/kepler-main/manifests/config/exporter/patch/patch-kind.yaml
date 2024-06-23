@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kepler-exporter
+  namespace: system
+spec:
+  template:
+    spec:
+      containers:
+      - name: kepler-exporter
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc-host
+          type: Directory

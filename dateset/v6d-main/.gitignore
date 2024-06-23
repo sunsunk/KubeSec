@@ -1,0 +1,68 @@
+/build/
+/install/
+/build-*/
+/install-*/
+*.code-workspace
+.vscode
+.idea
+.DS_store
+.cache/
+.ossutil_checkpoint/
+compile_commands.json
+cmake-build-debug
+
+#for hive
+/hivelog/
+/hive-base-workdir/
+
+# for python packaging
+/dist/
+*.egg-info/
+*.eggs/
+*.so
+*.dylib
+*.a
+*.pyc
+*.bin
+*.whl
+*.tar.gz
+*.zip
+*.xz
+
+# hive sql work directory
+/java/hive/docker/dependency/mysql/conf/
+/java/hive/docker/dependency/mysql/data/
+
+# coredump
+core.*.*
+
+# generated files
+*.vineyard.h
+*.java.touch
+
+# etcd data directory during testing
+default.etcd/
+
+# tmp data directory during building image
+/docker/dist/
+
+# docs
+/docs/_build/
+
+# setup.cfg will be generated
+/python/vineyard/version.py
+
+# go vendor
+/**/vendor/
+
+# Rust build
+/**/target/
+
+# Java JVM crash logs
+hs_err_pid*.log
+
+# ignore the lock file of helm chart
+charts/vineyard-operator/Chart.lock
+
+# ignore go.work.sum
+go.work.sum

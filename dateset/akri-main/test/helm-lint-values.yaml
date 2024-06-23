@@ -1,0 +1,59 @@
+# This document provides values to be passed to `helm lint` to provide more exhaustive linting in our workflows.
+# Can also be used locally from base of Akri repository: `helm lint deployment/helm --values test/helm-lint-values.yaml`
+# Alternatively, linting can be done in line by setting values: 
+# `helm lint deployment/helm/ --set debugEcho.discovery.enabled=true,debugEcho.configuration.enabled=true,udev.discovery.enabled=true,udev.configuration.enabled=true,udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'...`
+agent:
+  host:
+    containerRuntimeSocket: "/run/containerd/containerd.sock"
+debugEcho:
+  discovery: 
+    enabled: true
+  configuration:
+    enabled: true
+    brokerPod:
+      image:
+        repository: "nginx"
+udev:
+  discovery:
+    enabled: true
+  configuration:
+    enabled: true
+    discoveryDetails:
+      groupRecursive: true
+      udevRules:
+        - 'KERNEL=="video[0-9]*"'
+    brokerPod:
+      image:
+        repository: "nginx"
+opcua: 
+  discovery:
+    enabled: true
+  configuration:
+    enabled: true
+    brokerPod:
+      image:
+        repository: "nginx"
+onvif: 
+  discovery: 
+    enabled: true
+  configuration: 
+    enabled: true
+    brokerPod:
+      image:
+        repository: "nginx"
+custom: 
+  discovery: 
+    enabled: true
+    image:
+      repository: "nginx"
+  configuration: 
+    enabled: true
+    discoveryHandlerName: "some name"
+    brokerPod:
+      image:
+        repository: "nginx"
+webhookConfiguration: 
+  enabled: true
+  caBundle: certificate.crt
+imagePullSecrets:
+- name: "my-image-registry-creds"

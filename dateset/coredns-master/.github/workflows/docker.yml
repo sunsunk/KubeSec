@@ -1,0 +1,34 @@
+name: Docker Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release (e.g., v1.9.0)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker-release:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_LOGIN: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      RELEASE: ${{ github.event.inputs.release || github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Images
+        run: make VERSION=${RELEASE:1} DOCKER=coredns -f Makefile.docker release
+      - name: Show Docker Images
+        run: docker images
+      - name: Docker login
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20  # v3.1.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Publish Docker Images
+        run: make VERSION=${RELEASE:1} DOCKER=coredns -f Makefile.docker docker-push

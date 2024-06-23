@@ -1,0 +1,201 @@
+syntax = "proto3";
+package paralus.dev.rpc.user.v3;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "proto/types/userpb/v3/user.proto";
+import "proto/types/commonpb/v3/common.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "User management Service"
+    version : "2.0"
+    contact : {name : "Paralus Dev"}
+  }
+  schemes : HTTPS
+  consumes : "application/json"
+  consumes : "application/yaml"
+  produces : "application/json"
+  produces : "application/yaml"
+  security_definitions : {
+    security : {
+      key : "BasicAuth"
+      value : {type : TYPE_BASIC}
+    }
+    security : {
+      key : "ApiKeyAuth"
+      value : {type : TYPE_API_KEY in : IN_HEADER name : "X-API-KEYID"}
+    }
+    security : {
+      key : "ApiTokenAuth"
+      value : {
+        type : TYPE_API_KEY in : IN_HEADER name : "X-API-TOKEN"
+      }
+    }
+  }
+  security : {
+    security_requirement : {
+      key : "BasicAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiKeyAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiTokenAuth"
+      value : {}
+    }
+  }
+  responses : {
+    key : "403"
+    value : {
+      description : "Returned when the user does not have permission to access "
+                    "the resource."
+    }
+  }
+  responses : {
+    key : "404"
+    value : {
+      description : "Returned when the resource does not exist."
+      schema : {json_schema : {type : STRING}}
+    }
+  }
+};
+
+message ApiKeyRequest {
+  string username = 1;
+  string id = 2;
+}
+
+message ApiKeyResponse {
+  google.protobuf.Timestamp modifiedAt = 1;
+  google.protobuf.Timestamp createdAt = 2;
+  string id = 3;
+  string key = 4;
+  string name = 5;
+}
+
+message UserListApiKeysResponse { repeated ApiKeyResponse items = 1; }
+
+message UserForgotPasswordRequest { string username = 1; }
+
+message UserForgotPasswordResponse { 
+  string recoveryLink = 1; 
+}
+
+message UserDeleteApiKeysResponse {}
+message CliConfigRequest {}
+message UpdateForceResetRequest {}
+message UpdateForceResetResponse {}
+
+message UserLoginAuditRequest {string user_id = 1;}
+message UserLoginAuditResponse {}
+
+service UserService {
+
+  rpc AuditLogWebhook(UserLoginAuditRequest)
+      returns (UserLoginAuditResponse) {
+    option (google.api.http) = {
+      post : "/auth/v3/user/auditlog"
+      body : "*"    
+    }; 
+  };
+
+  rpc CreateUser(paralus.dev.types.user.v3.User)
+      returns (paralus.dev.types.user.v3.User) {
+    option (google.api.http) = {
+      post : "/auth/v3/users"
+      body : "*"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      responses : {
+        key : "201"
+        value : {description : "Returned when user is created successfully."}
+      }
+    };
+  };
+
+  rpc GetUsers(paralus.dev.types.common.v3.QueryOptions)
+      returns (paralus.dev.types.user.v3.UserList) {
+    option (google.api.http) = {
+      get : "/auth/v3/users"
+    };
+  };
+
+  rpc GetUser(paralus.dev.types.user.v3.User)
+      returns (paralus.dev.types.user.v3.User) {
+    option (google.api.http) = {
+      get : "/auth/v3/user/{metadata.name}"
+    };
+  };
+
+  rpc GetUserInfo(paralus.dev.types.user.v3.User)
+      returns (paralus.dev.types.user.v3.UserInfo) {
+    option (google.api.http) = {
+      get : "/auth/v3/userinfo" // user name if picked from session
+    };
+  };
+
+  rpc UpdateUser(paralus.dev.types.user.v3.User)
+      returns (paralus.dev.types.user.v3.User) {
+    option (google.api.http) = {
+      put : "/auth/v3/user/{metadata.name}"
+      body : "*"
+    };
+  };
+
+  rpc UpdateUserForceReset(UpdateForceResetRequest) 
+      returns (UpdateForceResetResponse){
+    option (google.api.http) = {
+      put : "/auth/v3/user/reset"
+      body : "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      responses : {
+        key : "200"
+        value : {description : "Returned when user forcereset flag has been successfully unset"}
+      }
+    };
+  };
+
+  rpc DeleteUser(paralus.dev.types.user.v3.User) returns (UserDeleteApiKeysResponse) {
+    option (google.api.http) = {
+      delete : "/auth/v3/user/{metadata.name}"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      responses : {
+        key : "204"
+        value : {description : "Returned when user is deleted successfully."}
+      }
+    };
+  };
+
+  rpc DownloadCliConfig(CliConfigRequest)
+      returns (paralus.dev.types.common.v3.HttpBody) {
+    option (google.api.http) = {
+      get : "/auth/v3/cli/config"
+    };
+  };
+
+  rpc UserListApiKeys(ApiKeyRequest) returns (UserListApiKeysResponse) {
+    option (google.api.http) = {
+      get : "/auth/v3/user/{username}/apikeys"
+    };
+  };
+
+  rpc UserDeleteApiKeys(ApiKeyRequest) returns (UserDeleteApiKeysResponse) {
+    option (google.api.http) = {
+      delete : "/auth/v3/user/{username}/apikeys/{id}"
+    };
+  };
+
+  rpc UserForgotPassword(UserForgotPasswordRequest) returns (UserForgotPasswordResponse) {
+    option (google.api.http) = {
+      get : "/auth/v3/user/{username}/forgotpassword"
+    };
+  };
+}

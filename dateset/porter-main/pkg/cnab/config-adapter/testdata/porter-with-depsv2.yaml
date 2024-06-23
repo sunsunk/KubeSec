@@ -1,0 +1,71 @@
+schemaVersion: 1.1.0
+name: porter-hello
+version: 0.1.0
+description: "An example Porter configuration"
+registry: "localhost:5000"
+
+dependencies:
+  requires:
+    - name: mysql
+      bundle:
+        reference: "getporter/azure-mysql:5.7"
+        version: 5.7.x
+        interface:
+          id: "https://porter.sh/interfaces/#mysql"
+          reference: "getporter/mysql-spec:5.7"
+          document:
+            outputs:
+              - name: myoutput
+                description: "worlds smallest output"
+            parameters: 
+              - name: myparam
+                description: "worlds biggest param"
+                default: false
+            credentials:
+              - name: mycred 
+                description: "credential"
+                required: true
+      sharing:
+        mode: true
+        group:
+          name: myapp
+      parameters:
+        database: wordpress
+        collation: ${bundle.parameters.db_collation}
+      credentials:
+        user: ${bundle.credentials.username}
+    - name: ad
+      bundle:
+        reference: "getporter/azure-active-directory"
+        version: 1.0.0-0
+    - name: storage
+      bundle:
+        reference: "getporter/azure-blob-storage"
+        version: 1.x - 2,2.1 - 3.x
+  provides:
+    interface:
+      id: https://example.com/hello
+
+mixins:
+  - exec
+
+install:
+  - exec:
+      description: "Install Hello World"
+      command: bash
+      flags:
+        c: echo Hello World
+
+upgrade:
+  - exec:
+      description: "World 2.0"
+      command: bash
+      flags:
+        c: echo World 2.0
+
+uninstall:
+  - exec:
+      description: "Uninstall Hello World"
+      command: bash
+      flags:
+        c: echo Goodbye World

@@ -1,0 +1,72 @@
+# https://opentelemetry.io/docs/collector/configuration/
+
+# How data gets into the Collector
+receivers:
+  # Data sources: traces, metrics, logs
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "otel-collector:4317"
+  # Data sources: metrics
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: openfga/openfga
+          scrape_interval: 1s
+          static_configs:
+            - targets: [ openfga:2112 ]
+              labels:
+                service: openfga
+
+# How you send data to one or more backends. Configuring an exporter does not enable it.
+exporters:
+  # Data sources: traces
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 10000
+      # this should work out to about 8M batches/second for 10s buffer
+  # Data sources: traces, metrics, logs
+  logging:
+    loglevel: debug
+  # Data sources: metrics
+  prometheus:
+    endpoint: otel-collector:2113
+
+processors:
+  # Data sources: traces, metrics, logs
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 30
+    spike_limit_percentage: 6
+  # Data sources: traces, metrics, logs
+  batch:
+    timeout: 2s
+    send_batch_max_size: 32768
+
+# Tasks that do not involve processing telemetry data. Configuring an extension does not enable it.
+extensions:
+  memory_ballast:
+    # https://github.com/open-telemetry/opentelemetry-collector/blob/main/extension/ballastextension/README.md
+    size_in_percentage: 10
+
+service:
+  extensions: [memory_ballast]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [prometheus]
+      processors: [batch]
+      exporters: [prometheus]

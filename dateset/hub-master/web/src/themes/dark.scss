@@ -1,0 +1,687 @@
+[data-theme='dark'] {
+  --border-md: rgba(209, 210, 211, 0.13);
+  --code-bg-md: var(--color-1-700);
+  --body-light-bg: #222529;
+
+  --color-1-100: #222529;
+  --color-1-200: #222529;
+  --color-1-300: #222529;
+  --color-1-400: #222529;
+  --color-1-500: #131216;
+  --color-1-600: #131216;
+  --color-1-700: #131216;
+  --color-1-800: #131216;
+  --color-1-900: #0f0e11;
+
+  --color-1-2: rgba(15, 14, 17, 0.98);
+  --color-1-5: rgba(15, 14, 17, 0.95);
+  --color-1-10: rgba(15, 14, 17, 0.9);
+  --color-1-20: rgba(15, 14, 17, 0.8);
+  --color-2-500: #0f0e11;
+
+  --color-black-5: rgba(255, 255, 255, 0.05);
+  --color-black-10: rgba(255, 255, 255, 0.1);
+  --color-black-15: rgba(255, 255, 255, 0.15);
+  --color-black-25: rgba(255, 255, 255, 0.25);
+  --color-black-35: rgba(255, 255, 255, 0.35);
+  --color-black-50: rgba(255, 255, 255, 0.5);
+  --color-black-75: rgba(255, 255, 255, 0.75);
+  --color-black-90: rgba(255, 255, 255, 0.9);
+
+  --color-white-50: rgba(0, 0, 0, 0.5);
+  --color-white-95: rgba(0, 0, 0, 0.95);
+
+  --bs-white: var(--body-bg);
+  --light: var(--color-1-900);
+
+  --color-font: #a3a3a6;
+  --body-bg: #222529;
+
+  --highlighted: #1164a3;
+  --extra-light-gray: var(--color-2-500);
+  --light-gray: var(--body-bg);
+  --gray: #606162;
+  --mid-gray: #495057;
+  --badge-bg: #1a1c1f;
+
+  --color-activity-0: #161b22;
+  --color-activity-1: #0e4429;
+  --color-activity-2: #006d32;
+  --color-activity-3: #26a641;
+  --color-activity-4: #39d353;
+
+  $border-solid: #737475;
+
+  // Templates diff
+  --diff-text-color: #c9d1d9 !important;
+  --diff-gutter-insert-background-color: rgba(63, 185, 80, 0.3) !important;
+  --diff-gutter-delete-background-color: rgba(248, 81, 73, 0.3) !important;
+  --diff-code-insert-background-color: rgba(46, 160, 67, 0.15) !important;
+  --diff-code-delete-background-color: rgba(248, 81, 73, 0.15) !important;
+
+  --font-color-light: #cbd3da;
+
+  body {
+    background-color: #2c2e31;
+    color: var(--color-font);
+  }
+
+  ::placeholder {
+    opacity: 0.5;
+    color: var(--color-font);
+  }
+
+  .table > :not(caption) > * > * {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  // $theme-colors for Bootstrap
+  $color1: #1a1d21;
+  $color2: #8c96a1;
+
+  --bs-secondary-rgb: $color1;
+
+  $font-color: #a3a3a6;
+  $font-color-light: #cbd3da;
+  $font-color-lighter: #f8f9fa;
+
+  .was-validated .form-check-input:valid ~ .form-check-label,
+  .form-check-input.is-valid ~ .form-check-label,
+  .was-validated .form-check-input:valid ~ .form-check-label,
+  .form-check-input.is-valid ~ .form-check-label {
+    color: var(--color-font);
+  }
+
+  .was-validated .form-check-input:valid:checked ~ .form-check-label::before,
+  .form-check-input.is-valid:checked ~ .form-check-label::before {
+    border-color: var(--highlighted) !important;
+    background-color: var(--highlighted);
+  }
+
+  .table th {
+    // This color has to be solid (not opacity) due to scrollable tables
+    background-color: var(--code-bg-md);
+  }
+
+  .table {
+    background-color: var(--color-1-700) !important;
+    border-color: $border-solid !important;
+    color: var(--color-font);
+
+    th,
+    td {
+      border-color: $border-solid !important;
+    }
+  }
+
+  .table-primary,
+  .table-primary > td,
+  .table-primary > th {
+    background-color: var(--color-1-500);
+    color: var(--color-font);
+    border-color: $border-solid !important;
+  }
+
+  .table-hover .table-primary:hover,
+  .table-hover .table-primary:hover > td,
+  .table-hover .table-primary:hover > th {
+    background-color: var(--color-1-2);
+    color: var(--color-font);
+  }
+
+  .table-bordered td,
+  .table > :not(:first-child) {
+    border-color: var(--border-solid) !important;
+  }
+
+  .table-hover tbody {
+    background-color: var(--color-1-700);
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: var(--color-black-5);
+    color: var(--color-font);
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    color: var(--color-font);
+  }
+
+  .border-bottom {
+    border-color: var(--border-md) !important;
+  }
+
+  .navbarBtn {
+    color: $font-color !important;
+
+    &:hover {
+      color: $font-color-light !important;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline-secondary,
+  .btn-outline-primary,
+  .btn-light,
+  a.bg-secondary {
+    color: var(--color-font) !important;
+    background-color: #1a1d21;
+    border-color: var(--border-solid);
+
+    img {
+      filter: grayscale(100%) invert(1) brightness(2);
+    }
+
+    &:hover,
+    &:focus {
+      color: $font-color-light !important;
+      background-color: #090a0c !important;
+    }
+  }
+
+  .btn-outline-primary {
+    border-color: var(--border-solid);
+  }
+
+  .btn-link {
+    color: var(--color-font) !important;
+
+    &:hover,
+    &:focus {
+      color: $font-color-light !important;
+    }
+  }
+
+  .btn-success {
+    @include button-variant(#275000, $border-solid);
+  }
+
+  .border-light {
+    border-color: var(--border-md) !important;
+  }
+
+  .btn-close:not(.btn-close-white) {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+
+  button.badge.bg-secondary {
+    border-color: var(--border-md) !important;
+    background-color: var(--color-font) !important;
+    color: var(--color-1-500);
+  }
+
+  a.rssBadge {
+    background-color: var(--color-font) !important;
+    color: var(--color-1-500) !important;
+
+    &:hover {
+      background-color: $font-color-lighter !important;
+    }
+  }
+
+  .form-check-label::before,
+  select,
+  input,
+  .form-control {
+    background-color: #2c2e31;
+    border-color: $color2 !important;
+    color: $font-color;
+  }
+
+  .form-check-input:checked ~ .form-check-label::before {
+    background-color: var(--highlighted);
+    border-color: var(--highlighted) !important;
+  }
+
+  .form-select {
+    background-image: url('/static/media/bootstrap/bt_select_dark.svg');
+    border-color: var(--border-md) !important;
+  }
+
+  .form-select:hover {
+    border-color: var(--color-black-25) !important;
+  }
+
+  .form-select:disabled {
+    background-color: var(--color-1-500);
+    opacity: 0.9;
+  }
+
+  .was-validated .form-control:valid {
+    border-color: var(--color2) !important;
+  }
+
+  .was-validated .form-check-input:valid ~ .form-check-label::before,
+  .form-check-input.is-valid ~ .form-check-label::before,
+  .was-validated .form-select:valid,
+  .form-select.is-valid,
+  .was-validated .form-select:valid:focus,
+  .form-select.is-valid:focus {
+    border-color: var(--color2) !important;
+  }
+
+  // Update switch color
+  .form-switch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%238c96a1'/%3e%3c/svg%3e");
+  }
+
+  .form-switch .form-check-input:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+  }
+
+  .dropdown-item,
+  .list-group-item {
+    &:hover,
+    &:focus {
+      color: $font-color;
+      background-color: var(--color-1-500);
+    }
+  }
+
+  .dropdownItem:hover {
+    background-color: var(--color-1-500);
+  }
+
+  .nav-item .btn:hover::before {
+    background-color: $font-color;
+  }
+
+  .navbar-brand {
+    color: $font-color-lighter;
+
+    &:hover,
+    &:focus {
+      color: $font-color-lighter !important;
+    }
+  }
+
+  .nav-tabs .nav-link.active,
+  .nav-tabs .nav-item.show .nav-link {
+    background-color: var(--color-1-300);
+  }
+
+  .card:not(.banner),
+  .card.bg-white,
+  .list-group-item {
+    background-color: #222529;
+    border-color: #676869 !important;
+  }
+
+  .banner {
+    border-color: var(--border-md) !important;
+    box-shadow: none !important;
+  }
+
+  .notificationCard {
+    box-shadow: 0px 0px 25px 5px var(--color-black-25);
+  }
+
+  .activeVersion {
+    & > span {
+      color: var(--highlighted);
+    }
+  }
+
+  .registryIcon {
+    filter: invert(1) grayscale(100%) brightness(125%);
+  }
+
+  .activeTemplate {
+    background-color: #090a0c;
+  }
+
+  .templateWrapper {
+    background-color: var(--extra-light-gray);
+  }
+
+  @media (hover: hover) {
+    .cardWithHover:hover {
+      border-color: var(--color-black-25) !important;
+    }
+  }
+
+  .btn:not(.bg-secondary) {
+    color: $font-color-light;
+  }
+
+  .text-muted {
+    color: #a0a0a0 !important;
+  }
+
+  a.textLight,
+  a.text-primary,
+  .anchorHeader {
+    color: $font-color-light !important;
+
+    &:hover,
+    &:focus {
+      color: $font-color;
+    }
+  }
+
+  .text-primary,
+  .text-secondary {
+    color: $font-color-light !important;
+  }
+
+  .transparentBorder {
+    border-color: transparent !important;
+  }
+
+  .anchorHeader {
+    color: $font-color-light !important;
+  }
+
+  .highlighted {
+    color: var(--highlighted);
+  }
+
+  .card a.text-primary {
+    color: $font-color-light !important;
+
+    &:hover > *,
+    &:focus > * {
+      color: $font-color-light !important;
+    }
+  }
+
+  .page-link {
+    background-color: var(--color-1-300);
+    color: $font-color;
+    border-color: $font-color !important;
+  }
+
+  .page-item {
+    &.disabled .page-link {
+      background-color: var(--color-black-15) !important;
+      color: $font-color;
+      border-color: $font-color !important;
+    }
+
+    &.active .page-link {
+      background-color: var(--highlighted);
+      border-color: #a3a3a6 !important;
+    }
+  }
+
+  .dropdown-menu {
+    background-color: rgba(0, 0, 0, 0.95);
+    border-color: var(--border-md) !important;
+    color: $font-color;
+
+    & > .arrow {
+      &::after,
+      &::before {
+        border-bottom-color: var(--border-md);
+      }
+    }
+  }
+
+  .dropdown-divider {
+    border-color: var(--border-md) !important;
+  }
+
+  .dropdown-item,
+  .jumbotron {
+    color: $font-color;
+  }
+
+  .package-detail-jumbotron {
+    background-color: var(--body-bg) !important;
+    border-top: 1px solid var(--border-md);
+  }
+
+  code {
+    color: $font-color !important;
+  }
+
+  .bg-light {
+    background-color: var(--body-bg) !important;
+    color: var(--color-font) !important;
+    border-color: $border-solid !important;
+  }
+
+  .starBtn {
+    border-color: $border-solid !important;
+  }
+
+  *:disabled,
+  .disabled {
+    color: $font-color !important;
+  }
+
+  .text-dark:not(.textLighter) {
+    color: $font-color-light !important;
+  }
+
+  .textLight {
+    color: $font-color-light !important;
+  }
+
+  .textLighter,
+  .btn-link.text-dark {
+    color: white !important;
+  }
+
+  .alert-primary {
+    color: var(--color-font);
+    background-color: var(--color-1-10);
+    border-color: var(--color-1-20);
+  }
+
+  .alert-light {
+    background-color: var(--color-1-900);
+    color: var(--color-font);
+    border-color: var(--border-md) !important;
+  }
+
+  .alert-danger {
+    background-color: #921e12;
+    color: #f5c6cb;
+  }
+
+  // Modifiers
+  .searchBar {
+    background-color: var(--body-bg);
+
+    svg {
+      color: var(--color-font) !important;
+    }
+  }
+
+  .sidebar {
+    box-shadow: none !important;
+  }
+
+  .homeCard:not(:last-child) {
+    border-color: var(--border-md) !important;
+  }
+
+  .homeLogo {
+    filter: grayscale(100%);
+  }
+
+  .relatedCard {
+    background-color: var(--body-bg) !important;
+  }
+
+  .sectionIcon {
+    color: var(--color-font);
+
+    path {
+      stroke: var(--color-font);
+    }
+  }
+
+  .sectionItem {
+    &.isActive {
+      color: var(--color-font) !important;
+      background-color: var(--color-1-100) !important;
+
+      .sectionIcon {
+        color: inherit;
+
+        path {
+          stroke: inherit;
+        }
+      }
+
+      &::before {
+        background-color: var(--highlighted);
+      }
+    }
+  }
+
+  .iconLight {
+    display: none;
+  }
+
+  .iconDark {
+    display: inline;
+  }
+
+  .motdBanner {
+    background-color: var(--color-1-100) !important;
+    color: $font-color-light;
+    border-color: var(--border-md) !important;
+  }
+
+  .bg-white {
+    background-color: var(--bs-white) !important;
+  }
+
+  .imageWrapper {
+    border-color: var(--border-md) !important;
+  }
+
+  .noReadmeAlert {
+    border-color: var(--mid-gray) !important;
+  }
+
+  .home {
+    background-color: var(--color-1-300);
+  }
+
+  .info {
+    background-color: var(--body-bg) !important;
+    border-color: var(--border-md) !important;
+  }
+
+  .activeSection {
+    border-color: var(--color-font) var(--color-font) transparent !important;
+
+    &::before {
+      background-color: var(--color-font);
+    }
+  }
+
+  .navWrapper {
+    background-color: var(--color-black-5);
+    border-top: 1px solid var(--border-md);
+
+    &::before {
+      background-color: var(--color-font);
+    }
+  }
+
+  .normalOpacityFont {
+    opacity: 1;
+  }
+
+  footer,
+  .navbar {
+    border-top: 1px solid var(--border-md);
+    color: var(--color-font) !important;
+    box-shadow: none !important;
+  }
+
+  .jumbotron,
+  .navbar + .navbar {
+    border-bottom: 1px solid var(--border-md);
+  }
+
+  .labelIconWrapper {
+    background-color: var(--body-bg) !important;
+    color: var(--color-font) !important;
+
+    &::before {
+      background-color: var(--body-bg) !important;
+    }
+  }
+
+  // Modal
+  .modal-backdrop {
+    opacity: 0.75;
+    animation: none;
+  }
+
+  .modal-content {
+    background-color: var(--body-bg);
+    color: var(--color-font);
+    border-color: var(--color-font) !important;
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: var(--border-md) !important;
+  }
+
+  .modal-header {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+
+  .close {
+    color: var(--color-font);
+    text-shadow: none;
+  }
+
+  .separator {
+    background-color: var(--border-md);
+  }
+
+  .capability-level-diagram {
+    filter: grayscale(1) invert(1);
+  }
+
+  .stepWrapper {
+    &:not(:last-child)::before {
+      background-color: $border-solid !important;
+    }
+
+    .step {
+      background-color: var(--color-black-25) !important;
+      border-color: $border-solid !important;
+
+      &.activeStep {
+        background-color: var(--highlighted) !important;
+      }
+    }
+  }
+
+  .userAuth {
+    border-color: var(--border-md) !important;
+  }
+
+  .offNotifications {
+    color: var(--color-font) !important;
+  }
+
+  .trademark {
+    background-color: var(--color-white-50);
+  }
+
+  .tooltip {
+    &.bs-tooltip-bottom .tooltip-arrow::before {
+      border-bottom-color: var(--gray) !important;
+    }
+
+    & .tooltip-inner {
+      background-color: var(--light) !important;
+      border: 1px solid var(--gray) !important;
+      color: var(--color-font) !important;
+    }
+  }
+}

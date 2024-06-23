@@ -1,0 +1,3515 @@
+basePath: /api/v1
+definitions:
+  d7y_io_dragonfly_v2_manager_models.Application:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      updated_at:
+        type: string
+      url:
+        type: string
+      user:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+      user_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Config:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+      user_id:
+        type: integer
+      value:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.JSONMap:
+    additionalProperties: {}
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Job:
+    properties:
+      args:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      result:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      scheduler_clusters:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+        type: array
+      seed_peer_clusters:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+        type: array
+      state:
+        type: string
+      task_id:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+      user_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Model:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      evaluation:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      scheduler:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+      scheduler_id:
+        type: integer
+      state:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Oauth:
+    properties:
+      bio:
+        type: string
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      redirect_url:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Peer:
+    properties:
+      build_platform:
+        type: string
+      created_at:
+        type: string
+      download_port:
+        type: integer
+      git_commit:
+        type: string
+      git_version:
+        type: string
+      host_name:
+        type: string
+      id:
+        type: integer
+      idc:
+        type: string
+      ip:
+        type: string
+      is_del:
+        type: integer
+      kernel_version:
+        type: string
+      location:
+        type: string
+      object_storage_port:
+        type: integer
+      os:
+        type: string
+      platform:
+        type: string
+      platform_family:
+        type: string
+      platform_version:
+        type: string
+      port:
+        type: integer
+      scheduler_cluster:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+      scheduler_cluster_id:
+        type: integer
+      state:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.PersonalAccessToken:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      expired_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+      state:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+      user_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_models.Scheduler:
+    properties:
+      created_at:
+        type: string
+      features:
+        items:
+          type: string
+        type: array
+      host_name:
+        type: string
+      id:
+        type: integer
+      idc:
+        type: string
+      ip:
+        type: string
+      is_del:
+        type: integer
+      location:
+        type: string
+      models:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Model'
+        type: array
+      port:
+        type: integer
+      scheduler_cluster:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+      scheduler_cluster_id:
+        type: integer
+      state:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.SchedulerCluster:
+    properties:
+      bio:
+        type: string
+      client_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      is_del:
+        type: integer
+      jobs:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+        type: array
+      name:
+        type: string
+      peers:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Peer'
+        type: array
+      schedulers:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+        type: array
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      seed_peer_clusters:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.SeedPeer:
+    properties:
+      created_at:
+        type: string
+      download_port:
+        type: integer
+      host_name:
+        type: string
+      id:
+        type: integer
+      idc:
+        type: string
+      ip:
+        type: string
+      is_del:
+        type: integer
+      location:
+        type: string
+      object_storage_port:
+        type: integer
+      port:
+        type: integer
+      seed_peer_cluster:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+      seed_peer_cluster_id:
+        type: integer
+      state:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.SeedPeerCluster:
+    properties:
+      bio:
+        type: string
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.JSONMap'
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      jobs:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+        type: array
+      name:
+        type: string
+      scheduler_clusters:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+        type: array
+      seed_peer:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeer'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_models.User:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      configs:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Config'
+        type: array
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      state:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_permission_rbac.Permission:
+    properties:
+      action:
+        enum:
+        - read
+        - '*'
+        type: string
+      object:
+        type: string
+    required:
+    - action
+    - object
+    type: object
+  d7y_io_dragonfly_v2_manager_types.AddPermissionForRoleRequest:
+    properties:
+      action:
+        enum:
+        - read
+        - '*'
+        type: string
+      object:
+        type: string
+    required:
+    - action
+    - object
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateApplicationRequest:
+    properties:
+      bio:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.PriorityConfig'
+      url:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - name
+    - priority
+    - url
+    - user_id
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateBucketRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateClusterRequest:
+    properties:
+      bio:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        type: string
+      peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      scheduler_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+    required:
+    - name
+    - peer_cluster_config
+    - scheduler_cluster_config
+    - seed_peer_cluster_config
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateClusterResponse:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+      peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      scheduler_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      scheduler_cluster_id:
+        type: integer
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+      seed_peer_cluster_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateConfigRequest:
+    properties:
+      bio:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: integer
+      value:
+        type: string
+    required:
+    - name
+    - user_id
+    - value
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateJobRequest:
+    properties:
+      args:
+        additionalProperties: {}
+        type: object
+      bio:
+        type: string
+      result:
+        additionalProperties: {}
+        type: object
+      scheduler_cluster_ids:
+        items:
+          type: integer
+        type: array
+      seed_peer_cluster_ids:
+        items:
+          type: integer
+        type: array
+      type:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - type
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateOauthRequest:
+    properties:
+      bio:
+        type: string
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      name:
+        enum:
+        - github
+        - google
+        type: string
+      redirect_url:
+        type: string
+    required:
+    - client_id
+    - client_secret
+    - name
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreatePeerRequest:
+    properties:
+      build_platform:
+        type: string
+      download_port:
+        type: integer
+      git_commit:
+        type: string
+      git_version:
+        type: string
+      host_name:
+        type: string
+      idc:
+        type: string
+      ip:
+        type: string
+      kernel_version:
+        type: string
+      location:
+        type: string
+      object_storage_port:
+        type: integer
+      os:
+        type: string
+      platform:
+        type: string
+      platform_family:
+        type: string
+      platform_version:
+        type: string
+      port:
+        type: integer
+      scheduler_cluster_id:
+        type: integer
+      state:
+        enum:
+        - active
+        - inactive
+        type: string
+      type:
+        enum:
+        - super
+        - strong
+        - weak
+        - normal
+        type: string
+    required:
+    - download_port
+    - host_name
+    - ip
+    - port
+    - scheduler_cluster_id
+    - type
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreatePersonalAccessTokenRequest:
+    properties:
+      bio:
+        type: string
+      expired_at:
+        type: string
+      name:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: integer
+    required:
+    - expired_at
+    - name
+    - user_id
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateRoleRequest:
+    properties:
+      permissions:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_permission_rbac.Permission'
+        type: array
+      role:
+        type: string
+    required:
+    - permissions
+    - role
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateSchedulerClusterRequest:
+    properties:
+      bio:
+        type: string
+      client_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      is_default:
+        type: boolean
+      name:
+        type: string
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_id:
+        type: integer
+    required:
+    - client_config
+    - config
+    - name
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateSchedulerRequest:
+    properties:
+      features:
+        items:
+          type: string
+        type: array
+      host_name:
+        type: string
+      idc:
+        type: string
+      ip:
+        type: string
+      location:
+        type: string
+      port:
+        type: integer
+      scheduler_cluster_id:
+        type: integer
+    required:
+    - host_name
+    - ip
+    - port
+    - scheduler_cluster_id
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateSeedPeerClusterRequest:
+    properties:
+      bio:
+        type: string
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+      name:
+        type: string
+    required:
+    - config
+    - name
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateSeedPeerRequest:
+    properties:
+      download_port:
+        type: integer
+      host_name:
+        type: string
+      idc:
+        type: string
+      ip:
+        type: string
+      location:
+        type: string
+      object_storage_port:
+        type: integer
+      port:
+        type: integer
+      seed_peer_cluster_id:
+        type: integer
+      type:
+        enum:
+        - super
+        - strong
+        - weak
+        type: string
+    required:
+    - download_port
+    - host_name
+    - ip
+    - port
+    - seed_peer_cluster_id
+    - type
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateV1PreheatRequest:
+    properties:
+      filter:
+        type: string
+      headers:
+        additionalProperties:
+          type: string
+        type: object
+      type:
+        enum:
+        - image
+        - file
+        type: string
+      url:
+        type: string
+    required:
+    - type
+    - url
+    type: object
+  d7y_io_dragonfly_v2_manager_types.CreateV1PreheatResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.DeletePermissionForRoleRequest:
+    properties:
+      action:
+        enum:
+        - read
+        - '*'
+        type: string
+      object:
+        type: string
+    required:
+    - action
+    - object
+    type: object
+  d7y_io_dragonfly_v2_manager_types.GetClusterResponse:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+      peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      scheduler_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      scheduler_cluster_id:
+        type: integer
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+      seed_peer_cluster_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.GetV1PreheatResponse:
+    properties:
+      finishTime:
+        type: string
+      id:
+        type: string
+      startTime:
+        type: string
+      status:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.PriorityConfig:
+    properties:
+      urls:
+        items:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.URLPriorityConfig'
+        type: array
+      value:
+        maximum: 20
+        minimum: 0
+        type: integer
+    required:
+    - value
+    type: object
+  d7y_io_dragonfly_v2_manager_types.ResetPasswordRequest:
+    properties:
+      new_password:
+        maxLength: 20
+        minLength: 8
+        type: string
+      old_password:
+        maxLength: 20
+        minLength: 8
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig:
+    properties:
+      load_limit:
+        maximum: 2000
+        minimum: 1
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig:
+    properties:
+      candidate_parent_limit:
+        maximum: 20
+        minimum: 1
+        type: integer
+      filter_parent_limit:
+        maximum: 1000
+        minimum: 10
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes:
+    properties:
+      cidrs:
+        items:
+          type: string
+        type: array
+      idc:
+        type: string
+      location:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig:
+    properties:
+      load_limit:
+        maximum: 5000
+        minimum: 1
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.SignUpRequest:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      name:
+        maxLength: 10
+        minLength: 3
+        type: string
+      password:
+        maxLength: 20
+        minLength: 8
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  d7y_io_dragonfly_v2_manager_types.URLPriorityConfig:
+    properties:
+      regex:
+        type: string
+      value:
+        maximum: 20
+        minimum: 0
+        type: integer
+    required:
+    - regex
+    - value
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateApplicationRequest:
+    properties:
+      bio:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.PriorityConfig'
+      url:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateClusterRequest:
+    properties:
+      bio:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        type: string
+      peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      scheduler_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateClusterResponse:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+      peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      scheduler_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      scheduler_cluster_id:
+        type: integer
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+      seed_peer_cluster_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateConfigRequest:
+    properties:
+      bio:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: integer
+      value:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateJobRequest:
+    properties:
+      bio:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateModelRequest:
+    properties:
+      BIO:
+        type: string
+      state:
+        enum:
+        - active
+        - inactive
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateOauthRequest:
+    properties:
+      bio:
+        type: string
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      name:
+        enum:
+        - github
+        - google
+        type: string
+      redirect_url:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdatePersonalAccessTokenRequest:
+    properties:
+      bio:
+        type: string
+      expired_at:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+      state:
+        enum:
+        - active
+        - inactive
+        type: string
+      user_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateSchedulerClusterRequest:
+    properties:
+      bio:
+        type: string
+      client_config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterClientConfig'
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterConfig'
+      is_default:
+        type: boolean
+      name:
+        type: string
+      scopes:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SchedulerClusterScopes'
+      seed_peer_cluster_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateSchedulerRequest:
+    properties:
+      features:
+        items:
+          type: string
+        type: array
+      idc:
+        type: string
+      ip:
+        type: string
+      location:
+        type: string
+      port:
+        type: integer
+      scheduler_cluster_id:
+        type: integer
+      scheduler_id:
+        type: integer
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateSeedPeerClusterRequest:
+    properties:
+      bio:
+        type: string
+      config:
+        $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SeedPeerClusterConfig'
+      name:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateSeedPeerRequest:
+    properties:
+      download_port:
+        type: integer
+      idc:
+        type: string
+      ip:
+        type: string
+      location:
+        type: string
+      object_storage_port:
+        type: integer
+      port:
+        type: integer
+      seed_peer_cluster_id:
+        type: integer
+      type:
+        enum:
+        - super
+        - strong
+        - weak
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_manager_types.UpdateUserRequest:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      phone:
+        type: string
+    type: object
+  d7y_io_dragonfly_v2_pkg_objectstorage.BucketMetadata:
+    properties:
+      createAt:
+        description: CreateAt is bucket create time.
+        type: string
+      name:
+        description: Name is bucket name.
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    url: https://d7y.io
+  description: Dragonfly Manager Server
+  license:
+    name: Apache 2.0
+  title: Dragonfly Manager
+  version: 1.0.0
+paths:
+  /applications:
+    get:
+      consumes:
+      - application/json
+      description: Get Applications
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Application'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Applications
+      tags:
+      - Application
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Application
+        in: body
+        name: Application
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateApplicationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Application'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Application
+      tags:
+      - Application
+  /applications/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Application
+      tags:
+      - Application
+    get:
+      consumes:
+      - application/json
+      description: Get Application by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Application'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Application
+      tags:
+      - Application
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Application
+        in: body
+        name: Application
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateApplicationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Application'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Application
+      tags:
+      - Application
+  /buckets:
+    get:
+      consumes:
+      - application/json
+      description: Get Buckets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_pkg_objectstorage.BucketMetadata'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Buckets
+      tags:
+      - Bucket
+    post:
+      consumes:
+      - application/json
+      description: Create by json bucket
+      parameters:
+      - description: Bucket
+        in: body
+        name: Bucket
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateBucketRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Bucket
+      tags:
+      - Bucket
+  /buckets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Bucket
+      tags:
+      - Bucket
+    get:
+      consumes:
+      - application/json
+      description: Get Bucket by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_pkg_objectstorage.BucketMetadata'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Bucket
+      tags:
+      - Bucket
+  /clusters:
+    get:
+      consumes:
+      - application/json
+      description: Get Clusters
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.GetClusterResponse'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Clusters
+      tags:
+      - Cluster
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Cluster
+        in: body
+        name: Cluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateClusterResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Cluster
+      tags:
+      - Cluster
+  /clusters/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Cluster
+      tags:
+      - Cluster
+    get:
+      consumes:
+      - application/json
+      description: Get Cluster by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.GetClusterResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Cluster
+      tags:
+      - Cluster
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cluster
+        in: body
+        name: Cluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateClusterResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Cluster
+      tags:
+      - Cluster
+  /configs:
+    get:
+      consumes:
+      - application/json
+      description: Get Configs
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Config'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Configs
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Config
+        in: body
+        name: Config
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Config'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Config
+      tags:
+      - Config
+  /configs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get Config by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Config'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Config
+      tags:
+      - Config
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Config
+        in: body
+        name: Config
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Config'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Config
+      tags:
+      - Config
+  /healthy:
+    get:
+      consumes:
+      - application/json
+      description: Get app health
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Health
+      tags:
+      - Health
+  /jobs:
+    get:
+      consumes:
+      - application/json
+      description: Get Jobs
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Jobs
+      tags:
+      - Job
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Job
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Job
+      tags:
+      - Job
+  /jobs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Job
+      tags:
+      - Job
+    get:
+      consumes:
+      - application/json
+      description: Get Job by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Job
+      tags:
+      - Job
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Job
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Job'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Job
+      tags:
+      - Job
+  /models:
+    get:
+      consumes:
+      - application/json
+      description: Get Models
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Model'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Models
+      tags:
+      - Model
+  /models/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Model
+      tags:
+      - Model
+    get:
+      consumes:
+      - application/json
+      description: Get Model by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Model'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Model
+      tags:
+      - Model
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Model
+        in: body
+        name: Model
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Model'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Model
+      tags:
+      - Model
+  /oauth:
+    get:
+      consumes:
+      - application/json
+      description: Get Oauths
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Oauth'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Oauths
+      tags:
+      - Oauth
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Oauth
+        in: body
+        name: Oauth
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateOauthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Oauth'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Oauth
+      tags:
+      - Oauth
+  /oauth/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Oauth
+      tags:
+      - Oauth
+    get:
+      consumes:
+      - application/json
+      description: Get Oauth by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Oauth'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Oauth
+      tags:
+      - Oauth
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Oauth
+        in: body
+        name: Oauth
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateOauthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Oauth'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Oauth
+      tags:
+      - Oauth
+  /peers:
+    get:
+      consumes:
+      - application/json
+      description: Get Peers
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Peer'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Peers
+      tags:
+      - Peer
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Peer
+        in: body
+        name: Peer
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreatePeerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Peer'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Peer
+      tags:
+      - Peer
+  /peers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Peer
+      tags:
+      - Peer
+    get:
+      consumes:
+      - application/json
+      description: Get Peer by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Peer'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Peer
+      tags:
+      - Peer
+  /permissions:
+    get:
+      description: Get Permissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_permission_rbac.Permission'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Permissions
+      tags:
+      - Permission
+  /personal-access-tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get PersonalAccessTokens
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.PersonalAccessToken'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get PersonalAccessTokens
+      tags:
+      - PersonalAccessToken
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: PersonalAccessToken
+        in: body
+        name: PersonalAccessToken
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreatePersonalAccessTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.PersonalAccessToken'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create PersonalAccessToken
+      tags:
+      - PersonalAccessToken
+  /personal-access-tokens/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy PersonalAccessToken
+      tags:
+      - PersonalAccessToken
+    get:
+      consumes:
+      - application/json
+      description: Get PersonalAccessToken by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.PersonalAccessToken'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get PersonalAccessToken
+      tags:
+      - PersonalAccessToken
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: PersonalAccessToken
+        in: body
+        name: PersonalAccessToken
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdatePersonalAccessTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.PersonalAccessToken'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update PersonalAccessToken
+      tags:
+      - PersonalAccessToken
+  /preheats:
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Preheat
+        in: body
+        name: Preheat
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateV1PreheatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateV1PreheatResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create V1 Preheat
+      tags:
+      - Preheat
+  /preheats/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Preheat by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.GetV1PreheatResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get V1 Preheat
+      tags:
+      - Preheat
+  /roles:
+    get:
+      consumes:
+      - application/json
+      description: Get roles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Roles
+      tags:
+      - Role
+    post:
+      consumes:
+      - application/json
+      description: Create Role by json config
+      parameters:
+      - description: Role
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create Role
+      tags:
+      - Role
+  /roles/{role}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy role by json config
+      parameters:
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Destroy Role
+      tags:
+      - Role
+    get:
+      consumes:
+      - application/json
+      description: Get Role
+      parameters:
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Role
+      tags:
+      - Role
+  /roles/{role}/permissions:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Role Permission by json config
+      parameters:
+      - description: Permission
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.DeletePermissionForRoleRequest'
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Update Role
+      tags:
+      - Role
+    post:
+      consumes:
+      - application/json
+      description: Add Permission by json config
+      parameters:
+      - description: Permission
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.AddPermissionForRoleRequest'
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Add Permission For Role
+      tags:
+      - Role
+  /scheduler-clusters:
+    get:
+      consumes:
+      - application/json
+      description: Get SchedulerClusters
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SchedulerClusters
+      tags:
+      - SchedulerCluster
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: SchedulerCluster
+        in: body
+        name: SchedulerCluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateSchedulerClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create SchedulerCluster
+      tags:
+      - SchedulerCluster
+  /scheduler-clusters/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy SchedulerCluster
+      tags:
+      - SchedulerCluster
+    get:
+      consumes:
+      - application/json
+      description: Get SchedulerCluster by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SchedulerCluster
+      tags:
+      - SchedulerCluster
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: SchedulerCluster
+        in: body
+        name: SchedulerCluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateSchedulerClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SchedulerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update SchedulerCluster
+      tags:
+      - SchedulerCluster
+  /scheduler-clusters/{id}/schedulers/{scheduler_id}:
+    put:
+      consumes:
+      - application/json
+      description: Add Scheduler to schedulerCluster
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: scheduler id
+        in: path
+        name: scheduler_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Add Scheduler to schedulerCluster
+      tags:
+      - SchedulerCluster
+  /schedulers:
+    get:
+      consumes:
+      - application/json
+      description: Get Schedulers
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Schedulers
+      tags:
+      - Scheduler
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: Scheduler
+        in: body
+        name: Scheduler
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateSchedulerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create Scheduler
+      tags:
+      - Scheduler
+  /schedulers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy Scheduler
+      tags:
+      - Scheduler
+    get:
+      consumes:
+      - application/json
+      description: Get Scheduler by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Scheduler
+      tags:
+      - Scheduler
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Scheduler
+        in: body
+        name: Scheduler
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateSchedulerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.Scheduler'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update Scheduler
+      tags:
+      - Scheduler
+  /seed-peer-clusters:
+    get:
+      consumes:
+      - application/json
+      description: Get SeedPeerClusters
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SeedPeerClusters
+      tags:
+      - SeedPeerCluster
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: DNCluster
+        in: body
+        name: SeedPeerCluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateSeedPeerClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+  /seed-peer-clusters/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+    get:
+      consumes:
+      - application/json
+      description: Get SeedPeerCluster by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: SeedPeerCluster
+        in: body
+        name: SeedPeerCluster
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateSeedPeerClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeerCluster'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+  /seed-peer-clusters/{id}/scheduler-clusters/{scheduler_cluster_id}:
+    put:
+      consumes:
+      - application/json
+      description: Add SchedulerCluster to SeedPeerCluster
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: scheduler cluster id
+        in: path
+        name: scheduler_cluster_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Add SchedulerCluster to SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+  /seed-peer-clusters/{id}/seed-peers/{seed_peer_id}:
+    put:
+      consumes:
+      - application/json
+      description: Add SeedPeer to SeedPeerCluster
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: seed peer id
+        in: path
+        name: seed_peer_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Add Instance to SeedPeerCluster
+      tags:
+      - SeedPeerCluster
+  /seed-peers:
+    get:
+      consumes:
+      - application/json
+      description: Get SeedPeers
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeer'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SeedPeers
+      tags:
+      - SeedPeer
+    post:
+      consumes:
+      - application/json
+      description: Create by json config
+      parameters:
+      - description: SeedPeer
+        in: body
+        name: SeedPeer
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.CreateSeedPeerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeer'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create SeedPeer
+      tags:
+      - SeedPeer
+  /seed-peers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Destroy by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Destroy SeedPeer
+      tags:
+      - SeedPeer
+    get:
+      consumes:
+      - application/json
+      description: Get SeedPeer by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeer'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get SeedPeer
+      tags:
+      - SeedPeer
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: SeedPeer
+        in: body
+        name: SeedPeer
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateSeedPeerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.SeedPeer'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update SeedPeer
+      tags:
+      - SeedPeer
+  /user/signin/{name}:
+    get:
+      consumes:
+      - application/json
+      description: oauth signin by json config
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Oauth Signin
+      tags:
+      - User
+  /user/signin/{name}/callback:
+    get:
+      description: oauth signin callback by json config
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: code
+        in: query
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Oauth Signin Callback
+      tags:
+      - Oauth
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: signup by json config
+      parameters:
+      - description: User
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: SignUp user
+      tags:
+      - User
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get Users
+      parameters:
+      - default: 0
+        description: current page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: return max item count, default 10, max 50
+        in: query
+        maximum: 50
+        minimum: 2
+        name: per_page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Users
+      tags:
+      - User
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get User by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get User
+      tags:
+      - User
+    patch:
+      consumes:
+      - application/json
+      description: Update by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/d7y_io_dragonfly_v2_manager_models.User'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update User
+      tags:
+      - User
+  /users/{id}/reset_password:
+    post:
+      consumes:
+      - application/json
+      description: reset password by json config
+      parameters:
+      - description: User
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/d7y_io_dragonfly_v2_manager_types.ResetPasswordRequest'
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Reset Password For User
+      tags:
+      - User
+  /users/{id}/roles:
+    get:
+      description: get roles by json config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get User Roles
+      tags:
+      - User
+  /users/{id}/roles/{role}:
+    delete:
+      consumes:
+      - application/json
+      description: delete role by uri config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Delete Role For User
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: add role to user by uri config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Add Role For User
+      tags:
+      - Users
+swagger: "2.0"

@@ -1,0 +1,47 @@
+global:
+  imagePullSecrets: []
+  imagePullPolicy: Always
+  proxy:
+    # Frontend proxy used in the cluster: istio, nginx, etc.
+    frontend: "istio"
+  images:
+    confserver: curiefense/confserver
+    redis: curiefense/redis
+    uiserver: curiefense/uiserver
+    minio: minio/minio:RELEASE.2021-10-13T00-23-17Z
+
+  storage:
+    # use the default storage class if null
+    storage_class_name: null
+    confserver_storage_size: '1Gi'
+    redis_storage_size: '1Gi'
+    minio_storage_size: '1Gi'
+
+  settings:
+    curieconf_manifest_url: 's3://curiefense-test01/prod/manifest.json'
+    # supported types: 's3', 'gs', 'local-bucket', 'minio'
+    curiefense_bucket_type: 's3'
+    # minio hostname and port, when curiefense_bucket_type is minio
+    curiefense_minio_host: 'minio:9000'
+    # set to true to disable TLS for minio, for testing environments
+    curiefense_minio_insecure: false
+    # docker_tag will be overridden by deploy.sh
+    docker_tag: 'main'
+    redis_port: 6379
+    uiserver_enable_tls: false
+    uiserver_domain: ""
+    uiserver_annotations: {}
+
+  requests:
+    cpu:
+      redis: "10m"
+      uiserver: "100m"
+      confserver_init: "100m"
+      confserver_nginx: "10m"
+      confserver_uwsgi: "100m"
+      minio_init: "100m"
+      minio: "200m"
+
+  enable:
+    # set to false to disable parts of this deployment, ex. if you prefer to use your own versions
+    minio: true

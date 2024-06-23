@@ -1,0 +1,183 @@
+carina-scheduler:
+  enabled: true
+  image:
+    repository: registry.cn-hangzhou.aliyuncs.com/carina/carina-scheduler
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.11.0"
+# Default values for carina-csi-driver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  baseRepo: registry.cn-hangzhou.aliyuncs.com/carina
+  carina:
+    repository: /carina
+    tag: v0.11.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    repository: /livenessprobe
+    tag: v2.7.0
+    pullPolicy: IfNotPresent 
+  csiProvisioner:
+    repository: /csi-provisioner
+    tag: v2.2.2
+    pullPolicy: IfNotPresent
+  csiResizer:
+    repository: /csi-resizer
+    tag: v1.5.0
+    pullPolicy: IfNotPresent
+  nodeDriverRegistrar:
+    repository: /csi-node-driver-registrar
+    tag: v2.5.1
+    pullPolicy: IfNotPresent
+  nodeInitImage:  
+    repository: /busybox
+    tag: "1.28"
+    pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true # When true, service accounts will be created for you. Set to false if you want to use your own.
+  controller: carina-csi-controller 
+  node: carina-csi-node 
+
+driver:
+  name: carina.storage.io
+
+rbac:
+  create: true
+  name: carina
+
+controller:
+  name: csi-carina-controller
+  replicas: 1
+  metricsPort: 8080
+  webhookPort: 8443
+  livenessProbe:
+    healthPort: 29602
+  disableAvailabilitySetNodes: true
+  provisionerWorkerThreads: 40
+  logLevel: 5
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/controlplane"
+      operator: "Exists"
+      effect: "NoSchedule"
+  hostNetwork: false # this setting could be disabled if controller does not depend on MSI setting
+  podLabels: {}
+  resources:
+    csiProvisioner:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    csiResizer:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    livenessProbe:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    carina:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 300m
+        memory: 64Mi
+
+node:
+  name: csi-carina-node # daemonset name
+  logLevel: 2
+  kubelet: /var/lib/kubelet
+  bcache: true
+  initContainer:
+    modprobe: 
+      - dm_snapshot 
+      - dm_mirror
+      - dm_thin_pool
+  enablePerfOptimization: true
+  tolerations:
+    # - key: "node-role.kubernetes.io/master"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
+  hostNetwork: false # this setting could be disabled if perfProfile is `none`
+  maxUnavailable: 1
+  podLabels: {}
+  nodeAffinity: {}
+  resources:
+    livenessProbe:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    nodeDriverRegistrar:
+      limits:
+        cpu: 200m
+        memory: 100Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    carina:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+  metricsPort: 8080
+  livenessProbe:
+    healthPort: 29602
+  logDir: /var/log/carina/
+  configDir: /etc/carina/
+
+imagePullSecrets: []
+# - name: "image-pull-secret"
+installCRDs: true  
+
+
+serviceMonitor:
+  enable: false 
+
+
+webhook:
+  enabled: true
+
+config:  
+  schedulerStrategy: spreadout
+  diskScanInterval: 300
+  diskSelector:
+  - name: "carina-vg-ssd" 
+    re: ["loop2+"]
+    policy: "LVM"
+    nodeLabel: "kubernetes.io/hostname"
+  - name: "carina-raw-ssd" 
+    re: ["loop3+"]
+    policy: "RAW"
+    nodeLabel: "kubernetes.io/hostname"
+
+  
+storage:
+  create: true
+  # file system
+  StorageClass: 
+  - fstype: xfs
+    disktype: carina-vg-ssd  # as same as diskSelector[0].name
+    reclaimPolicy: Delete
+    volumeBindingMode: WaitForFirstConsumer
+  - fstype: xfs
+    disktype: carina-raw-ssd #as same as diskSelector[1].name
+    reclaimPolicy: Delete  
+    volumeBindingMode: WaitForFirstConsumer    

@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: dynamic_parameters
+  strategy:
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      labels:
+        
+      annotations: dynamic_parameters
+    spec:
+      imagePullSecrets:
+      securityContext:
+      nodeSelector:
+      tolerations:
+      topologySpreadConstraints:
+      priorityClassName: dynamic_parameters
+      hostNetwork: dynamic_parameters
+      dnsPolicy: dynamic_parameters
+      affinity:
+        podAntiAffinity:
+        podAffinity:
+        nodeAffinity:
+      serviceAccountName: dynamic_parameters
+      containers:
+        - name: controller
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          ports:
+          - containerPort: dynamic_parameters
+            name: https
+            protocol: TCP
+          - containerPort: dynamic_parameters
+            name: metrics
+            protocol: TCP
+          - containerPort: dynamic_parameters
+            name: profiling-port
+            protocol: TCP
+          args:
+            - --enableTracing
+            - --tracingAddress=dynamic_parameters
+            - --tracingPort=dynamic_parameters
+            - --tracingCreds=dynamic_parameters
+            - --disableMetrics=dynamic_parameters
+            - --otelConfig=dynamic_parameters
+            - --metricsPort=dynamic_parameters
+            - --otelCollector=dynamic_parameters
+            - --transportCreds=dynamic_parameters
+            - --imagePullSecrets=dynamic_parameters
+              "configMapCaching"
+              "deferredLoading"
+              "globalContext"
+              "logging"
+              "omitEvents"
+              "policyExceptions"
+            - --dynamic_parameters=dynamic_parameters
+            - --profile=true
+            - --profilePort=dynamic_parameters
+          env:
+          - name: KYVERNO_SERVICEACCOUNT_NAME
+            value: dynamic_parameters
+          - name: KYVERNO_DEPLOYMENT
+            value: dynamic_parameters
+          - name: INIT_CONFIG
+            value: dynamic_parameters
+          - name: METRICS_CONFIG
+            value: dynamic_parameters
+          - name: KYVERNO_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: KYVERNO_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          resources:
+          securityContext:
+          volumeMounts:
+            - name: ca-certificates
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+      volumes:
+      - name: ca-certificates
+        configMap:
+          name: dynamic_parameters
+          items:
+          - key: ca-certificates
+            path: ca-certificates.crt
+      - name: ca-certificates
+
+---

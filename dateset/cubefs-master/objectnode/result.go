@@ -1,0 +1,443 @@
+// Copyright 2019 The CubeFS Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing
+// permissions and limitations under the License.
+
+package objectnode
+
+import (
+	"bytes"
+	"encoding/json"
+	"encoding/xml"
+	"net/url"
+	"regexp"
+	"strings"
+	"unicode/utf8"
+)
+
+var (
+	regexTagKeyValue    = regexp.MustCompile(`^[0-9a-zA-Z+=._ :/@-]+$`)
+	invalidTagKeyPrefix = []string{"cfs", "cubefs"}
+)
+
+func MarshalXMLEntity(entity interface{}) ([]byte, error) {
+	var err error
+	var result []byte
+	if result, err = xml.Marshal(entity); err != nil {
+		return nil, err
+	}
+	return append([]byte(xml.Header), result...), nil
+}
+
+func UnmarshalXMLEntity(bytes []byte, data interface{}) error {
+	err := xml.Unmarshal(bytes, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ParseJSONEntity(raw interface{}, entity interface{}) error {
+	data, err := json.Marshal(raw)
+	if err != nil {
+		return err
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(entity)
+}
+
+type LocationResponse struct {
+	XMLName  xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ LocationConstraint" json:"-"`
+	Location string   `xml:",chardata"`
+}
+
+type CopyObjectResult struct {
+	XMLName      xml.Name `xml:"CopyObjectResult"`
+	ETag         string   `xml:"ETag"`
+	LastModified string   `xml:"LastModified"`
+}
+
+type Deleted struct {
+	XMLName               xml.Name `xml:"Deleted"`
+	Key                   string   `xml:"Key"`
+	VersionId             string   `xml:"VersionId,omitempty"`
+	DeleteMarker          string   `xml:"DeleteMarker,omitempty"`
+	DeleteMarkerVersionId string   `xml:"DeleteMarkerVersionId,omitempty"`
+}
+
+type Error struct {
+	XMLName   xml.Name `xml:"Error"`
+	Key       string   `xml:"Key"`
+	VersionId string   `xml:"VersionId,omitempty"`
+	Code      string   `xml:"Code,omitempty"`
+	Message   string   `xml:"Message,omitempty"`
+}
+
+type DeleteResult struct {
+	XMLName xml.Name  `json:"DeleteResult"`
+	Deleted []Deleted `xml:"Deleted,omitempty"`
+	Error   []Error   `xml:"Error,omitempty"`
+}
+
+type InitMultipartResult struct {
+	XMLName  xml.Name `xml:"InitiateMultipartUploadResult"`
+	Bucket   string   `xml:"Bucket"`
+	Key      string   `xml:"Key"`
+	UploadId string   `xml:"UploadId"`
+}
+
+type CompleteMultipartResult struct {
+	XMLName  xml.Name `xml:"CompleteMultipartUploadResult"`
+	Location string   `xml:"Location"`
+	Bucket   string   `xml:"Bucket"`
+	Key      string   `xml:"Key"`
+	ETag     string   `xml:"ETag"`
+}
+
+type Initiator struct {
+	XMLName     xml.Name `xml:"Initiator"`
+	ID          string   `xml:"ID"`
+	DisplayName string   `xml:"DisplayName"`
+}
+
+type BucketOwner struct {
+	XMLName     xml.Name `xml:"Owner"`
+	ID          string   `xml:"ID"`
+	DisplayName string   `xml:"DisplayName"`
+}
+
+type Upload struct {
+	XMLName      xml.Name     `xml:"Upload"`
+	Key          string       `xml:"Key"`
+	UploadId     string       `xml:"UploadId"`
+	StorageClass string       `xml:"StorageClass"`
+	Initiated    string       `xml:"Initiated"`
+	Owner        *BucketOwner `xml:"Owner"`
+}
+
+type Part struct {
+	XMLName      xml.Name `xml:"Part"`
+	PartNumber   int      `xml:"PartNumber"`
+	LastModified string   `xml:"LastModified"`
+	ETag         string   `xml:"ETag"`
+	Size         int      `xml:"Size"`
+}
+
+type ListPartsResult struct {
+	XMLName          xml.Name     `xml:"ListPartsResult"`
+	Bucket           string       `xml:"Bucket"`
+	Key              string       `xml:"Key"`
+	UploadId         string       `xml:"UploadId"`
+	Initiator        *Initiator   `xml:"Initiator"`
+	Owner            *BucketOwner `xml:"Owner"`
+	StorageClass     string       `xml:"StorageClass"`
+	PartNumberMarker int          `xml:"PartNumberMarker"`
+	NextMarker       uint64       `xml:"NextPartNumberMarker"`
+	MaxParts         uint64       `xml:"MaxParts"`
+	IsTruncated      bool         `xml:"IsTruncated"`
+	Parts            []*Part      `xml:"Parts"`
+}
+
+type CommonPrefix struct {
+	XMLName xml.Name `xml:"CommonPrefixes"`
+	Prefix  string
+}
+
+type ListUploadsResult struct {
+	XMLName            xml.Name        `xml:"ListMultipartUploadsResult"`
+	Bucket             string          `xml:"Bucket"`
+	KeyMarker          string          `xml:"KeyMarker"`
+	UploadIdMarker     string          `xml:"UploadIdMarker"`
+	NextKeyMarker      string          `xml:"NextKeyMarker"`
+	NextUploadIdMarker string          `xml:"NextUploadIdMarker"`
+	Delimiter          string          `xml:"Delimiter"`
+	Prefix             string          `xml:"Prefix"`
+	MaxUploads         uint64          `xml:"MaxUploads"`
+	IsTruncated        bool            `xml:"IsTruncated"`
+	Uploads            []*Upload       `xml:"Uploads"`
+	CommonPrefixes     []*CommonPrefix `xml:"CommonPrefixes"`
+}
+
+type Content struct {
+	Key          string       `xml:"Key"`
+	LastModified string       `xml:"LastModified"`
+	ETag         string       `xml:"ETag"`
+	Size         int          `xml:"Size"`
+	StorageClass string       `xml:"StorageClass"`
+	Owner        *BucketOwner `xml:"Owner,omitempty"`
+}
+
+type ListBucketResult struct {
+	XMLName        xml.Name        `xml:"ListBucketResult"`
+	Bucket         string          `xml:"Name"`
+	Prefix         string          `xml:"Prefix"`
+	Marker         string          `xml:"Marker"`
+	MaxKeys        int             `xml:"MaxKeys"`
+	Delimiter      string          `xml:"Delimiter"`
+	IsTruncated    bool            `xml:"IsTruncated"`
+	NextMarker     string          `xml:"NextMarker,omitempty"`
+	Contents       []*Content      `xml:"Contents"`
+	CommonPrefixes []*CommonPrefix `xml:"CommonPrefixes"`
+}
+
+func NewParts(fsParts []*FSPart) []*Part {
+	parts := make([]*Part, 0)
+	for _, fsPart := range fsParts {
+		part := &Part{
+			PartNumber:   fsPart.PartNumber,
+			LastModified: fsPart.LastModified,
+			ETag:         "\"" + fsPart.ETag + "\"",
+			Size:         fsPart.Size,
+		}
+		parts = append(parts, part)
+	}
+	return parts
+}
+
+func NewUploads(fsUploads []*FSUpload, accessKey string) []*Upload {
+	owner := &BucketOwner{
+		ID:          accessKey,
+		DisplayName: accessKey,
+	}
+	uploads := make([]*Upload, 0)
+	for _, fsUpload := range fsUploads {
+		upload := &Upload{
+			Key:          fsUpload.Key,
+			UploadId:     fsUpload.UploadId,
+			StorageClass: StorageClassStandard,
+			Initiated:    fsUpload.Initiated,
+			Owner:        owner,
+		}
+		uploads = append(uploads, upload)
+	}
+	return uploads
+}
+
+func NewBucketOwner(volume *Volume) *BucketOwner {
+	return &BucketOwner{
+		ID:          volume.GetOwner(),
+		DisplayName: volume.GetOwner(),
+	}
+}
+
+func NewInitiator(volume *Volume) *Initiator {
+	return &Initiator{
+		ID:          volume.GetOwner(),
+		DisplayName: volume.GetOwner(),
+	}
+}
+
+type Object struct {
+	Key       string `xml:"Key"`
+	VersionId string `xml:"VersionId,omitempty"`
+}
+
+type DeleteRequest struct {
+	XMLName xml.Name `xml:"Delete"`
+	Objects []Object `xml:"Object"`
+}
+
+type CopyResult struct {
+	XMLName      xml.Name `xml:"CopyObjectResult"`
+	LastModified string   `xml:"LastModified,omitempty"`
+	ETag         string   `xml:"ETag,omitempty"`
+}
+
+type ListBucketResultV2 struct {
+	XMLName        xml.Name        `xml:"ListBucketResult"`
+	Name           string          `xml:"Name"`
+	Prefix         string          `xml:"Prefix,omitempty"`
+	Token          string          `xml:"ContinuationToken,omitempty"`
+	NextToken      string          `xml:"NextContinuationToken,omitempty"`
+	KeyCount       uint64          `xml:"KeyCount"`
+	MaxKeys        uint64          `xml:"MaxKeys"`
+	Delimiter      string          `xml:"Delimiter,omitempty"`
+	IsTruncated    bool            `xml:"IsTruncated"`
+	Contents       []*Content      `xml:"Contents"`
+	CommonPrefixes []*CommonPrefix `xml:"CommonPrefixes"`
+}
+
+type Tag struct {
+	Key   string `xml:"Key" json:"k"`
+	Value string `xml:"Value" json:"v"`
+}
+
+func (t Tag) isValid() bool {
+	if len(t.Key) < 1 || len(t.Key) > TaggingKeyMaxLength {
+		return false
+	}
+	if len(t.Value) < 1 || len(t.Value) > TaggingValueMaxLength {
+		return false
+	}
+
+	if !regexTagKeyValue.MatchString(t.Key) || !regexTagKeyValue.MatchString(t.Value) {
+		return false
+	}
+
+	if !utf8.ValidString(t.Key) || !utf8.ValidString(t.Value) {
+		return false
+	}
+
+	for _, pre := range invalidTagKeyPrefix {
+		if strings.HasPrefix(t.Key, pre) {
+			return false
+		}
+	}
+
+	return true
+}
+
+type Tagging struct {
+	XMLName xml.Name `json:"-"`
+	TagSet  []Tag    `xml:"TagSet>Tag,omitempty" json:"ts"`
+}
+
+func (t Tagging) Encode() string {
+	values := url.Values{}
+	for _, tag := range t.TagSet {
+		values[tag.Key] = []string{tag.Value}
+	}
+	return values.Encode()
+}
+
+func (t Tagging) hasDuplicateKey() bool {
+	m := make(map[string]struct{})
+	for _, ts := range t.TagSet {
+		if _, ok := m[ts.Key]; ok {
+			return true
+		}
+		m[ts.Key] = struct{}{}
+	}
+
+	return false
+}
+
+func (t Tagging) Validate() error {
+	if len(t.TagSet) == 0 {
+		return MissingTagInBody
+	}
+
+	if len(t.TagSet) > TaggingCounts {
+		return TooManyTags
+	}
+
+	if t.hasDuplicateKey() {
+		return DuplicateTagKey
+	}
+
+	for _, tag := range t.TagSet {
+		if !tag.isValid() {
+			return InvalidTag
+		}
+	}
+
+	return nil
+}
+
+func NewTagging() *Tagging {
+	return &Tagging{
+		XMLName: xml.Name{Local: "Tagging"},
+	}
+}
+
+func ParseTagging(src string) (*Tagging, error) {
+	values, err := url.ParseQuery(src)
+	if err != nil {
+		return nil, err
+	}
+	tagSet := make([]Tag, 0, len(values))
+	for key, value := range values {
+		tagSet = append(tagSet, Tag{Key: key, Value: value[0]})
+	}
+	if len(tagSet) == 0 {
+		return NewTagging(), nil
+	}
+	return &Tagging{
+		XMLName: xml.Name{Local: "Tagging"},
+		TagSet:  tagSet,
+	}, nil
+}
+
+type XAttr struct {
+	Key   string `xml:"Key"`
+	Value string `xml:"Value"`
+}
+
+type PutXAttrRequest struct {
+	XMLName xml.Name `xml:"PutXAttrRequest"`
+	XAttr   *XAttr   `xml:"XAttr"`
+}
+
+type GetXAttrOutput struct {
+	XMLName xml.Name `xml:"GetXAttrOutput"`
+	XAttr   *XAttr   `xml:"XAttr"`
+}
+
+type ListXAttrsOutput struct {
+	XMLName xml.Name `xml:"ListXAttrsResult"`
+	Keys    []string `xml:"Keys"`
+}
+
+type PartRequest struct {
+	XMLName    xml.Name `xml:"Part"`
+	PartNumber int      `xml:"PartNumber"`
+	ETag       string   `xml:"ETag"`
+}
+
+type CompleteMultipartUploadRequest struct {
+	XMLName xml.Name       `xml:"CompleteMultipartUpload"`
+	Parts   []*PartRequest `xml:"Part"`
+}
+
+type CreateBucketRequest struct {
+	XMLName            xml.Name `xml:"CreateBucketConfiguration"`
+	LocationConstraint string   `xml:"LocationConstraint"`
+}
+
+type S3UploadObject struct {
+	XMLName  xml.Name
+	Bucket   string `xml:"Bucket"` // bucket name
+	Key      string `xml:"Key"`    // object id or name
+	ETag     string `xml:"ETag"`   // object content MD5 hash
+	Location string `xml:"Location"`
+}
+
+func NewS3UploadObject() *S3UploadObject {
+	return &S3UploadObject{
+		XMLName: xml.Name{
+			Space: S3Namespace,
+			Local: "PostResponse",
+		},
+	}
+}
+
+func (s3 *S3UploadObject) SetBucket(bucket string) {
+	s3.Bucket = bucket
+}
+
+func (s3 *S3UploadObject) SetKey(key string) {
+	s3.Key = key
+}
+
+func (s3 *S3UploadObject) SetETag(etag string) {
+	s3.ETag = etag
+}
+
+func (s3 *S3UploadObject) SetLocation(location string) {
+	s3.Location = location
+}
+
+func (s3 *S3UploadObject) String() string {
+	b, _ := xml.Marshal(s3)
+	return string(b)
+}

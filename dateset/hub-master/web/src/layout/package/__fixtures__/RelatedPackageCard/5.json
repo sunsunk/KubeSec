@@ -1,0 +1,13 @@
+{
+  "normalizedName": "test",
+  "name": "test",
+  "logoImageId": "imageId",
+  "version": "1.0.0",
+  "repository": {
+    "repositoryid": "id",
+    "kind": 0,
+    "name": "incubator",
+    "organizationName": "helm",
+    "organizationDisplayName": "Helm"
+  }
+}

@@ -1,0 +1,176 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app.vineyard.io/name: dynamic_parameters
+    app.kubernetes.io/instance: dynamic_parameters - dynamic_parameters
+    app.kubernetes.io/component: deployment
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app.vineyard.io/name: dynamic_parameters
+      app.kubernetes.io/name: dynamic_parameters
+      app.kubernetes.io/instance: dynamic_parameters - dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app.vineyard.io/role: vineyardd
+        app.vineyard.io/name: dynamic_parameters
+        app.kubernetes.io/name: dynamic_parameters
+        app.kubernetes.io/instance: dynamic_parameters - dynamic_parameters
+        app.kubernetes.io/component: deployment
+      annotations:
+        kubectl.kubernetes.io/default-container: "vineyardd"
+        kubectl.kubernetes.io/default-logs-container: "vineyardd"
+    spec:
+      containers:
+        - name: vineyardd
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          securityContext:
+          command:
+          - /bin/bash
+          - -c
+          - >
+            /usr/local/bin/vineyardd
+            --sync_crds dynamic_parameters
+            --socket dynamic_parameters/vineyard.sock
+            --socket /var/run/vineyard.sock
+            --size dynamic_parameters
+            --reserve_memory
+            --stream_threshold dynamic_parameters
+            --etcd_cmd etcd
+            --etcd_prefix /vineyard
+            --etcd_endpoint http://dynamic_parameters-etcd-service:2379
+            --spill_path dynamic_parameters
+            --spill_lower_rate dynamic_parameters
+            --spill_upper_rate dynamic_parameters
+            --metrics
+            -log_dir /var/log/vineyard/
+          env:
+          - name: VINEYARDD_UID
+            value: dynamic_parameters
+          - name: VINEYARDD_NAME
+            value: dynamic_parameters
+          - name: VINEYARDD_NAMESPACE
+            value: dynamic_parameters
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: MY_HOST_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: USER
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: dynamic_parameters
+            value: dynamic_parameters
+          ports:
+            - name: rpc
+              containerPort: 9600
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 9600
+            periodSeconds: 60
+          readinessProbe:
+            exec:
+              command:
+              - ls
+              - dynamic_parameters/vineyard.sock
+              - /var/run/vineyard.sock
+          volumeMounts:
+          - name: vineyard-socket
+            mountPath: dynamic_parameters
+          - name: vineyard-socket
+            mountPath: /var/run
+          - name: dynamic_parameters
+            mountPath: dynamic_parameters
+          - name: shm
+            mountPath: /dev/shm
+          - name: log
+            mountPath: /var/log/vineyard
+          resources:
+            requests:
+              cpu: "dynamic_parameters"
+              memory: "dynamic_parameters"
+            limits:
+              cpu: "dynamic_parameters"
+              memory: "dynamic_parameters"
+        - name: metrics
+          image : dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command: ["./grok_exporter"]
+          args: ["-config", "grok_exporter.yml", "-disable-exporter-metrics", "&"]
+          ports:
+            - name: exporter
+              containerPort: 9144
+              protocol: TCP
+          volumeMounts:
+          - name: log
+            mountPath: /var/log/vineyard
+      volumes:
+      - name: vineyard-socket
+        persistentVolumeClaim:
+          claimName: dynamic_parameters
+      - name: vineyard-socket
+        hostPath:
+          path: dynamic_parameters
+      - name: dynamic_parameters
+        persistentVolumeClaim:
+          claimName: dynamic_parameters
+      - name: shm
+        emptyDir:
+          medium: Memory
+      - name: log
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                     - dynamic_parameters - dynamic_parameters
+              topologyKey: "kubernetes.io/hostname"
+
+---
+
+---

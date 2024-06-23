@@ -1,0 +1,73 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: clusternet:agent:admin
+  namespace: clusternet-system
+rules:
+  - apiGroups: [ "*" ]
+    resources: [ "*" ]
+    verbs: [ "*" ]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: clusternet:agent:admin
+  namespace: clusternet-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: clusternet:agent:admin
+subjects:
+  - kind: ServiceAccount
+    name: clusternet-agent
+    namespace: clusternet-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clusternet:agent:admin
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "pods", "nodes" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: [ "endpointslices" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "multicluster.x-k8s.io" ]
+    resources: [ "serviceexports" ]
+    verbs: [ "get", "list", "watch", "update", "patch" ]
+  - nonResourceURLs: [ "*" ]
+    verbs: [ "*" ]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clusternet:agent:admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: clusternet:agent:admin
+subjects:
+  - kind: ServiceAccount
+    name: clusternet-agent
+    namespace: clusternet-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clusternet:app:deployer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: clusternet-app-deployer
+    namespace: clusternet-system

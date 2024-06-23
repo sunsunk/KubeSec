@@ -1,0 +1,261 @@
+/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR Apache-2.0 */
+
+#ifndef SOCKETS_MAP_H
+#define SOCKETS_MAP_H
+
+#ifdef GADGET_TYPE_NETWORKING
+
+#include <linux/if_ether.h>
+#include <linux/in.h>
+#include <linux/ip.h>
+#include <linux/ipv6.h>
+#include <linux/tcp.h>
+#include <linux/udp.h>
+
+#endif
+
+#ifndef PACKET_HOST
+#define PACKET_HOST 0
+#endif
+
+#ifndef PACKET_OUTGOING
+#define PACKET_OUTGOING 4
+#endif
+
+#ifndef ETH_HLEN
+#define ETH_HLEN 14
+#endif
+
+#ifndef ETH_P_IP
+#define ETH_P_IP 0x0800 /* Internet Protocol packet     */
+#endif
+
+#ifndef AF_INET
+#define AF_INET 2 /* Internet IP Protocol 	*/
+#endif
+
+#ifndef AF_INET6
+#define AF_INET6 10 /* IP version 6                 */
+#endif
+
+// See include/net/ipv6.h
+#ifndef NEXTHDR_NONE
+#define NEXTHDR_HOP 0 /* Hop-by-hop option header. */
+#define NEXTHDR_TCP 6 /* TCP segment. */
+#define NEXTHDR_UDP 17 /* UDP message. */
+#define NEXTHDR_ROUTING 43 /* Routing header. */
+#define NEXTHDR_FRAGMENT 44 /* Fragmentation/reassembly header. */
+#define NEXTHDR_AUTH 51 /* Authentication header. */
+#define NEXTHDR_NONE 59 /* No next header */
+#define NEXTHDR_DEST 60 /* Destination options header. */
+#endif
+
+#ifdef GADGET_TYPE_NETWORKING
+
+unsigned long long load_byte(const void *skb,
+			     unsigned long long off) asm("llvm.bpf.load.byte");
+unsigned long long load_half(const void *skb,
+			     unsigned long long off) asm("llvm.bpf.load.half");
+unsigned long long load_word(const void *skb,
+			     unsigned long long off) asm("llvm.bpf.load.word");
+
+#endif
+
+struct sockets_key {
+	__u32 netns;
+	__u16 family;
+
+	// proto is IPPROTO_TCP(6) or IPPROTO_UDP(17)
+	__u8 proto;
+	__u16 port;
+};
+
+#define TASK_COMM_LEN 16
+struct sockets_value {
+	__u64 mntns;
+	__u64 pid_tgid;
+	__u64 uid_gid;
+	char task[TASK_COMM_LEN];
+	__u64 sock;
+	__u64 deletion_timestamp;
+	char ipv6only;
+};
+
+#define MAX_SOCKETS 16384
+struct {
+	__uint(type, BPF_MAP_TYPE_HASH);
+	__uint(max_entries, MAX_SOCKETS);
+	__type(key, struct sockets_key);
+	__type(value, struct sockets_value);
+} gadget_sockets SEC(".maps");
+
+#ifdef GADGET_TYPE_NETWORKING
+static __always_inline struct sockets_value *
+gadget_socket_lookup(const struct __sk_buff *skb)
+{
+	struct sockets_value *ret;
+	struct sockets_key key = {
+		0,
+	};
+	int l4_off;
+	__u16 h_proto;
+	int i;
+	long err;
+
+	key.netns = skb->cb[0]; // cb[0] initialized by dispatcher.bpf.c
+	err = bpf_skb_load_bytes(skb, offsetof(struct ethhdr, h_proto),
+				 &h_proto, sizeof(h_proto));
+	if (err < 0)
+		return 0;
+
+	switch (h_proto) {
+	case bpf_htons(ETH_P_IP):
+		key.family = AF_INET;
+		err = bpf_skb_load_bytes(
+			skb, ETH_HLEN + offsetof(struct iphdr, protocol),
+			&key.proto, sizeof(key.proto));
+		if (err < 0)
+			return 0;
+
+		// An IPv4 header doesn't have a fixed size. The IHL field of a packet
+		// represents the size of the IP header in 32-bit words, so we need to
+		// multiply this value by 4 to get the header size in bytes.
+		__u8 ihl_byte;
+		err = bpf_skb_load_bytes(skb, ETH_HLEN, &ihl_byte,
+					 sizeof(ihl_byte));
+		if (err < 0)
+			return 0;
+		struct iphdr *iph = (struct iphdr *)&ihl_byte;
+		__u8 ip_header_len = iph->ihl * 4;
+		l4_off = ETH_HLEN + ip_header_len;
+		break;
+
+	case bpf_htons(ETH_P_IPV6):
+		key.family = AF_INET6;
+		err = bpf_skb_load_bytes(
+			skb, ETH_HLEN + offsetof(struct ipv6hdr, nexthdr),
+			&key.proto, sizeof(key.proto));
+		if (err < 0)
+			return 0;
+		l4_off = ETH_HLEN + sizeof(struct ipv6hdr);
+
+// Parse IPv6 extension headers
+// Up to 6 extension headers can be chained. See ipv6_ext_hdr().
+#pragma unroll
+		for (i = 0; i < 6; i++) {
+			__u8 nextproto;
+			__u8 off;
+
+			// TCP or UDP found
+			if (key.proto == NEXTHDR_TCP ||
+			    key.proto == NEXTHDR_UDP)
+				break;
+
+			err = bpf_skb_load_bytes(skb, l4_off, &nextproto,
+						 sizeof(nextproto));
+			if (err < 0)
+				return 0;
+
+			// Unfortunately, each extension header has a different way to calculate the header length.
+			// Support the ones defined in ipv6_ext_hdr(). See ipv6_skip_exthdr().
+			switch (key.proto) {
+			case NEXTHDR_FRAGMENT:
+				// No hdrlen in the fragment header
+				l4_off += 8;
+				break;
+			case NEXTHDR_AUTH:
+				// See ipv6_authlen()
+				err = bpf_skb_load_bytes(skb, l4_off + 1, &off,
+							 sizeof(off));
+				if (err < 0)
+					return 0;
+				l4_off += 4 * (off + 2);
+				break;
+			case NEXTHDR_HOP:
+			case NEXTHDR_ROUTING:
+			case NEXTHDR_DEST:
+				// See ipv6_optlen()
+				err = bpf_skb_load_bytes(skb, l4_off + 1, &off,
+							 sizeof(off));
+				if (err < 0)
+					return 0;
+				l4_off += 8 * (off + 1);
+				break;
+			case NEXTHDR_NONE:
+				// Nothing more in the packet. Not even TCP or UDP.
+				return 0;
+			default:
+				// Unknown header
+				return 0;
+			}
+			key.proto = nextproto;
+		}
+		break;
+
+	default:
+		return 0;
+	}
+
+	int off = l4_off;
+	switch (key.proto) {
+	case IPPROTO_TCP:
+		if (skb->pkt_type == PACKET_HOST)
+			off += offsetof(struct tcphdr, dest);
+		else
+			off += offsetof(struct tcphdr, source);
+		break;
+	case IPPROTO_UDP:
+		if (skb->pkt_type == PACKET_HOST)
+			off += offsetof(struct udphdr, dest);
+		else
+			off += offsetof(struct udphdr, source);
+		break;
+	default:
+		return 0;
+	}
+
+	err = bpf_skb_load_bytes(skb, off, &key.port, sizeof(key.port));
+	if (err < 0)
+		return 0;
+	key.port = bpf_ntohs(key.port);
+
+	ret = bpf_map_lookup_elem(&gadget_sockets, &key);
+	if (ret)
+		return ret;
+
+	// If a native socket was not found, try to find a dual-stack socket.
+	if (key.family == AF_INET) {
+		key.family = AF_INET6;
+		ret = bpf_map_lookup_elem(&gadget_sockets, &key);
+		if (ret && ret->ipv6only == 0)
+			return ret;
+	}
+
+	return 0;
+}
+#endif
+
+#ifdef GADGET_TYPE_TRACING
+static __always_inline struct sockets_value *
+gadget_socket_lookup(const struct sock *sk, __u32 netns)
+{
+	struct sockets_key key = {
+		0,
+	};
+	key.netns = netns;
+	key.family = BPF_CORE_READ(sk, __sk_common.skc_family);
+	key.proto = BPF_CORE_READ_BITFIELD_PROBED(sk, sk_protocol);
+	if (key.proto != IPPROTO_TCP && key.proto != IPPROTO_UDP)
+		return 0;
+
+	BPF_CORE_READ_INTO(&key.port, sk, __sk_common.skc_dport);
+	struct inet_sock *sockp = (struct inet_sock *)sk;
+	BPF_CORE_READ_INTO(&key.port, sockp, inet_sport);
+	// inet_sock.inet_sport is in network byte order
+	key.port = bpf_ntohs(key.port);
+
+	return bpf_map_lookup_elem(&gadget_sockets, &key);
+}
+#endif
+
+#endif

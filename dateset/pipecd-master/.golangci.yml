@@ -1,0 +1,52 @@
+run:
+  timeout: 15m
+  skip-files:
+    - ^.*\.(pb|y)\.go$
+  skip-dirs:
+    - "vendor$"
+    - "pkg/app/piped/executor/analysis/mannwhitney"
+
+linters:
+  disable-all: true
+  enable:
+    - depguard
+    - exportloopref
+    - gocritic
+    - goimports
+    - gosimple
+    - ineffassign
+    - misspell
+    - prealloc
+    - staticcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    # TODO: Enable these linters
+    # - errcheck
+    # - goerr113
+    # - gosec
+
+issues:
+  exclude-rules:
+    - linters:
+        - staticcheck
+      text: "SA1019"
+
+output:
+  sort-results: true
+
+linters-settings:
+  depguard:
+    rules:
+      main:
+        deny:
+          - pkg: "sync/atomic"
+            desc: "Use go.uber.org/atomic instead of sync/atomic."
+          - pkg: "io/ioutil"
+            desc: "Use corresponding 'os' or 'io' functions instead."
+  gocritic:
+    disabled-checks:
+      - appendAssign
+  goimports:
+    local-prefixes: github.com/pipe-cd/pipecd

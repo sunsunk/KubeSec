@@ -1,0 +1,23 @@
+# Source: memcached/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-memcached
+  namespace: default
+  labels:
+    app.kubernetes.io/name: memcached
+    helm.sh/chart: memcached-0.0.2
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.5.20"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    {}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  selector:
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/instance: my-release

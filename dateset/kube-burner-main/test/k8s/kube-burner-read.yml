@@ -1,0 +1,22 @@
+---
+indexers:
+{{ if .ES_INDEXING }}
+  - type: opensearch
+    esServers: ["{{ .ES_SERVER }}"]
+    defaultIndex: {{ .ES_INDEX }}
+{{ end }}
+{{ if .LOCAL_INDEXING }}
+  - type: local
+    metricsDirectory: {{ .METRICS_FOLDER }}
+{{ end }}
+
+jobs:
+  - name: read-job
+    jobType: read
+    jobIterations: 20
+    qps: 5
+    burst: 10
+    jobPause: 5s
+    objects:
+    - kind: Namespace
+      labelSelector: {kubernetes.io/metadata.name: default}

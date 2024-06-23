@@ -1,0 +1,155 @@
+#@ load("@ytt:template", "template")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:yaml", "yaml")
+
+#@ def test1_left():
+---
+#! exact match
+metadata:
+  name: test1
+---
+metadata:
+  name: test1
+  #! additional non-matching key
+  other: key
+---
+metadata:
+  #! missing name key
+  other: key
+---
+#! missing top level key
+{}
+#@ end
+
+#@ def test1_right():
+#@overlay/match by=overlay.subset({"metadata":{"name":"test1"}}),expects=2
+---
+#@overlay/match missing_ok=True
+key1:
+- name: foo
+#@ end
+
+---
+test1
+--- #@ template.replace(overlay.apply(test1_left(), test1_right()))
+
+#@ def test2_left():
+---
+#! exact match
+metadata:
+- name: test2
+---
+metadata:
+- name: test2
+#! additional non-matching item
+- other: key
+---
+metadata:
+#! missing name key
+- other: key
+---
+#! missing top level key
+{}
+#@ end
+
+#@ def test2_right():
+#@overlay/match by=overlay.subset({"metadata":[{"name":"test2"}]}),expects=2
+---
+#@overlay/match missing_ok=True
+key1:
+- name: foo
+#@ end
+
+---
+test2
+--- #@ template.replace(overlay.apply(test2_left(), test2_right()))
+
+#@ def test3_left():
+---
+metadata:
+  name: first
+---
+metadata:
+  name: second
+#@ end
+
+#@ def test3_right():
+#@overlay/match by=lambda i, a, b: yaml.decode(yaml.encode(a))["metadata"]["name"] == "first"
+---
+metadata:
+  name: updated
+#@ end
+
+---
+test3
+--- #@ template.replace(overlay.apply(test3_left(), test3_right()))
+
+#@ def test4_left():
+---
+metadata:
+  name: first
+---
+metadata:
+  name: second
+#@ end
+
+#@ def test4_right():
+#@overlay/match by=lambda i, a, b: a["metadata"]["name"] == "first" and b["metadata"]["name"] == "updated"
+---
+metadata:
+  name: updated
+#@ end
+
+---
+test4
+--- #@ template.replace(overlay.apply(test4_left(), test4_right()))
+
++++
+
+test1
+---
+metadata:
+  name: test1
+key1:
+- name: foo
+---
+metadata:
+  name: test1
+  other: key
+key1:
+- name: foo
+---
+metadata:
+  other: key
+---
+test2
+---
+metadata:
+- name: test2
+key1:
+- name: foo
+---
+metadata:
+- name: test2
+- other: key
+key1:
+- name: foo
+---
+metadata:
+- other: key
+---
+test3
+---
+metadata:
+  name: updated
+---
+metadata:
+  name: second
+---
+test4
+---
+metadata:
+  name: updated
+---
+metadata:
+  name: second

@@ -1,0 +1,13 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+rules:
+# Role (namespace scoped) to be able to push certificate bundles to a configmap
+- apiGroups: [ "" ]
+  resources: [ "configmaps" ]
+  verbs: [ "patch", "get", "list" ]
+
+---

@@ -1,0 +1,18 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/jwt/cf",
+      "user-agent": "dummy",
+      "x-forwarded-for": "12.13.14.15"
+    },
+    "plugins": {
+      "jwt": {
+        "secret": "SECRETSECRET"
+      }
+    },
+    "name": "jwt argument masking",
+    "secret": "SECRETSECRET"
+  }
+]

@@ -1,0 +1,15 @@
+[Unit]
+Description=Tremor
+Documentation=https://docs.tremor.rs
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+User=tremor
+Group=tremor
+ExecStart=/usr/share/tremor/tremor.sh
+Restart=always
+SyslogIdentifier=tremor
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,41 @@
+# Inspired by https://github.com/actions/setup-go/issues/21#issuecomment-997208686
+name: 'Install Go Tip'
+description: 'Install Go Tip toolchain'
+runs:
+  using: "composite"
+  steps:
+    - name: Install Go Tip
+      shell: bash
+      run: |
+        set -euo pipefail
+        tip=$(git ls-remote https://github.com/golang/go.git HEAD | awk '{print $1;}')
+        echo "Go Tip version: ${tip}"
+        retries=10
+        wait_time=30
+        success=false
+        for ((i=1; i<=retries; i++)); do
+          url="https://storage.googleapis.com/go-build-snap/go/linux-amd64/${tip}.tar.gz"
+          if curl -fsSL -o gotip.tar.gz "$url"; then
+            success=true
+            break
+          fi
+          echo "Failed to download. Retrying in $wait_time seconds..."
+          sleep $wait_time
+        done
+
+        if [[ "$success" == false ]]; then
+          echo "Failed to download Go Tip after $retries attempts"
+          exit 1
+        fi
+        echo "Downloaded bundle:"
+        ls -lah gotip.tar.gz
+        export GOROOT="$HOME/sdk/gotip"
+        export GOPATH="$HOME/go"
+        mkdir -p $GOROOT
+        tar -C $GOROOT -xzf gotip.tar.gz
+        export PATH="$GOROOT/bin/:$GOPATH/bin:$PATH"
+        echo "GOROOT=$GOROOT" >> $GITHUB_ENV
+        echo "GOPATH=$GOPATH" >> $GITHUB_ENV
+        echo "PATH=$PATH" >> $GITHUB_ENV
+        echo "Active Go version:"
+        go version

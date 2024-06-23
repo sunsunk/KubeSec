@@ -1,0 +1,7 @@
+resources:
+  - ns.yaml
+  - ../crd
+  - ../rbac
+  - ../workloads
+  - ../webhook
+#  - ../prometheus

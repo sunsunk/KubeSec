@@ -1,0 +1,11 @@
+apiVersion: multicluster.crd.antrea.io/v1alpha2
+kind: ClusterSet
+metadata:
+  name: test-clusterset
+  namespace: antrea-multicluster
+spec:
+  clusterID: test-cluster-leader
+  leaders:
+    - clusterID: test-cluster-leader
+  namespace: antrea-multicluster
+

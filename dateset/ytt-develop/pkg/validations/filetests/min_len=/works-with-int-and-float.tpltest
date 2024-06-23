@@ -1,0 +1,18 @@
+#@assert/validate min_len=20
+foo: "shorter than 20"
+#@assert/validate min_len=20.5
+bar: "shorter than 20"
+
++++
+
+ERR:
+  foo
+    from: stdin:2
+    - must be: length >= 20 (by: stdin:1)
+      found: length = 15
+
+  bar
+    from: stdin:4
+    - must be: length >= 20 (by: stdin:3)
+      found: length = 15
+

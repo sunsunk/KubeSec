@@ -1,0 +1,23 @@
+# macOS stuff
+.DS_Store
+
+# Node.js artifacts (mostly Sass sources)
+node_modules/
+
+# Hugo-generated assets
+public/
+resources/
+
+# Binaries
+bin/
+
+# Ignore kdrfc working files
+OpenMetrics.xml
+.refcache/
+
+# Ignore kdrfc ruby bundle and vendor
+.bundle
+vendor/
+
+# Golang vendor
+src/vendor/

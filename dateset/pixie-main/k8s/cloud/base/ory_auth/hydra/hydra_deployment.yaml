@@ -1,0 +1,215 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra
+  labels:
+    name: hydra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: hydra
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: hydra
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10100
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+      - name: migrate
+        args:
+        - migrate
+        - -c
+        - /etc/config/hydra/hydra.yml
+        - sql
+        - -e
+        - --yes
+        envFrom:
+        - configMapRef:
+            name: pl-db-config
+        env:
+        - name: PL_POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_USERNAME
+        - name: PL_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_PASSWORD
+        - name: OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT
+          valueFrom:
+            secretKeyRef:
+              name: pl-hydra-secrets
+              key: OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT
+        - name: SECRETS_SYSTEM
+          valueFrom:
+            secretKeyRef:
+              name: pl-hydra-secrets
+              key: SECRETS_SYSTEM
+        - name: HYDRA_DATABASE
+          value: hydra
+        - name: DSN
+          # yamllint disable-line rule:line-length
+          value: postgres://$(PL_POSTGRES_USERNAME):$(PL_POSTGRES_PASSWORD)@$(PL_POSTGRES_HOSTNAME):$(PL_POSTGRES_PORT)/$(PL_POSTGRES_DB)?sslmode=disable&max_conns=20&max_idle_conns=4
+        imagePullPolicy: IfNotPresent
+        image: oryd/hydra:v1.9.2-sqlite@sha256:61771c706934e1ffd66f86700a28a294ce4ed150fbf30cc131710924271a5871
+        volumeMounts:
+        - mountPath: /etc/config/hydra
+          name: config
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      containers:
+      - name: server
+        imagePullPolicy: IfNotPresent
+        image: oryd/hydra:v1.9.2-sqlite@sha256:61771c706934e1ffd66f86700a28a294ce4ed150fbf30cc131710924271a5871
+        args:
+        - serve
+        - -c
+        - /etc/config/hydra/hydra.yml
+        - all
+        envFrom:
+        - configMapRef:
+            name: pl-db-config
+        - configMapRef:
+            name: pl-domain-config
+        env:
+        - name: PL_POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_USERNAME
+        - name: PL_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_PASSWORD
+        - name: OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT
+          valueFrom:
+            secretKeyRef:
+              name: pl-hydra-secrets
+              key: OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT
+        - name: SECRETS_SYSTEM
+          valueFrom:
+            secretKeyRef:
+              name: pl-hydra-secrets
+              key: SECRETS_SYSTEM
+        - name: DSN
+          # yamllint disable-line rule:line-length
+          value: postgres://$(PL_POSTGRES_USERNAME):$(PL_POSTGRES_PASSWORD)@$(PL_POSTGRES_HOSTNAME):$(PL_POSTGRES_PORT)/$(PL_POSTGRES_DB)?sslmode=disable&max_conns=20&max_idle_conns=4
+        - name: SERVE_TLS_CERT_PATH
+          value: /certs/server.crt
+        - name: SERVE_TLS_KEY_PATH
+          value: /certs/server.key
+        - name: PL_WORK_DOMAIN
+          value: work.$(PL_DOMAIN_NAME)
+        - name: PL_OAUTH_DOMAIN
+          value: $(PL_WORK_DOMAIN)/oauth
+        - name: HYDRA_URL
+          value: https://$(PL_OAUTH_DOMAIN)/hydra
+        - name: URLS_CONSENT
+          value: https://$(PL_OAUTH_DOMAIN)/auth/hydra/consent
+        - name: URLS_LOGIN
+          value: https://$(PL_WORK_DOMAIN)/api/auth/oauth/login
+        - name: URLS_LOGOUT
+          value: https://$(PL_OAUTH_DOMAIN)/logout
+        - name: URLS_SELF_PUBLIC
+          value: $(HYDRA_URL)
+        - name: URLS_SELF_ISSUER
+          value: $(HYDRA_URL)
+        ports:
+        - containerPort: 4444
+        - containerPort: 4445
+        - containerPort: 5555
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config/hydra
+        - name: certs
+          mountPath: /certs
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      - name: client-create-or-update
+        imagePullPolicy: IfNotPresent
+        image: oryd/hydra:v1.9.2-alpine@sha256:faa6ca02e77e0a08f66bfa7470a5e06d80e6e68c9c35410c65a4ea7b501aea61
+        # yamllint disable rule:indentation
+        command: ['sh', '-c', 'set -x;
+          URL="https://localhost:4445/health/ready";
+          until [
+            $(wget --no-check-certificate --spider --quiet --server-response ${URL} 2>&1 |
+              awk ''NR==1{print $2}'') -eq 200
+          ]; do
+            echo "waiting for ${URL}";
+            sleep 2;
+          done;
+          CMD="hydra clients update auth-code-client";
+          hydra clients get auth-code-client
+            --endpoint=https://localhost:4445
+            --skip-tls-verify;
+          if [ $? -ne 0 ]; then
+            echo "Creating client";
+            CMD="hydra clients create --id auth-code-client";
+          fi;
+          ${CMD}
+            --endpoint https://localhost:4445
+            --secret "${HYDRA_CLIENT_SECRET}"
+            --grant-types authorization_code,refresh_token,implicit
+            --response-types code,id_token,token
+            --scope openid,offline,notifications,gist,vizier
+            --callbacks "https://${PL_DOMAIN_NAME}/oauth/auth/callback"
+            --callbacks "https://work.${PL_DOMAIN_NAME}/auth/callback"
+            --skip-tls-verify;
+          sleep infinity;
+        ']
+        # yamllint enable rule:indentation
+        envFrom:
+        - configMapRef:
+            name: pl-domain-config
+        env:
+        - name: HYDRA_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pl-hydra-secrets
+              key: CLIENT_SECRET
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      restartPolicy: Always
+      volumes:
+      - name: config
+        configMap:
+          name: hydra-config
+          items:
+          - key: hydra.yml
+            path: hydra.yml
+      - name: certs
+        secret:
+          secretName: service-tls-certs

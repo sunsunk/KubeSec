@@ -1,0 +1,56 @@
+.fitCell {
+  width: 1%;
+}
+
+.icon {
+  width: 14px;
+}
+
+.body {
+  background-color: var(--bs-white);
+}
+
+.pkgIcon {
+  min-width: 15px;
+  font-size: 0.85rem;
+  margin-top: 3px;
+  padding-right: 1px;
+}
+
+.tableTitle:hover {
+  background-color: inherit !important;
+}
+
+.dependency {
+  font-size: 0.9rem;
+}
+
+.separator {
+  padding: 0 2px;
+}
+
+.textWrapper {
+  table-layout: fixed;
+}
+
+.repoName {
+  font-size: 0.75rem;
+  margin-left: 1.4rem;
+}
+
+.repoNameInTable {
+  font-size: 0.75rem;
+  margin-top: 3px;
+}
+
+.copyBtn {
+  top: -2px;
+}
+
+.modal {
+  width: 800px !important;
+}
+
+.versionCol {
+  width: 15%;
+}

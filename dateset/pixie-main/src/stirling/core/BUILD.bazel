@@ -1,0 +1,147 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_library", "pl_cc_test")
+
+package(default_visibility = ["//src/stirling:__subpackages__"])
+
+pl_cc_library(
+    name = "cc_library",
+    srcs = glob(
+        ["*.cc"],
+        exclude = [
+            "**/*_test.cc",
+        ],
+    ),
+    hdrs = glob(["*.h"]),
+    visibility = [
+        "//src/stirling:__pkg__",
+        "//src/stirling/source_connectors/cpu_stat_bpftrace:__pkg__",
+        "//src/stirling/source_connectors/dynamic_bpftrace:__pkg__",
+        "//src/stirling/source_connectors/dynamic_tracer:__pkg__",
+        "//src/stirling/source_connectors/jvm_stats:__pkg__",
+        "//src/stirling/source_connectors/network_stats:__pkg__",
+        "//src/stirling/source_connectors/perf_profiler:__pkg__",
+        "//src/stirling/source_connectors/pid_runtime:__pkg__",
+        "//src/stirling/source_connectors/pid_runtime_bpftrace:__pkg__",
+        "//src/stirling/source_connectors/proc_exit:__pkg__",
+        "//src/stirling/source_connectors/proc_stat:__pkg__",
+        "//src/stirling/source_connectors/process_stats:__pkg__",
+        "//src/stirling/source_connectors/seq_gen:__pkg__",
+        "//src/stirling/source_connectors/socket_tracer:__pkg__",
+        "//src/stirling/source_connectors/stirling_error:__pkg__",
+        "//src/stirling/source_connectors/tcp_stats:__pkg__",
+        "//src/stirling/testing:__pkg__",
+    ],
+    deps = [
+        "//src/shared/metadata:cc_library",
+        "//src/shared/types:cc_library",
+        "//src/shared/types/typespb/wrapper:cc_library",
+        "//src/shared/upid:cc_library",
+        "//src/stirling/bpf_tools:cc_library",
+        "//src/stirling/proto:stirling_pl_cc_proto",
+        "//src/stirling/utils:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "types_test",
+    srcs = ["types_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "info_class_manager_test",
+    srcs = ["info_class_manager_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/stirling/source_connectors/seq_gen:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "data_table_test",
+    srcs = ["data_table_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/stirling/source_connectors/seq_gen:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "record_builder_test",
+    size = "large",
+    srcs = ["record_builder_test.cc"],
+    tags = ["cpu:4"],
+    deps = [
+        ":cc_library",
+        "//src/stirling/testing:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "pub_sub_manager_test",
+    srcs = ["pub_sub_manager_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "source_registry_test",
+    srcs = ["source_registry_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/stirling/source_connectors/seq_gen:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "connector_context_test",
+    srcs = ["connector_context_test.cc"],
+    data = ["//src/common/system/testdata:proc_fs"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "output_test",
+    srcs = ["output_test.cc"],
+    deps = [
+        ":cc_library",
+        "//src/stirling/testing:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "stirling_component_test",
+    srcs = ["stirling_component_test.cc"],
+    deps = ["//src/stirling:cc_library"],
+)
+
+pl_cc_test(
+    name = "frequency_manager_test",
+    srcs = ["frequency_manager_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "stirling_test",
+    size = "medium",
+    srcs = ["stirling_test.cc"],
+    # This test is flaky on ASAN due to an ASAN bug related to reading /proc/<pid>/stat.
+    # See //src/common/system:proc_parser_bug_test for a reproducable demonstration of the bug,
+    # and for detailed comments of why it happens.
+    tags = ["no_asan"],
+    deps = ["//src/stirling:cc_library"],
+)

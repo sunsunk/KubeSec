@@ -1,0 +1,66 @@
+name: "License verification"
+on:
+  pull_request_target:
+  workflow_dispatch:
+jobs:
+  dependency_info_linux:
+    name: "Linux: Verify use of forbidden licenses"
+    runs-on: ubuntu-latest
+    outputs:
+      is-up-to-date: ${{ steps.check.outputs.up-to-date }}
+      diff: ${{ steps.check.outputs.diff }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: "Install mockgen"
+        shell: bash
+        run: go install github.com/golang/mock/mockgen@v1.6.0
+      - name: "Generate dependency information"
+        shell: bash
+        run: make generate
+      - name: "Update dependency information after dependabot change"
+        uses: datawire/go-mkopensource/actions/save-dependabot-changes@v0.0.7
+        id: changed-by-dependabot
+        with:
+          branches_to_skip: 'release/v2'
+      - name: "Abort if dependencies changed"
+        if: steps.changed-by-dependabot.outputs.is_dirty == 'true'
+        run: |
+          echo "Dependabot triggered a dependency update. Aborting workflow."
+          exit 1
+      - name: "Check dependency files are up-to-date"
+        id: check
+        shell: bash
+        run: |
+          set -e
+          git add .
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "diff=$(PAGER= git diff --cached 2>&1 | base64 -w0)" >> $GITHUB_OUTPUT
+            echo "up-to-date=no" >> $GITHUB_OUTPUT
+          else
+            echo "up-to-date=yes" >> $GITHUB_OUTPUT
+          fi
+  up_to_date_check_linux:
+    name: "Linux: Check out-of-date licenses"
+    needs: dependency_info_linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check dependency files are up-to-date"
+        shell: bash
+        run: |
+          set -e
+          if [[ "${{needs.dependency_info_linux.outputs.is-up-to-date}}" == "no" ]]; then
+            echo '::error:: Changes detected after dependency generation. Run ' \
+              '`make generate` and commit the latest version of the ' \
+              'dependency information files'
+
+            echo ${{needs.dependency_info_linux.outputs.diff}} | base64 -d
+            exit 1
+          fi
+
+          echo '::info:: Files are up-to-date'

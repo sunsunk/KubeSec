@@ -1,0 +1,34 @@
+log:
+  level: debug
+  pretty: true
+db:
+  host: localhost
+  port: "5432"
+  database: hub
+  user: postgres
+server:
+  addr: localhost:8000
+  shutdownTimeout: 10s
+  webBuildPath: ../../web/build
+  widgetBuildPath: ../../widget/build
+  basicAuth:
+    enabled: false
+    username: hub
+    password: changeme
+  oauth:
+    oidc:
+      # Dex example app config: https://dexidp.io/docs/getting-started/
+      issuerURL: http://127.0.0.1:5556/dex
+      clientID: example-app
+      clientSecret: ZXhhbXBsZS1hcHAtc2VjcmV0
+      redirectURL: http://localhost:8000/oauth/oidc/callback
+      scopes:
+        - openid
+        - profile
+        - email
+  cookie:
+    hashKey: default-unsafe-key
+    secure: false
+  csrf:
+    authKey: default-unsafe-key
+    secure: false

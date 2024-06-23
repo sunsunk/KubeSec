@@ -1,0 +1,29 @@
+# Source: microcks/templates/ingress.yaml
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "microcks-grpc"
+  labels:
+    app: "microcks"
+    group: microcks
+    
+  annotations:
+    
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  tls:
+  - hosts:
+     - "microcks-grpc-microcks.192.168.99.100.nip.io"
+  rules:
+  - host: "microcks-grpc-microcks.192.168.99.100.nip.io"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: "microcks-grpc"
+            port:
+              number: 9090

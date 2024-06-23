@@ -1,0 +1,6 @@
+build/
+.idea/
+_output/
+bin/
+dist/rpm/epm.spec
+dist/deb/debian/changelog

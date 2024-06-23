@@ -1,0 +1,7 @@
+# Source: easegress-ingress-controller/templates/IngressClass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: easegress
+spec:
+  controller: megaease.com/ingress-controller

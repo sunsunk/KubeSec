@@ -1,0 +1,33 @@
+.tableTitle {
+  font-size: 0.875rem;
+}
+
+.table {
+  font-size: 0.875rem;
+  min-width: 650px;
+}
+
+.body {
+  background-color: var(--bs-white);
+}
+
+.fitCell {
+  min-width: 1%;
+}
+
+.warningCell {
+  font-size: 0.8rem;
+  padding: 0.15rem !important;
+}
+
+.securityRatingBadge {
+  top: -2px;
+}
+
+.badge:hover {
+  text-decoration: none;
+}
+
+.summaryTable > :not(caption) > * > * {
+  padding: 0.25rem 0.75rem;
+}

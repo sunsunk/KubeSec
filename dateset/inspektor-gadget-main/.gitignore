@@ -1,0 +1,46 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/ig
+/ig-*-*
+/gadgetctl
+/gadgetctl-*-*
+/kubectl-gadget
+/kubectl-gadget-*-*
+/gadget-container/bin
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# editor and IDE paraphernalia
+.idea
+.vscode
+*.swp
+*.swo
+
+# Downloaded binaries
+bin/
+
+# BTF files
+pkg/btfgen/btfs/x86/*
+!pkg/btfgen/btfs/x86/README.md
+pkg/btfgen/btfs/arm64/*
+!pkg/btfgen/btfs/arm64/README.md
+
+# Build artifacts
+*.o
+*.tgz
+# keep all bpf objects generated with bpf2go
+!pkg/container-hook/**/*.o
+!pkg/kfilefields/**/*.o
+!pkg/gadgets/**/*.o
+!pkg/socketenricher/*.o
+
+!gadgets/*.o
+!testdata/*.o

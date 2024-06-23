@@ -1,0 +1,82 @@
+name: Terratest for n clusters
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+permissions:
+  contents: read
+
+jobs:
+  terratest-n-clusters:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.label.name == 'heavy-tests' }}
+    steps:
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@bfd2fb341f32be7281829126376a12a780ca79fc
+        with:
+          go-version: 1.19.1
+
+      - name: Build artifacts
+        uses: goreleaser/goreleaser-action@c21f56a7bc891b5f73bec61233c4102ef8273150
+        with:
+          version: v1.7.0
+          args: release --rm-dist --skip-publish --skip-validate --snapshot --skip-sbom --skip-sign
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create edgeDNS k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "edgedns"
+          args: -c k3d/edge-dns.yaml
+
+      - name: Create 1st k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "test-gslb1"
+          args: -c k3d/test-gslb1.yaml
+
+      - name: Create 2nd k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "test-gslb2"
+          args: -c k3d/test-gslb2.yaml
+
+      - name: Create 3rd k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "test-gslb3"
+          args: -c k3d/test-gslb3.yaml
+
+      - name: K8GB deployment
+        run: |
+          make deploy-test-version list-running-pods CLUSTERS_NUMBER=3
+          echo "Cluster 1 (eu):"
+          kubectl get no -owide --context=k3d-test-gslb1
+          echo "Cluster 2 (us):"
+          kubectl get no -owide --context=k3d-test-gslb2
+          echo "Cluster 3 (cz):"
+          kubectl get no -owide --context=k3d-test-gslb3
+
+      - name: Run Terratest
+        run: |
+          mkdir -p ${{ github.workspace }}/tmp/terratest
+          set -o pipefail
+          echo "::group::Terratest logs"
+          make terratest | tee ${{ github.workspace }}/tmp/terratest/all.log
+          echo "::endgroup::"
+
+      - name: Print debug info
+        if: always()
+        uses: ./.github/actions/print-debug
+
+      - uses: actions/upload-artifact@ef09cdac3e2d3e60d8ccadda691f4f1cec5035cb
+        if: always()
+        with:
+          name: terratest-logs
+          path: ${{ github.workspace }}/tmp/terratest

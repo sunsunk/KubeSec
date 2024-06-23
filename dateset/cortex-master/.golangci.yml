@@ -1,0 +1,48 @@
+output:
+  format: line-number
+
+linters:
+  enable:
+    - goimports
+    - revive
+    - gofmt
+    - misspell
+    - depguard
+
+linters-settings:
+  staticcheck:
+    checks:
+      - all
+  errcheck:
+    # path to a file containing a list of functions to exclude from checking
+    # see https://github.com/kisielk/errcheck#excluding-functions for details
+    exclude: ./.errcheck-exclude
+  goimports:
+    local-prefixes: "github.com/cortexproject/cortex"
+  revive:
+    severity: error # We only want critical issues.
+
+  depguard:
+    rules:
+      main:
+        list-mode: lax
+        files:
+          - $all
+        deny:
+          - pkg: "github.com/go-kit/kit/log"
+            desc: Use github.com/go-kit/log instead of github.com/go-kit/kit/log"
+
+run:
+  timeout: 5m
+
+  # List of build tags, all linters use it.
+  build-tags:
+    - netgo
+    - requires_docker
+    - integration
+    - integration_alertmanager
+    - integration_backward_compatibility
+    - integration_memberlist
+    - integration_querier
+    - integration_ruler
+    - integration_query_fuzz

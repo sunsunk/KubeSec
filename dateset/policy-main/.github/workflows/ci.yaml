@@ -1,0 +1,213 @@
+name: ci
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  push:
+    # Publish `main` as Docker `latest` image.
+    branches:
+      - main
+      - release-*
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+  # Run tests for PRs
+  pull_request:
+    branches:
+      - main
+      - release-*
+env:
+  PRE_RELEASE: ${{ github.ref == 'refs/heads/main' && 'development' || '' }}
+  GO_VERSION: "1.22"
+  GO_RELEASER_VERSION: "v1.24.0"
+  GO_LANGCI_LINT_VERSION: "v1.56.2"
+  GO_TESTSUM_VERSION: "1.11.0"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@v4
+      - 
+        name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      -
+        name: Build
+        uses: goreleaser/goreleaser-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          distribution: goreleaser
+          version: ${{ env.GO_RELEASER_VERSION }}
+          args: build --clean --snapshot --single-target
+      -
+        name: Lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: ${{ env.GO_LANGCI_LINT_VERSION }}
+          args: --timeout=30m
+      -
+        name: Test Setup
+        uses: gertd/action-gotestsum@v3.0.0
+        with:
+          gotestsum_version: ${{ env.GO_TESTSUM_VERSION }}
+      -
+        name: Test
+        run: |
+          gotestsum --format short-verbose -- -count=1 -parallel=1 -v -timeout=240s -coverprofile=cover.out -coverpkg=./... ./...
+      -
+        name: Upload code coverage
+        uses: shogo82148/actions-goveralls@v1
+        continue-on-error: true
+        with:
+          path-to-profile: cover.out
+    
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+    # when on a branch only push if the branch is main
+    # always push when ref is a tag
+    if: github.event_name == 'push' && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') )
+    steps:
+      - 
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - 
+        name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      -
+        name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+      - 
+        name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://ghcr.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - 
+        name: Docker SSH Setup
+        run: |
+          git config --global url."git@github.com:".insteadOf https://github.com/
+          git config --global user.email "github-bot@aserto.com"
+          git config --global user.name "Aserto Bot"
+          eval `ssh-agent`
+      -
+        name: Push image to GitHub Container Registry
+        uses: goreleaser/goreleaser-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          distribution: goreleaser
+          version: ${{ env.GO_RELEASER_VERSION }}
+          args: release --clean --snapshot
+
+  release:
+    needs: [test, push]
+    runs-on: ubuntu-latest
+    # Only release when ref is a tag
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - 
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - 
+        name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      -
+        name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+      - 
+        name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: https://ghcr.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - 
+        name: Docker SSH Setup
+        run: |
+          git config --global url."git@github.com:".insteadOf https://github.com/
+          git config --global user.email "github-bot@aserto.com"
+          git config --global user.name "Aserto Bot"
+          eval `ssh-agent`
+      - 
+        name: Pre-release
+        if: github.event_name == 'push'  && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-rc')
+        uses: goreleaser/goreleaser-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ROOT_TOKEN }}
+          ASERTO_TAP: ${{ secrets.GH_ASERTO_TAP_TOKEN }}
+        with:
+          distribution: goreleaser
+          version: ${{ env.GO_RELEASER_VERSION }}
+          args: release --clean --config $PWD/.goreleaser-pre.yml
+      - 
+        name: Release
+        if: github.event_name == 'push'  && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-rc')
+        uses: goreleaser/goreleaser-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ROOT_TOKEN }}
+          ASERTO_TAP: ${{ secrets.GH_ASERTO_TAP_TOKEN }}
+        with:
+          distribution: goreleaser
+          version: ${{ env.GO_RELEASER_VERSION }}
+          args: release --clean
+
+  msi:
+    needs: release
+    runs-on: windows-latest
+    steps:
+      - 
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    
+      - 
+        name: Download exe
+        id: download_exe
+        shell: bash
+        run: |
+          gh release download "${GITHUB_REF#refs/tags/}" -p '*windows_x86_64*.zip'
+          printf "zip=%s\n" *.zip >> $GITHUB_OUTPUT
+          unzip -o *.zip && rm -v *.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ROOT_TOKEN }}
+      - 
+        name: Install go-msi
+        run: choco install -y "go-msi"    
+      - 
+        name: Prepare PATH
+        shell: bash
+        run: |
+          echo "$WIX\\bin" >> $GITHUB_PATH
+          echo "C:\\Program Files\\go-msi" >> $GITHUB_PATH
+      - 
+        name: Build MSI
+        id: buildmsi
+        shell: bash
+        env:
+          ZIP_FILE: ${{ steps.download_exe.outputs.zip }}
+        run: |
+          mkdir -p build
+          msi="$(basename "$ZIP_FILE" ".zip").msi"
+          printf "msi=${msi}" >> $GITHUB_OUTPUT
+          go-msi make --arch amd64 --msi "$PWD/$msi" --out "$PWD/build" --version "${GITHUB_REF#refs/tags/}"
+      - 
+        name: Upload MSI
+        shell: bash
+        run: |
+          tag_name="${GITHUB_REF#refs/tags/}"
+          gh release upload "$tag_name" "$MSI_FILE" --repo opcr-io/policy --clobber          
+        env:
+          MSI_FILE: ${{ steps.buildmsi.outputs.msi }}
+          GITHUB_TOKEN: ${{ secrets.GH_ROOT_TOKEN }}

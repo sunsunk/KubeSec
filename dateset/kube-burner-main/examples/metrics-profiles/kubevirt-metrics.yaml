@@ -1,0 +1,228 @@
+
+# K8s control plane
+  metricName: 99thSchedulingDuration
+
+  metricName: 99thSchedulingVolumeDuration
+
+  metricName: workQueueAddRate
+
+  metricName: workQueueDepth
+
+  metricName: workQueue99thQueueDuration
+
+  metricName: workQueue99thWorkDuration
+
+- query: sum(workqueue_unfinished_work_seconds) by (service, name) > 0
+  metricName: workQueueUnfinishedWork
+
+  metricName: workQueueLongestRunningProcessor
+
+  metricName: workQueueRetryRate
+
+# K8s API server
+  metricName: API99thReadRequestLatency
+
+  metricName: API99thWriteRequestLatency
+
+  metricName: APIRequestCount
+
+  metricName: APIRequestRate
+
+  metricName: APIInflightRequests
+
+- query: sum(rate(apiserver_flowcontrol_dispatched_requests_total[2m])) by (flow_schema,priority_level) > 0
+  metricName: flowControlRate
+
+  metricName: flowControlRejectedRequest
+
+  metricName: flowControl99thRequestWait
+
+  metricName: flowControl99thRequestExecution
+
+# Containers & pod metrics
+  metricName: podCPU
+
+  metricName: podMemory
+
+  metricName: rxDroppedPackets
+
+  metricName: txDroppedPackets
+
+  metricName: containerDiskUsage
+
+  metricName: containerFsUsage
+
+# Prometheus
+  metricName: containerMemory-Prometheus
+
+  metricName: containerCPU-Prometheus
+
+  metricName: prometheus-tsdb-storage
+
+# Kubelet & CRI-O metrics
+  metricName: kubeletCPU
+
+  metricName: kubeletMemory
+
+  metricName: kubelet99thPodStartDuration
+
+  metricName: kubeletPodStartRate
+
+  metricName: kubelet99thPodWorkerDuration
+
+  metricName: kubeletStorageOperation99thDurationSeconds
+
+  metricName: kubeletStorageOperationRate
+
+  metricName: kubeletStorageOperationErrorsRate
+
+  metricName: crioCPU
+
+  metricName: crioMemory
+
+# Node metrics
+- query: sum(irate(node_cpu_seconds_total[5m])) by (mode,instance) > 1
+  metricName: nodeCPU
+
+- query: sum(node_memory_MemAvailable_bytes) by (instance) > 0
+  metricName: nodeMemoryAvailable
+
+- query: sum(node_memory_Active_bytes) by (instance) > 0
+  metricName: nodeMemoryActive
+
+- query: sum(node_memory_Cached_bytes) by (instance) + sum(node_memory_Buffers_bytes) by (instance) > 0
+  metricName: nodeMemoryCached+nodeMemoryBuffers
+
+  metricName: rxNetworkBytes
+
+  metricName: txNetworkBytes
+
+  metricName: nodeDiskWrittenBytes
+
+  metricName: nodeDiskReadBytes
+
+  metricName: nodeDiskReadOpsSec
+
+  metricName: nodeDiskWriteOpsSec
+
+# Etcd metrics
+- query: etcd_server_is_leader > 0
+  metricName: etcdServerIsLeader
+
+- query: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[2m])) > 0
+  metricName: 99thEtcdDiskBackendCommitDurationSeconds
+
+- query: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[2m])) > 0
+  metricName: 99thEtcdDiskWalFsyncDurationSeconds
+
+- query: histogram_quantile(0.99, rate(etcd_network_peer_round_trip_time_seconds_bucket[5m])) > 0
+  metricName: 99thEtcdRoundTripTimeSeconds
+
+- query: etcd_mvcc_db_total_size_in_bytes > 0
+  metricName: etcdDBPhysicalSizeBytes
+
+- query: etcd_mvcc_db_total_size_in_use_in_bytes > 0
+  metricName: etcdDBLogicalSizeBytes
+
+  metricName: etcdObjectCount
+
+  metricName: etcdObjectRate
+
+- query: sum(rate(etcd_server_leader_changes_seen_total[2m])) > 0
+  metricName: etcdLeaderChangesRate
+
+- query: sum by (cluster_version)(etcd_cluster_version) > 0
+  metricName: etcdVersion
+  instant: true
+
+- query: histogram_quantile(0.99,sum(rate(etcd_request_duration_seconds_bucket[2m])) by (le,operation,apiserver)) > 0
+  metricName: P99APIEtcdRequestLatency
+
+# Cluster metrics
+- query: sum(kube_namespace_status_phase) by (phase) > 0
+  metricName: namespaceCount
+
+  metricName: podStatusCount
+
+  metricName: secretCount
+
+  metricName: deploymentCount
+
+  metricName: configmapCount
+
+  metricName: serviceCount
+
+  metricName: routeCount
+  instant: true
+
+- query: kube_node_role > 0
+  metricName: nodeRoles
+  instant: true
+
+  metricName: nodeStatus
+
+  metricName: clusterVersion
+  instant: true
+
+# Golang metrics
+  metricName: goHeapAllocBytes
+
+  metricName: goHeapInuseBytes
+
+  metricName: goGCDurationRate
+
+  metricName: goRoutinesCount
+
+# Kubevirt metrics
+  metricName: kubevirtVersion
+  instant: true
+
+  metricName: vmiStatusCount
+
+  metricName: vmiNodeCount
+
+  metricName: vmiStatusRate
+
+  metricName: kubevirtAPI99thReadRequestLatency
+
+  metricName: kubevirtAPI99thWriteRequestLatency
+
+  metricName: kubevirtAPIRequestCount
+
+  metricName: kubevirtAPIRequestRate
+
+  metricName: kubevirtRestClient99thReadRequestLatency
+
+  metricName: kubevirtRestClient99thWriteRequestLatency
+
+  metricName: kubevirtRestClientRequestCount
+
+  metricName: kubevirtRestClientRequestRate
+
+  metricName: kubevirtRateLimiter95thDuration
+
+  metricName: kubevirtWorkQueueAddRate
+
+  metricName: kubevirtWorkQueueRetryRate
+
+  metricName: kubevirtWorkQueue99thQueueDuration
+
+  metricName: kubevirtWorkQueue99thWorkDuration
+
+  metricName: kubevirtWorkQueueUnfinishedWork
+
+  metricName: kubevirtWorkQueueLongestRunningProcessor
+
+  metricName: kubevirtWorkQueueDepth
+
+  metricName: kubevirtMemory
+
+  metricName: kubevirtCPU
+
+# Processes metrics
+  metricName: processCPU
+
+  metricName: processMemory
+---
+
+---

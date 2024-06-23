@@ -1,0 +1,78 @@
+.heatMap {
+  max-width: 250px;
+}
+
+.heatMapCell {
+  height: 16px;
+  width: 16px;
+  border-color: var(--color-black-25) !important;
+}
+
+.level0 {
+  background-color: var(--color-activity-0);
+  border-color: var(--color-black-15) !important;
+}
+
+.level1 {
+  background-color: var(--color-activity-1);
+}
+
+.level2 {
+  background-color: var(--color-activity-2);
+}
+
+.level3 {
+  background-color: var(--color-activity-3);
+}
+
+.level4 {
+  background-color: var(--color-activity-4);
+}
+
+.legend {
+  font-size: 0.8rem;
+}
+
+.popover {
+  opacity: 0;
+  left: auto;
+  top: 18px;
+  font-size: 0.8rem;
+  padding: 0 !important;
+  z-index: -1;
+}
+
+.marker {
+  width: 12px;
+  height: 12px;
+  margin-right: 10px;
+  border-color: var(--color-black-25) !important;
+}
+
+.popoverHeader {
+  font-size: 0.8rem;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .popover {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1920px) {
+  .heatMapCell {
+    height: 13px;
+    width: 13px;
+  }
+
+  .popover {
+    top: 15px;
+  }
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .heatMapCell:hover + .popover {
+    opacity: 1;
+    z-index: 1;
+  }
+}

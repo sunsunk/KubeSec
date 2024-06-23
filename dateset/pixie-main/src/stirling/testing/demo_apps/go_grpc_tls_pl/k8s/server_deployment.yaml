@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: grpc-server
+  template:
+    metadata:
+      labels:
+        name: grpc-server
+    spec:
+      containers:
+      - name: grpc-server
+        image: go_grpc_tls_pl-server
+        ports:
+        - containerPort: 50400
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 10m
+            memory: 512Mi

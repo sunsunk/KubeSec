@@ -1,0 +1,12 @@
+#! here are some commonly used modules from the ytt library
+
+#@ load("@ytt:regexp", "regexp")
+#@ load("@ytt:base64", "base64")
+#@ load("@ytt:sha256", "sha256")
+
+regex: #@ regexp.match("[a-z]+[0-9]+", "__hello123__")
+sha256: #@ sha256.sum("data")
+base64: #@ base64.encode("regular")
+
+#! check out the complete list:
+#!   https://carvel.dev/ytt/docs/latest/lang-ref-ytt/

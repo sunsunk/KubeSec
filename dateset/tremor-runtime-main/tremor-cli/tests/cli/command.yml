@@ -1,0 +1,213 @@
+name: Tremor Unified Client acceptance tests
+tags:
+  - cli
+  - acceptance
+suites:
+  - name: Calling cli with no args gets help / version information
+    cases:
+      - name: |
+          `tremor` no args returns help
+        command: tremor
+        tags:
+          - help
+        status: 2
+        expects:
+          - source: stderr
+            contains:
+              - Usage
+              - Options
+              - Commands
+      - name: |
+          `tremor -h` returns help
+        command: tremor -h
+        tags:
+          - help
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - Usage
+              - Options
+              - Commands
+      - name: |
+          `tremor help` returns help
+        command: tremor -h
+        tags:
+          - help
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - Usage
+              - Options
+              - Commands
+      - name: |
+          `tremor --help` returns help
+        command: tremor --help
+        tags:
+          - help
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - Usage
+              - Options
+              - Commands
+              - completions
+              - dbg
+              - doc
+              - help
+              - run
+              - server
+              - test
+      - name: |
+          `tremor -V` returns version
+        command: tremor -V
+        tags:
+          - version
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - tremor
+      - name: |
+          `tremor --version` returns version
+        command: tremor --version
+        tags:
+          - version
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - tremor
+  - name: Calling cli with no args gets help and basic top level usage
+    cases:
+      - name: |
+          `tremor completions` returns help for completions
+        command: tremor help completions
+        tags:
+          - completions
+          - shell
+          - help
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - bash
+              - elvish
+              - fish
+              - powershell
+              - zsh
+      - name: |
+          `tremor completions bash` returns bash completions
+        command: tremor completions bash
+        tags:
+          - completions
+          - shell
+          - bash
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - _tremor() {
+      - name: |
+          `tremor completions elvish` returns elvish completions
+        command: tremor completions elvish
+        tags:
+          - completions
+          - shell
+          - elvish
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - edit:completion:arg-completer[tremor]
+      - name: |
+          `tremor completions fish` returns fish completions
+        command: tremor completions fish
+        tags:
+          - completions
+          - shell
+          - fish
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - complete -c tremor -n "__fish_use_subcommand"
+      - name: |
+          `tremor completions powershell` returns powershell completions
+        command: tremor completions powershell
+        tags:
+          - completions
+          - shell
+          - powershell
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - using namespace System.Management.Automation
+              - using namespace System.Management.Automation.Language
+      - name: |
+          `tremor completions zsh` returns zsh completions
+        command: tremor completions zsh
+        tags:
+          - completions
+          - shell
+          - zsh
+          - bug
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - "#compdef tremor"
+  - name: Calling `run` shows hygienic errors
+    cases:
+      - name: Running a tremor script shows hygienic runtime error
+        command: tremor run data/script_with_error.tremor -i data/input.json
+        tags:
+          - run
+          - script
+        status: 0
+        expects:
+          - source: stderr
+            contains:
+              - "Error in data/script_with_error.tremor:3:34"
+              - "3 | let trimmed = string::trim(event.foo);"
+              - "  |                                  ^^^ Trying to access a non existing event key `foo`"
+      - name: Running a trickle query shows hygienic runtime error
+        command: tremor run data/query_with_error.trickle -i data/input.json
+        tags:
+          - run
+          - query
+        status: 0
+        expects:
+          - source: stderr
+            contains:
+              - "Error in data/query_with_error.trickle:1:14"
+              - "1 | select event.foo from in into out;"
+              - "  |              ^^^ Trying to access a non existing event key `foo`"
+      - name: Running a trickle query shows a hygienic runtime error caused in embedded script
+        command: tremor run data/query_with_script_with_error.trickle -i data/input.json --encoder string
+        tags:
+          - run
+          - query
+          - script
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - "Error:"
+              - "3 |   emit event.baz"
+              - "  |              ^^^ Trying to access a non existing event key `baz`\n\n"
+      - name: tremor new creates 
+        command: tremor new test
+        tags:
+          - run
+          - new
+        status: 0
+        expects:
+          - source: stdout
+            contains:
+              - "test/main.troy"
+
+

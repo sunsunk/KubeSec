@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: https://charts.lifecycle.keptn.sh
+  version: 0.2.1
+digest: sha256:23cfd1d58cd1cd569753326f7587dc0bf18df6110acffc3cf002479efab46abe
+generated: "2024-03-18T11:11:32.514626+01:00"

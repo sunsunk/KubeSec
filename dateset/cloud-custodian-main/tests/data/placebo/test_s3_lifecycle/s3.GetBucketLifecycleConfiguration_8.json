@@ -1,0 +1,21 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "Rules": [
+            {
+                "ID": "test-lifecycle-two",
+                "Filter": {
+                    "Prefix": "baz/"
+                },
+                "Status": "Enabled",
+                "Transitions": [
+                    {
+                        "Days": 60,
+                        "StorageClass": "GLACIER"
+                    }
+                ]
+            }
+        ]
+    }
+}

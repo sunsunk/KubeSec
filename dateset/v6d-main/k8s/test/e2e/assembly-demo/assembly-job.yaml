@@ -1,0 +1,67 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# replace the $job with your job name
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: vineyard-job
+spec:
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        scheduling.k8s.v6d.io/required: dynamic_parameters
+      labels:
+        app: dynamic_parameters
+        assembly.v6d.io/enabled: "dynamic_parameters"
+        assembly.v6d.io/type: "dynamic_parameters"
+        # this label represents the vineyardd's name that need to be used
+        scheduling.k8s.v6d.io/vineyardd-namespace: vineyard-system
+        scheduling.k8s.v6d.io/vineyardd: vineyardd-sample
+        scheduling.k8s.v6d.io/job: dynamic_parameters
+    spec:
+      schedulerName: dynamic_parameters
+      nodeName: dynamic_parameters
+      containers:
+        - name: dynamic_parameters
+          image: localhost:5001/dynamic_parameters
+          env:
+            - name: JOB_NAME
+              value: dynamic_parameters
+            - name: METADATA_ID
+              # tricky step: the value should be placed before running
+              value: METADATA_ID_VALUE
+            - name: REQUIRED_JOB_NAME
+              value: dynamic_parameters
+          envFrom:
+          - configMapRef:
+              name: dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/run
+              name: vineyard-sock
+      volumes:
+        - name: vineyard-sock
+          hostPath:
+            path: /var/run/vineyard-kubernetes/vineyard-system/vineyardd-sample
+
+---
+
+---

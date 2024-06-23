@@ -1,0 +1,36 @@
+---
+name: Unit Tests
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  unit-testing:
+    name: Go Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Create artifacts directory
+        run: mkdir artifacts
+
+      - name: Run Go unit tests
+        run: |
+          set -o pipefail
+          make unit 2>&1 | tee artifacts/unittest.log
+
+      - name: Collect artifacts
+        run: |
+          for f in $(find ./pkg -name "*.xml"); do
+            mkdir -p artifacts/$(dirname $f)
+            cp $f -rfp artifacts/$f
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3
+        with:
+          name: Unit test artifacts
+          path: artifacts

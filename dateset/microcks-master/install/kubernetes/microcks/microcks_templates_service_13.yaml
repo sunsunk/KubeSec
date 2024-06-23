@@ -1,0 +1,25 @@
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-mongodb"
+  labels:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - name: mongodb
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+    nodePort: 0
+  selector:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+  type: ClusterIP
+  sessionAffinity: None

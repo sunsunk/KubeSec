@@ -1,0 +1,11 @@
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: cloud-ingress-managed-cert-noslackin
+spec:
+  domains:
+  - withpixie.ai
+  - work.withpixie.ai
+  - docs.withpixie.ai
+  - segment.withpixie.ai

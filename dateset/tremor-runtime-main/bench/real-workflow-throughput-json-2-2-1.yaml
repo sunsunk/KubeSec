@@ -1,0 +1,27 @@
+# Test a realistic workflow including json encoding and decoding
+# and connect both the pass and the overflow output to the
+# blackhole to acount for the data
+---
+onramp:
+  - id: blaster
+    type: blaster
+    codec: json
+    config:
+      source: ./demo/data/data.json.xz
+
+offramp:
+  - id: blackhole
+    type: blackhole
+    codec: json
+    config:
+      warmup_secs: 10
+      stop_after_secs: 100
+      significant_figures: 2
+
+binding:
+  - id: bench
+    links:
+      "/onramp/blaster/{instance}-1/out": ["/pipeline/main/{instance}-1/in"]
+      "/onramp/blaster/{instance}-2/out": ["/pipeline/main/{instance}-2/in"]
+      "/pipeline/main/{instance}-1/out": ["/offramp/blackhole/{instance}/in"]
+      "/pipeline/main/{instance}-2/out": ["/offramp/blackhole/{instance}/in"]

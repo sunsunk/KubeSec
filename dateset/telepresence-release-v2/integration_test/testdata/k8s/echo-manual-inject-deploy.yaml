@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "manual-inject"
+  labels:
+    app: manual-inject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: manual-inject
+  template:
+    metadata:
+      labels:
+        app: manual-inject
+    spec:
+      containers:
+        - name: echo-container
+          image: jmalloc/echo-server
+          ports:
+            - containerPort: 80
+          resources: {}

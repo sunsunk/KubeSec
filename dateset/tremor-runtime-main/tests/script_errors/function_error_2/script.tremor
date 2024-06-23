@@ -1,0 +1,2 @@
+use std::math;
+math::max("snot", 7)

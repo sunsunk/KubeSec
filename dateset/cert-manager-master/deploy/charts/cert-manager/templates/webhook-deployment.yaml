@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    app.kubernetes.io/name: dynamic_parameters
+    app.kubernetes.io/instance: dynamic_parameters
+    app.kubernetes.io/component: "webhook"
+    
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: dynamic_parameters
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dynamic_parameters
+      app.kubernetes.io/instance: dynamic_parameters
+      app.kubernetes.io/component: "webhook"
+  strategy:
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        app.kubernetes.io/name: dynamic_parameters
+        app.kubernetes.io/instance: dynamic_parameters
+        app.kubernetes.io/component: "webhook"
+        
+      annotations:
+    spec:
+      serviceAccountName: dynamic_parameters
+      automountServiceAccountToken: dynamic_parameters
+      enableServiceLinks: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      securityContext:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: dynamic_parameters-webhook
+          image: "dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+          - --v=dynamic_parameters
+          - --config=/var/cert-manager/config/config.yaml
+          - --secure-port=dynamic_parameters
+          - --feature-gates=dynamic_parameters
+          - --dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)
+          - --dynamic-serving-ca-secret-name=dynamic_parameters-ca
+          - --dynamic-serving-dns-names=dynamic_parameters
+          - --dynamic-serving-dns-names=dynamic_parameters.$(POD_NAMESPACE)
+          - --dynamic-serving-dns-names=dynamic_parameters.$(POD_NAMESPACE).svc
+          - --dynamic-serving-dns-names=dynamic_parameters
+          ports:
+          - name: https
+            protocol: TCP
+            containerPort: dynamic_parameters
+            containerPort: dynamic_parameters
+            containerPort: 6443
+          - name: healthcheck
+            protocol: TCP
+            containerPort: dynamic_parameters
+            containerPort: 6080
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: dynamic_parameters
+              port: 6080
+              scheme: HTTP
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: dynamic_parameters
+              port: 6080
+              scheme: HTTP
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+          securityContext:
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          resources:
+          volumeMounts:
+            - name: config
+              mountPath: /var/cert-manager/config
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      volumes:
+        - name: config
+          configMap:
+            name: dynamic_parameters
+
+---

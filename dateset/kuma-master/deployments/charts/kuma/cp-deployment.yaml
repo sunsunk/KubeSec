@@ -1,0 +1,175 @@
+# Source: kuma/templates/cp-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuma-control-plane
+  namespace: default
+  labels: 
+    app: kuma-control-plane
+    helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+    app.kubernetes.io/managed-by: Helm
+  annotations: 
+    
+spec:
+  replicas: 1
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kuma
+      app.kubernetes.io/instance: my-release
+      app: kuma-control-plane
+  template:
+    metadata:
+      annotations:
+        checksum/config: 2f870c320368463edace1b284d9b4f92b6e8ce7ee8f3c66712e89be2ca29b25f
+        checksum/tls-secrets: fe2eb49ad1597b1d0c051b819c2c8029af1a9689cd33f25d5a3df861f64df981
+      labels: 
+        app: kuma-control-plane
+        helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+        app.kubernetes.io/name: kuma
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      affinity: 
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - 'kuma'
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - 'my-release'
+                - key: app
+                  operator: In
+                  values:
+                  - 'kuma-control-plane'
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: kuma-control-plane
+      automountServiceAccountToken: true
+      nodeSelector:
+        
+        kubernetes.io/os: linux
+      hostNetwork: false
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: control-plane
+          image: "docker.io/kumahq/kuma-cp:0.0.0-preview.vlocal-build"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+          env:
+            - name: KUMA_API_SERVER_AUTHN_LOCALHOST_IS_ADMIN
+              value: "false"
+            - name: KUMA_API_SERVER_READ_ONLY
+              value: "true"
+            - name: KUMA_DEFAULTS_SKIP_MESH_CREATION
+              value: "false"
+            - name: KUMA_DP_SERVER_HDS_ENABLED
+              value: "false"
+            - name: KUMA_ENVIRONMENT
+              value: "kubernetes"
+            - name: KUMA_GENERAL_TLS_CERT_FILE
+              value: "/var/run/secrets/kuma.io/tls-cert/tls.crt"
+            - name: KUMA_GENERAL_TLS_KEY_FILE
+              value: "/var/run/secrets/kuma.io/tls-cert/tls.key"
+            - name: KUMA_INJECTOR_INIT_CONTAINER_IMAGE
+              value: "docker.io/kumahq/kuma-init:0.0.0-preview.vlocal-build"
+            - name: KUMA_MODE
+              value: "zone"
+            - name: KUMA_PLUGIN_POLICIES_ENABLED
+              value: "meshaccesslogs,meshcircuitbreakers,meshfaultinjections,meshhealthchecks,meshhttproutes,meshloadbalancingstrategies,meshmetrics,meshproxypatches,meshratelimits,meshretries,meshtcproutes,meshtimeouts,meshtraces,meshtrafficpermissions"
+            - name: KUMA_RUNTIME_KUBERNETES_ADMISSION_SERVER_CERT_DIR
+              value: "/var/run/secrets/kuma.io/tls-cert"
+            - name: KUMA_RUNTIME_KUBERNETES_ADMISSION_SERVER_PORT
+              value: "5443"
+            - name: KUMA_RUNTIME_KUBERNETES_CONTROL_PLANE_SERVICE_NAME
+              value: "kuma-control-plane"
+            - name: KUMA_RUNTIME_KUBERNETES_INJECTOR_CA_CERT_FILE
+              value: "/var/run/secrets/kuma.io/tls-cert/ca.crt"
+            - name: KUMA_RUNTIME_KUBERNETES_INJECTOR_CNI_ENABLED
+              value: "false"
+            - name: KUMA_RUNTIME_KUBERNETES_INJECTOR_SIDECAR_CONTAINER_IMAGE
+              value: "docker.io/kumahq/kuma-dp:0.0.0-preview.vlocal-build"
+            - name: KUMA_RUNTIME_KUBERNETES_SERVICE_ACCOUNT_NAME
+              value: "system:serviceaccount:default:kuma-control-plane"
+            - name: KUMA_STORE_KUBERNETES_SYSTEM_NAMESPACE
+              value: "default"
+            - name: KUMA_STORE_TYPE
+              value: "kubernetes"
+            - name: KUMA_INTER_CP_CATALOG_INSTANCE_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          args:
+            - run
+            - --log-level=info
+            - --log-output-path=
+            - --config-file=/etc/kuma.io/kuma-control-plane/config.yaml
+          ports:
+            - containerPort: 5680
+              name: diagnostics
+              protocol: TCP
+            - containerPort: 5681
+            - containerPort: 5682
+            - containerPort: 5443
+            - containerPort: 5678
+          livenessProbe:
+            timeoutSeconds: 10
+            httpGet:
+              path: /healthy
+              port: 5680
+          readinessProbe:
+            timeoutSeconds: 10
+            httpGet:
+              path: /ready
+              port: 5680
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              cpu: 500m
+              memory: 256Mi
+          
+          volumeMounts:
+            - name: general-tls-cert
+              mountPath: /var/run/secrets/kuma.io/tls-cert/tls.crt
+              subPath: tls.crt
+              readOnly: true
+            - name: general-tls-cert
+              mountPath: /var/run/secrets/kuma.io/tls-cert/tls.key
+              subPath: tls.key
+              readOnly: true
+            - name: general-tls-cert
+              mountPath: /var/run/secrets/kuma.io/tls-cert/ca.crt
+              subPath: ca.crt
+              readOnly: true
+            - name: kuma-control-plane-config
+              mountPath: /etc/kuma.io/kuma-control-plane
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: general-tls-cert
+          secret:
+            secretName: kuma-tls-cert
+        - name: kuma-control-plane-config
+          configMap:
+            name: kuma-control-plane-config
+        - name: tmp
+          emptyDir: {}

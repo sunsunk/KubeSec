@@ -1,0 +1,81 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:struct", "struct")
+
+test1: #@ struct.decode(data.values)
+test2: #@ struct.decode(data.values.map)
+test3: #@ struct.decode(data.values.list)
+
+test4:
+#@ for/end v in struct.decode(data.values.list):
+- value: #@ v
+
+test5:
+#@ kvs = struct.decode(data.values.map)
+#@ for/end k in kvs:
+- key: #@ k
+  value: #@ kvs[k]
+
+is_mapping:
+  test1: #@ data.values["int"]
+  test2: #@ data.values["map"]["a"]
+  test3: #@ data.values["list"][2]["a"]
+
+is_iterable:
+  test1:
+    #@ for/end key in data.values:
+    - #@ "{} = {}".format(key, str(data.values[key]))
+
+is_sequence:
+  test1: #@ len(data.values)
+  test2: #@ len(data.values.map)
+  test3: #@ len(data.values.list)
+
++++
+
+test1:
+  int: 123
+  intNeg: -49
+  float: 123.123
+  t: true
+  f: false
+  nullz: null
+  string: string
+  map:
+    a: 123
+  list:
+  - a
+  - 123
+  - a: 123
+test2:
+  a: 123
+test3:
+- a
+- 123
+- a: 123
+test4:
+- value: a
+- value: 123
+- value:
+    a: 123
+test5:
+- key: a
+  value: 123
+is_mapping:
+  test1: 123
+  test2: 123
+  test3: 123
+is_iterable:
+  test1:
+  - int = 123
+  - intNeg = -49
+  - float = 123.123
+  - t = True
+  - f = False
+  - nullz = None
+  - string = string
+  - map = struct(...)
+  - list = ["a", 123, struct(...)]
+is_sequence:
+  test1: 9
+  test2: 1
+  test3: 3

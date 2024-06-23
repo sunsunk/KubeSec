@@ -1,0 +1,24 @@
+.badge {
+  top: -2px;
+  width: 20px;
+}
+
+.tooltip {
+  font-size: 0.75rem;
+}
+
+.onlyBadgeTooltip {
+  margin-right: -5px;
+}
+
+.ratingLetter {
+  top: 1px;
+}
+
+.link {
+  top: -4px;
+}
+
+.link:hover {
+  text-decoration: none;
+}

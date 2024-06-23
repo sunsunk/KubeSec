@@ -1,0 +1,49 @@
+[[make-tooling]]
+= Building the documentation locally
+
+When you make changes to the documentation, it is a good practice to do a local test build to verify the book builds successfully and renders as you expect before you submit the merge request back to upstream main.
+
+After you have made documentation updates in your local GitHub clone of the `strimzi-kafka-operator` project, you can build the documentation using AsciiDoctor or the `Makefile` provided with the project.
+
+== Building documentation using AsciiDoctor
+
+As the documentation is based on asciidoc, you can use AsciiDoctor to build the guides locally.
+To build a guide using AsciiDoctor on your local machine, you run the `asciidoctor` command for the source file of the guide. 
+
+For example, this command builds the Overview:
+
+[source,shell]
+----
+asciidoctor <path_to_overview.adoc>
+----
+
+== Building documentation with make commands
+
+Use make commands from the root of the `strimzi-kafka-operator` project to build all the documentation at the same time.
+The documentation is output to `documentation/html`.   
+
+`make docu_clean`:: Deletes all temporary files
+`make docu_check`:: Executes the documentation checks in `.azure/scripts/check_docs.sh`
+`make docu_html`:: Generates HTML versions of all the guides
+`make docu_htmlnoheader`:: Generates HTML versions of all the guides without the HTML headers so they are suitable for including in a website
+
+NOTE: Before running the make commands, ensure that you remove any old build files from the documentation directories. 
+Failure to do so will result in these files being included in the documentation checks and causing build failures. 
+For instance, if you previously generated an HTML file in the `deploying` directory using Asciidoctor, make sure to delete that file.  
+
+== Generating the Strimzi Custom Resource API Reference
+
+The `documentation/modules/appendix_crds.adoc` file provides the main content for the _Strimzi Custom Resource API Reference_.
+It is generated directly from the Java code when building the operators.
+
+If you change the Strimzi API, you need to regenerate the API Reference before submitting your PR by running the following from the root:
+
+[source,shell,subs=attributes+]
+----
+mvn clean -DskipTests install
+make crd_install
+----
+
+The build uses https://github.com/mikefarah/yq[`yq`^], so make sure it is kept up-to-date for it to work properly.
+
+NOTE: You only have to generate the _Strimzi Custom Resource API Reference_ if you changed anything in the `api` module of the Java code.

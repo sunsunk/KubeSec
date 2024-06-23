@@ -1,0 +1,36 @@
+{{- $gateway := index .Values "gateways" "istio-ingressgateway" }}
+{{- if $gateway.waf.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: curiefense-access-logs-filter
+  namespace: istio-system
+  labels:
+    app.kubernetes.io/part-of: "curiefense"
+spec:
+  workloadSelector:
+    labels:
+      curiefense: "enabled"
+  configPatches:
+  - applyTo: NETWORK_FILTER # http connection manager is a filter in Envoy
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: MERGE
+      value:
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+          access_log:
+            - name: "envoy.file_access_log"
+              typed_config:
+                "@type": "type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog"
+                path: /dev/stdout
+                log_format:
+                  text_format_source:
+                    inline_string: "%DYNAMIC_METADATA(com.reblaze.curiefense:request.info)%\n"
+                  content_type: "application/json"
+{{- end }}

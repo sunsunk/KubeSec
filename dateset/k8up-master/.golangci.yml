@@ -1,0 +1,5 @@
+issues:
+  exclude-rules:
+    - linters:
+        - staticcheck
+      text: "k8upv1.LegacyScheduleFinalizerName is deprecated: Migrate to ScheduleFinalizerName"

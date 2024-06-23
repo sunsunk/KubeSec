@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: pixie-operator
+  component: pixie-operator
+namespace: px-operator
+kind: Kustomization
+patches:
+- path: arch_tolerations/deployment.yaml
+  target:
+    kind: Deployment
+resources:
+- deployment.yaml
+- service_account.yaml
+- rbac.yaml

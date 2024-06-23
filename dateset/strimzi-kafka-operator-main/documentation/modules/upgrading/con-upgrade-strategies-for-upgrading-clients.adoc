@@ -1,0 +1,20 @@
+// Module included in the following assemblies:
+//
+// upgrade/assembly-upgrade-kafka.adoc
+
+[id='con-strategies-for-upgrading-clients-{context}']
+
+= Strategies for upgrading clients
+
+[role="_abstract"]
+Upgrading Kafka clients ensures that they benefit from the features, fixes, and improvements that are introduced in new versions of Kafka. 
+Upgraded clients maintain compatibility with other upgraded Kafka components.
+The performance and stability of the clients might also be improved.
+
+Consider the best approach for upgrading Kafka clients and brokers to ensure a smooth transition.
+The chosen upgrade strategy depends on whether you are upgrading brokers or clients first. 
+Since Kafka 3.0, you can upgrade brokers and client independently and in any order.
+The decision to upgrade clients or brokers first depends on several factors, such as the number of applications that need to be upgraded and how much downtime is tolerable.
+
+If you upgrade clients before brokers, some new features may not work as they are not yet supported by brokers. 
+However, brokers can handle producers and consumers running with different versions and supporting different log message versions.

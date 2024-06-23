@@ -1,0 +1,41 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-wordpress-allow-readme
+  namespace: wordpress-mysql
+spec:
+  severity: 10
+  message: "Allowed access to wordpress configuration file"
+  selector:
+    matchLabels:
+      app: wordpress
+  file:
+    matchDirectories:
+    - dir: /etc/
+      recursive: true
+    - dir: /proc/
+      recursive: true
+    - dir: /lib/x86_64-linux-gnu/
+    - dir: /bin/
+    - dir: /pts/
+      recursive: true
+    - dir: /dev/
+      recursive: true
+    matchPaths:
+    - path: /root/.bashrc
+    - path: /root/.bash_history
+    - path: /dev/tty
+    - path: /lib/terminfo/x/xterm
+    - fromSource:
+      - path: /bin/cat
+      path: /var/www/html/readme.html
+  process:
+    matchDirectories:
+    - dir: /bin/
+      recursive: true
+
+      # http://[NodeIP]:30080
+      # cat /var/www/html/wp-config.php
+ 
+  action:
+    Allow

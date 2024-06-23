@@ -1,0 +1,35 @@
+# thanks to https://github.com/giantswarm/devctl/blob/v5.9.0/pkg/gen/input/workflows/internal/file/check_values_schema.yaml.template for the idea
+
+name: 'Check if values schema file has been updated'
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'chart/k8gb/values.yaml'
+      - 'chart/k8gb/values.schema.json'
+permissions:  # added using https://github.com/step-security/secure-workflows
+  contents: read
+
+jobs:
+  check:
+    name: 'Check values.yaml and its schema in PR'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - name: 'Checkout'
+        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+      - name: 'Check if values.schema.json was updated'
+        run: |
+          VALUES_FILE=chart/k8gb/values.yaml
+          SCHEMA_FILE=chart/k8gb/values.schema.json
+
+          # check if the values.json is covered by the schema
+          pip3 install json-spec
+          yq -o=json eval ${VALUES_FILE} > /tmp/values.json
+          json validate --schema-file=${SCHEMA_FILE} --document-file=/tmp/values.json
+          echo "PASSED: values.yaml and values.schema.json both appear to have been updated and the document is valid against the schema"

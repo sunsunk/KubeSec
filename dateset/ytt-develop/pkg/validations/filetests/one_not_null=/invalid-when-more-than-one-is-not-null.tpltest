@@ -1,0 +1,13 @@
+#@assert/validate one_not_null=True
+config:
+  foo: ""
+  bar: ""
+
++++
+
+ERR:
+  config
+    from: stdin:2
+    - must be: exactly one of all children to be not null (by: stdin:1)
+      found: ["foo", "bar"] are not null
+

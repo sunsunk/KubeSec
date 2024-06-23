@@ -1,0 +1,12 @@
+##############################################################
+#
+# Lists the owners of this project
+#
+##############################################################
+#
+# Learn about CODEOWNERS file format:
+#  https://help.github.com/en/articles/about-code-owners
+* @keptn/lifecycle-toolkit-maintainers
+
+# The Documentation workgroup should also be able to approve documentation pullrequests
+/docs @keptn/lifecycle-toolkit-maintainers @keptn/docs-maintainers

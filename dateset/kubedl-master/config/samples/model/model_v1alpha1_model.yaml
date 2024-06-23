@@ -1,0 +1,7 @@
+apiVersion: model.kubedl.io/v1alpha1
+kind: Model
+metadata:
+  name: model1
+spec:
+status:
+

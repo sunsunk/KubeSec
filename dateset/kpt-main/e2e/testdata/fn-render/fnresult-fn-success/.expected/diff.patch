@@ -1,0 +1,13 @@
+diff --git a/resources.yaml b/resources.yaml
+index f2eec52..114819d 100644
+--- a/resources.yaml
++++ b/resources.yaml
+@@ -16,7 +16,7 @@ kind: Deployment
+ metadata:
+   name: nginx-deployment
+ spec:
+-  replicas: 3
++  replicas: 4
+ ---
+ apiVersion: custom.io/v1
+ kind: Custom

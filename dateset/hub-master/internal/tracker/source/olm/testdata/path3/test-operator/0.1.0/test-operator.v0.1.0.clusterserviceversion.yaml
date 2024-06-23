@@ -1,0 +1,44 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    artifacthub.io/changes: single string
+  name: test-operator.v0.1.0
+  namespace: placeholder
+spec:
+  customresourcedefinitions:
+    owned:
+      - description: Test CRD
+        kind: Test
+        name: test.crds.com
+        version: v1
+        displayName: Test
+  description: Test Operator README
+  displayName: Test Operator
+  installModes:
+    - supported: true
+      type: OwnNamespace
+    - supported: true
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces
+  keywords:
+    - Test
+  links:
+    - name: Sample link
+      url: https://sample.link
+  maintainers:
+    - email: test@email.com
+      name: Test
+  provider:
+    name: Test
+  version: 0.1.0
+  install:
+    strategy: deployment
+  relatedImages:
+    - name: image1
+      image: registry.io/image1:1.0.0
+    - name: image2
+      image: registry.io/image2:1.0.0

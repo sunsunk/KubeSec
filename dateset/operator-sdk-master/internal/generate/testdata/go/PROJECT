@@ -1,0 +1,8 @@
+domain: example.com
+projectName: memcached-operator
+repo: github.com/example/memcached-operator
+resources:
+- group: cache
+  kind: Memcached
+  version: v1alpha1
+version: 3-alpha

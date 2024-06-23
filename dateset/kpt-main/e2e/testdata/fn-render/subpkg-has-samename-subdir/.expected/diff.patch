@@ -1,0 +1,31 @@
+diff --git a/pkg-a/Kptfile b/pkg-a/Kptfile
+index 5489897..9589794 100644
+--- a/pkg-a/Kptfile
++++ b/pkg-a/Kptfile
+@@ -2,6 +2,7 @@ apiVersion: kpt.dev/v1
+ kind: Kptfile
+ metadata:
+   name: pkg-a
++  namespace: dev
+ info:
+   description: sample description
+ pipeline:
+diff --git a/pkg-a/pkg-a/resources.yaml b/pkg-a/pkg-a/resources.yaml
+index f2eec52..c4e4abb 100644
+--- a/pkg-a/pkg-a/resources.yaml
++++ b/pkg-a/pkg-a/resources.yaml
+@@ -15,6 +15,7 @@ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: nginx-deployment
++  namespace: dev
+ spec:
+   replicas: 3
+ ---
+@@ -22,5 +23,6 @@ apiVersion: custom.io/v1
+ kind: Custom
+ metadata:
+   name: custom
++  namespace: dev
+ spec:
+   image: nginx:1.2.3

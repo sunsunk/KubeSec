@@ -1,0 +1,52 @@
+# See https://github.com/github/codeql-action/tree/v1 for more information.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [main, stable-*]
+    paths:
+      - .github/workflows/codeql.yml
+      - "**/*.go"
+      - "**/*.js"
+      - "**/*.jsx"
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [main, stable-*]
+    paths:
+      - .github/workflows/codeql.yml
+      - "**/*.go"
+      - "**/*.js"
+      - "**/*.jsx"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - go
+          - javascript
+
+    steps:
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version: "1.22"
+      - name: Checkout
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+
+      - name: Initialize
+        # Unpinned action version so that we automatically get analyzer updates.
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3

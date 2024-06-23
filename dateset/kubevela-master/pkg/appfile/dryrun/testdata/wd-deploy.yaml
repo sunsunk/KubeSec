@@ -1,0 +1,24 @@
+apiVersion: core.oam.dev/v1beta1
+kind: WorkflowStepDefinition
+metadata:
+  annotations:
+    definition.oam.dev/description: Deploy components with policies.
+  name: deploy
+spec:
+  schematic:
+    cue:
+      template: |
+        import (
+        	"vela/op"
+        )
+
+        deploy: op.#Deploy & {
+        	policies:    parameter.policies
+        	parallelism: parameter.parallelism
+        }
+        parameter: {
+        	auto: *true | bool
+        	policies?: [...string]
+        	parallelism: *5 | int
+        }
+

@@ -1,0 +1,17 @@
+global:
+  imagePullPolicy: IfNotPresent
+  requests:
+    cpu:
+      redis: "1m"
+      uiserver: "1m"
+      confserver-init: "1m"
+      confserver-nginx: "1m"
+      confserver-uwsgi: "1m"
+
+  storage:
+    confserver_storage_size: '1Gi'
+    redis_storage_size: '500Mi'
+
+  enable:
+    # set to false to disable parts of this deployment, ex. if you prefer to use your own versions
+    minio: true

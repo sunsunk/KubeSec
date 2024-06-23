@@ -1,0 +1,7 @@
+# Source: vela-test/templates/cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-release
+data:
+  key: value

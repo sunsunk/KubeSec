@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-rbac-manager
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters-rbac-manager
+    release: dynamic_parameters
+    
+  annotations: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters-rbac-manager
+      release: dynamic_parameters
+  strategy:
+    type: dynamic_parameters
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: dynamic_parameters-rbac-manager
+        release: dynamic_parameters
+        
+    spec:
+      securityContext:
+      priorityClassName: dynamic_parameters
+      serviceAccountName: rbac-manager
+      initContainers:
+      - image: "dynamic_parameters:dynamic_parameters"
+        args:
+        - rbac
+        - init
+        imagePullPolicy: dynamic_parameters
+        name: dynamic_parameters-init
+        resources:
+        securityContext:
+        env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters-init
+                resource: limits.cpu
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters-init
+                resource: limits.memory
+      containers:
+      - image: "dynamic_parameters:dynamic_parameters"
+        args:
+        - rbac
+        - start
+        - dynamic_parameters
+        - --provider-clusterrole=dynamic_parameters:allowed-provider-permissions
+        imagePullPolicy: dynamic_parameters
+        name: dynamic_parameters
+        resources:
+        ports:
+        - name: metrics
+          containerPort: 8080
+        securityContext:
+        env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters
+                resource: limits.cpu
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters
+                resource: limits.memory
+          - name: LEADER_ELECTION
+            value: "dynamic_parameters"
+          - name: dynamic_parameters
+            value: dynamic_parameters
+      nodeSelector: dynamic_parameters
+      tolerations: dynamic_parameters
+      affinity: dynamic_parameters
+
+---

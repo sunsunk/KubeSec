@@ -1,0 +1,164 @@
+// Module included in the following assemblies:
+//
+// assembly-configuring-kafka-listeners.adoc
+
+[id='proc-accessing-kafka-using-routes-{context}']
+= Accessing Kafka using OpenShift routes
+
+[role="_abstract"]
+Use OpenShift routes to access a Strimzi Kafka cluster from clients outside the OpenShift cluster.
+
+To be able to use routes, add configuration for a `route` type listener in the `Kafka` custom resource. 
+When applied, the configuration creates a dedicated route and service for an external bootstrap and each broker in the cluster. 
+Clients connect to the bootstrap route, which routes them through the bootstrap service to connect to a broker. 
+Per-broker connections are then established using DNS names, which route traffic from the client to the broker through the broker-specific routes and services.
+
+To connect to a broker, you specify a hostname for the route bootstrap address, as well as the certificate used for TLS encryption.
+For access using routes, the port is always 443.
+
+WARNING: An OpenShift route address comprises the Kafka cluster name, the listener name, the project name, and the domain of the router.
+For example, `my-cluster-kafka-external1-bootstrap-my-project.domain.com` (<cluster_name>-kafka-<listener_name>-bootstrap-<namespace>.<domain>). 
+Each DNS label (between periods "`.`") must not exceed 63 characters, and the total length of the address must not exceed 255 characters.
+
+The procedure shows basic listener configuration.
+TLS encryption (`tls`) must be enabled.
+You can also specify a client authentication mechanism (`authentication`).
+Add additional configuration using `configuration` properties.
+For example, you can use the `host` configuration property with `route` listeners to specify the hostnames used by the bootstrap and per-broker services.   
+
+For more information on listener configuration, see the link:{BookURLConfiguring}#type-GenericKafkaListener-reference[`GenericKafkaListener` schema reference^].
+
+.TLS passthrough
+
+TLS passthrough is enabled for routes created by Strimzi.
+Kafka uses a binary protocol over TCP, but routes are designed to work with a HTTP protocol. 
+To be able to route TCP traffic through routes, Strimzi uses TLS passthrough with Server Name Indication (SNI).
+
+SNI helps with identifying and passing connection to Kafka brokers.
+In passthrough mode, TLS encryption is always used.
+Because the connection passes to the brokers, the listeners use TLS certificates signed by the internal cluster CA and not the ingress certificates.
+To configure listeners to use your own listener certificates, xref:proc-installing-certs-per-listener-{context}[use the `brokerCertChainAndKey` property].
+
+.Prerequisites
+
+* A running Cluster Operator
+
+In this procedure, the Kafka cluster name is `my-cluster`.
+The name of the listener is `external1`.
+
+.Procedure
+
+. Configure a `Kafka` resource with an external listener set to the `route` type.
++
+For example:
++
+[source,yaml,subs=attributes+]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+metadata:
+  labels:
+    app: my-cluster
+  name: my-cluster
+  namespace: myproject
+spec:
+  kafka:
+    # ...
+    listeners:
+      - name: external1
+        port: 9094
+        type: route
+        tls: true # <1>
+        authentication:
+          type: tls
+        # ...
+    # ...
+  zookeeper:
+    # ...
+----
+<1> For `route` type listeners, TLS encryption must be enabled (`true`).
+
+. Create or update the resource.
++
+[source,shell,subs=+quotes]
+----
+kubectl apply -f _<kafka_configuration_file>_
+----
++
+A cluster CA certificate to verify the identity of the kafka brokers is created in the secret `my-cluster-cluster-ca-cert`.
++
+`ClusterIP` type services are created for each Kafka broker, as well as an external bootstrap service.
++
+A `route` is also created for each service, with a DNS address (host/port) to expose them using the default OpenShift HAProxy router.
++
+The routes are preconfigured with TLS passthrough. 
++
+.Routes created for the bootstraps and brokers
+[source,shell]
+----
+NAME                                  HOST/PORT                                                  SERVICES                              PORT  TERMINATION
+my-cluster-kafka-external1-0          my-cluster-kafka-external1-0-my-project.router.com         my-cluster-kafka-external1-0          9094  passthrough
+my-cluster-kafka-external1-1          my-cluster-kafka-external1-1-my-project.router.com         my-cluster-kafka-external1-1          9094  passthrough
+my-cluster-kafka-external1-2          my-cluster-kafka-external1-2-my-project.router.com         my-cluster-kafka-external1-2          9094  passthrough
+my-cluster-kafka-external1-bootstrap  my-cluster-kafka-external1-bootstrap-my-project.router.com my-cluster-kafka-external1-bootstrap  9094  passthrough
+----
++
+The DNS addresses used for client connection are propagated to the `status` of each route.
++
+.Example status for the bootstrap route
+[source,yaml]
+----
+status:
+  ingress:
+    - host: >-
+        my-cluster-kafka-external1-bootstrap-my-project.router.com
+ # ...
+----
+
+. Use a target broker to check the client-server TLS connection on port 443 using the OpenSSL `s_client`.  
++
+[source,shell]
+----
+openssl s_client -connect my-cluster-kafka-external1-0-my-project.router.com:443 -servername my-cluster-kafka-external1-0-my-project.router.com -showcerts
+----
++
+The server name is the Server Name Indication (SNI) for passing the connection to the broker. 
++
+If the connection is successful, the certificates for the broker are returned.
++
+.Certificates for the broker
+[source,shell,subs=attributes+]
+----
+Certificate chain
+ 0 s:O = io.strimzi, CN = my-cluster-kafka
+   i:O = io.strimzi, CN = cluster-ca v0
+----
+
+. Retrieve the address of the bootstrap service from the status of the `Kafka` resource.
++
+[source,shell,subs=+quotes]
+----
+kubectl get kafka my-cluster -o=jsonpath='{.status.listeners[?(@.name=="external1")].bootstrapServers}{"\n"}'
+
+my-cluster-kafka-external1-bootstrap-my-project.router.com:443
+----
++
+The address comprises the Kafka cluster name, the listener name, the project name and the domain of the router (`router.com` in this example).
+
+. Extract the cluster CA certificate.
++
+[source,shell]
+----
+kubectl get secret my-cluster-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
+----
+
+. Configure your client to connect to the brokers.
+
+.. Specify the address for the bootstrap service and port 443 in your Kafka client as the bootstrap address to connect to the Kafka cluster.
+
+.. Add the extracted certificate to the truststore of your Kafka client to configure a TLS connection.
++
+If you enabled a client authentication mechanism, you will also need to configure it in your client.
+
+NOTE: If you are using your own listener certificates, check whether you need to add the CA certificate to the client's truststore configuration. 
+If it is a public (external) CA, you usually won't need to add it.

@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-protocol-loadtest-config
+data:
+  NUM_CONNECTIONS: "99"
+  TARGET_RPS: "3000"

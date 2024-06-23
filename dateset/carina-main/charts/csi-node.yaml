@@ -1,0 +1,280 @@
+# Source: carina-csi-driver/templates/csi-node.yaml
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: csi-carina-node
+  namespace: default
+  labels:
+    class: carina
+    app: csi-carina-node
+    release:  "my-release"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "carina-csi-driver"
+    app.kubernetes.io/version: "0.11.0"
+    helm.sh/chart: "carina-csi-driver-v0.11.0"
+spec:
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: csi-carina-node
+  template:
+    metadata:
+      labels:
+        class: carina
+        app: csi-carina-node
+        release:  "my-release"
+        app.kubernetes.io/instance: "my-release"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/name: "carina-csi-driver"
+        app.kubernetes.io/version: "0.11.0"
+        helm.sh/chart: "carina-csi-driver-v0.11.0"
+    spec:
+      hostNetwork: false
+      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: carina-csi-node
+      affinity:
+        nodeAffinity:
+          {}      
+      initContainers:
+        - name: bcache
+          securityContext:
+            privileged: true
+          image: registry.cn-hangzhou.aliyuncs.com/carina/busybox:1.28
+          command:
+          - sh
+          - -c
+          - >-
+              uname  -r  ;
+              main=$(uname  -r | awk -F . '{print $1 }') ;
+              minor=$(uname -r | awk -F . '{print $2}');
+              echo "major version is:$main, secondary version is:$minor";
+
+              if ([ "$main"  -eq "3" ] && [ "$minor" -ge "10" ]) || ([ "$main"  -ge "3" ]);
+              then
+                  modprobe  bcache || true
+              else
+                  echo "skip modprobe bcache" ;
+              fi
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: modules
+        - name: dm-snapshot
+          securityContext:
+            privileged: true
+          image: registry.cn-hangzhou.aliyuncs.com/carina/busybox:1.28
+          command:
+          - sh
+          - -c
+          - >-
+              uname  -r  ;
+              main=$(uname  -r | awk -F . '{print $1 }') ;
+              minor=$(uname -r | awk -F . '{print $2}');
+              echo "major version is:$main, secondary version is:$minor";
+
+              if ([ "$main"  -eq "3" ] && [ "$minor" -ge "10" ]) || ([ "$main"  -ge "3" ]);
+              then
+                  modprobe dm_snapshot  || true
+              else
+                  echo "skip modprobe dm_snapshot" ;
+              fi
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: modules
+        - name: dm-mirror
+          securityContext:
+            privileged: true
+          image: registry.cn-hangzhou.aliyuncs.com/carina/busybox:1.28
+          command:
+          - sh
+          - -c
+          - >-
+              uname  -r  ;
+              main=$(uname  -r | awk -F . '{print $1 }') ;
+              minor=$(uname -r | awk -F . '{print $2}');
+              echo "major version is:$main, secondary version is:$minor";
+
+              if ([ "$main"  -eq "3" ] && [ "$minor" -ge "10" ]) || ([ "$main"  -ge "3" ]);
+              then
+                  modprobe dm_mirror  || true
+              else
+                  echo "skip modprobe dm_mirror" ;
+              fi
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: modules
+        - name: dm-thin-pool
+          securityContext:
+            privileged: true
+          image: registry.cn-hangzhou.aliyuncs.com/carina/busybox:1.28
+          command:
+          - sh
+          - -c
+          - >-
+              uname  -r  ;
+              main=$(uname  -r | awk -F . '{print $1 }') ;
+              minor=$(uname -r | awk -F . '{print $2}');
+              echo "major version is:$main, secondary version is:$minor";
+
+              if ([ "$main"  -eq "3" ] && [ "$minor" -ge "10" ]) || ([ "$main"  -ge "3" ]);
+              then
+                  modprobe dm_thin_pool  || true
+              else
+                  echo "skip modprobe dm_thin_pool" ;
+              fi
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: modules
+      containers:
+        - name: liveness-probe
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/livenessprobe:v2.7.0"
+          args:
+            - --csi-address=/csi/csi.sock
+            - --probe-timeout=3s
+            - --health-port=29602
+            - --v=2
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+        - name: node-driver-registrar
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/csi-node-driver-registrar:v2.5.1"
+          args:
+            - --csi-address=$(ADDRESS)
+            - --kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)
+            - --v=2
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: /var/lib/kubelet/plugins/carina.storage.io/csi.sock
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+        - name: csi-carina-node
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/carina:v0.11.0"
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          command: ["carina-node"]
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--metrics-addr=:8080"
+          ports:
+            - containerPort: 8080
+              name: metrics
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: ADDRESS
+              value: /csi/csi.sock
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: Bidirectional
+            - name: plugin-dir
+              mountPath: /var/lib/kubelet/plugins
+              mountPropagation: Bidirectional
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+              mountPropagation: Bidirectional
+            - name: host-sys
+              mountPath: /sys/fs/cgroup
+            - name: host-block
+              mountPath: /sys/block
+            - name: host-dev
+              mountPath: /dev
+            - name: host-proc
+              mountPath: /host/proc
+            - name: host-mount
+              mountPath: /run/mount
+            - name: config
+              mountPath: /etc/carina/
+            - name: log-dir
+              mountPath: /var/log/carina/
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet/plugins/carina.storage.io
+            type: DirectoryOrCreate
+          name: socket-dir
+        - hostPath:
+            path: /var/lib/kubelet/pods
+            type: DirectoryOrCreate
+          name: mountpoint-dir
+        - hostPath:
+            path: /var/lib/kubelet/plugins_registry/
+            type: DirectoryOrCreate
+          name: registration-dir
+        - name: log-dir
+          hostPath:
+            path: /var/log/carina/
+            type: DirectoryOrCreate
+        - name: plugin-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins
+            type: Directory
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+            type: Directory
+        - name: host-sys
+          hostPath:
+            path: /sys/fs/cgroup
+        - name: host-block
+          hostPath:
+            path: /sys/block
+        - name: modules
+          hostPath:
+            path: /lib/modules
+        - name: host-dev
+          hostPath:
+            path: /dev
+        - name: host-proc
+          hostPath:
+            path: /proc
+        - name: host-mount
+          hostPath:
+            path: /run/mount
+        - name: config
+          configMap:
+            name: my-release-csi-config

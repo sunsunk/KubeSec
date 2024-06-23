@@ -1,0 +1,57 @@
+kind: PodSecurityPolicy
+apiVersion: policy/v1beta1
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+  annotations:
+spec:
+  fsGroup:
+    rule: RunAsAny
+  hostPorts:
+  - max: 0
+    min: 0
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - secret
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-use-psp
+  labels:
+    
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - dynamic_parameters
+  verbs:
+  - use
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-use-psp
+  labels:
+    
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters-use-psp
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: dynamic_parameters
+
+---
+
+---

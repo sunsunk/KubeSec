@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eraser-controller-manager
+  namespace: eraser-system
+spec:
+  template:
+    metadata:
+      labels:
+        HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_ADDITIONALPODLABELS: ""
+    spec:
+      HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_PULL_SECRETS: ""
+      volumes:
+      - name: eraser-manager-config
+        configMap:
+          name: eraser-manager-config
+      containers:
+      - name: manager
+        args:
+        - --config=/config/controller_manager_config.yaml
+        - HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_ADDITIONAL_ARGS
+        command:
+        - /manager
+        image: "{{ .Values.deploy.image.repo }}:{{ .Values.deploy.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: "{{ .Values.deploy.image.pullPolicy }}"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_CONTAINER_RESOURCES: ""
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: eraser-manager-config
+          mountPath: /config
+      nodeSelector:
+        HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_NODESELECTOR: ""
+      tolerations:
+        HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_TOLERATIONS: ""
+      affinity:
+        HELMSUBST_DEPLOYMENT_CONTROLLER_MANAGER_AFFINITY: ""
+      priorityClassName: "{{ .Values.deploy.priorityClassName }}"

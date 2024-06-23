@@ -1,0 +1,69 @@
+.legend {
+  font-size: 75%;
+}
+
+.blockWrapper {
+  flex-basis: calc(100% - 45px);
+  max-width: calc(100% - 45px);
+}
+
+.blockWrapper code {
+  word-wrap: normal;
+}
+
+.copyBtn {
+  height: 30px;
+  width: 30px;
+  margin-top: 0.9rem;
+}
+
+.md p,
+.md li,
+.md table {
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
+.mdHeader {
+  font-size: 55%;
+}
+
+.md p code {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+}
+
+.inlineCode {
+  hyphens: none;
+  color: var(--bs-dark);
+  background-color: var(--code-bg-md);
+  border-color: var(--color-1-20) !important;
+  padding: 0 0.15rem;
+}
+
+.md li ul {
+  margin-bottom: 1rem;
+}
+
+.btnInLegend {
+  font-size: 80%;
+}
+
+.btnInText {
+  top: -2px;
+}
+
+.selectWrapper {
+  width: 30%;
+  min-width: 180px;
+}
+
+.gatekeeperInstallContent {
+  height: 335px;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .blockWrapper {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,205 @@
+site_name: Litmus Experiments
+site_url: https://litmuschaos.github.io/litmus
+site_description: >-
+  It contains litmus chaos experiments docs
+repo_name: litmuschaos/litmus
+repo_url: https://github.com/litmuschaos/litmus
+theme: 
+  name: material
+  custom_dir: overrides
+  font:
+    text: Work Sans
+  highlightjs: true
+  logo: images/litmus.png
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/lightbulb-off
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb-on
+        name: Switch to light mode
+  hljs_languages:
+    - yaml
+  features:
+    - content.code.annotate
+    - content.tabs.link
+    - header.autohide
+    - navigation.indexes
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
+    - search.share
+    - search.suggest
+extra:
+  version:
+    provider: mike
+markdown_extensions:
+  - codehilite
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: iter8-tools
+      repo: iter8
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+    - Home: index.md
+    - Experiments:
+      - Contents: experiments/categories/contents.md
+      - Kubernetes: 
+        - Generic:
+          - Pod Chaos:
+            - Container Kill: experiments/categories/pods/container-kill.md
+            - Disk Fill: experiments/categories/pods/disk-fill.md
+            - Pod Autoscaler: experiments/categories/pods/pod-autoscaler.md
+            - Pod CPU Hog Exec: experiments/categories/pods/pod-cpu-hog-exec.md
+            - Pod CPU Hog: experiments/categories/pods/pod-cpu-hog.md
+            - Pod Delete: experiments/categories/pods/pod-delete.md
+            - Pod Dns Error: experiments/categories/pods/pod-dns-error.md
+            - Pod Dns Spoof: experiments/categories/pods/pod-dns-spoof.md
+            - Pod IO Stress: experiments/categories/pods/pod-io-stress.md
+            - Pod Memory Hog Exec: experiments/categories/pods/pod-memory-hog-exec.md
+            - Pod Memory Hog: experiments/categories/pods/pod-memory-hog.md
+            - Pod Network Corruption: experiments/categories/pods/pod-network-corruption.md
+            - Pod Network Duplication: experiments/categories/pods/pod-network-duplication.md
+            - Pod Network Latency: experiments/categories/pods/pod-network-latency.md
+            - Pod Network Loss: experiments/categories/pods/pod-network-loss.md
+            - Pod Network Partition: experiments/categories/pods/pod-network-partition.md
+            - Pod HTTP Latency: experiments/categories/pods/pod-http-latency.md
+            - Pod HTTP Reset Peer: experiments/categories/pods/pod-http-reset-peer.md
+            - Pod HTTP Status Code: experiments/categories/pods/pod-http-status-code.md
+            - Pod HTTP Modify Body: experiments/categories/pods/pod-http-modify-body.md
+            - Pod HTTP Modify Header: experiments/categories/pods/pod-http-modify-header.md
+          - Node Chaos:
+            - Docker Service Kill: experiments/categories/nodes/docker-service-kill.md
+            - Kubelet Service Kill: experiments/categories/nodes/kubelet-service-kill.md
+            - Node CPU Hog: experiments/categories/nodes/node-cpu-hog.md
+            - Node Drain: experiments/categories/nodes/node-drain.md
+            - Node IO Stress: experiments/categories/nodes/node-io-stress.md
+            - Node Memory Hog: experiments/categories/nodes/node-memory-hog.md
+            - Node Restart: experiments/categories/nodes/node-restart.md
+            - Node Taint: experiments/categories/nodes/node-taint.md
+        - Spring Boot:
+            - Spring Boot App Kill: experiments/categories/spring-boot/spring-boot-app-kill.md
+            - Spring Boot CPU Stress: experiments/categories/spring-boot/spring-boot-cpu-stress.md
+            - Spring Boot Memory Stress: experiments/categories/spring-boot/spring-boot-memory-stress.md
+            - Spring Boot Exceptions: experiments/categories/spring-boot/spring-boot-exceptions.md
+            - Spring Boot Latency: experiments/categories/spring-boot/spring-boot-latency.md
+            - Spring Boot Faults: experiments/categories/spring-boot/spring-boot-faults.md
+      - Cloud Infrastructure:
+        - AWS: 
+            - EC2:
+              - EC2 Stop By ID: experiments/categories/aws/ec2-stop-by-id.md
+              - EC2 Stop By Tag: experiments/categories/aws/ec2-stop-by-tag.md
+            - EBS:
+              - EBS Loss By ID: experiments/categories/aws/ebs-loss-by-id.md
+              - EBS Loss By Tag: experiments/categories/aws/ebs-loss-by-tag.md
+            - AWS SSM: 
+              - AWS SSM Chaos By ID: experiments/categories/aws-ssm/aws-ssm-chaos-by-id.md
+              - AWS SSM Chaos By Tag: experiments/categories/aws-ssm/aws-ssm-chaos-by-tag.md
+        - VMWare:
+            - VM Poweroff: experiments/categories/vmware/vm-poweroff.md
+        - Azure:
+            - Azure Instance Stop: experiments/categories/azure/azure-instance-stop.md
+            - Azure Disk Loss: experiments/categories/azure/azure-disk-loss.md
+        - GCP:
+            - VM Instance:
+              - GCP VM Instance Stop: experiments/categories/gcp/gcp-vm-instance-stop.md
+              - GCP VM Instance Stop By Label: experiments/categories/gcp/gcp-vm-instance-stop-by-label.md
+            - VM Disk:
+              - GCP VM Disk Loss: experiments/categories/gcp/gcp-vm-disk-loss.md
+              - GCP VM Disk Loss By Label: experiments/categories/gcp/gcp-vm-disk-loss-by-label.md
+    - Concepts:
+      - Chaos Resources:
+        - Contents: experiments/concepts/chaos-resources/contents.md
+        - ChaosEngine:
+          - Contents: experiments/concepts/chaos-resources/chaos-engine/contents.md
+          - State Specifications: experiments/concepts/chaos-resources/chaos-engine/engine-state.md
+          - Application Specifications: experiments/concepts/chaos-resources/chaos-engine/application-details.md
+          - RBAC Specifications: experiments/concepts/chaos-resources/chaos-engine/rbac-details.md
+          - Runtime Specifications: experiments/concepts/chaos-resources/chaos-engine/runtime-details.md
+          - Runner Specifications: experiments/concepts/chaos-resources/chaos-engine/runner-components.md
+          - Experiment Specifications: experiments/concepts/chaos-resources/chaos-engine/experiment-components.md
+        - ChaosExperiment: 
+          - Contents: experiments/concepts/chaos-resources/chaos-experiment/contents.md
+          - Scope Specification: experiments/concepts/chaos-resources/chaos-experiment/scope-specification.md
+          - Component Specification: experiments/concepts/chaos-resources/chaos-experiment/component-specification.md
+          - Experiment Tunables Specification: experiments/concepts/chaos-resources/chaos-experiment/experiment-tunable-specification.md
+          - Configuration Specification: experiments/concepts/chaos-resources/chaos-experiment/configuration-specification.md
+        - ChaosResult: 
+          - Contents: experiments/concepts/chaos-resources/chaos-result/contents.md
+          - Spec Specification: experiments/concepts/chaos-resources/chaos-result/spec-specification.md
+          - Status Specification: experiments/concepts/chaos-resources/chaos-result/status-specification.md
+          - Probe Status: experiments/concepts/chaos-resources/chaos-result/probe-specification.md
+        - ChaosScheduler:
+          - Contents: experiments/concepts/chaos-resources/chaos-scheduler/contents.md
+          - Schedule Once: experiments/concepts/chaos-resources/chaos-scheduler/schedule-once.md
+          - Schedule Repeat: experiments/concepts/chaos-resources/chaos-scheduler/schedule-repeat.md
+          - Schedule State: experiments/concepts/chaos-resources/chaos-scheduler/state.md
+          - Engine Specifications: experiments/concepts/chaos-resources/chaos-scheduler/engine-specification.md
+        - Probes:
+          - Contents: experiments/concepts/chaos-resources/probes/contents.md
+          - Introduction:  experiments/concepts/chaos-resources/probes/litmus-probes.md
+          - Command Probe: experiments/concepts/chaos-resources/probes/cmdProbe.md
+          - HTTP Probe: experiments/concepts/chaos-resources/probes/httpProbe.md
+          - K8S Probe: experiments/concepts/chaos-resources/probes/k8sProbe.md
+          - Prometheus Probe: experiments/concepts/chaos-resources/probes/promProbe.md
+          - Probe Chaining: experiments/concepts/chaos-resources/probes/probe-chaining.md
+      - Security:  
+          - Pod Security Policies: experiments/concepts/security/psp.md
+          - Kyverno Policies: experiments/concepts/security/kyverno-policies.md
+          - OpenShift SCC: experiments/concepts/security/openshift-scc.md
+      - AWS IAM Integration: experiments/concepts/IAM/awsIamIntegration.md
+      - GCP IAM Integration: experiments/concepts/IAM/gcpIamIntegration.md
+    - Litmus FAQ:
+      - Contents: experiments/faq/content.md
+      - FAQ: 
+        - Install: experiments/faq/install.md 
+        - Experiments: experiments/faq/experiments.md
+        - Portal: experiments/faq/portal.md
+        - Scheduler: experiments/faq/scheduler.md
+        - CI/CD: experiments/faq/ci-cd.md
+      - Troubleshooting:
+        - Install: experiments/troubleshooting/install.md 
+        - Experiments: experiments/troubleshooting/experiments.md
+        - Portal: experiments/troubleshooting/portal.md
+        - Scheduler: experiments/troubleshooting/scheduler.md
+    - Chaos Hub ⧉: https://hub.litmuschaos.io/
+    - Platform Docs ⧉: https://docs.litmuschaos.io/
+    - Releases ⧉: https://github.com/litmuschaos/litmus/releases
+    - Roadmap: ROADMAP.md
+    - API Docs: experiments/api/contents.md

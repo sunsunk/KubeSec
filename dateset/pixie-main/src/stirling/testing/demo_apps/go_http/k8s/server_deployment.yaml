@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-http-server
+  labels:
+    name: go-http-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: go-http-server
+  template:
+    metadata:
+      labels:
+        name: go-http-server
+    spec:
+      containers:
+      - name: go-http-server
+        image: go_http_server
+        ports:
+        - containerPort: 50051
+        args:
+        - --port=50051
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 10m
+            memory: 512Mi

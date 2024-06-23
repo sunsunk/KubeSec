@@ -1,0 +1,59 @@
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kuma-patch-ns
+  namespace: default
+  labels:
+  
+    helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": "pre-install"
+    
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+spec:
+  template:
+    metadata:
+      name: kuma-patch-ns-script
+      labels:
+    
+        helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+        app.kubernetes.io/name: kuma
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: kuma-patch-ns-job
+      nodeSelector:
+      
+        kubernetes.io/os: linux
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: pre-install-job
+          image: "docker.io/bitnami/kubectl:1.27.5"
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 65534
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          command:
+            - 'kubectl'
+            - 'patch'
+            - 'namespace'
+            - "default"
+            - '--type'
+            - 'merge'
+            - '--patch'
+            - '{ "metadata": { "labels": { "kuma.io/system-namespace": "true" } } }'

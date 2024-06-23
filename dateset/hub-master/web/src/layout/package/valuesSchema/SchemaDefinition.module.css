@@ -1,0 +1,63 @@
+.contentWrapper {
+  min-width: 0;
+}
+
+.btn {
+  font-size: inherit;
+}
+
+.btnClip {
+  font-size: 80%;
+}
+
+.content {
+  margin-top: 1px;
+  min-width: 0px;
+}
+
+.badge {
+  top: -2px;
+}
+
+.xsBadge {
+  font-size: 0.5rem;
+}
+
+.icon {
+  width: 20px;
+}
+
+.moreInfo {
+  margin-left: 20px;
+}
+
+.listItem {
+  padding-left: 15px;
+}
+
+.listItem::before {
+  content: '- ';
+  position: absolute;
+  left: 0px;
+}
+
+.errorMsg {
+  line-height: 1.15rem;
+}
+
+.select {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.75rem;
+}
+
+.selectInLine {
+  top: -1px;
+}
+
+.selectType {
+  width: 80px;
+}
+
+.titleWithRequiredLabel {
+  max-width: calc(100% - 75px);
+}

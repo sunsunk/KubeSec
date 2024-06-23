@@ -1,0 +1,20 @@
+.label {
+  font-size: 0.875rem;
+}
+
+.copyBtnTooltip {
+  top: -0.4rem;
+  left: 14.5rem;
+  right: auto;
+}
+
+.copyBtnArrow {
+  top: 13px !important;
+  left: -6px !important;
+}
+
+.copyBtnArrow::before {
+  border-right-color: var(--color-1-900) !important;
+  border-bottom-color: transparent !important;
+  border-width: 0.4rem 0.4rem 0.4rem 0 !important;
+}

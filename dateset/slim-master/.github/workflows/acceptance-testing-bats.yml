@@ -1,0 +1,30 @@
+name: Acceptance testing (using bats tests)
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, closed]
+jobs:
+  test:
+    strategy:
+      matrix:
+        go: ['1.21']
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - uses: actions/setup-go@v5.0.0
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Build Slim (quick dev)
+        run: make build_dev
+
+      - name: Run the bats test suite
+        run: ./test/bats/bin/bats test/debug.bats

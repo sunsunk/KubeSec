@@ -1,0 +1,11 @@
+.circleci/
+.idea/
+.git/
+build-aux/
+build-output/
+!build-output/version.txt
+integration_test/
+k8s/
+packaging/
+test-infra/
+tools/

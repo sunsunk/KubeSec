@@ -1,0 +1,20 @@
+# Source: athenz-zms/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-athenz-zms
+  labels:
+    app: "athenz-zms"
+    chart: "athenz-zms-1.0.0"
+    release: "my-release"
+    heritage: "Helm"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: zms
+    port: 4443
+    protocol: TCP
+    targetPort: zms
+  selector:
+    app: "athenz-zms"
+    release: "my-release"

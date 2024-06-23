@@ -1,0 +1,94 @@
+project: werfio-ng
+configVersion: 1
+
+---
+image: jekyll_base
+from: jekyll/builder:4.2.0
+fromCacheVersion: 20230421
+git:
+  - add: /docs
+    to: /app/docs
+    owner: jekyll
+    group: jekyll
+    includePaths:
+      - Gemfile
+      - Gemfile.lock
+    stageDependencies:
+      setup: ["**/*"]
+shell:
+  install:
+    - gem update --system 3.2.3
+    - gem install bundler -v 2.4.22
+  setup:
+    - export PATH=/usr/jekyll/bin/:$PATH
+    - echo "Install Dependencies ..."
+    - cd /app/docs && bundle install
+
+---
+image: assets
+fromImage: jekyll_base
+shell:
+  beforeSetup:
+    - mkdir -p /app/_site/main/
+    - chmod 777 /app/_site/main/
+    - mkdir -p /app/_site/ru/
+    - chmod 777 /app/_site/ru/
+    - cd /app/docs
+    - bundle exec jekyll --version
+    - export JEKYLL_ENV="production"
+
+    - bundle info bundler
+    - bundle info sprockets
+    - bundle info jekyll
+
+    - cat _config.yml
+
+    - echo "Build 'en' ..."
+    - bundle exec jekyll build -s /app/docs  -d /app/_site/main/ --config /app/docs/_config.yml --profile --trace
+
+    - echo "Build 'ru' ..."
+    - bundle exec jekyll build -s /app/docs  -d /app/_site/ru/ --config /app/docs/_config.yml,/app/docs/_config_ru.yml --profile --trace
+
+    - echo "Assets in 'en':"
+    - ls -la /app/_site/main/assets || true
+
+    - echo "Assets in 'ru':"
+    - ls -la /app/_site/ru/assets || true
+git:
+- add: /docs
+  to: /app/docs
+  owner: jekyll
+  group: jekyll
+  includePaths:
+    - _data
+    - _includes
+    - _layouts
+    - _plugins
+    - css
+    - images
+    - pages_ru
+    - pages_en
+    - ssi
+    - _config.yml
+    - _config_ru.yml
+    - Gemfile
+    - Gemfile.lock
+    - "*.xml"
+  stageDependencies:
+    beforeSetup:
+    - '**/*'
+---
+image: web
+from: nginx:stable-alpine
+ansible:
+  setup:
+  - name: "Setup /etc/nginx/nginx.conf"
+    copy:
+      content: |
+{{ .Files.Get ".werf/nginx.conf" | indent 8 }}
+      dest: /etc/nginx/nginx.conf
+import:
+- image: assets
+  add: /app/_site
+  to: /app
+  before: setup

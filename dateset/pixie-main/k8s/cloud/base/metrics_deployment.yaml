@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-server
+spec:
+  selector:
+    matchLabels:
+      name: metrics-server
+  template:
+    metadata:
+      labels:
+        name: metrics-server
+        monitoring.gke.io/scrape: 'true'
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '50801'
+        prometheus.io/scheme: 'http'
+    spec:
+      containers:
+      - name: metrics-server
+        imagePullPolicy: IfNotPresent
+        image: cloud-metrics_server_image
+        ports:
+        - containerPort: 50800
+          name: http2
+        - containerPort: 50801
+          name: metrics-http
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 50800
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 50800
+        envFrom:
+        - configMapRef:
+            name: pl-tls-config
+        - configMapRef:
+            name: pl-domain-config
+        - configMapRef:
+            name: pl-bq-config
+        env:
+        - name: PL_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloud-auth-secrets
+              key: jwt-signing-key
+        volumeMounts:
+        - name: certs
+          mountPath: /certs
+        - name: bq-access-sa
+          mountPath: /creds
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10100
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: certs
+        secret:
+          secretName: service-tls-certs
+      - name: bq-access-sa
+        secret:
+          secretName: bq-access-sa
+          optional: true

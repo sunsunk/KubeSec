@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dynamic_parameters
+  labels:
+    app: istiod
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "Pilot"
+    istio: pilot
+    release: dynamic_parameters
+    dynamic_parameters: "dynamic_parameters"
+spec:
+  replicas: dynamic_parameters
+  strategy:
+    rollingUpdate:
+      maxSurge: dynamic_parameters
+      maxUnavailable: dynamic_parameters
+  selector:
+    matchLabels:
+      app: istiod
+      istio.io/rev: dynamic_parameters
+      istio: pilot
+  template:
+    metadata:
+      labels:
+        app: istiod
+        istio.io/rev: dynamic_parameters
+        install.operator.istio.io/owning-resource: dynamic_parameters
+        sidecar.istio.io/inject: "false"
+        operator.istio.io/component: "Pilot"
+        istio: istiod
+        istio: pilot
+        dynamic_parameters: "dynamic_parameters"
+      annotations:
+        prometheus.io/port: "15014"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      nodeSelector:
+      affinity:
+      tolerations:
+      priorityClassName: "dynamic_parameters"
+      securityContext:
+        fsGroup: 1337
+      containers:
+        - name: discovery
+          image: "dynamic_parameters"
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parametersdynamic_parameters-dynamic_parametersdynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+          - "discovery"
+          - --monitoringAddr=:15014
+          - --log_output_level=dynamic_parameters
+          - --log_as_json
+          - --domain
+          - dynamic_parameters
+          - "-a"
+          - dynamic_parameters
+          - --plugins=dynamic_parameters
+          - --keepaliveMaxServerConnectionAge
+          - "dynamic_parameters"
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 15010
+            protocol: TCP
+          - containerPort: 15017
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            timeoutSeconds: 5
+          env:
+          - name: REVISION
+            value: "dynamic_parameters"
+          - name: JWT_POLICY
+            value: dynamic_parameters
+          - name: PILOT_CERT_PROVIDER
+            value: dynamic_parameters
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.serviceAccountName
+          - name: KUBECONFIG
+            value: /var/run/secrets/remote/config
+          - name: dynamic_parameters
+            value: "dynamic_parameters"
+          - name: ENABLE_LEGACY_FSGROUP_INJECTION
+            value: "true"
+          - name: PILOT_TRACE_SAMPLING
+            value: "dynamic_parameters"
+          - name: PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_OUTBOUND
+            value: "dynamic_parameters"
+          - name: PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_INBOUND
+            value: "dynamic_parameters"
+          - name: ISTIOD_ADDR
+          - name: PILOT_ENABLE_ANALYSIS
+            value: "dynamic_parameters"
+          - name: CLUSTER_ID
+            value: "dynamic_parameters"
+          resources:
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1337
+            runAsGroup: 1337
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+          volumeMounts:
+          - name: istio-token
+            mountPath: /var/run/secrets/tokens
+            readOnly: true
+          - name: local-certs
+            mountPath: /var/run/secrets/istio-dns
+          - name: cacerts
+            mountPath: /etc/cacerts
+            readOnly: true
+          - name: istio-kubeconfig
+            mountPath: /var/run/secrets/remote
+            readOnly: true
+          - name: extracacerts
+            mountPath: /cacerts
+          - name: istio-csr-dns-cert
+            mountPath: /var/run/secrets/istiod/tls
+            readOnly: true
+          - name: istio-csr-ca-configmap
+            mountPath: /var/run/secrets/istiod/ca
+            readOnly: true
+      volumes:
+      # Technically not needed on this pod - but it helps debugging/testing SDS
+      # Should be removed after everything works.
+      - emptyDir:
+          medium: Memory
+        name: local-certs
+      - name: istio-token
+        projected:
+          sources:
+            - serviceAccountToken:
+                audience: dynamic_parameters
+                expirationSeconds: 43200
+                path: istio-token
+      # Optional: user-generated root
+      - name: cacerts
+        secret:
+          secretName: cacerts
+          optional: true
+      - name: istio-kubeconfig
+        secret:
+          secretName: istio-kubeconfig
+          optional: true
+      # Optional: istio-csr dns pilot certs
+      - name: istio-csr-dns-cert
+        secret:
+          secretName: istiod-tls
+          optional: true
+      - name: istio-csr-ca-configmap
+        configMap:
+          name: istio-ca-root-cert
+          defaultMode: 420
+          optional: true
+      - name: extracacerts
+        configMap:
+
+---
+
+---

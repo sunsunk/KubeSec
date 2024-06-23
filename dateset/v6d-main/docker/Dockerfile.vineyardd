@@ -1,0 +1,89 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+FROM ghcr.io/v6d-io/v6d/vineyardd-alpine-builder:builder-latest as builder
+
+RUN export arch="$PLATFORM" && \
+    export arch="${arch/x86_64/amd64}" && \
+    export arch="${arch/aarch64/arm64}" && \
+    echo "PLATFORM = $PLATFORM" && \
+    echo "arch = $arch" && \
+    cd /tmp && \
+    curl -LO https://github.com/robxu9/bash-static/releases/download/5.2.015-1.2.3-2/bash-linux-$PLATFORM && \
+    chmod +x bash-linux-$PLATFORM && \
+    mv /tmp/bash-linux-$PLATFORM /usr/bin/bash-linux && \
+    curl -LO https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_$arch && \
+    chmod +x dumb-init_1.2.2_$arch && \
+    mv /tmp/dumb-init_1.2.2_$arch /usr/bin/dumb-init && \
+    curl -LO https://github.com/etcd-io/etcd/releases/download/v3.5.9/etcd-v3.5.9-linux-$arch.tar.gz && \
+    tar zxf etcd-v3.5.9-linux-$arch.tar.gz && \
+    mv /tmp/etcd-v3.5.9-linux-$arch/etcd /usr/bin/etcd && \
+    curl -LO https://dl.k8s.io/release/v1.24.0/bin/linux/$arch/kubectl && \
+    chmod +x kubectl && \
+    mv /tmp/kubectl /usr/bin/kubectl
+
+ADD . /work/v6d
+
+# FIXME It is still not clear why the first run of cmake will fail.
+
+# patch cpprestsdk to drop boost::regex dependency.
+RUN cd /work/v6d && \
+    sed -i 's/Boost::regex//g' thirdparty/cpprestsdk/Release/cmake/cpprest_find_boost.cmake && \
+    sed -i 's/regex//g' thirdparty/cpprestsdk/Release/cmake/cpprest_find_boost.cmake
+
+# Install libunwind, static linked
+RUN cd /tmp && \
+    curl -LO https://github.com/libunwind/libunwind/releases/download/v1.7.2/libunwind-1.7.2.tar.gz && \
+    tar zxf libunwind-1.7.2.tar.gz && \
+    cd libunwind-1.7.2 && \
+    ./configure --enable-static --disable-shared --enable-debug-frame && \
+    make install -j`nproc` && \
+    cd /tmp && \
+    rm -rf libunwind-1.7.2.tar.gz libunwind-1.7.2/
+
+RUN cd /work/v6d && \
+    mkdir -p /work/v6d/build && \
+    cd /work/v6d/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release \
+         -DBUILD_SHARED_LIBS=OFF \
+         -DUSE_STATIC_BOOST_LIBS=ON \
+         -DBUILD_VINEYARD_SERVER=ON \
+         -DBUILD_VINEYARD_CLIENT=OFF \
+         -DBUILD_VINEYARD_PYTHON_BINDINGS=OFF \
+         -DBUILD_VINEYARD_PYPI_PACKAGES=OFF \
+         -DBUILD_VINEYARD_LLM_CACHE=OFF \
+         -DBUILD_VINEYARD_BASIC=OFF \
+         -DBUILD_VINEYARD_GRAPH=OFF \
+         -DBUILD_VINEYARD_IO=OFF \
+         -DBUILD_VINEYARD_HOSSEINMOEIN_DATAFRAME=OFF \
+         -DBUILD_VINEYARD_TESTS=OFF \
+         -DBUILD_VINEYARD_TESTS_ALL=OFF \
+         -DBUILD_VINEYARD_PROFILING=OFF && \
+    make -j`nproc` && \
+    strip ./bin/vineyardd
+
+# debug has busybox
+FROM gcr.io/distroless/base:debug
+
+SHELL ["/bin/bash", "-c"]
+
+COPY --from=builder /usr/bin/bash-linux /bin/bash
+COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
+COPY --from=builder /usr/bin/etcd /usr/bin/etcd
+COPY --from=builder /usr/bin/kubectl /usr/bin/kubectl
+COPY --from=builder /work/v6d/build/bin/vineyardd /usr/local/bin/vineyardd
+RUN ln -s /busybox/env /usr/bin/env
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["/usr/local/bin/vineyardd"]

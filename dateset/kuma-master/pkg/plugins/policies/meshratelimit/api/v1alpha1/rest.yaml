@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  version: v1alpha1
+  title: Kuma API
+  description: Kuma API
+  x-ref-schema-name: "MeshRateLimit"
+
+paths:
+  /meshes/{mesh}/meshratelimits/{name}:
+    get:
+      summary: Returns MeshRateLimit entity
+      tags: [ "MeshRateLimit" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshRateLimit
+      responses:
+        '200':
+          $ref: "#/components/responses/MeshRateLimitItem"
+
+    put:
+      summary: Creates or Updates MeshRateLimit entity
+      tags: [ "MeshRateLimit" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshRateLimit
+      requestBody:
+        description: Put request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeshRateLimitItem'
+      responses:
+        '200':
+          description: Updated
+        '201':
+          description: Created
+
+    delete:
+      summary: Deletes MeshRateLimit entity
+      tags: [ "MeshRateLimit" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshRateLimit
+      responses:
+        '200':
+          description: Successful response
+
+
+  /meshes/{mesh}/meshratelimits:
+    get:
+      summary: Returns a list of MeshRateLimit in the mesh.
+      tags: [ "MeshRateLimit" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+      responses:
+        '200':
+          $ref: "#/components/responses/MeshRateLimitList"
+
+components:
+  schemas:
+    MeshRateLimitItem:
+      $ref: 'schema.yaml'
+  responses:
+    MeshRateLimitItem:
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeshRateLimitItem'
+    MeshRateLimitList:
+      description: List
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeshRateLimitItem"
+              total:
+                type: number
+                description: The total number of entities
+              next:
+                type: string
+                description: URL to the next page

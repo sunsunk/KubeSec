@@ -1,0 +1,61 @@
+<!DOCTYPE html >
+<html>
+  <head>
+    <title class="title">ytt playground</title>
+
+    <script src="js/deps.js"></script>
+    <link rel="stylesheet" href="js/deps.css"></link>
+
+    <script src="js/app.js"></script>
+    <link rel="stylesheet" href="js/app.css"></link>
+
+    <script type="text/javascript">
+      var defaultDomain = "get-ytt.io";
+      if (document.domain == defaultDomain) {
+        window.location.replace(window.location.href.replace(defaultDomain, "carvel.dev/ytt"));
+      }
+    </script>
+  </head>
+  <body>
+    <div class="content">
+      <div class="playground-wrapper">
+        <div id="playground" style="display: none;">
+          <div class="dropdown">
+            <h2>Interactive Playground
+              <span class="button-container"></span>
+            </h2>
+            <div class="example-sets"></div>
+            <p>Edit files on the left, and see template results on the right.
+            Alternatively, click through above examples to see different features.
+            We do not store or use content entered into playground.</p>
+            <form id="show-gist">
+              <p>Alternatively enter <a href="https://gist.github.com/">GitHub Gist</a> URL here <input/> press Enter.</p>
+            </form>
+          </div>
+
+          <div class="playground-inner">
+            <div class="blocker"></div>
+
+            <div class="left">
+              <div class="controls">
+                <button type="button" class="add-config button">+ Add File</button>
+                <button type="button" class="run button" title="Run (Shift+Enter)">&#8627; Run</button>
+                <button type="button" class="expand button">Full Screen</button>
+              </div>
+
+              <form class="config-form">
+                <div class="config-boxes"></div>
+              </form>
+            </div>
+
+            <div class="right">
+              <div class="output"></div>
+            </div>
+          </div>
+        </div>
+
+        <noscript>Page includes interactive editor with ability to render templates and see their results.</noscript>
+      </div>
+    </div>
+  </body>
+</html>

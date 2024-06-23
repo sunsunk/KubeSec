@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "hook": {
+    "path": "/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "test ! -x /opt/hooks/oci/poststop.sh || /opt/hooks/oci/poststop.sh"
+    ]
+  },
+  "when": {
+    "always": true
+  },
+  "stages": [
+    "poststop"
+  ]
+}

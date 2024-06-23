@@ -1,0 +1,40 @@
+// This assembly is included in the following assemblies:
+//
+// metrics/assembly-metrics-config-files.adoc
+
+[id='ref-metrics-alertmanager-examples-{context}']
+
+= Example Prometheus rules for alert notifications
+
+[role="_abstract"]
+Example Prometheus rules for alert notifications are provided with the xref:assembly-metrics-config-files-{context}[example metrics configuration files] provided by Strimzi.
+The rules are specified in the example `prometheus-rules.yaml` file for use in a xref:proc-metrics-deploying-prometheus-{context}[Prometheus deployment].
+
+The `prometheus-rules.yaml` file contains example rules for the following components:
+
+* Kafka
+* ZooKeeper
+* Entity Operator
+* Kafka Connect
+* Kafka Bridge
+* MirrorMaker
+* Kafka Exporter
+
+A description of each of the example rules is provided in the file.
+
+Alerting rules provide notifications about specific conditions observed in metrics.
+Rules are declared on the Prometheus server, but Prometheus Alertmanager is responsible for alert notifications.
+
+Prometheus alerting rules describe conditions using https://prometheus.io/docs/prometheus/latest/querying/basics/[PromQL] expressions that are continuously evaluated.
+
+When an alert expression becomes true, the condition is met and the Prometheus server sends alert data to the Alertmanager.
+Alertmanager then sends out a notification using the communication method configured for its deployment.
+
+General points about the alerting rule definitions:
+
+* A `for` property is used with the rules to determine the period of time a condition must persist before an alert is triggered.
+* A tick is a basic ZooKeeper time unit, which is measured in milliseconds and configured using the `tickTime` parameter of `Kafka.spec.zookeeper.config`. For example, if ZooKeeper `tickTime=3000`, 3 ticks (3 x 3000) equals 9000 milliseconds.
+* The availability of the `ZookeeperRunningOutOfSpace` metric and alert is dependent on the Kubernetes configuration and storage implementation used. Storage implementations for certain platforms may not be able to supply the information on available space required for the metric to provide an alert.
+
+Alertmanager can be configured to use email, chat messages or other notification methods.
+Adapt the default configuration of the example rules according to your specific needs.

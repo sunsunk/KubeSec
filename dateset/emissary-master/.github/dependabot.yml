@@ -1,0 +1,110 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "sigs.k8s.io/gateway-api"
+      - dependency-name: "go.opentelemetry.io/proto/otlp"
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/yq"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/chart-doc-gen"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/crane"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/ct"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/golangci-lint"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: gomod
+    directory: "/tools/src/ocibuild"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: pip
+    directory: "/docker/test-auth"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: pip
+    directory: "/docker/test-shadow"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: pip
+    directory: "/docker/test-stats"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: pip
+    directory: "/python"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: pytest
+      - dependency-name: urllib3
+        versions:
+          - "<2.0"
+  - package-ecosystem: docker
+    directory: "/docker/base-python"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: docker
+    directory: "/docker/test-auth"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: docker
+    directory: "/docker/test-http"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: docker
+    directory: "/docker/test-shadow"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: docker
+    directory: "/docker/test-stats"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10

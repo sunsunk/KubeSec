@@ -1,0 +1,4 @@
+match event of
+  case rp = %{ meta ~= influx||} => rp["meta"]
+  case _ => "no match"
+end

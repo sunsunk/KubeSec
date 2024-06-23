@@ -1,0 +1,9 @@
+let ignore = match [event] of
+  case %[ _ ] => true
+  case _ => false
+end;
+let empty = match [] of
+  case %[ _ ] => true
+  case _ => false
+end;
+[ignore, empty]

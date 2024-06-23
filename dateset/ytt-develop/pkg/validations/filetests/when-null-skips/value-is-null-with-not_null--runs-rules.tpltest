@@ -1,0 +1,11 @@
+#@assert/validate not_null=True
+foo: null
+
++++
+
+ERR:
+  foo
+    from: stdin:2
+    - must be: not null (by: stdin:1)
+      found: value is null
+

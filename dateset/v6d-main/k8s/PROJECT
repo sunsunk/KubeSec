@@ -1,0 +1,111 @@
+domain: v6d.io
+layout:
+- go.kubebuilder.io/v3
+multigroup: true
+projectName: vineyard
+repo: github.com/v6d-io/v6d/k8s
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: LocalObject
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: GlobalObject
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: Vineyardd
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: Operation
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: Sidecar
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: Backup
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: Recover
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: v6d.io
+  group: k8s
+  kind: CSIDriver
+  path: github.com/v6d-io/v6d/k8s/apis/k8s/v1alpha1
+  version: v1alpha1
+  webhooks:
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+version: "3"

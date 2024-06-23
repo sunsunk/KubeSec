@@ -1,0 +1,277 @@
+/*
+ *  Copyright (c) 2021 NetEase Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+syntax="proto2";
+import "curvefs/proto/common.proto";
+import "curvefs/proto/topology.proto";
+package curvefs.mds;
+option cc_generic_services = true;
+option go_package = "curvefs/proto/mds";
+
+enum FSStatusCode {
+    OK = 0;
+    UNKNOWN_ERROR = 1;
+    FS_EXIST = 2;
+    NOT_FOUND = 3;
+    PARAM_ERROR = 4;
+    MOUNT_POINT_EXIST = 5;
+    MOUNT_POINT_NOT_EXIST = 6;
+    RPC_ERROR = 7;
+    INIT_SPACE_ERROR = 8;
+    UNINIT_SPACE_ERROR = 9;
+    FS_BUSY = 10;
+    INSERT_ROOT_INODE_ERROR = 11;
+    UNDER_DELETING = 12;
+    NOT_INITED = 13;
+    DELETE_INODE_ERROR = 14;
+    METASERVER_CLIENT_NOT_INITED = 15;
+    FS_ID_MISMATCH = 16;
+    SPACE_CLIENT_NOT_INITED = 17;
+    INODE_EXIST = 18;
+    INTERNAL_ERROR = 19;
+    STORAGE_ERROR = 20;
+    ALLOCATE_CHUNKID_ERROR = 21;
+    CREATE_PARTITION_ERROR = 22;
+    CREATE_COPYSET_ERROR = 23;
+    GET_PARTITIONINFOOFFS_ERROR = 24;
+    PARTITION_EXIST = 25;
+    DELETE_PARTITION_ERROR = 26;
+    S3_INFO_ERROR = 27;
+    LOCK_FAILED = 28;
+    LOCK_TIMEOUT = 29;
+    COMMIT_TX_SEQUENCE_MISMATCH = 30;
+    VOLUME_INFO_ERROR = 31;
+    MOUNT_POINT_CONFLICT = 32;
+    FSNAME_INVALID = 33;
+    INSERT_DENTRY_FAIL = 34;
+    INSERT_MANAGE_INODE_FAIL = 35;
+    DELETE_DENTRY_FAIL = 36;
+    UPDATE_FS_FAIL = 37;
+    SPACE_RELEASE_FAIL = 38;
+}
+
+// fs interface
+message GetFsInfoRequest {
+    optional uint32 fsId = 1;     // Globally unique, no duplicates allowed
+    optional string fsName = 2;   // Globally unique, no duplicates allowed
+}
+
+enum FsStatus {
+    NEW = 0;
+    INITED = 1;
+    DELETING = 2;
+}
+
+message FsDetail {
+    optional common.Volume volume = 1;
+    optional common.S3Info s3Info = 2;
+}
+
+message Mountpoint {
+    required string hostname = 1;
+    required uint32 port = 2;
+    required string path = 3;
+    optional bool cto = 4;
+}
+
+message FsInfo {
+    required uint32 fsId = 1;
+    required string fsName = 2;
+    required FsStatus status = 3;
+    required uint64 rootInodeId = 4;
+    required uint64 capacity = 5;
+    required uint64 blockSize = 6;
+    required uint32 mountNum = 7;
+    repeated Mountpoint mountpoints = 8;
+    required common.FSType fsType = 9;
+    required FsDetail detail = 10;
+    required bool enableSumInDir = 11;
+    required string owner = 12;
+    optional uint64 txSequence = 13;
+    optional string txOwner = 14;
+    optional uint32 recycleTimeHour =15;
+}
+
+message FsUsage {
+    optional uint64 usedBytes = 1;
+}
+
+message GetFsInfoResponse {
+    required FSStatusCode statusCode = 1;
+    optional FsInfo fsInfo = 2;
+}
+
+message CreateFsRequest {
+    required string fsName = 1;
+    required uint64 blockSize = 2;
+    required common.FSType fsType = 3;
+    required FsDetail fsDetail = 4;
+    required bool enableSumInDir = 5;
+    required string owner = 6;
+    required uint64 capacity = 7;
+    optional uint32 recycleTimeHour = 8;
+}
+
+message CreateFsResponse {
+    required FSStatusCode statusCode = 1;
+    optional FsInfo fsInfo = 2;
+}
+
+message MountFsRequest {
+    required string fsName = 1;
+    required Mountpoint mountpoint = 2;
+}
+
+message MountFsResponse {
+    required FSStatusCode statusCode = 1;
+    optional FsInfo fsInfo = 2;
+}
+
+message UmountFsRequest {
+    required string fsName = 1;
+    required Mountpoint mountpoint = 2;
+}
+
+message UmountFsResponse {
+    required FSStatusCode statusCode = 1;
+}
+
+message UpdateFsInfoRequest {
+    required string fsName = 1;
+    optional uint64 capacity = 2;
+}
+
+message UpdateFsInfoResponse {
+    required FSStatusCode statusCode = 1;
+}
+
+message DeleteFsRequest {
+    required string fsName = 1;
+}
+
+message DeleteFsResponse {
+    required FSStatusCode statusCode = 1;
+}
+
+message AllocateS3ChunkRequest {
+    required uint32 fsId = 1;
+    optional uint32 chunkIdNum = 2;
+}
+
+message AllocateS3ChunkResponse {
+   // status code, default value is FSStatusCode::UNKNOWN_ERROR
+   required FSStatusCode statusCode = 1;
+   required uint64 beginChunkId = 2;
+}
+
+message ListClusterFsInfoRequest {
+}
+
+message ListClusterFsInfoResponse {
+    repeated FsInfo fsInfo = 1;
+}
+
+message FsDelta {
+    optional int64 bytes = 1;
+}
+
+message RefreshSessionRequest {
+    repeated topology.PartitionTxId txIds = 1;
+    // used for client timeout
+    required string fsName = 2;
+    required Mountpoint mountpoint = 3;
+    optional FsDelta fsDelta = 4;
+    optional string mdsAddrs = 5;
+}
+
+message RefreshSessionResponse {
+    required FSStatusCode statusCode = 1;
+    repeated topology.PartitionTxId latestTxIdList = 2;
+    optional bool enableSumInDir = 3;
+    optional uint64 fsCapacity = 4;
+    optional uint64 fsUsedBytes = 5;
+    optional string mdsAddrsOverride = 6;
+}
+
+message DLockValue {
+    required string owner = 1;
+    required uint64 expireTime = 2;
+}
+
+message GetLatestTxIdRequest {
+    optional bool lock = 1;
+    optional uint32 fsId = 2;
+    optional string fsName = 3;
+    optional string uuid = 4;
+}
+
+message GetLatestTxIdResponse {
+    required FSStatusCode statusCode = 1;
+    repeated topology.PartitionTxId txIds = 2;
+    optional uint64 txSequence = 3;
+}
+
+message CommitTxRequest {
+    repeated topology.PartitionTxId partitionTxIds = 1;
+    optional bool lock = 2;
+    optional string fsName = 3;
+    optional string uuid = 4;
+    optional uint64 txSequence = 5;
+}
+
+message CommitTxResponse {
+    required FSStatusCode statusCode = 1;
+}
+
+message SetClientMdsAddrsOverrideRequest {
+    required string clientMdsAddrsOverride = 1;
+}
+
+message SetClientMdsAddrsOverrideResponse {
+    required FSStatusCode statusCode = 1;
+}
+
+message TsoRequest {}
+
+message TsoResponse {
+    required FSStatusCode statusCode = 1;
+    optional uint64 ts = 2;  // transaction sequence number
+    optional uint64 timestamp = 3;
+}
+
+service MdsService {
+    // fs interface
+    rpc CreateFs(CreateFsRequest) returns (CreateFsResponse);
+    rpc MountFs(MountFsRequest) returns (MountFsResponse);
+    rpc UmountFs(UmountFsRequest) returns (UmountFsResponse);
+    // TODO(chengyi01): move to GetFssInfo
+    rpc GetFsInfo(GetFsInfoRequest) returns (GetFsInfoResponse);
+    rpc UpdateFsInfo(UpdateFsInfoRequest) returns (UpdateFsInfoResponse);
+    rpc DeleteFs(DeleteFsRequest) returns (DeleteFsResponse);
+    rpc AllocateS3Chunk(AllocateS3ChunkRequest) returns (AllocateS3ChunkResponse);
+    rpc ListClusterFsInfo (ListClusterFsInfoRequest) returns (ListClusterFsInfoResponse);
+
+    rpc GetLatestTxId(GetLatestTxIdRequest) returns (GetLatestTxIdResponse);
+    rpc CommitTx(CommitTxRequest) returns (CommitTxResponse);
+
+    rpc Tso(TsoRequest) returns (TsoResponse);
+
+    // client lease
+    rpc RefreshSession(RefreshSessionRequest) returns (RefreshSessionResponse);
+
+    // client mds addrs override, for mds migration
+    rpc SetClientMdsAddrsOverride(SetClientMdsAddrsOverrideRequest) returns (SetClientMdsAddrsOverrideResponse);
+}

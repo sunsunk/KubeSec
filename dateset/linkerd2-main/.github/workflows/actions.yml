@@ -1,0 +1,26 @@
+name: Actions
+
+on:
+  pull_request:
+    paths:
+      - .devcontainer/devcontainer.json
+      - .github/workflows/**
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: linkerd/dev/actions/setup-tools@v43
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - run: just-dev lint-actions
+
+  devcontainer-versions:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: linkerd/dev/actions/setup-tools@v43
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - run: just-dev check-action-images

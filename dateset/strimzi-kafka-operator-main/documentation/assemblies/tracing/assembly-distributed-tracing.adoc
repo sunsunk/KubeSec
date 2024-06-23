@@ -1,0 +1,16 @@
+// This assembly is included in the following assemblies:
+//
+// configuring/configuring.adoc
+
+[id='assembly-distributed-tracing-{context}']
+= Introducing distributed tracing
+
+[role="_abstract"]
+include::../../modules/tracing/con-distributed-tracing-description.adoc[leveloffset=+1]
+
+include::../../modules/tracing/con-overview-tracing.adoc[leveloffset=+1]
+
+include::../../modules/tracing/ref-tracing-environment-variables.adoc[leveloffset=+1]
+
+include::assembly-distributed-tracing-procedures.adoc[leveloffset=+1]
+

@@ -1,0 +1,284 @@
+[
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:ignoresqli",
+        "contentfiltername:ignore-sqli",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-ignore-sqli",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "ignore sqli (pass)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/ignoresqli?a=1&b=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:ignoresqli",
+        "contentfiltername:ignore-sqli",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-ignore-sqli",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl",
+        "generic",
+        "cf-rule-category:generic",
+        "cf-rule-risk:1",
+        "cf-rule-id:100099",
+        "cf-rule-subcategory:generic",
+        "status:403",
+        "status-class:4xx",
+        "waf"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "ignore sqli (block)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/ignoresqli?a=1&b=/nettracker/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:ignoresqli",
+        "contentfiltername:ignore-sqli",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-ignore-sqli",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl",
+        "generic",
+        "cf-rule-category:generic",
+        "cf-rule-risk:1",
+        "cf-rule-id:100099",
+        "cf-rule-subcategory:generic",
+        "status:403",
+        "status-class:4xx",
+        "waf"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "ignore sqli (body, block)",
+    "body": "{\"b\": \"/nettracker/\"}",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "content-type": "text/json",
+      ":path": "\/content-filter\/ignoresqli?a=1",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:ignorerl5",
+        "contentfiltername:ignore-risk-level-5",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-ignore-risk-level-5",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "ignore rl5 (pass)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/ignorerl5?a=1&b=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:ignorerl5",
+        "contentfiltername:ignore-risk-level-5",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-ignore-risk-level-5",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "ignore rl5 (block)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/ignorerl5?a=1&b=information_schema",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:rl45report3",
+        "contentfiltername:rl45report3",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:rl45report3",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "libinjection not enabled",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/rl45report3?a=1&b=%3Cscript%3Edocument.body.innerHTML=",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:rl45ignorebody",
+        "contentfiltername:rl45ignorebody",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:rl45ignorebody",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl",
+        "cf-rule-id:100016",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "cf-rule-category:sqli",
+        "sqli",
+        "cf-rule-risk:5",
+        "status:403",
+        "status-class:4xx",
+        "waf"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "ignore body (block)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/rl45ignorebody?a=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:rl45ignorebody",
+        "contentfiltername:rl45ignorebody",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:rl45ignorebody",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "ignore body (pass)",
+    "body": "{\"a\": \"xp_cmdshell\"}",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "content-type": "text/json",
+      ":path": "\/content-filter\/rl45ignorebody",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

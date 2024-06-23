@@ -1,0 +1,52 @@
+[package]
+name = "wasmcloud-core"
+version = "0.4.0"
+description = "wasmCloud core functionality shared throughout the ecosystem"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = [
+    "hyper-rustls",
+    "oci-distribution",
+    "reqwest",
+    "rustls-native-certs",
+    "webpki-roots",
+]
+hyper-rustls = ["dep:hyper-rustls", "dep:hyper-util"]
+otel = []
+
+[dependencies]
+anyhow = { workspace = true, features = ["std"] }
+async-nats = { workspace = true }
+async-trait = { workspace = true }
+bytes = { workspace = true }
+futures = { workspace = true }
+hex = { workspace = true, features = ["std"] }
+hyper-rustls = { workspace = true, features = [
+    "http2",
+    "ring",
+], optional = true }
+hyper-util = { workspace = true, optional = true }
+nkeys = { workspace = true }
+oci-distribution = { workspace = true, optional = true }
+once_cell = { workspace = true }
+reqwest = { workspace = true, features = ["rustls-tls"], optional = true }
+rustls = { workspace = true, features = ["std"] }
+rustls-native-certs = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"] }
+serde_bytes = { workspace = true, features = ["std"] }
+sha2 = { workspace = true }
+tokio = { workspace = true }
+tower = { workspace = true }
+tracing = { workspace = true }
+ulid = { workspace = true, features = ["std"] }
+uuid = { workspace = true, features = ["serde"] }
+wascap = { workspace = true }
+webpki-roots = { workspace = true, optional = true }
+wrpc-transport = { workspace = true }
+wrpc-transport-nats = { workspace = true }

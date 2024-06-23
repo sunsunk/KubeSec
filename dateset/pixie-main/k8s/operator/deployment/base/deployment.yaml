@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vizier-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vizier-operator
+  template:
+    metadata:
+      labels:
+        name: vizier-operator
+        plane: control
+    spec:
+      serviceAccountName: pixie-operator-service-account
+      containers:
+      - name: app
+        image: operator-operator_image:latest
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: Exists
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: Exists
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux

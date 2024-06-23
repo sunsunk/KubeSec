@@ -1,0 +1,164 @@
+// Styling for the subscribe section
+section#subscribe,#discussion {
+  background-color: $gray-900;
+  background-image: url("#{$subscribe-image}");
+  padding-top: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  text-align: center;
+  .section-heading {
+    color: $white;
+  }
+  .form-group {
+    margin-bottom: 25px;
+    input,
+    textarea {
+      padding: 20px;
+    }
+    input.form-control {
+      height: auto;
+    }
+    textarea.form-control {
+      height: 248px;
+    }
+  }
+  .form-control:focus {
+    border-color: $primary;
+    box-shadow: none;
+  }
+  ::-webkit-input-placeholder {
+    font-weight: 700;
+    color: $gray-400;
+    @include heading-font;
+  }
+  :-moz-placeholder {
+    font-weight: 700;
+    color: $gray-400;
+    @include heading-font;
+  }
+  ::-moz-placeholder {
+    font-weight: 700;
+    color: $gray-400;
+    @include heading-font;
+  }
+  :-ms-input-placeholder {
+    font-weight: 700;
+    color: $gray-400;
+    @include heading-font;
+  }
+}
+
+.center {
+  margin: auto;
+  float: center;
+  width: 50%;
+  border: 3px;
+  text-align: center;
+  padding: 10px;
+}
+
+.white-text {
+  color: #fff;
+}
+
+.image-right {
+  width: 25%;
+  float: right;
+  padding-right: 100px;
+  border: 10px;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  margin-top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #000;
+  background-color: #ebc017;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {
+  background-color: #f0d41c;
+}
+
+.button:active {
+  background-color: #fff;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.text {
+  color: black;
+}
+
+.mailing-container {
+  margin-top: 40px;
+  padding: 30px 0px;
+  padding-bottom: 70px;
+  text-align: center;
+  color: white;
+
+  h1 {
+    text-transform: uppercase;
+  }
+
+  p {
+    padding: 1.25rem 0;
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+  }
+}
+
+.mailing-btn-container a {
+  margin-right: -2px;
+  padding: 12px;
+  color: #222222 !important;
+
+  &:first-child {
+    margin-right: 40px;
+  }
+}
+
+.padbtn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12.5px;
+}
+
+// @media (max-width: 765px) {
+//   .mailing-container p {
+//     padding: 1.25rem 1rem;
+//   }
+//   .mailing-container {
+//     margin-top: 100px;
+//     padding: 80px 40px;
+//   }
+// }
+
+@media (max-width: 600px) {
+  .mailing-container h1 {
+    font-size: 1.75rem;
+  }
+
+  .mailing-btn-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    a {
+      width: 90%;
+    }
+  }
+  .mailing-btn-container a:first-child {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}

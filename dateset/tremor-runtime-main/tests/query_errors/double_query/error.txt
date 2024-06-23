@@ -1,0 +1,5 @@
+Error: 
+    4 | end;
+    5 | create pipeline add;
+    6 | create pipeline add;
+      | ^^^^^^^^^^^^^^^^^^^ Name `add` is already in use for another node, please use another name.

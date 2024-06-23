@@ -1,0 +1,50 @@
+- name: Get Kubernetes stable release
+  uri:
+    url: https://dl.k8s.io/release/stable.txt
+    return_content: yes
+  register: k8sRelease
+
+- name: Add an apt signing key for Kubernetes
+  vars:
+    k8sVersion: "{{ k8sRelease.content.split('.')[0] }}.{{ k8sRelease.content.split('.')[1] }}"
+  apt_key:
+    url: https://pkgs.k8s.io/core:/stable:/{{ k8sVersion }}/deb/Release.key
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    state: present
+
+- name: Adding apt repository for Kubernetes
+  vars:
+    k8sVersion: "{{ k8sRelease.content.split('.')[0] }}.{{ k8sRelease.content.split('.')[1] }}"
+  apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ k8sVersion }}/deb/ /
+    state: present
+    filename: kubernetes.list
+
+- name: Install Kubernetes binaries
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+  vars:
+    packages:
+      - kubelet
+      - kubeadm
+      - kubectl
+  notify:
+    - kubelet status
+
+- name: Configure node ip
+  lineinfile:
+    path: /etc/default/kubelet
+    line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}
+    state: present
+    create: yes
+  register: kubelet_config
+
+- name: Restart kubelet
+  service:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+  when: kubelet_config.changed

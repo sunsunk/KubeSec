@@ -1,0 +1,3 @@
+[build]
+  command = "mkdir -p site && cp docs/_redirects site/"
+  publish = "site"

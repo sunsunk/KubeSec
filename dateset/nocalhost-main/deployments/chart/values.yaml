@@ -1,0 +1,110 @@
+# Default values for nocalhost-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+api:
+  image:
+    repository: nocalhost-docker.pkg.coding.net/nocalhost/public/nocalhost-api
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.6.18"
+
+web:
+  image:
+    repository: nocalhost-docker.pkg.coding.net/nocalhost/public/nocalhost-web
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.6.18"
+
+imagePullSecrets: []
+
+podSecurityContext: {}
+#  fsGroup: 2000
+
+securityContext: {}
+#  capabilities:
+#    drop:
+#    - ALL
+#  readOnlyRootFilesystem: true
+#  runAsNonRoot: true
+#  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+mariadb:
+  fullnameOverride: nocalhost-mariadb
+  commonAnnotations: {"helm.sh/hook":"pre-install","helm.sh/hook-weight":"1"}
+  image:
+    registry: nocalhost-docker.pkg.coding.net/nocalhost/public
+    repository: mariadb
+  auth:
+    rootPassword: root
+    database: nocalhost
+  primary:
+    persistence:
+      size: "10Gi"
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+    extraVolumes:
+    - name: nocalhost-api-sql-config-volume
+      configMap:
+        name: nocalhost-api-sql-init-config
+        defaultMode: 0755
+    extraVolumeMounts:
+    - name: nocalhost-api-sql-config-volume
+      mountPath: /docker-entrypoint-initdb.d/
+
+ingress:
+  enabled: false
+
+  # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+  # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
+  # ingressClassName: nginx
+
+  annotations: {}
+
+  labels: {}
+
+  ## Hosts must be provided if Ingress is enabled.
+  ##
+  hosts: []
+    # - nocalhost.domain.com
+
+  ## For Kubernetes >= 1.18 you should specify the pathType (determines how Ingress paths should be matched)
+  ## See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#better-path-matching-with-path-types
+  # pathType: ImplementationSpecific
+
+  ## TLS configuration
+  ## Secret must be manually created in the namespace
+  ##
+  tls: []
+  # - secretName: nocalhost-tls
+  #   hosts:
+  #   - nocalhost.example.com

@@ -1,0 +1,20 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+subjects:
+- kind: ServiceAccount
+  namespace: dynamic_parameters
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+---
+
+---
+
+---
+
+---
+
+---
+
+---

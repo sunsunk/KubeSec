@@ -1,0 +1,82 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-webhook
+  namespace: dynamic_parameters
+  labels:
+  
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  strategy:
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+        
+    spec:
+      
+      automountServiceAccountToken: false
+      nodeSelector:
+      affinity:
+      tolerations:
+      containers:
+        - name: dynamic_parameters-webhook
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command:
+            - /bin/karmada-webhook
+            - --kubeconfig=/etc/kubeconfig
+            - --bind-address=0.0.0.0
+            - --secure-port=8443
+            - --cert-dir=/var/serving-cert
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+          
+            - name: dynamic_parameters-webhook-cert-secret
+              mountPath: /var/serving-cert
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8443
+              scheme: HTTPS
+          resources:
+      volumes:
+      
+        - name: dynamic_parameters-webhook-cert-secret
+          secret:
+            secretName: dynamic_parameters-webhook-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynamic_parameters-webhook
+  namespace: dynamic_parameters
+spec:
+  selector:
+    
+  ports:
+    - port: 443
+      targetPort: 8443
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: dynamic_parameters-webhook
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  selector:
+    matchLabels:
+      
+
+
+---

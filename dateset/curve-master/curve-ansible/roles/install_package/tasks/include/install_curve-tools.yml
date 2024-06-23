@@ -1,0 +1,37 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+- name: install package via deb
+  include_tasks: "install_deb_package.yml"
+  when: install_with_deb | bool
+
+- name: install package via tar
+  block:
+    - name: install tool bin
+      vars:
+        remote_dir_name: "{{ curve_bin_dir }}"
+        local_file_path: "{{ local_tool_package_path }}/bin/"
+        file_mode: 0755
+      include_tasks: copy_file_to_remote.yml
+    - name: pip install requests
+      ignore_errors: true
+      shell: sudo pip install requests
+      register: pip_requests_res
+    - name: pip2 install requests
+      shell: sudo pip2 install requests
+      when: pip_requests_res.failed
+  when: not install_with_deb | bool

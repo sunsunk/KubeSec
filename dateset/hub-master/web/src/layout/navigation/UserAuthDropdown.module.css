@@ -1,0 +1,31 @@
+.imageWrapper {
+  width: 2rem;
+  height: 2rem;
+  border-color: var(--bs-white) !important;
+}
+
+.imageAsBg {
+  object-fit: cover;
+}
+
+.btn {
+  z-index: 1;
+}
+
+.iconWrapper {
+  background-color: var(--color-1-700) !important;
+  padding: 2px;
+}
+
+.dropdown {
+  width: 16rem;
+  top: 120% !important;
+}
+
+.arrow {
+  right: 1.25rem !important;
+}
+
+.signedInText {
+  padding: 0.25rem 1.5rem;
+}

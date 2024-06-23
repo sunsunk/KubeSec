@@ -1,0 +1,82 @@
+.chartWrapper {
+  background-color: var(--bs-white) !important;
+  padding: 1rem;
+  padding-bottom: calc(1rem - 15px) !important;
+}
+
+.title {
+  font-size: 1.75rem !important;
+}
+
+[data-theme='dark'] :global(.card).chartWrapper {
+  background-color: var(--color-black-5) !important;
+}
+
+.listWrapper {
+  height: calc(100% - 1.5rem);
+}
+
+:global(.apexcharts-svg) > text {
+  font-weight: 700 !important;
+}
+
+:global(.apexcharts-tooltip) {
+  background-color: var(--bs-white) !important;
+  border-color: var(--color-1-900) !important;
+  color: var(--font-color) !important;
+}
+
+:global(.apexcharts-tooltip-title) {
+  background-color: var(--color-black-5) !important;
+  border-color: var(--color-1-900) !important;
+}
+
+:global(.apexcharts-xaxistooltip) {
+  background-color: var(--bs-white) !important;
+  color: var(--font-color) !important;
+  border-color: var(--color-1-900) !important;
+}
+
+:global(.apexcharts-xaxistooltip)::before,
+:global(.apexcharts-xaxistooltip)::after {
+  border-bottom-color: var(--color-1-900) !important;
+}
+
+:global(.apexcharts-selected) svg {
+  fill: var(--highlighted) !important;
+}
+
+:global(.apexcharts-zoomin-icon:not(.apexcharts-selected)):hover svg,
+:global(.apexcharts-zoomout-icon:not(.apexcharts-selected)):hover svg,
+:global(.apexcharts-zoom-icon:not(.apexcharts-selected)):hover svg,
+:global(.apexcharts-reset-icon:not(.apexcharts-selected)):hover svg {
+  fill: var(--color-1-900) !important;
+}
+
+.apexcharts-theme-light .apexcharts-selection-icon:not(.apexcharts-selected):hover svg,
+.apexcharts-theme-light .apexcharts-zoom-icon:not(.apexcharts-selected):hover svg,
+.apexcharts-theme-light .apexcharts-zoomin-icon:hover svg,
+.apexcharts-theme-light .apexcharts-zoomout-icon:hover svg,
+.apexcharts-theme-light .apexcharts-reset-icon:hover svg,
+.apexcharts-theme-light .apexcharts-menu-icon:hover svg {
+  fill: #333;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .listWrapper {
+    height: auto;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .chartWrapper {
+    padding: 2rem;
+    padding-bottom: calc(2rem - 15px);
+  }
+}

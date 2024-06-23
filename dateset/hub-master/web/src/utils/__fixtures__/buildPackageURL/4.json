@@ -1,0 +1,12 @@
+{
+  "packageId": "id",
+  "name": "test",
+  "normalizedName": "test",
+  "displayName": "Pretty name",
+  "description": "desc",
+  "repository": {
+    "kind": 1,
+    "name": "repo",
+    "url": "repoUrl"
+  }
+}

@@ -1,0 +1,87 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "api_key.go",
+        "auth.go",
+        "bindata.gen.go",
+        "collect_logs.go",
+        "create_bundle.go",
+        "create_cloud_certs.go",
+        "debug.go",
+        "delete_pixie.go",
+        "demo.go",
+        "deploy.go",
+        "deployment_key.go",
+        "get.go",
+        "live.go",
+        "root.go",
+        "run.go",
+        "script_utils.go",
+        "scripts.go",
+        "update.go",
+        "version.go",
+    ],
+    importpath = "px.dev/pixie/src/pixie_cli/pkg/cmd",
+    visibility = ["//src:__subpackages__"],
+    deps = [
+        "//src/api/proto/cloudpb:cloudapi_pl_go_proto",
+        "//src/api/proto/vizierpb:vizier_pl_go_proto",
+        "//src/cloud/api/ptproxy",
+        "//src/operator/apis/px.dev/v1alpha1",
+        "//src/operator/client/versioned",
+        "//src/pixie_cli/pkg/auth",
+        "//src/pixie_cli/pkg/components",
+        "//src/pixie_cli/pkg/live",
+        "//src/pixie_cli/pkg/pxanalytics",
+        "//src/pixie_cli/pkg/pxconfig",
+        "//src/pixie_cli/pkg/update",
+        "//src/pixie_cli/pkg/utils",
+        "//src/pixie_cli/pkg/vizier",
+        "//src/shared/goversion",
+        "//src/shared/services/utils",
+        "//src/utils",
+        "//src/utils/script",
+        "//src/utils/shared/artifacts",
+        "//src/utils/shared/certs",
+        "//src/utils/shared/k8s",
+        "//src/utils/shared/yamls",
+        "@com_github_alecthomas_chroma//quick",
+        "@com_github_blang_semver//:semver",
+        "@com_github_bmatcuk_doublestar//:doublestar",
+        "@com_github_cenkalti_backoff_v4//:backoff",
+        "@com_github_dustin_go_humanize//:go-humanize",
+        "@com_github_fatih_color//:color",
+        "@com_github_gofrs_uuid//:uuid",
+        "@com_github_lestrrat_go_jwx//jwt",
+        "@com_github_segmentio_analytics_go_v3//:analytics-go",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_pflag//:pflag",
+        "@com_github_spf13_viper//:viper",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/api/errors",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//rest",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_x_term//:term",
+    ],
+)

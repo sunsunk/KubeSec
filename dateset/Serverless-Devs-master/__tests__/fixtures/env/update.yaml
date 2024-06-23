@@ -1,0 +1,22 @@
+project: custom-project
+environments:
+  - name: dev
+    description: this is a description
+    type: staging
+    region: cn-chengdu
+    role: acs:ram::<account>:role/serverlessdevsinfra-testing
+    overlays:
+      components:
+        fc3test:
+          region: cn-hangzhou
+    access: default
+  - name: other
+    description: this is a description
+    type: staging
+    region: cn-chengdu
+    role: acs:ram::<account>:role/serverlessdevsinfra-testing
+    overlays:
+      components:
+        fc3test:
+          region: cn-chengdu
+    access: default

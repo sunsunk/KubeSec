@@ -1,0 +1,7 @@
+name: remote-pipeline
+kind: Pipeline
+
+filters:
+  - name: remoteFilter
+    kind: RemoteFilter
+    url: http://127.0.0.1:10000/

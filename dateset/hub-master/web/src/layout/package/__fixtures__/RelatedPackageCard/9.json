@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "displayName": "Pretty name",
+  "logoImageId": "imageId",
+  "version": "1.0.0",
+  "normalizedName": "pr",
+  "repository": {
+    "repositoryid": "id",
+    "kind": 1,
+    "name": "repo",
+    "userAlias": "userAlias"
+  }
+}

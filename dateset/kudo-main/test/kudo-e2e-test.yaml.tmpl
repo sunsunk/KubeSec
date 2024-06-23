@@ -1,0 +1,13 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestSuite
+testDirs:
+- ./test/e2e
+commands:
+- command: ./bin/kubectl-kudo init --wait --unsafe-self-signed-webhook-ca --kudo-image kudobuilder/controller:%version% --kudo-image-pull-policy Never
+startKIND: true
+kindContainers:
+- kudobuilder/controller:%version%
+kindConfig: ./test/e2e/kind-config.yaml
+timeout: 300
+skipDelete: true
+artifactsDir: reports/kind-logs

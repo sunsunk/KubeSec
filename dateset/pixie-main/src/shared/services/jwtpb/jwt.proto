@@ -1,0 +1,66 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.common;
+
+option go_package = "jwtpb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+// Store the basic JWT claim information.
+message JWTClaims {
+  // Generic claims, as referenced at
+  // https://tools.ietf.org/html/rfc7519#section-4.1
+  string audience = 1 [ (gogoproto.jsontag) = "aud" ];
+  int64 expires_at = 2 [ (gogoproto.jsontag) = "exp" ];
+  string jti = 3 [ (gogoproto.customname) = "JTI", (gogoproto.jsontag) = "jti" ];
+  int64 issued_at = 4 [ (gogoproto.jsontag) = "iat" ];
+  string issuer = 5 [ (gogoproto.jsontag) = "iss" ];
+  int64 not_before = 6 [ (gogoproto.jsontag) = "nbf" ];
+  string subject = 7 [ (gogoproto.jsontag) = "sub" ];
+  // The permitted scopes for the jwt. For now, these scopes will just be
+  // "user", "cluster", or "service", but may be more fine-grained in the future
+  // like "read:user_profile", etc.
+  repeated string scopes = 8;
+  oneof custom_claims {
+    UserJWTClaims user_claims = 9;
+    ServiceJWTClaims service_claims = 10;
+    ClusterJWTClaims cluster_claims = 11;
+  }
+}
+
+// Claims for User JWTs.
+message UserJWTClaims {
+  string user_id = 1 [ (gogoproto.customname) = "UserID", (gogoproto.jsontag) = "userID" ];
+  // The organization that this user belongs to.
+  string org_id = 2 [ (gogoproto.customname) = "OrgID", (gogoproto.jsontag) = "orgID" ];
+  string email = 3;
+  bool is_api_user = 4 [ (gogoproto.customname) = "IsAPIUser", (gogoproto.jsontag) = "isAPIUser" ];
+}
+
+// Claims for Service JWTs.
+message ServiceJWTClaims {
+  string service_id = 1 [ (gogoproto.customname) = "ServiceID", (gogoproto.jsontag) = "serviceID" ];
+}
+
+// Claims for Cluster JWTs.
+message ClusterJWTClaims {
+  string cluster_id = 1 [ (gogoproto.customname) = "ClusterID", (gogoproto.jsontag) = "clusterID" ];
+}

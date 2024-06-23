@@ -1,0 +1,187 @@
+[
+  {
+    "params": {
+      "headers": {
+        "location": "http://www.google.com"
+      },
+      "status": 456
+    },
+    "type": "custom",
+    "id": "3lfpo6xe",
+    "tags": [],
+    "name": "3lfpo6xe"
+  },
+  {
+    "type": "challenge",
+    "id": "5ktcoafw",
+    "tags": [],
+    "name": "5ktcoafw"
+  },
+  {
+    "type": "ichallenge",
+    "id": "ichallenge",
+    "tags": [],
+    "name": "ichallenge"
+  },
+  {
+    "type": "custom",
+    "id": "a7ge3v0l",
+    "tags": [],
+    "name": "a7ge3v0l"
+  },
+  {
+    "params": {
+      "content": "{}",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 200
+    },
+    "type": "custom",
+    "id": "an6yhiyr",
+    "tags": [],
+    "name": "an6yhiyr"
+  },
+  {
+    "params": {
+      "headers": {
+        "location": "http://www.redir.com"
+      },
+      "status": 333
+    },
+    "type": "custom",
+    "id": "bh3gw11k",
+    "tags": [],
+    "name": "bh3gw11k"
+  },
+  {
+    "params": {
+      "content": "body"
+    },
+    "type": "custom",
+    "id": "d5vnu3hs",
+    "tags": [],
+    "name": "d5vnu3hs"
+  },
+  {
+    "type": "custom",
+    "id": "default",
+    "tags": [],
+    "name": "default"
+  },
+  {
+    "params": {
+      "content": "lol",
+      "status": 323
+    },
+    "type": "custom",
+    "id": "dxfyhx4n",
+    "tags": [],
+    "name": "dxfyhx4n"
+  },
+  {
+    "params": {
+      "headers": {
+        "h1": "${ip} - ${args.dd} - ${args.ee}"
+      }
+    },
+    "type": "custom",
+    "id": "addipheader",
+    "tags": [],
+    "name": "Add IP header to response"
+  },
+  {
+    "params": {
+      "headers": {
+        "header_1": "value_1"
+      }
+    },
+    "type": "monitor",
+    "id": "monitorheader",
+    "tags": [],
+    "name": "Add header to forwarded request"
+  },
+  {
+    "params": {
+      "headers": {
+        "header1": "value_1"
+      }
+    },
+    "type": "monitor",
+    "id": "header1",
+    "tags": [],
+    "name": "Add header to forwarded request"
+  },
+  {
+    "params": {
+      "headers": {
+        "header2": "value_2"
+      }
+    },
+    "type": "monitor",
+    "id": "header2",
+    "tags": [],
+    "name": "Add header to forwarded request"
+  },
+  {
+    "type": "monitor",
+    "id": "monitor",
+    "tags": [],
+    "name": "monitor"
+  },
+  {
+    "params": {
+      "headers": {
+        "location": "/1234"
+      }
+    },
+    "type": "custom",
+    "id": "sk9lz9q4",
+    "tags": [],
+    "name": "sk9lz9q4"
+  },
+  {
+    "type": "skip",
+    "id": "ye8qyg0h",
+    "tags": [],
+    "name": "ye8qyg0h"
+  },
+  {
+    "tags": [
+      "myextratag"
+    ],
+    "type": "custom",
+    "params": {
+      "status": 403,
+      "headers": {
+        "h1": "${ip}"
+      }
+    },
+    "id": "blockheaders",
+    "name": "blockheaders"
+  },
+  {
+    "type": "custom",
+    "params": {
+      "status": 403
+    },
+    "id": "b403",
+    "tags": [],
+    "name": "b403"
+  },
+  {
+    "type": "custom",
+    "params": {
+      "status": 473
+    },
+    "id": "b473",
+    "tags": [],
+    "name": "b473"
+  },
+  {
+    "id": "ijcy5mwz",
+    "name": "ijcy5mwz",
+    "tags": [],
+    "type": "custom"
+  }
+]

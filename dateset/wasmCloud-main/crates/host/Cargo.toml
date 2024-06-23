@@ -1,0 +1,69 @@
+[package]
+name = "wasmcloud-host"
+version = "0.82.0"
+description = "wasmCloud host library"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[badges.maintenance]
+status = "actively-developed"
+
+[dependencies]
+anyhow = { workspace = true, features = ["std"] }
+async-nats = { workspace = true }
+async-trait = { workspace = true }
+base64 = { workspace = true }
+bytes = { workspace = true }
+cloudevents-sdk = { workspace = true }
+futures = { workspace = true, features = ["async-await", "std"] }
+hex = { workspace = true, features = ["std"] }
+http = { workspace = true }
+http-body = { workspace = true }
+humantime = { workspace = true }
+names = { workspace = true }
+nkeys = { workspace = true }
+oci-distribution = { workspace = true, features = ["rustls-tls"] }
+opentelemetry-nats = { workspace = true }
+provider-archive = { workspace = true }
+rmp-serde = { workspace = true }
+serde = { workspace = true }
+serde_bytes = { workspace = true, features = ["std"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+time = { workspace = true, features = ["formatting"] }
+tokio = { workspace = true, features = [
+    "fs",
+    "io-std",
+    "io-util",
+    "process",
+    "rt-multi-thread",
+    "time",
+] }
+tokio-stream = { workspace = true, features = ["net", "time"] }
+tracing = { workspace = true }
+ulid = { workspace = true, features = ["std"] }
+url = { workspace = true, features = ["serde"] }
+uuid = { workspace = true, features = ["serde"] }
+wascap = { workspace = true }
+wasmcloud-control-interface = { workspace = true }
+wasmcloud-core = { workspace = true, features = [
+    "oci-distribution",
+    "otel",
+    "rustls-native-certs",
+] }
+wasmcloud-runtime = { workspace = true }
+wasmcloud-tracing = { workspace = true, features = ["otel"] }
+wasmtime-wasi-http = { workspace = true }
+wrpc-interface-blobstore = { workspace = true }
+wrpc-interface-http = { workspace = true, features = [
+    "http",
+    "wasmtime-wasi-http",
+] }
+wrpc-interface-keyvalue = { workspace = true }
+wrpc-transport = { workspace = true }
+wrpc-transport-nats = { workspace = true }
+wrpc-types = { workspace = true }

@@ -1,0 +1,24 @@
+# Source: kuma/templates/egress-rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters-egress
+  namespace: dynamic_parameters
+  labels: dynamic_parameters
+  annotations:
+imagePullSecrets:
+  - name: dynamic_parameters
+
+---
+# Source: kuma/templates/egress-rbac.yaml
+---
+
+---
+# Source: kuma/templates/egress-rbac.yaml
+---
+
+---
+# Source: kuma/templates/egress-rbac.yaml
+---
+
+---

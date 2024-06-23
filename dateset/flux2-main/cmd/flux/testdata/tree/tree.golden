@@ -1,0 +1,11 @@
+Kustomization/{{ .fluxns }}/flux-system
+├── Namespace/{{ .fluxns }}
+├── Deployment/{{ .fluxns }}/helm-controller
+├── Deployment/{{ .fluxns }}/kustomize-controller
+├── Deployment/{{ .fluxns }}/notification-controller
+├── Deployment/{{ .fluxns }}/source-controller
+├── Kustomization/{{ .fluxns }}/infrastructure
+│   ├── Namespace/cert-manager
+│   └── HelmRepository/cert-manager/cert-manager
+└── GitRepository/{{ .fluxns }}/flux-system
+

@@ -1,0 +1,74 @@
+// Module included in the following assemblies:
+//
+// deploying/assembly_deploy-cluster-operator.adoc
+
+[id='deploying-cluster-operator-to-watch-whole-cluster-{context}']
+= Deploying the Cluster Operator to watch all namespaces
+
+[role="_abstract"]
+This procedure shows how to deploy the Cluster Operator to watch Strimzi resources across all namespaces in your Kubernetes cluster.
+
+When running in this mode, the Cluster Operator automatically manages clusters in any new namespaces that are created.
+
+.Prerequisites
+
+* You need an account with permission to create and manage `CustomResourceDefinition` and RBAC (`ClusterRole`, and `RoleBinding`) resources.
+
+.Procedure
+
+. Edit the Strimzi installation files to use the namespace the Cluster Operator is going to be installed into.
++
+For example, in this procedure the Cluster Operator is installed into the namespace `my-cluster-operator-namespace`.
++
+include::../../shared/snip-cluster-operator-namespace-sed.adoc[]
+
+. Edit the `install/cluster-operator/060-Deployment-strimzi-cluster-operator.yaml` file to set the value of the `STRIMZI_NAMESPACE` environment variable to `*`.
++
+[source,yaml,subs="attributes"]
+----
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  # ...
+  template:
+    spec:
+      # ...
+      serviceAccountName: strimzi-cluster-operator
+      containers:
+      - name: strimzi-cluster-operator
+        image: {DockerClusterOperator}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: STRIMZI_NAMESPACE
+          value: "*"
+        # ...
+----
+
+. Create `ClusterRoleBindings` that grant cluster-wide access for all namespaces to the Cluster Operator.
++
+[source,shell,subs="+quotes,attributes+"]
+kubectl create clusterrolebinding strimzi-cluster-operator-namespaced --clusterrole=strimzi-cluster-operator-namespaced --serviceaccount my-cluster-operator-namespace:strimzi-cluster-operator
+kubectl create clusterrolebinding strimzi-cluster-operator-watched --clusterrole=strimzi-cluster-operator-watched --serviceaccount my-cluster-operator-namespace:strimzi-cluster-operator
+kubectl create clusterrolebinding strimzi-cluster-operator-entity-operator-delegation --clusterrole=strimzi-entity-operator --serviceaccount my-cluster-operator-namespace:strimzi-cluster-operator
+
+. Deploy the Cluster Operator to your Kubernetes cluster.
++
+[source,shell,subs="+quotes,attributes+"]
+kubectl create -f install/cluster-operator -n my-cluster-operator-namespace
+
+. Check the status of the deployment:
++
+[source,shell,subs="+quotes"]
+----
+kubectl get deployments -n my-cluster-operator-namespace
+----
++
+.Output shows the deployment name and readiness
+[source,shell,subs="+quotes"]
+----
+NAME                      READY  UP-TO-DATE  AVAILABLE
+strimzi-cluster-operator  1/1    1           1
+----
++
+`READY` shows the number of replicas that are ready/expected.
+The deployment is successful when the `AVAILABLE` output shows `1`.

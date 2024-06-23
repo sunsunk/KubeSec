@@ -1,0 +1,42 @@
+# KubeArmor
+kubearmor
+karmor
+snitch
+kubearmor-operator
+
+# KubeArmor YAML Generator
+deploygen
+
+# contribution
+.vscode
+.idea
+
+# vagrant
+.vagrant
+contribution/vagrant/*.log
+
+# packages
+*.deb
+*.rpm
+.coverprofile
+
+# object files
+**/BPF/**/*.o
+
+# protobuf
+protobuf/go.sum
+
+# kernel header
+vmlinux.h
+
+# ignore list
+**/ignore.lst
+**/syscheck
+**/cflags.lst
+
+# gingko test tmp file
+**/*.test
+
+#ignore go.work
+go.work
+go.work.sum

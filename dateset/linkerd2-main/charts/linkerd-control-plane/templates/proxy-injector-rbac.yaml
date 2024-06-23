@@ -1,0 +1,102 @@
+---
+###
+### Proxy Injector RBAC
+###
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-dynamic_parameters-proxy-injector
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+    linkerd.io/control-plane-ns: dynamic_parameters
+rules:
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: [""]
+  resources: ["namespaces", "replicationcontrollers"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "watch"]
+- apiGroups: ["extensions", "apps"]
+  resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: ["extensions", "batch"]
+  resources: ["cronjobs", "jobs"]
+  verbs: ["list", "get", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-dynamic_parameters-proxy-injector
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+    linkerd.io/control-plane-ns: dynamic_parameters
+subjects:
+- kind: ServiceAccount
+  name: linkerd-proxy-injector
+  namespace: dynamic_parameters
+  apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: linkerd-dynamic_parameters-proxy-injector
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: linkerd-proxy-injector
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+    linkerd.io/control-plane-ns: dynamic_parameters
+
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: linkerd-proxy-injector-k8s-tls
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+type: kubernetes.io/tls
+data:
+  tls.crt: dynamic_parameters
+  tls.key: dynamic_parameters
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: linkerd-proxy-injector-webhook-config
+  annotations:
+    cert-manager.io/inject-ca-from: dynamic_parameters
+    cert-manager.io/inject-ca-from-secret: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+    linkerd.io/control-plane-ns: dynamic_parameters
+webhooks:
+- name: linkerd-proxy-injector.linkerd.io
+  namespaceSelector:
+  objectSelector:
+  clientConfig:
+    service:
+      name: linkerd-proxy-injector
+      namespace: dynamic_parameters
+      path: "/"
+    caBundle: dynamic_parameters
+  failurePolicy: dynamic_parameters
+  admissionReviewVersions: ["v1", "v1beta1"]
+  rules:
+  - operations: [ "CREATE" ]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods", "services"]
+    scope: "Namespaced"
+  sideEffects: None
+  timeoutSeconds: dynamic_parameters
+
+---

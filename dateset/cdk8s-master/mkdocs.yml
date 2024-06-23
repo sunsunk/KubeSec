@@ -1,0 +1,98 @@
+site_name: cdk8s
+repo_url: https://github.com/cdk8s-team/cdk8s
+repo_name: cdk8s-team/cdk8s
+edit_uri: blob/master/docs
+# Used for canonical URLS and sitemap.xml
+site_url: https://cdk8s.io/docs/latest/
+theme:
+  name: material
+  favicon: assets/favicon.png
+  logo: assets/logo.png
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    scheme: default
+    primary: '#133650'
+  features:
+    # Clicks on all internal links will be intercepted and dispatched via XHR without fully reloading the page
+    # https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/#instant-loading
+    - navigation.instant
+    # Documents can be directly linked to sections, which is particularly useful for providing overview pages.
+    # https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/#section-index-pages
+    - navigation.indexes
+    # The URL in the address bar is automatically updated with the active anchor as highlighted in the table of contents.
+    # https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/#anchor-tracking
+    - navigation.tracking
+    # All tabs with the same label will be activated when a user clicks a content tab
+    # https://squidfunk.github.io/mkdocs-material/reference/content-tabs/#linked-content-tabs
+    - content.tabs.link
+
+extra_css:
+  - assets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - smarty
+  - toc:
+      permalink: true
+      toc_depth: 3
+      title: On this page
+  # This configuration enables Markdown table support
+  # https://squidfunk.github.io/mkdocs-material/reference/data-tables/#data-tables
+  - tables
+plugins:
+  - search
+  - awesome-pages
+  # Allows us to ignore files from the final build
+  # https://github.com/apenwarr/mkdocs-exclude
+  - exclude:
+      glob:
+        - '*.sh'
+        - 'requirements.txt'
+  # Support redirects
+  # https://github.com/mkmkdocs-redirects
+  - redirects:
+        redirect_maps:
+            # /plus docs are now split into subdirs for each cdk8s+ version. Redirect the old traffic to the latest (cdk8s-plus-25/).
+            plus/config-map.md: plus/cdk8s-plus-25/config-map.md
+            plus/container.md: plus/cdk8s-plus-25/container.md
+            plus/cronjob.md: plus/cdk8s-plus-25/cronjob.md
+            plus/deployment.md: plus/cdk8s-plus-25/deployment.md
+            plus/horizontal-pod-autoscaler.md: plus/cdk8s-plus-25/horizontal-pod-autoscaler.md
+            plus/ingress.md: plus/cdk8s-plus-25/ingress.md
+            plus/job.md: plus/cdk8s-plus-25/job.md
+            plus/namespace.md: plus/cdk8s-plus-25/namespace.md
+            plus/network-policy.md: plus/cdk8s-plus-25/network-policy.md
+            plus/pod.md: plus/cdk8s-plus-25/pod.md
+            plus/pv.md: plus/cdk8s-plus-25/pv.md
+            plus/pvc.md: plus/cdk8s-plus-25/pvc.md
+            plus/rbac.md: plus/cdk8s-plus-25/rbac.md
+            plus/secret.md: plus/cdk8s-plus-25/secret.md
+            plus/service.md: plus/cdk8s-plus-25/service.md
+            plus/service-account.md: plus/cdk8s-plus-25/service-account.md
+            plus/volume.md: plus/cdk8s-plus-25/volume.md
+
+
+# footer
+extra:
+  homepage: /
+  social:
+    - icon: fontawesome/brands/slack
+      link: https://cdk.dev
+      name: Join the cdk8s Slack channel
+    - icon: fontawesome/brands/github
+      link: https://github.com/cdk8s-team/cdk8s
+      name: cdk8s on GitHub
+    - icon: fontawesome/brands/stack-overflow
+      link: https://stackoverflow.com/questions/tagged/cdk8s
+      name: cdk8s on Stack Overflow
+
+copyright: © 2022, Amazon Web Services, Inc. or its affiliates. © cdk8s project authors. All rights reserved.

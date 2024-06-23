@@ -1,0 +1,56 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: pl-cloud
+namespace: plc
+replicas:
+- name: api-server
+  count: 3
+- name: auth-server
+  count: 3
+- name: profile-server
+  count: 3
+- name: cloud-proxy
+  count: 5
+- name: project-manager-server
+  count: 3
+- name: vzmgr-server
+  count: 1
+- name: scriptmgr-server
+  count: 3
+resources:
+- frontend_config.yaml
+- cloud_ingress_managed_cert.yaml
+- cloud_ingress_managed_cert_noslackin.yaml
+- cloud_proxy_backend_config.yaml
+- vzconn_backend_config.yaml
+- ../base
+- ../overlays/exposed_services_gclb
+- ../overlays/plugin_job
+patchesStrategicMerge:
+- support_access_config.yaml
+- analytics_config.yaml
+- bq_config.yaml
+- api_deployment.yaml
+- contact_config.yaml
+- db_config.yaml
+- service_config.yaml
+- domain_config.yaml
+- cloud_ingress_ip.yaml
+- script_bundles_config.yaml
+- scriptmgr_config.yaml
+- proxy_envoy.yaml
+- auth_deployment.yaml
+patches:
+- path: db_sidecar.yaml
+  target:
+    kind: Deployment
+    labelSelector: db=pgsql
+- path: node_selector_patch.yaml
+  target:
+    kind: Deployment
+- path: plugin_job.yaml
+  target:
+    kind: Job
+    labelSelector: jobgroup=plugin-db-updater

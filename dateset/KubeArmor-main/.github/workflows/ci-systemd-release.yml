@@ -1,0 +1,44 @@
+name: ci-systemd-release
+
+on:
+  push:
+    tags:
+      - "*"
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-20.04
+    if: github.repository == 'kubearmor/kubearmor'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Install the latest LLVM toolchain
+        run: ./.github/workflows/install-llvm.sh
+
+      - name: Compile libbpf
+        run: ./.github/workflows/install-libbpf.sh
+
+      - name: Install karmor
+        run: curl -sfL https://raw.githubusercontent.com/kubearmor/kubearmor-client/main/install.sh | sudo sh -s -- -b .
+        working-directory: KubeArmor
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: v1.12.2
+          args: release --rm-dist
+          workdir: KubeArmor
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+  name: dubbo-resolve-config
+data:
+  dubbo-resolve.properties: |-
+    org.apache.dubbo.samples.basic.api.DemoService=dubbo://org.apache.dubbo.samples.basic.api.demoservice:20880
+    org.apache.dubbo.samples.basic.api.TestService=dubbo://org.apache.dubbo.samples.basic.api.testservice:20880
+    org.apache.dubbo.samples.basic.api.ComplexService=dubbo://org.apache.dubbo.samples.basic.api.complexservice:20880
+    org.apache.dubbo.samples.basic.api.SecondService=dubbo://org.apache.dubbo.samples.basic.api.secondservice:20880
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dubbo-sample-provider-v1
+  labels:
+    app: dubbo-sample-provider
+spec:
+  selector:
+    matchLabels:
+      app: dubbo-sample-provider
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dubbo-sample-provider
+        version: v1
+        service_group: user
+    spec:
+      containers:
+        - name: dubbo-sample-provider
+          image: ghcr.io/aeraki-mesh/dubbo-sample-provider
+          ports:
+            - containerPort: 20880
+          volumeMounts:
+            - name: dubbo-resolve-config
+              mountPath: /dubbo-resolve.properties
+              subPath: dubbo-resolve.properties
+              readOnly: true
+      volumes:
+        - name: dubbo-resolve-config
+          configMap:
+            name: dubbo-resolve-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dubbo-sample-provider-v2
+  labels:
+    app: dubbo-sample-provider
+spec:
+  selector:
+    matchLabels:
+      app: dubbo-sample-provider
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dubbo-sample-provider
+        version: v2
+        service_group: batchjob
+    spec:
+      containers:
+        - name: dubbo-sample-provider
+          image: ghcr.io/aeraki-mesh/dubbo-sample-provider
+          ports:
+            - containerPort: 20880
+          volumeMounts:
+            - name: dubbo-resolve-config
+              mountPath: /dubbo-resolve.properties
+              subPath: dubbo-resolve.properties
+              readOnly: true
+      volumes:
+        - name: dubbo-resolve-config
+          configMap:
+            name: dubbo-resolve-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dubbo-sample-consumer
+  labels:
+    app: dubbo-sample-consumer
+spec:
+  selector:
+    matchLabels:
+      app: dubbo-sample-consumer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dubbo-sample-consumer
+    spec:
+      containers:
+        - name: dubbo-sample-consumer
+          image: ghcr.io/aeraki-mesh/dubbo-sample-consumer
+          ports:
+            - containerPort: 9009
+          volumeMounts:
+            - name: dubbo-resolve-config
+              mountPath: /dubbo-resolve.properties
+              subPath: dubbo-resolve.properties
+              readOnly: true
+      volumes:
+        - name: dubbo-resolve-config
+          configMap:
+            name: dubbo-resolve-config

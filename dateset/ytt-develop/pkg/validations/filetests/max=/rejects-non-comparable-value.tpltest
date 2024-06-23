@@ -1,0 +1,13 @@
+#@assert/validate max=4
+value:
+  foo: bar
+
+
++++
+
+ERR:
+  value
+    from: stdin:2
+    - must be: a value <= 4 (by: stdin:1)
+      found: dict <= int not implemented
+

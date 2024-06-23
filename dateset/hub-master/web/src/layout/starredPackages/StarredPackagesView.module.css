@@ -1,0 +1,22 @@
+.wrapper {
+  max-width: 100%;
+  width: 750px;
+}
+
+@media only screen and (min-width: 1400px) {
+  .wrapper {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .wrapper {
+    width: 80%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .card {
+    min-height: 172px;
+  }
+}

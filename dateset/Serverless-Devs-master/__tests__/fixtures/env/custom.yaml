@@ -1,0 +1,9 @@
+project: custom-project
+environments:
+  - name: custom
+    description: this is a description
+    type: testing
+    region: cn-chengdu
+    role: acs:ram::<account>:role/serverlessdevsinfra-testing
+    access: default
+    message: this is a message from v3test

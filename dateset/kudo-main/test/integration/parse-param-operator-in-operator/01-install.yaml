@@ -1,0 +1,13 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    kudo.dev/operator: dream
+  name: dream1
+spec:
+  operatorVersion:
+    name: dream-v1
+    kind: OperatorVersion
+  parameters:
+    REPLICAS: "2"

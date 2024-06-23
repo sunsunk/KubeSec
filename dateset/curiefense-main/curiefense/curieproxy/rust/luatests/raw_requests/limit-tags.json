@@ -1,0 +1,38 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-blocking/xx",
+      "user-agent": "dummy",
+      "x-forwarded-for": "1.1.1.1"
+    },
+    "name": "test block by ip tagging",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 503,
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "ip:1-1-1-1",
+        "sante",
+        "securitypolicy-entry:ablock",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "status:503",
+        "status-class:5xx",
+        "limit-id:ablock",
+        "limit-name:always-blocking-limit",
+        "alwaysblock",
+        "bot"
+      ]
+    }
+  }
+]

@@ -1,0 +1,25 @@
+apiVersion: apps.kruise.io/v1alpha1
+kind: SidecarSet
+metadata:
+  name: guestbook-sidecar
+spec:
+  selector: # select the pods to be injected with sidecar containers
+    matchLabels:
+      app.kubernetes.io/name: guestbook-with-sidecar
+  initContainers:
+    - name: init-myservice
+      image: busybox:1.28
+      command: ['sh', '-c', 'echo The app is running! && sleep 360']
+  containers:
+    - name: guestbook-sidecar
+      image: openkruise/guestbook:sidecar
+      imagePullPolicy: Always
+      ports:
+        - name: sidecar-server
+          containerPort: 4000 # different from main guestbook containerPort which is 3000
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log
+  volumes:
+    - name: log-volume
+      emptyDir: {}

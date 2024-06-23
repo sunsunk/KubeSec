@@ -1,0 +1,16 @@
+{
+    "Version": "init version",
+    "DefaultProduct": null,
+    "Hosts": {
+        "exampleTag":[
+            "example.org",
+            "fcgi.example.org",
+            "h2c.example.org"
+        ]
+    },
+    "HostTags": {
+        "example_product":[
+            "exampleTag"
+        ]
+    }
+}

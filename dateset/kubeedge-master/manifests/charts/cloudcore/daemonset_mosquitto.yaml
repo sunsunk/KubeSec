@@ -1,0 +1,46 @@
+# Source: cloudcore/templates/daemonset_mosquitto.yaml
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: edge-eclipse-mosquitto
+  labels:
+    k8s-app: eclipse-mosquitto
+    kubeedge: eclipse-mosquitto
+spec:
+  selector:
+    matchLabels:
+      k8s-app: eclipse-mosquitto
+      kubeedge: eclipse-mosquitto
+  template:
+    metadata:
+      labels:
+        k8s-app: eclipse-mosquitto
+        kubeedge: eclipse-mosquitto
+    spec:
+      hostNetwork: true
+      restartPolicy: Always
+      volumes:
+        - name: mqtt-data-path
+          hostPath:
+            path: /var/lib/kubeedge/mqtt/data
+      containers:
+      - name: edge-eclipse-mosquitto
+        image: eclipse-mosquitto:1.6.15
+        imagePullPolicy: IfNotPresent
+        resources: 
+          limits:
+            cpu: 200m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        volumeMounts:
+          - name: mqtt-data-path
+            mountPath: /mosquitto/data
+      affinity: 
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/edge
+                operator: Exists

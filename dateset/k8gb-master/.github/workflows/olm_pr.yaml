@@ -1,0 +1,113 @@
+name: OLM bundle and PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundleVersion:
+        description: Version of the bundle that should be generated. If not provided, the latest release tag is taken. Use 'master' for incorporating the latest changes in repo
+        required: false
+        default: ""
+      downstreamRepo:
+          description: "The pull request will be opened from this repository"
+          required: true
+          default: "k8gb-io/community-operators"
+      upstreamRepo:
+        description: "The pull request will be opened against this repository"
+        required: true
+        default: "k8s-operatorhub/community-operators"
+      olmBundleToolVersion:
+        description: "Version of the olm-bundle tool that generate CSV file from Chart.yaml and yamls on FS"
+        required: false
+        default: "0.5.4"
+
+permissions:  # added using https://github.com/step-security/secure-workflows
+  contents: read
+
+jobs:
+  olm-bundle-pr:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        run: |
+          if [ "${{ github.event.inputs.bundleVersion }}x" == "x" ]; then
+            version=$(git describe --abbrev=0 --tags)
+          else
+            version=${{ github.event.inputs.bundleVersion }}
+          fi
+          if [ "${{ github.event.inputs.bundleVersion }}" == "master" ]; then
+            bundleDir=$(git describe --abbrev=0 --tags)
+          else
+            bundleDir=${version}
+          fi
+          echo "bundleDir=${bundleDir#v}" >> $GITHUB_ENV
+          echo "version=${version#v}" >> $GITHUB_ENV
+
+      - name: Generate OLM bundle
+        env:
+          TOOL_VERSION: ${{ github.event.inputs.olmBundleToolVersion }}
+          DEBUG: 1
+        run: |
+          ./olm/generate.sh ${{ env.version }}
+          rm ./olm/bundle/Dockerfile
+          cp -r ./olm/bundle $GITHUB_WORKSPACE/
+
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          repository: ${{ github.event.inputs.upstreamRepo }}
+          path: sandbox
+          token: ${{ secrets.CR_TOKEN }}
+          fetch-depth: 0
+
+      - name: Copy the generated manifests
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/sandbox/operators/k8gb/
+          rm -rf $GITHUB_WORKSPACE/sandbox/operators/k8gb/${{ env.bundleDir }} || true
+          cp -r $GITHUB_WORKSPACE/bundle/ $GITHUB_WORKSPACE/sandbox/operators/k8gb/${{ env.bundleDir }}
+
+      - name: Open Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@8500972a1322d52aebd0e3050bc201599f71661f
+        with:
+          token: ${{ secrets.CR_TOKEN }}
+          push-to-fork: ${{ github.event.inputs.downstreamRepo }}
+          path: sandbox
+          commit-message: OLM bundle for k8gb@${{ env.bundleDir }}
+          title: operators k8gb (${{ env.bundleDir }})
+          body: |
+            :package: Update k8gb operator bundle :package:
+
+            ### New Submissions
+            N/A
+
+            ### Updates to existing Operators
+            - [x] All checks
+
+            ### Your submission should not
+            - [x] All checks
+
+            ### Operator Description must contain (in order)
+            - [x] All checks
+
+            ### Operator Metadata should contain
+            - [x] All checks
+
+            This automated PR was created by [this action][1].
+
+            [1]: https://github.com/k8gb-io/k8gb/actions/runs/${{ github.run_id }}
+          branch: k8gb-${{ env.bundleDir }}
+          delete-branch: true
+          signoff: true
+
+      - name: Check PR
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

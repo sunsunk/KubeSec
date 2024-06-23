@@ -1,0 +1,79 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "vineyard-operator.fullname" . }}-scheduler-plugin-role
+  labels:
+  {{- include "vineyard-operator.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+  - get
+  - list
+  - update
+- apiGroups:
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflows
+  verbs:
+  - list
+  - get
+  - watch
+- apiGroups:
+  - admissionregistration.k8s.io
+  resourceNames:
+  - vineyard-mutating-webhook-configuration
+  resources:
+  - mutatingwebhookconfigurations
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+- apiGroups:
+  - admissionregistration.k8s.io
+  resourceNames:
+  - vineyard-validating-webhook-configuration
+  resources:
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "vineyard-operator.fullname" . }}-scheduler-plugin-rolebinding
+  labels:
+  {{- include "vineyard-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: '{{ include "vineyard-operator.fullname" . }}-scheduler-plugin-role'
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "vineyard-operator.fullname" . }}-manager'
+  namespace: '{{ .Release.Namespace }}'

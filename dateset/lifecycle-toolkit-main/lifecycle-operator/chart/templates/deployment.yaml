@@ -1,0 +1,189 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: keptn-scheduler
+  namespace: dynamic_parameters
+  annotations: dynamic_parameters
+  labels:
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: lifecycle-operator
+  namespace: dynamic_parameters
+  labels:
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lifecycle-operator
+  namespace: dynamic_parameters
+  labels:
+    app.kubernetes.io/part-of: keptn
+    control-plane: lifecycle-operator
+    keptn.sh/inject-cert: "true"
+
+
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      control-plane: lifecycle-operator
+    
+  template:
+    metadata:
+      labels:
+        control-plane: lifecycle-operator
+      
+      annotations:
+        kubectl.kubernetes.io/default-container: lifecycle-operator
+        metrics.dynatrace.com/port: "2222"
+        metrics.dynatrace.com/scrape: "true"
+        
+    spec:
+      containers:
+      - args:
+        - --leader-elect
+        command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: FUNCTION_RUNNER_IMAGE
+          value: dynamic_parameters
+        - name: PYTHON_RUNNER_IMAGE
+          value: dynamic_parameters
+        - name: KEPTN_APP_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_APP_CREATION_REQUEST_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_APP_VERSION_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_EVALUATION_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_TASK_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_TASK_DEFINITION_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_WORKLOAD_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_WORKLOAD_VERSION_CONTROLLER_LOG_LEVEL
+        - name: KEPTN_DORA_METRICS_PORT
+          value: dynamic_parameters
+        - name: OPTIONS_CONTROLLER_LOG_LEVEL
+        - name: SCHEDULING_GATES_ENABLED
+        - name: PROMOTION_TASKS_ENABLED
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: dynamic_parameters
+        - name: CERT_MANAGER_ENABLED
+          value: dynamic_parameters
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        name: lifecycle-operator
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 2222
+          name: metrics
+          protocol: TCP
+        resources: dynamic_parameters
+        securityContext:
+        volumeMounts:
+        - name: keptn-certs
+          mountPath: /tmp/webhook/certs/
+        livenessProbe: 
+        livenessProbe:
+         httpGet:
+           path: /healthz
+           port: 8081
+         initialDelaySeconds: 15
+         periodSeconds: 20
+        readinessProbe: 
+        readinessProbe:
+         httpGet:
+           path: /readyz
+           port: 8081
+         initialDelaySeconds: 5
+         periodSeconds: 10
+      
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: lifecycle-operator
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: keptn-certs
+        secret:
+          secretName: keptn-certs
+      topologySpreadConstraints: 
+      nodeSelector: 
+      tolerations: 
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler
+  namespace: dynamic_parameters
+  labels:
+    component: scheduler
+
+
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      component: scheduler
+    
+  template:
+    metadata:
+      labels:
+        component: scheduler
+      
+    spec:
+      containers:
+      - command:
+        - /bin/kube-scheduler
+        - --config=/etc/kubernetes/scheduler-config.yaml
+        env:
+        - name: OTEL_COLLECTOR_URL
+          value: dynamic_parameters
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: dynamic_parameters
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        name: scheduler
+        resources: dynamic_parameters
+        securityContext:
+          runAsUser: dynamic_parameters
+        volumeMounts:
+        - mountPath: /etc/kubernetes
+          name: scheduler-config
+          readOnly: true
+        livenessProbe: 
+        livenessProbe:
+         httpGet:
+           path: /healthz
+           port: 10259
+           scheme: HTTPS
+         initialDelaySeconds: 15
+        readinessProbe: 
+        readinessProbe:
+         httpGet:
+           path: /healthz
+           port: 10259
+           scheme: HTTPS
+      
+      serviceAccountName: keptn-scheduler
+      volumes:
+      - configMap:
+          name: scheduler-config
+        name: scheduler-config
+      topologySpreadConstraints: 
+      nodeSelector: 
+      tolerations: 
+
+---

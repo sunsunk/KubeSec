@@ -1,0 +1,52 @@
+#!/bin/sh
+
+set -x
+
+BENCH_ROOT="$(dirname $0)"
+
+. "${BENCH_ROOT}/common.inc"
+
+
+
+BENCH_EXTRA?=""
+
+file=$1
+if [ ! -f $file ]
+then
+  file="${BENCH_ROOT}/$file.yaml"
+fi
+
+if [ "${TREMOR_DEV_ENV}" = "devcontainer" ]
+then
+  TARGET_ROOT=target.vsc
+else
+  TARGET_ROOT=target
+  if [ ! -z $TREMOR_TARGET ]
+  then
+    TARGET_ROOT="${TREMOR_TARGET}"
+  fi
+fi
+
+if [ "${TREMOR_MODE}" = "debug" ]
+then
+  TARGET_MODE=debug
+else
+  TARGET_MODE=release
+fi
+
+if [ ! -f $file ]
+then
+    echo "Benchmark file ${BENCH_ROOT}/$1.yaml not found!"
+    exit 1
+fi
+
+echo "######## $1"
+
+echo "TARGET_ROOT: ${TARGET_ROOT}"
+
+if [ -d ${BENCH_ROOT}/$1 ]
+then
+  TREMOR_PATH="${BENCH_ROOT}/../tremor-script/lib" ${BENCH_EXTRA} ${TARGET_ROOT}/${TARGET_MODE}/tremor server run --no-api -f $file bench/link.yaml ./bench/$1/*.trickle
+else
+  TREMOR_PATH="${BENCH_ROOT}/../tremor-script/lib" ${BENCH_EXTRA} ${TARGET_ROOT}/${TARGET_MODE}/tremor server run --no-api -f $file bench/link.yaml
+fi

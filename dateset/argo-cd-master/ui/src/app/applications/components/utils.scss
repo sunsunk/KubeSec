@@ -1,0 +1,29 @@
+@import 'node_modules/argo-ui/src/styles/theme';
+
+.propagation-policy-list {
+    display: flex;
+    justify-content: left;
+}
+
+.propagation-policy-option {
+    display: flex;
+    align-items: center;
+    padding-right: 2em;
+
+    label {
+        font-size: 15px;
+        cursor: pointer;
+
+        @include themify($themes) {
+            color: themed('light-argo-gray-6');        
+        }
+    }
+
+    input {
+        cursor: pointer;
+    }
+}
+
+.radio-button {
+    margin-right: 0.1em;       
+}

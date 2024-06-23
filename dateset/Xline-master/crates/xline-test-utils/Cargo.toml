@@ -1,0 +1,30 @@
+[package]
+name = "xline-test-utils"
+version = "0.1.0"
+edition = "2021"
+authors = ["DatenLord <dev@datenlord.io>"]
+repository = "https://github.com/xline-kv/Xline/tree/master/xline-test-utils"
+description = "Test utils for Xline"
+categories = ["Test"]
+keywords = ["Test", "Utils"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[dependencies]
+anyhow = "1.0.81"
+clap = { version = "4.4.4", features = ["derive"] }
+futures = "0.3.30"
+rand = "0.8.5"
+tokio = { version = "0.2.23", package = "madsim-tokio", features = [
+    "rt-multi-thread",
+    "time",
+    "fs",
+    "macros",
+    "net",
+    "signal",
+] }
+tonic = "0.10.2"
+utils = { path = "../utils", features = ["parking_lot"] }
+workspace-hack = { version = "0.1", path = "../../workspace-hack" }
+xline = { path = "../xline" }
+xline-client = { path = "../xline-client" }

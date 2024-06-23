@@ -1,0 +1,208 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "container_push")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//bazel:images.bzl", "image_replacements", "list_image_bundle")
+load("//bazel:kustomize.bzl", "kustomize_build")
+
+package(default_visibility = ["//visibility:public"])
+
+VIZIER_IMAGE_TO_LABEL = {
+    "$(IMAGE_PREFIX)/vizier-cert_provisioner_image:$(BUNDLE_VERSION)": "//src/utils/cert_provisioner:cert_provisioner_image",
+    "$(IMAGE_PREFIX)/vizier-cloud_connector_server_image:$(BUNDLE_VERSION)": "//src/vizier/services/cloud_connector:cloud_connector_server_image",
+    "$(IMAGE_PREFIX)/vizier-kelvin_image:$(BUNDLE_VERSION)": "//src/vizier/services/agent/kelvin:kelvin_image",
+    "$(IMAGE_PREFIX)/vizier-metadata_server_image:$(BUNDLE_VERSION)": "//src/vizier/services/metadata:metadata_server_image",
+    "$(IMAGE_PREFIX)/vizier-pem_image:$(BUNDLE_VERSION)": "//src/vizier/services/agent/pem:pem_image",
+    "$(IMAGE_PREFIX)/vizier-query_broker_server_image:$(BUNDLE_VERSION)": "//src/vizier/services/query_broker:query_broker_server_image",
+    "$(IMAGE_PREFIX)/vizier-vizier_updater_image:$(BUNDLE_VERSION)": "//src/utils/pixie_updater:vizier_updater_image",
+}
+
+kustomize_build(
+    name = "etcd_metadata",
+    srcs = glob(
+        [
+            "base/**/*.yaml",
+            "bootstrap/**/*.yaml",
+            "etcd_metadata/**/*.yaml",
+            "pem/**/*.yaml",
+        ],
+        exclude = [
+            "etcd_metadata/kustomization.yaml",
+            "etcd_metadata/autopilot/**",
+            "persistent_metadata/**",
+        ],
+    ),
+    kustomization = "etcd_metadata/kustomization.yaml",
+    replacements = image_replacements(
+        image_map = VIZIER_IMAGE_TO_LABEL,
+    ),
+    toolchains = [
+        "//k8s:bundle_version",
+        "//k8s:image_prefix",
+    ],
+)
+
+kustomize_build(
+    name = "etcd_metadata_autopilot",
+    srcs = glob(
+        [
+            "base/**/*.yaml",
+            "bootstrap/**/*.yaml",
+            "etcd_metadata/**/*.yaml",
+            "pem/**/*.yaml",
+        ],
+        exclude = [
+            "etcd_metadata/autopilot/kustomization.yaml",
+            "persistent_metadata/**",
+        ],
+    ),
+    kustomization = "etcd_metadata/autopilot/kustomization.yaml",
+    replacements = image_replacements(
+        image_map = VIZIER_IMAGE_TO_LABEL,
+    ),
+    toolchains = [
+        "//k8s:bundle_version",
+        "//k8s:image_prefix",
+    ],
+)
+
+kustomize_build(
+    name = "persistent_metadata",
+    srcs = glob(
+        [
+            "base/**/*.yaml",
+            "bootstrap/**/*.yaml",
+            "persistent_metadata/**/*.yaml",
+            "pem/**/*.yaml",
+        ],
+        exclude = [
+            "persistent_metadata/kustomization.yaml",
+            "persistent_metadata/autopilot/**",
+            "etcd_metadata/**",
+        ],
+    ),
+    kustomization = "persistent_metadata/kustomization.yaml",
+    replacements = image_replacements(
+        image_map = VIZIER_IMAGE_TO_LABEL,
+    ),
+    toolchains = [
+        "//k8s:bundle_version",
+        "//k8s:image_prefix",
+    ],
+)
+
+kustomize_build(
+    name = "persistent_metadata_autopilot",
+    srcs = glob(
+        [
+            "base/**/*.yaml",
+            "bootstrap/**/*.yaml",
+            "persistent_metadata/**/*.yaml",
+            "pem/**/*.yaml",
+        ],
+        exclude = [
+            "persistent_metadata/autopilot/kustomization.yaml",
+            "etcd_metadata/**",
+        ],
+    ),
+    kustomization = "persistent_metadata/autopilot/kustomization.yaml",
+    replacements = image_replacements(
+        image_map = VIZIER_IMAGE_TO_LABEL,
+    ),
+    toolchains = [
+        "//k8s:bundle_version",
+        "//k8s:image_prefix",
+    ],
+)
+
+container_bundle(
+    name = "image_bundle",
+    images = VIZIER_IMAGE_TO_LABEL,
+    toolchains = [
+        "//k8s:image_prefix",
+        "//k8s:bundle_version",
+    ],
+)
+
+list_image_bundle(
+    name = "list_image_bundle",
+    images = VIZIER_IMAGE_TO_LABEL,
+    toolchains = [
+        "//k8s:image_prefix",
+        "//k8s:bundle_version",
+    ],
+)
+
+container_push(
+    name = "vizier_images_push",
+    bundle = ":image_bundle",
+    format = "Docker",
+)
+
+genrule(
+    name = "vizier_etcd_image_list",
+    srcs = [
+        ":etcd_metadata",
+        "//k8s/vizier_deps:nats_prod",
+        "//k8s/vizier_deps:etcd_prod",
+    ],
+    outs = ["vizier_etcd_image_list.txt"],
+    cmd = """
+    $(location @com_github_mikefarah_yq_v4//:v4) '..|.image?|select(.|type == "!!str")' -o json $(SRCS) | sort | uniq > $@
+    """,
+    tools = ["@com_github_mikefarah_yq_v4//:v4"],
+)
+
+genrule(
+    name = "vizier_image_list",
+    srcs = [
+        ":persistent_metadata",
+        "//k8s/vizier_deps:nats_prod",
+    ],
+    outs = ["vizier_image_list.txt"],
+    cmd = """
+    $(location @com_github_mikefarah_yq_v4//:v4) '..|.image?|select(.|type == "!!str")' -o json $(SRCS) | sort | uniq > $@
+    """,
+    tools = ["@com_github_mikefarah_yq_v4//:v4"],
+)
+
+pkg_tar(
+    name = "vizier_yamls",
+    srcs = [
+        "public/secrets.yaml",
+        ":etcd_metadata",
+        ":etcd_metadata_autopilot",
+        ":persistent_metadata",
+        ":persistent_metadata_autopilot",
+        ":vizier_etcd_image_list",
+        ":vizier_image_list",
+        "//k8s/vizier_deps:etcd_prod",
+        "//k8s/vizier_deps:nats_prod",
+    ],
+    package_dir = "/yamls",
+    remap_paths = {
+        "/vizier/etcd_metadata.yaml": "vizier/vizier_etcd_metadata_prod.yaml",
+        "/vizier/etcd_metadata_autopilot.yaml": "vizier/vizier_etcd_metadata_autopilot_prod.yaml",
+        "/vizier/persistent_metadata.yaml": "vizier/vizier_metadata_persist_prod.yaml",
+        "/vizier/persistent_metadata_autopilot.yaml": "vizier/vizier_metadata_persist_autopilot_prod.yaml",
+        "/vizier/public/secrets.yaml": "vizier/secrets.yaml",
+        "/vizier/vizier_etcd_image_list.txt": "images/vizier_etcd_image_list.txt",
+        "/vizier/vizier_image_list.txt": "images/vizier_image_list.txt",
+    },
+    strip_prefix = "/k8s",
+)

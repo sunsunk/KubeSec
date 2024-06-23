@@ -1,0 +1,11 @@
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.all, expects="1+"
+---
+modified: true
+
+#! by default `@overlay/match` expects exactly 1 match.
+#!   Specify `expects` to override.
+
+#! For more on `@overlay/match`:
+#!   https://carvel.dev/ytt/docs/latest/lang-ref-ytt-overlay/#overlaymatch

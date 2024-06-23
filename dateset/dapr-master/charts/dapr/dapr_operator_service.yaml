@@ -1,0 +1,51 @@
+# Source: dapr/charts/dapr_operator/templates/dapr_operator_service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: dapr-api
+  namespace: default
+  labels:
+    app.kubernetes.io/component: operator
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  selector:
+    app: dapr-operator
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 443
+    targetPort: 6500
+    name: grpc
+# Added for backwards compatibility where previous clients will attempt to
+# connect on port 80.
+# TOOD: @joshvanl: remove in v1.14
+
+  - protocol: TCP
+    port: 80
+    targetPort: 6500
+    name: legacy
+
+---
+# Source: dapr/charts/dapr_operator/templates/dapr_operator_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dapr-webhook
+  namespace: default
+  labels:
+    app.kubernetes.io/component: operator
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  type: ClusterIP
+  ports:
+  - port: 443
+    targetPort: 19443
+    protocol: TCP
+  selector:
+    app: dapr-operator

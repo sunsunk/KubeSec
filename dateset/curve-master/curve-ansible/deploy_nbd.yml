@@ -1,0 +1,58 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+# The deploy playbook of Curve
+
+- name: check_ansible_version
+  tags:
+    - always
+  import_playbook: check_ansible_version.yml
+
+- name: check kernal version and nbd module
+  hosts: client
+  any_errors_fatal: true
+  gather_facts: yes
+  become: "{{ sudo_or_not | bool }}"
+  tags:
+    - check_kernel_version
+  tasks:
+    - name: check kernel version
+      assert:
+        that:
+          - ansible_kernel|version_compare('4.18.0-193.el8.x86_64', '>=')
+    - name: check nbd module exist
+      include_tasks: common_tasks/check_if_nbd_exists_in_kernel.yml
+
+- name: prepare software environment on all machines
+  hosts: client
+  any_errors_fatal: true
+  gather_facts: no
+  become: "{{ sudo_or_not | bool }}"
+  tags:
+    - prepare_software_env
+  roles:
+    - { role: prepare_software_env }
+
+- name: prepare curve-nbd
+  hosts: client
+  gather_facts: no
+  any_errors_fatal: true
+  become: "{{ sudo_or_not | bool }}"
+  tags:
+    - prepare
+  roles:
+    - { role: install_package, package_name: curve-nbd, package_version: "{{ nbd_package_version }}",
+            tags: ["install_package", "install_curve_nbd_package"] }

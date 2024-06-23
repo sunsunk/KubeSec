@@ -1,0 +1,216 @@
+#
+# The Alluxio Open Foundation licenses this work under the Apache License, version 2.0
+# (the "License"). You may not use this work except in compliance with the License, which is
+# available at www.apache.org/licenses/LICENSE-2.0
+#
+# This software is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied, as more fully set forth in the License.
+#
+# See the NOTICE file distributed with this work for information regarding copyright ownership.
+#
+
+{{ if .Values.fuse.enabled -}}
+{{- $shortCircuitEnabled := .Values.shortCircuit.enabled -}}
+{{- $needDomainSocketVolume := and $shortCircuitEnabled (eq .Values.shortCircuit.policy "uuid") }}
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "alluxio.fullname" . }}-fuse
+  labels:
+    app: {{ template "alluxio.name" . }}
+    chart: {{ template "alluxio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: alluxio-fuse
+    {{- include "library.fluid.labels" . | nindent 4 }}
+  ownerReferences:
+  {{- if .Values.owner.enabled }}
+  - apiVersion: {{ .Values.owner.apiVersion }}
+    blockOwnerDeletion: {{ .Values.owner.blockOwnerDeletion }}
+    controller: {{ .Values.owner.controller }}
+    kind: {{ .Values.owner.kind }}
+    name: {{ .Values.owner.name }}
+    uid: {{ .Values.owner.uid }}
+  {{- end }}
+spec:
+  updateStrategy:
+    type: {{ .Values.fuse.updateStrategy.type }}
+  selector:
+    matchLabels:
+      app: {{ template "alluxio.name" . }}
+      chart: {{ template "alluxio.chart" . }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+      role: alluxio-fuse
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      {{- if .Values.fuse.annotations }}
+      {{- range $key, $val := .Values.fuse.annotations }}
+        {{ $key | quote }}: {{ $val | quote }}
+      {{- end }}
+      {{- end }}
+      labels:
+        app: {{ template "alluxio.name" . }}
+        chart: {{ template "alluxio.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        role: alluxio-fuse
+        {{- if .Values.fuse.labels }}
+        {{- range $key, $val := .Values.fuse.labels }}
+        {{ $key | quote }}: {{ $val | quote }}
+        {{- end }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.fuse.criticalPod }}
+      priorityClassName: system-node-critical
+      {{- end }}
+      enableServiceLinks: false
+      {{- if .Values.fuse.hostNetwork }}
+      hostNetwork: {{ .Values.fuse.hostNetwork }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      hostPID: {{ .Values.fuse.hostPID }}
+      nodeSelector:
+      {{- if .Values.fuse.nodeSelector }}
+{{ toYaml .Values.fuse.nodeSelector | trim | indent 8  }}
+      {{- else if .Values.nodeSelector }}
+{{ toYaml .Values.nodeSelector | trim | indent 8  }}
+      {{- end }}
+      tolerations:
+        - operator: Exists
+      initContainers:
+        {{ if .Values.initUsers.enabled -}}
+        - name: init-fuse
+          image: {{ .Values.initUsers.image }}:{{ .Values.initUsers.imageTag }}
+          imagePullPolicy: {{ .Values.initUsers.imagePullPolicy }}
+          command: ["/entrypoint.sh"]
+          args:
+            - "chmod_fuse_mountpoint"
+          env:
+            - name: FLUID_FUSE_MOUNTPOINT
+              value: {{ .Values.fuse.mountPath | dir | quote }}
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+            - name: alluxio-fuse-mount
+              mountPath: {{ .Values.fuse.mountPath | dir }}
+        {{- end }}
+      containers:
+        - name: alluxio-fuse
+          image: {{ .Values.fuse.image }}:{{ .Values.fuse.imageTag }}
+          imagePullPolicy: {{ .Values.fuse.imagePullPolicy }}
+          {{- if .Values.fuse.resources  }}
+          resources:
+            {{- if .Values.fuse.resources.limits }}
+            limits:
+              cpu: {{ .Values.fuse.resources.limits.cpu }}
+              memory: {{ .Values.fuse.resources.limits.memory }}
+            {{- end }}
+            {{- if .Values.fuse.resources.requests }}
+            requests:
+              cpu: {{ .Values.fuse.resources.requests.cpu }}
+              memory: {{ .Values.fuse.resources.requests.memory }}
+            {{- end }}
+          {{- end }}
+          command: ["/entrypoint.sh"]
+          {{- if .Values.fuse.args }}
+          args:
+{{ toYaml .Values.fuse.args | trim | indent 12 }}
+          {{- end }}
+          env:
+          - name: ALLUXIO_CLIENT_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: ALLUXIO_CLIENT_JAVA_OPTS
+            value: " -Dalluxio.user.hostname=${ALLUXIO_CLIENT_HOSTNAME} "
+          - name: FLUID_RUNTIME_TYPE
+            value: "alluxio"
+          - name: FLUID_RUNTIME_NS
+            value: {{ .Values.runtimeIdentity.namespace }}
+          - name: FLUID_RUNTIME_NAME
+            value: {{ .Values.runtimeIdentity.name }}
+          {{- range $key, $value := .Values.fuse.env }}
+          - name: "{{ $key }}"
+            value: "{{ $value }}"
+          {{- end }}
+          securityContext:
+            runAsUser: {{ .Values.user }}
+            runAsGroup: {{ .Values.group }}
+            privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/opt/alluxio/integration/fuse/bin/alluxio-fuse", "unmount", "{{ .Values.fuse.mountPath }}"]
+          envFrom:
+          - configMapRef:
+              name: {{ template "alluxio.fullname" . }}-config
+          volumeMounts:
+            {{ if .Values.initUsers.enabled -}}
+            - name: user
+              mountPath: /etc/passwd
+              readOnly: true
+            - name: group
+              mountPath: /etc/group
+              readOnly: true
+            {{- end }}
+            - name: alluxio-fuse-device
+              mountPath: /dev/fuse
+            - name: alluxio-fuse-mount
+              mountPath: {{ .Values.fuse.mountPath | dir }}
+              mountPropagation: Bidirectional
+            {{- if $shortCircuitEnabled}}
+              {{- if eq .Values.shortCircuit.policy "uuid" }}
+            - name: alluxio-domain
+              mountPath: /opt/domain
+              {{- end }}
+              {{- if eq .Values.shortCircuit.policy "local" }}
+{{- include "alluxio.fuse.tieredstoreVolumeMounts" . }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.fuse.volumeMounts }}
+{{ toYaml .Values.fuse.volumeMounts | indent 12 }}
+            {{- end }}
+      restartPolicy: Always
+      volumes:
+        {{ if .Values.initUsers.enabled -}}
+        - name: user         
+          hostPath:
+            path: {{ .Values.initUsers.dir }}/passwd
+            type: FileOrCreate
+        - name: group         
+          hostPath:
+            path: {{ .Values.initUsers.dir }}/group
+            type: FileOrCreate
+        {{- end }}
+        - name: alluxio-fuse-device
+          hostPath:
+            path: /dev/fuse
+            type: CharDevice
+        - name: alluxio-fuse-mount
+          hostPath:
+            path: {{ .Values.fuse.mountPath | dir }}
+            type: DirectoryOrCreate
+        {{- if $shortCircuitEnabled}}
+          {{- if eq .Values.shortCircuit.policy "uuid" }}
+{{- include "alluxio.worker.shortCircuit.volume" . }}
+          {{- end }}
+          {{- if eq .Values.shortCircuit.policy "local" }}
+{{- include "alluxio.fuse.tieredstoreVolumes" . }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.fuse.volumes }}
+{{ toYaml .Values.fuse.volumes | indent 8 }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,401 @@
+package porter
+
+import (
+	"context"
+	"fmt"
+	"sort"
+	"strings"
+	"time"
+
+	"get.porter.sh/porter/pkg/cnab"
+	"get.porter.sh/porter/pkg/printer"
+	"get.porter.sh/porter/pkg/secrets"
+	"get.porter.sh/porter/pkg/storage"
+	"get.porter.sh/porter/pkg/tracing"
+	dtprinter "github.com/carolynvs/datetime-printer"
+
+	"reflect"
+)
+
+const (
+	StateInstalled   = "installed"
+	StateUninstalled = "uninstalled"
+	StateDefined     = "defined"
+
+	StatusInstalling   = "installing"
+	StatusUninstalling = "uninstalling"
+	StatusUpgrading    = "upgrading"
+)
+
+// ListOptions represent generic options for use by Porter's list commands
+type ListOptions struct {
+	printer.PrintOptions
+	AllNamespaces bool
+	Namespace     string
+	Name          string
+	Labels        []string
+	Skip          int64
+	Limit         int64
+	FieldSelector string
+}
+
+func (o *ListOptions) Validate() error {
+	return o.ParseFormat()
+}
+
+func (o ListOptions) GetNamespace() string {
+	if o.AllNamespaces {
+		return "*"
+	}
+	return o.Namespace
+}
+
+func (o ListOptions) ParseLabels() map[string]string {
+	return parseLabels(o.Labels)
+}
+
+func parseLabels(raw []string) map[string]string {
+	if len(raw) == 0 {
+		return nil
+	}
+
+	labelMap := make(map[string]string, len(raw))
+	for _, label := range raw {
+		parts := strings.SplitN(label, "=", 2)
+		k := parts[0]
+		v := ""
+		if len(parts) > 1 {
+			v = parts[1]
+		}
+		labelMap[k] = v
+	}
+	return labelMap
+}
+
+// DisplayInstallation holds a subset of pertinent values to be listed from installation data
+// originating from its runs, results and outputs records
+type DisplayInstallation struct {
+	// SchemaType helps when we export the definition so editors can detect the type of document, it's not used by porter.
+	SchemaType string `json:"schemaType" yaml:"schemaType" toml:"schemaType"`
+
+	SchemaVersion cnab.SchemaVersion `json:"schemaVersion" yaml:"schemaVersion" toml:"schemaVersion"`
+
+	ID string `json:"id" yaml:"id" toml:"id"`
+	// Name of the installation. Immutable.
+	Name string `json:"name" yaml:"name" toml:"name"`
+
+	// Namespace in which the installation is defined.
+	Namespace string `json:"namespace" yaml:"namespace" toml:"namespace"`
+
+	// Uninstalled specifies if the installation isn't used anymore and should be uninstalled.
+	Uninstalled bool `json:"uninstalled,omitempty" yaml:"uninstalled,omitempty" toml:"uninstalled,omitempty"`
+
+	// Bundle specifies the bundle reference to use with the installation.
+	Bundle storage.OCIReferenceParts `json:"bundle" yaml:"bundle" toml:"bundle"`
+
+	// Custom extension data applicable to a given runtime.
+	// TODO(carolynvs): remove and populate in ToCNAB when we firm up the spec
+	Custom interface{} `json:"custom,omitempty" yaml:"custom,omitempty" toml:"custom,omitempty"`
+
+	// Labels applied to the installation.
+	Labels map[string]string `json:"labels,omitempty" yaml:"labels,omitempty" toml:"labels,omitempty"`
+
+	// CredentialSets that should be included when the bundle is reconciled.
+	CredentialSets []string `json:"credentialSets,omitempty" yaml:"credentialSets,omitempty" toml:"credentialSets,omitempty"`
+
+	// Parameters specified by the user through overrides.
+	// Does not include defaults, or values resolved from parameter sources.
+	Parameters map[string]interface{} `json:"parameters,omitempty" yaml:"parameters,omitempty" toml:"parameters,omitempty"`
+
+	// ParameterSets that should be included when the bundle is reconciled.
+	ParameterSets []string `json:"parameterSets,omitempty" yaml:"parameterSets,omitempty" toml:"parameterSets,omitempty"`
+
+	// Status of the installation.
+	Status                      storage.InstallationStatus `json:"status,omitempty" yaml:"status,omitempty" toml:"status,omitempty"`
+	DisplayInstallationMetadata `json:"_calculated" yaml:"_calculated"`
+}
+
+type DisplayInstallationMetadata struct {
+	ResolvedParameters DisplayValues `json:"resolvedParameters" yaml:"resolvedParameters"`
+
+	// DisplayInstallationState is the latest state of the installation.
+	// It is either "installed", "uninstalled", or "defined".
+	DisplayInstallationState string `json:"displayInstallationState,omitempty" yaml:"displayInstallationState,omitempty" toml:"displayInstallationState,omitempty"`
+	// DisplayInstallationStatus is the latest status of the installation.
+	// It is either "succeeded, "failed", "installing", "uninstalling", "upgrading", or "running <custom action>"
+	DisplayInstallationStatus string `json:"displayInstallationStatus,omitempty" yaml:"displayInstallationStatus,omitempty" toml:"displayInstallationStatus,omitempty"`
+}
+
+func NewDisplayInstallation(installation storage.Installation) DisplayInstallation {
+
+	di := DisplayInstallation{
+		SchemaType:     storage.SchemaTypeInstallation,
+		SchemaVersion:  installation.SchemaVersion,
+		ID:             installation.ID,
+		Name:           installation.Name,
+		Namespace:      installation.Namespace,
+		Uninstalled:    installation.Uninstalled,
+		Bundle:         installation.Bundle,
+		Custom:         installation.Custom,
+		Labels:         installation.Labels,
+		CredentialSets: installation.CredentialSets,
+		ParameterSets:  installation.ParameterSets,
+		Status:         installation.Status,
+		DisplayInstallationMetadata: DisplayInstallationMetadata{
+			DisplayInstallationState:  getDisplayInstallationState(installation),
+			DisplayInstallationStatus: getDisplayInstallationStatus(installation),
+		},
+	}
+
+	return di
+}
+
+// ConvertToInstallationClaim transforms the data from DisplayInstallation into
+// a Installation record.
+func (d DisplayInstallation) ConvertToInstallation() (storage.Installation, error) {
+	i := storage.Installation{
+		ID: d.ID,
+		InstallationSpec: storage.InstallationSpec{
+			SchemaVersion:  d.SchemaVersion,
+			Name:           d.Name,
+			Namespace:      d.Namespace,
+			Uninstalled:    d.Uninstalled,
+			Bundle:         d.Bundle,
+			Custom:         d.Custom,
+			Labels:         d.Labels,
+			CredentialSets: d.CredentialSets,
+			ParameterSets:  d.ParameterSets,
+		},
+		Status: d.Status,
+	}
+
+	var err error
+	i.Parameters, err = d.ConvertParamToSet()
+	if err != nil {
+		return storage.Installation{}, err
+	}
+
+	// do not validate here, validate the converted installation right before we save it to the database
+	return i, nil
+}
+
+// ConvertParamToSet converts a Parameters into an internal ParameterSet.
+func (d DisplayInstallation) ConvertParamToSet() (storage.ParameterSet, error) {
+	strategies := make([]secrets.SourceMap, 0, len(d.Parameters))
+	for name, value := range d.Parameters {
+		stringVal, err := cnab.WriteParameterToString(name, value)
+		if err != nil {
+			return storage.ParameterSet{}, err
+		}
+
+		strategies = append(strategies, storage.ValueStrategy(name, stringVal))
+	}
+
+	return storage.NewInternalParameterSet(d.Namespace, d.Name, strategies...), nil
+}
+
+// TODO(carolynvs): be consistent with sorting results from list, either keep the default sort by name
+// or update the other types to also sort by modified
+type DisplayInstallations []DisplayInstallation
+
+func (l DisplayInstallations) Len() int {
+	return len(l)
+}
+
+func (l DisplayInstallations) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l DisplayInstallations) Less(i, j int) bool {
+	return l[i].Status.Modified.Before(l[j].Status.Modified)
+}
+
+type DisplayRun struct {
+	ID         string                 `json:"id" yaml:"id"`
+	Bundle     string                 `json:"bundle,omitempty" yaml:"bundle,omitempty"`
+	Version    string                 `json:"version" yaml:"version"`
+	Action     string                 `json:"action" yaml:"action"`
+	Parameters map[string]interface{} `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+	Started    time.Time              `json:"started" yaml:"started"`
+	Stopped    *time.Time             `json:"stopped" yaml:"stopped"`
+	Status     string                 `json:"status" yaml:"status"`
+}
+
+func NewDisplayRun(run storage.Run) DisplayRun {
+	return DisplayRun{
+		ID:         run.ID,
+		Action:     run.Action,
+		Parameters: run.TypedParameterValues(),
+		Started:    run.Created,
+		Bundle:     run.BundleReference,
+		Version:    run.Bundle.Version,
+	}
+}
+
+// ListInstallations lists installed bundles.
+func (p *Porter) ListInstallations(ctx context.Context, opts ListOptions) (DisplayInstallations, error) {
+	ctx, log := tracing.StartSpan(ctx)
+	defer log.EndSpan()
+
+	installations, err := p.Installations.ListInstallations(ctx, storage.ListOptions{
+		Namespace: opts.GetNamespace(),
+		Name:      opts.Name,
+		Labels:    opts.ParseLabels(),
+		Skip:      opts.Skip,
+		Limit:     opts.Limit,
+	})
+	if err != nil {
+		return nil, log.Error(fmt.Errorf("could not list installations: %w", err))
+	}
+
+	var displayInstallations DisplayInstallations
+	var fieldSelectorMap map[string]string
+	if opts.FieldSelector != "" {
+		fieldSelectorMap, err = parseFieldSelector(opts.FieldSelector)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	for _, installation := range installations {
+		di := NewDisplayInstallation(installation)
+		if opts.FieldSelector != "" && !doesInstallationMatchFieldSelectors(di, fieldSelectorMap) {
+			continue
+		}
+		displayInstallations = append(displayInstallations, di)
+
+	}
+	sort.Sort(sort.Reverse(displayInstallations))
+
+	return displayInstallations, nil
+}
+
+// PrintInstallations prints installed bundles.
+func (p *Porter) PrintInstallations(ctx context.Context, opts ListOptions) error {
+	displayInstallations, err := p.ListInstallations(ctx, opts)
+	if err != nil {
+		return err
+	}
+
+	switch opts.Format {
+	case printer.FormatJson:
+		return printer.PrintJson(p.Out, displayInstallations)
+	case printer.FormatYaml:
+		return printer.PrintYaml(p.Out, displayInstallations)
+	case printer.FormatPlaintext:
+		// have every row use the same "now" starting ... NOW!
+		now := time.Now()
+		tp := dtprinter.DateTimePrinter{
+			Now: func() time.Time { return now },
+		}
+
+		row :=
+			func(v interface{}) []string {
+				cl, ok := v.(DisplayInstallation)
+				if !ok {
+					return nil
+				}
+				return []string{cl.Namespace, cl.Name, cl.Status.BundleVersion, cl.DisplayInstallationState, cl.DisplayInstallationStatus, tp.Format(cl.Status.Modified)}
+			}
+		return printer.PrintTable(p.Out, displayInstallations, row,
+			"NAMESPACE", "NAME", "VERSION", "STATE", "STATUS", "MODIFIED")
+	default:
+		return fmt.Errorf("invalid format: %s", opts.Format)
+	}
+}
+
+func getDisplayInstallationState(installation storage.Installation) string {
+	if installation.IsInstalled() {
+		return StateInstalled
+	} else if installation.IsUninstalled() {
+		return StateUninstalled
+	}
+
+	return StateDefined
+}
+
+func getDisplayInstallationStatus(installation storage.Installation) string {
+	var status string
+
+	switch installation.Status.ResultStatus {
+	case cnab.StatusSucceeded:
+		status = cnab.StatusSucceeded
+	case cnab.StatusFailed:
+		status = cnab.StatusFailed
+	case cnab.StatusRunning:
+		switch installation.Status.Action {
+		case cnab.ActionInstall:
+			status = StatusInstalling
+		case cnab.ActionUninstall:
+			status = StatusUninstalling
+		case cnab.ActionUpgrade:
+			status = StatusUpgrading
+		default:
+			status = fmt.Sprintf("running %s", installation.Status.Action)
+		}
+	}
+
+	return status
+}
+
+// Split the fieldSelector into a map of fields and values
+// e.g. "bundle.version=0.2.0,status.action=install" => map[string]string{"bundle.version": "0.2.0", "status.action": "install"}
+func parseFieldSelector(fieldSelector string) (map[string]string, error) {
+	fieldSelectorMap := make(map[string]string)
+	for _, field := range strings.Split(fieldSelector, ",") {
+		fieldParts := strings.Split(field, "=")
+		if len(fieldParts) != 2 {
+			return nil, fmt.Errorf("invalid field selector: %s", fieldSelector)
+		}
+		fieldSelectorMap[fieldParts[0]] = fieldParts[1]
+	}
+
+	return fieldSelectorMap, nil
+}
+
+// Check if the installation matches the field selectors
+func doesInstallationMatchFieldSelectors(installation DisplayInstallation, fieldSelectorMap map[string]string) bool {
+	for field, value := range fieldSelectorMap {
+		if !installationHasFieldWithValue(installation, field, value) {
+			return false
+		}
+	}
+	return true
+}
+
+// Check if the installation has the field with the value
+// e.g. installationHasFieldWithValue(installation, "bundle.version", "0.2.0") => true if installation.Bundle.Version (for which json tag is bunde.version) == "0.2.0"
+func installationHasFieldWithValue(installation DisplayInstallation, fieldJsonTagPath string, value string) bool {
+
+	fieldJsonTagPathParts := strings.Split(fieldJsonTagPath, ".")
+	current := reflect.ValueOf(installation)
+
+	for _, fieldJsonTagPart := range fieldJsonTagPathParts {
+		if current.Kind() != reflect.Struct {
+			return false
+		}
+		field := getFieldByJSONTag(current, fieldJsonTagPart)
+		if !field.IsValid() {
+			return false
+		}
+		current = field
+	}
+
+	return reflect.DeepEqual(current.Interface(), value)
+}
+
+// Return the reflect.value based on the field's json tag
+func getFieldByJSONTag(value reflect.Value, fieldJsonTag string) reflect.Value {
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Type().Field(i)
+
+		reflectTag := field.Tag.Get("json")
+		if strings.Contains(reflectTag, ",") {
+			reflectTag = strings.Split(reflectTag, ",")[0]
+		}
+		if reflectTag == fieldJsonTag {
+			return value.Field(i)
+		}
+	}
+	return reflect.Value{}
+}

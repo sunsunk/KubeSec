@@ -1,0 +1,22 @@
+.search {
+  width: 45%;
+  margin-left: -15px;
+}
+
+.code {
+  border-color: var(--color-black-15) !important;
+  background-color: var(--extra-light-gray);
+}
+
+.comment {
+  font-size: 80%;
+  color: var(--mid-gray);
+}
+
+[data-theme='light'] .comment {
+  color: var(--color-black-35);
+}
+
+.btns {
+  z-index: 1;
+}

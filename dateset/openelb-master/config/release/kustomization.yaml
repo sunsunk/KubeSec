@@ -1,0 +1,8 @@
+namespace: openelb-system
+
+resources:
+  - ../default
+
+patchesStrategicMerge:
+#  - agent_image_patch.yaml
+  - manager_image_patch.yaml

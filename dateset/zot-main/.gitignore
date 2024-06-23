@@ -1,0 +1,34 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Output of the UI build
+pkg/extensions/build/
+
+# Tooling used for blackbox testing
+hack/
+.stacker/
+oci/
+!pkg/meta/proto/oci
+roots/
+bin/
+bazel-*
+coverage*.txt
+test/data/
+*.orig
+.idea/
+coverage.html
+tags
+vendor/
+.vscode/
+examples/config-sync-localhost.json
+node_modules

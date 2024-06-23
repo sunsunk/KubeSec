@@ -1,0 +1,97 @@
+.inputWrapper {
+  height: 36px;
+  box-shadow: 0 0 0 0.3rem var(--color-black-15);
+  margin: 0 0.3rem;
+}
+
+.iconWrapper {
+  color: var(--color-1-700);
+  padding: 0.375rem 0.75rem;
+}
+
+.input {
+  padding: 0.375rem 0;
+}
+
+.input:focus {
+  background-color: var(--bs-white);
+  outline: 0;
+}
+
+.loading {
+  top: 5px;
+  right: 10px;
+}
+
+.dropdown {
+  top: 2.65rem;
+}
+
+.table th {
+  font-size: 0.875rem;
+}
+
+.clickableCell:hover {
+  cursor: pointer;
+}
+
+.disabledCell {
+  cursor: auto;
+  opacity: 0.5;
+  background-color: var(--color-1-2);
+}
+
+.activeCell {
+  background-color: var(--color-black-5);
+}
+
+.disabledCell:hover {
+  background-color: var(--color-1-2) !important;
+}
+
+.fitCell {
+  width: 1%;
+}
+
+.icon {
+  height: 17px;
+  margin-top: -2px;
+}
+
+.tinyIcon {
+  font-size: 0.5rem;
+}
+
+.tableWrapper {
+  max-height: 240px;
+}
+
+.tableWrapper thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom-color: transparent;
+}
+
+.tableWrapper thead th:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 2px;
+  background-color: var(--code-bg-md);
+}
+
+@media only screen and (max-width: 767.98px) {
+  .tableWrapper td {
+    font-size: 0.85rem;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .iconWrapper {
+    padding-left: 0.5rem;
+    padding-right: 0;
+  }
+}

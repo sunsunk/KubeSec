@@ -1,0 +1,39 @@
+[
+  {
+    "response": {
+      "tags": [
+        "geo-country:austria",
+        "securitypolicy:default-entry",
+        "cookies:0",
+        "headers:1",
+        "contentfilterid:--default--",
+        "geo-org:foundation-for-applied-privacy",
+        "contentfiltername:default-contentfilter",
+        "network:109-70-100-0-24",
+        "geo-continent-code:eu",
+        "host:localhost:30081",
+        "geo-tor",
+        "ip:109-70-100-8",
+        "bot",
+        "geo-subregion:1010",
+        "aclname:default-acl",
+        "geo-asn:208323",
+        "all",
+        "geo-city:vienna",
+        "geo-region:vienna",
+        "securitypolicy-entry:default",
+        "args:0",
+        "geo-continent-name:europe",
+        "aclid:--default--"
+      ],
+      "action": "pass"
+    },
+    "name": "test privacy tor tagging",
+    "headers": {
+      "x-forwarded-for": "109.70.100.8",
+      ":path": "/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

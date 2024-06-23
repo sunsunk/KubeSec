@@ -1,0 +1,31 @@
+@import '../scss/settings';
+
+.notifier {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	box-shadow: 0 10px 35px 0 #000;
+}
+
+.notifier_item {
+	padding: 1.5rem;
+
+	display: flex;
+	align-items: center;
+}
+
+.notifier_error {
+	@extend .notifier_item;
+	background: $color-error;
+}
+
+.notifier_message {
+	@extend .notifier_item;
+	background: $color-menu;
+}
+
+.notifier_body {
+	flex-grow: 1;
+}

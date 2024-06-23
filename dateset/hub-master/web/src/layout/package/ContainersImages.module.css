@@ -1,0 +1,54 @@
+.table {
+  table-layout: fixed;
+}
+
+.tableTitle:hover {
+  background-color: inherit !important;
+}
+
+.body {
+  background-color: var(--bs-white);
+}
+
+.containerImage {
+  font-size: 0.8rem;
+}
+
+.icon {
+  min-width: 15px;
+  font-size: 0.85rem;
+  padding-right: 1px;
+}
+
+.copyBtn {
+  top: -2px;
+}
+
+.badgesWrapper {
+  font-size: 80%;
+}
+
+.badgeDecorator {
+  top: -6px;
+  height: 14px;
+  width: 10px;
+  border-color: var(--color-black-25) !important;
+}
+
+.badge {
+  border-color: var(--bs-orange) !important;
+  color: var(--bs-orange);
+}
+
+.platformBadge {
+  background-color: var(--color-black-15) !important;
+  color: var(--color-font);
+}
+
+.image {
+  font-size: 0.9rem;
+}
+
+.imageCol {
+  width: 70%;
+}

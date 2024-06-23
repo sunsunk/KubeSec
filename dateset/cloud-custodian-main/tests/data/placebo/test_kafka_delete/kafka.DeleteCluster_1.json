@@ -1,0 +1,8 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "ClusterArn": "arn:aws:kafka:ap-northeast-2:644160558196:cluster/demo-cluster-1/a4128f17-d0a5-4b03-b858-ea13108e7286-4",
+        "State": "DELETING"
+    }
+}

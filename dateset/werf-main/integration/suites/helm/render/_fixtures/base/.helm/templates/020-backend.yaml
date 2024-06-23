@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-backend
+  labels:
+    service: dynamic_parameters-backend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      service: dynamic_parameters-backend
+  template:
+    metadata:
+      labels:
+        service: dynamic_parameters-backend
+    spec:
+      containers:
+      - name: backend
+        workingDir: /app
+        command: [ "python3", "-m", "http.server", "8080" ]
+        image: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynamic_parameters-backend
+spec:
+  clusterIP: None
+  selector:
+    service: dynamic_parameters-backend
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+
+---
+
+---

@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: pl-cloud
+resources:
+- configmap.yaml
+- service_accounts.yaml
+- statefulset.yaml
+vars:
+- name: NATS_SERVICEACCOUNT_NAMESPACE
+  objref:
+    kind: ServiceAccount
+    name: nats
+    apiVersion: v1
+  fieldref:
+    fieldpath: metadata.namespace

@@ -1,0 +1,121 @@
+/build-output/
+/vendor/
+
+*.tgz
+*.img.tar
+*.layer.tar
+.*.stamp
+/docker/kat-server/server.crt
+/docker/kat-server/server.key
+
+*.pyc
+*~
+.cache
+.coverage
+.dmypy
+.dmypy.json
+.python-version
+.DS_Store
+.skip_test_warning
+venv
+.venv
+__pycache__
+.pytest_cache
+.mypy_cache
+.envrc
+
+# local files
+*.local
+*.local.sh
+
+# binaries
+/charts/docgen
+
+# helm chart
+charts/emissary-ingress/ci/tests/values
+charts/emissary-ingress/artifacts
+charts/emissary-ingress/k3dconfig
+charts/yq
+
+/docker/images.sh
+/docker/images.tar
+/docker/volume.tar
+*.docker
+*.docker.stamp
+*.docker.tag.*
+*.docker.push.*
+
+*.egg-info
+/build
+/python/build
+dist
+
+# kubeapply
+*.yaml.o
+
+# misc
+*.out
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+log.txt
+
+# From `make update-aws`
+/stable.txt
+/app.json
+
+docs/_book
+docs/_site
+docs/Gemfile.lock
+docs/node_modules
+package-lock.json
+.netlify
+node_modules
+unused-e2e
+
+.forge
+forge.yaml
+
+# Editor nonsense
+.vscode
+.idea
+*.iml
+tags
+
+# Test outputs
+no-such-file
+envoy.json
+intermediate.json
+v1.json
+check-*.json
+stats.json
+ambassador-deployment-*.yaml
+ambassador-secrets-deployment.yaml
+*failures.txt
+*.swp
+.ambassador_ignore_ingress_class
+/test-chart-values.yaml
+# `.coverage.HOSTNAME.PID.NNN` - I'm not sure what causes these to get written, but `make pytest-kat` does it
+.coverage.*.*.*
+
+# --- Files ignored by older versions ---
+# Remove the tail of this list when the commit making the change gets
+# far enough in to the past.
+
+# 2023-02-20
+gold.no_yaml.json
+# 2022-05-19
+/bin
+/bin_*/
+# 2022-04-18
+/build-aux/version-hack.stamp.mk
+/manifests/emissary/*.yaml
+/docs/yaml/versions.yml
+# 2022-01-31
+/docker/container.txt
+/docker/container.txt.stamp
+
+# telepresence
+emissary-agent.env

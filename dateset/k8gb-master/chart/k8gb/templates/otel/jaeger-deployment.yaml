@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  labels:
+spec:
+  selector:
+    matchLabels:
+      id: jaeger
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        id: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: dynamic_parameters:dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 14269
+            initialDelaySeconds: 5
+          env:
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+
+---
+
+---

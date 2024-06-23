@@ -1,0 +1,109 @@
+# Copyright Aeraki Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aeraki
+  namespace: dynamic_parameters
+  labels:
+    app: aeraki
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: aeraki
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: aeraki
+    spec:
+      serviceAccountName: aeraki
+      containers:
+        - name: dynamic_parameters
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+            - /usr/local/bin/aeraki
+            - --master=true
+            - --enable-envoy-filter-namespace-scope=false
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 15010
+              protocol: TCP
+            - containerPort: 15017
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            timeoutSeconds: 5
+          resources:
+          env:
+            - name: AERAKI_IS_MASTER
+              value: dynamic_parameters
+            - name: AERAKI_ISTIOD_ADDR
+              value: dynamic_parameters
+            - name: AERAKI_ISTIOD_CONFIGMAP_NAME
+              value: dynamic_parameters
+            - name: AERAKI_CLUSTER_ID
+              value: dynamic_parameters
+            # In case of TCM, Istio config store can be a different k8s API server from the one Aeraki is running with
+            - name: AERAKI_ISTIO_CONFIG_STORE_SECRET
+              value: dynamic_parameters
+            - name: AERAKI_XDS_ADDR
+              value: dynamic_parameters
+            - name: AERAKI_XDS_PORT
+              value: dynamic_parameters
+            - name: AERAKI_LOG_LEVEL
+              value: dynamic_parameters
+            - name: AERAKI_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: AERAKI_SERVER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: istiod-ca-cert
+              mountPath: /var/run/secrets/istio
+              readOnly: true
+      volumes:
+        - name: istiod-ca-cert
+          configMap:
+            name: istio-ca-root-cert
+            defaultMode: 420
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

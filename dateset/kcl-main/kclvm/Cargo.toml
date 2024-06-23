@@ -1,0 +1,80 @@
+[package]
+name = "kclvm"
+version = "0.8.3"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = [
+    "cdylib",
+]
+path = "src/lib.rs"
+name = "kclvm_cli_cdylib"
+
+
+[build-dependencies]
+cc = "1.0"
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1", features = ["derive"] }
+glob = "0.3.0"
+walkdir = "2"
+libc = "0.2.112"
+indexmap = "1.0"
+fslock = "0.2.1"
+libloading = "0.7.3"
+chrono = "0.4.19"
+maplit = "1.0.2"
+anyhow = { version = "1.0.70", features = ["backtrace"] }
+compiler_base_session = {path = "../compiler_base/session"}
+
+kclvm-api = {path = "./api"}
+kclvm-cmd = {path = "./cmd"}
+kclvm-ast = {path = "./ast"}
+kclvm-runner = {path = "./runner"}
+kclvm-parser = {path = "./parser"}
+kclvm-compiler = {path = "./compiler"}
+kclvm-config = {path = "./config"}
+kclvm-loader = {path = "./loader"}
+kclvm-runtime = {path = "./runtime"}
+kclvm-sema = {path = "./sema"}
+kclvm-tools = {path = "./tools"}
+kclvm-version = {path = "./version"}
+kclvm-error = {path = "./error"}
+kclvm-evaluator = {path = "./evaluator"}
+kclvm-query = {path = "./query"}
+kclvm-driver = {path = "./driver"}
+
+[profile.release]
+rpath = true
+panic = "unwind"
+opt-level = "z"  # Optimize for size.
+lto = true
+
+[workspace]
+members = [
+    "third-party/prost-wkt",
+    "third-party/prost-wkt/wkt-build", 
+    "third-party/prost-wkt/wkt-types",
+    "api",
+    "cmd",
+    "ast",
+    "ast_pretty",
+    "compiler",
+    "config",
+    "error",
+    "lexer",
+    "macros",
+    "parser",
+    "runner",
+    "runtime",
+    "sema",
+    "span",
+    "tools",
+    "version",
+    "query",
+    "utils",
+    "tools/src/LSP"
+]

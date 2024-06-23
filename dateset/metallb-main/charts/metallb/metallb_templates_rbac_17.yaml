@@ -1,0 +1,40 @@
+# Source: metallb/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: my-release-metallb-pod-lister
+  namespace: "default"
+  labels:
+    helm.sh/chart: metallb-0.0.0
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "v0.0.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["bfdprofiles"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["bgppeers"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["l2advertisements"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["bgpadvertisements"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["ipaddresspools"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metallb.io"]
+  resources: ["communities"]
+  verbs: ["get", "list", "watch"]

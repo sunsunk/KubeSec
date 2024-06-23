@@ -1,0 +1,10 @@
+domain: storage.io
+repo: carina
+resources:
+- group: carina
+  kind: LogicVolume
+  version: v1
+- group: carina
+  kind: NodeStorageResource
+  version: v1beta1
+version: "2"

@@ -1,0 +1,185 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-challenge",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 challenge",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 247,
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwayschallenge",
+        "limit-name:rate-limit-always-challenge",
+        "securitypolicy-entry:alwayschallenge",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "status:247",
+        "status-class:2xx",
+        "bot",
+        "challenge",
+        "challenge-phase01"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-challenge",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 challenge (human)",
+    "human": "active",
+    "response": {
+      "action": "pass",
+      "block_mode": false,
+      "status": 200,
+      "tags": [
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwayschallenge",
+        "limit-name:rate-limit-always-challenge",
+        "securitypolicy-entry:alwayschallenge",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "human",
+        "precision-l1"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-ichallenge",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 ichallenge (bot)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 247,
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwaysichallenge",
+        "limit-name:rate-limit-always-ichallenge",
+        "securitypolicy-entry:alwaysichallenge",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "status:247",
+        "status-class:2xx",
+        "bot",
+        "ichallenge",
+        "challenge-phase01"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-ichallenge",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 ichallenge (active)",
+    "human": "active",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 247,
+      "tags": [
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwaysichallenge",
+        "limit-name:rate-limit-always-ichallenge",
+        "securitypolicy-entry:alwaysichallenge",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "status:247",
+        "status-class:2xx",
+        "human",
+        "precision-l1",
+        "ichallenge",
+        "challenge-phase01"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-ichallenge",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 ichallenge (interactive)",
+    "human": "interactive",
+    "response": {
+      "action": "pass",
+      "block_mode": false,
+      "status": 200,
+      "tags": [
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwaysichallenge",
+        "limit-name:rate-limit-always-ichallenge",
+        "securitypolicy-entry:alwaysichallenge",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "human",
+        "precision-l3"
+      ]
+    }
+  }
+]

@@ -1,0 +1,58 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel:pl_build_system.bzl", "pl_go_binary", "pl_go_image")
+
+package(default_visibility = ["//src/cloud:__subpackages__"])
+
+pl_go_binary(
+    name = "metrics_server",
+    embed = [":metrics_lib"],
+)
+
+pl_go_image(
+    name = "metrics_server_image",
+    binary = ":metrics_server",
+    importpath = "px.dev/pixie",
+    visibility = [
+        "//k8s:__subpackages__",
+        "//src/cloud:__subpackages__",
+    ],
+)
+
+go_library(
+    name = "metrics_lib",
+    srcs = ["metrics_server.go"],
+    importpath = "px.dev/pixie/src/cloud/metrics",
+    deps = [
+        "//src/cloud/metrics/controllers",
+        "//src/cloud/shared/messages",
+        "//src/cloud/shared/vzshard",
+        "//src/shared/services",
+        "//src/shared/services/env",
+        "//src/shared/services/healthz",
+        "//src/shared/services/metrics",
+        "//src/shared/services/msgbus",
+        "//src/shared/services/server",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@com_github_spf13_pflag//:pflag",
+        "@com_github_spf13_viper//:viper",
+        "@com_google_cloud_go_bigquery//:bigquery",
+        "@org_golang_google_api//googleapi",
+        "@org_golang_google_api//option",
+    ],
+)

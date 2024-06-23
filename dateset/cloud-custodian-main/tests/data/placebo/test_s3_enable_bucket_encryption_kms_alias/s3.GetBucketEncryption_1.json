@@ -1,0 +1,17 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "ServerSideEncryptionConfiguration": {
+            "Rules": [
+                {
+                    "ApplyServerSideEncryptionByDefault": {
+                        "SSEAlgorithm": "aws:kms",
+                        "KMSMasterKeyID": "arn:aws:kms:us-east-1:644160558196:key/5d8168d1-8e77-4495-97f5-0ef5f7b4753a"
+                    },
+                    "BucketKeyEnabled": true
+                }
+            ]
+        }
+    }
+}

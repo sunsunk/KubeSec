@@ -1,0 +1,11 @@
+  - name: testproject123451234512345h
+    git:
+      checkoutFrom: 
+        remote: test-branch
+      remotes: 
+        origin: test-origin
+    clonePath: /Users/test/projects
+  - name: testproject3
+    zip: 
+      location: git-repo.zip
+    clonePath: /Users/test/projects

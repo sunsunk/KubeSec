@@ -1,0 +1,35 @@
+# Note: This example only works in minikube, since the custom builder
+# does not push the image
+version: v2beta1
+name: custom-builder
+
+vars:
+  IMAGE: myusername/devspace
+
+images:
+  my-image:
+    image: ${IMAGE}
+    custom:
+      command: |-
+        # Also works on windows as this is executed in a pseudo shell
+        docker build -t ${runtime.images.my-image.image}:${runtime.images.my-image.tag} . -f custom/Dockerfile
+      onChange:
+      - main.go
+
+deployments:
+  my-deployment:
+    kubectl:
+      manifests:
+      - kube
+
+dev:
+  my-dev:
+    imageSelector: ${IMAGE}
+    logs: {}
+    command: ["go", "run", "main.go"]
+    ports:
+    - port: 8080
+    sync:
+    - path: ./
+      onUpload:
+        restartContainer: true

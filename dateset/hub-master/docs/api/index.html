@@ -1,0 +1,48 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Artifact Hub UI</title>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
+    <link rel="stylesheet" type="text/css" href="./custom-styles.css" >
+    <link rel="shortcut icon" type="image/png" href="https://artifacthub.io/static/media/logo_v2.png">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#417598" />
+    <link rel="apple-touch-icon" href="https://artifacthub.io/static/media/logo192_v2.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="https://artifacthub.io/static/media/logo512_v2.png">
+  </head>
+
+  <body>
+    <div class="nav">
+      <div class="nav-content">
+        <a href="/" target="_blank" rel="noopener noreferrer">
+          <img src="https://artifacthub.io/static/media/logo/artifacthub-brand-white.svg" alt="Artifact Hub logo" />
+        </a>
+      </div>
+    </div>
+    <div id="swagger-ui"></div>
+
+    <script src="./swagger-ui-bundle.js"> </script>
+    <script src="./swagger-ui-standalone-preset.js"> </script>
+    <script src="/static/js/theme.js"> </script>
+    <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "openapi.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset,
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl,
+        ],
+        layout: "StandaloneLayout"
+      })
+      window.ui = ui
+    }
+  </script>
+  </body>
+</html>

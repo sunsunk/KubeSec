@@ -1,0 +1,368 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    app: "dynamic_parameters"
+    chart: "dynamic_parameters"
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+spec:
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+      release: dynamic_parameters
+  strategy: dynamic_parameters
+  serviceAccountName: dynamic_parameters
+  replicas: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        chart: dynamic_parameters
+        release: dynamic_parameters
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: dynamic_parameters
+    spec:
+
+      schedulerName: dynamic_parameters
+      affinity: dynamic_parameters
+      nodeSelector: dynamic_parameters
+      tolerations: dynamic_parameters
+      securityContext:
+        fsGroup: dynamic_parameters
+        runAsGroup:  dynamic_parameters
+        runAsUser: dynamic_parameters
+
+      initContainers:
+        - name: check-zms-status
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          env:
+            - name: ATHENZ_CONF_PATH
+              value: dynamic_parameters
+          volumeMounts:
+            - name: config
+              mountPath: /opt/athenz/zts/conf/zts_server
+        - name: chmod
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          securityContext:
+            runAsUser: 0
+          command:
+            - "/bin/chown"
+            - "-R"
+            - dynamic_parameters
+            - "/opt/athenz/zts/var/zts_store"
+          volumeMounts:
+            - name: change-log-store
+              mountPath: /opt/athenz/zts/var/zts_store
+        - name: tls-keystore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZTS_KEYSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zts_keystore.pkcs12
+            - name: ZTS_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: keystore
+            - name: ZTS_CERT_PATH
+              value: /opt/athenz/zts/var/tls/tls.crt
+            - name: ZTS_CERT_KEY_PATH
+              value: /opt/athenz/zts/var/tls/tls.key
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: tls
+              mountPath: /opt/athenz/zts/var/tls
+            - name: tls-stores
+              mountPath: /opt/athenz/zts/var/certs
+        - name: tls-truststore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZTS_TRUSTSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zts_truststore.jks
+            - name: ZTS_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: truststore
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: tls-ca
+              mountPath: /opt/athenz/zts/var/tls/CAs
+            - name: tls-stores
+              mountPath: /opt/athenz/zts/var/certs
+        - name: signer-mtls-keystore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZTS_SIGNER_KEYSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zts_signer_keystore.pkcs12
+            - name: ZTS_SIGNER_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: signerKeystore
+            - name: ZTS_SIGNER_CERT_PATH
+              value: /opt/athenz/zts/var/signer/tls.crt
+            - name: ZTS_SIGNER_CERT_KEY_PATH
+              value: /opt/athenz/zts/var/signer/tls.key
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: signer-mtls
+              mountPath: /opt/athenz/zts/var/signer
+            - name: signer-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs
+        - name: signer-mtls-truststore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZTS_SIGNER_TRUSTSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zts_signer_truststore.jks
+            - name: ZTS_SIGNER_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: signerTruststore
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: signer-mtls-ca
+              mountPath: /opt/athenz/zts/var/signer/CAs
+            - name: signer-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs
+        - name: zms-client-mtls-keystore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZMS_CLIENT_KEYSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zms_client_keystore.pkcs12
+            - name: ZMS_CLIENT_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: zmsClientKeystore
+            - name: ZMS_CLIENT_CERT_PATH
+              value: /opt/athenz/zts/var/zms-client/tls.crt
+            - name: ZMS_CLIENT_CERT_KEY_PATH
+              value: /opt/athenz/zts/var/zms-client/tls.key
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: zms-client-mtls
+              mountPath: /opt/athenz/zts/var/zms-client
+            - name: zms-client-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs
+        - name: zms-client-mtls-truststore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZMS_CLIENT_TRUSTSTORE_PATH
+              value: /opt/athenz/zts/var/certs/zms_client_truststore.jks
+            - name: ZMS_CLIENT_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: zmsClientTruststore
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: zms-client-mtls-ca
+              mountPath: /opt/athenz/zts/var/zms-client/CAs
+            - name: zms-client-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs
+      containers:
+        - name: zts
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZTS_DB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: jdbc
+            - name: ZTS_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: keystore
+            - name: ZTS_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: truststore
+            - name: ZTS_SIGNER_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: signerKeystore
+            - name: ZTS_SIGNER_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: signerTruststore
+            - name: ZMS_CLIENT_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: zmsClientKeystore
+            - name: ZMS_CLIENT_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: zmsClientTruststore
+            - name: ZTS_PORT
+              value: "8443"
+          ports:
+            - name: zts
+              containerPort: 8443
+            - name: metrics
+              containerPort: dynamic_parameters
+          livenessProbe:
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            httpGet:
+              path: /zts/v1/status
+              port: zts
+              scheme: HTTPS
+          readinessProbe:
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            httpGet:
+              path: /zts/v1/status
+              port: zts
+              scheme: HTTPS
+          volumeMounts:
+            - name: config
+              mountPath: /opt/athenz/zts/conf/zts_server
+              readOnly: true
+            - name: zts-key
+              mountPath: /opt/athenz/zts/var/keys
+              readOnly: true
+            - name: tls-stores
+              mountPath: /opt/athenz/zts/var/certs/zts_keystore.pkcs12
+              subPath: zts_keystore.pkcs12
+              readOnly: true
+            - name: tls-stores
+              mountPath: /opt/athenz/zts/var/certs/zts_truststore.jks
+              subPath: zts_truststore.jks
+              readOnly: true
+            - name: signer-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs/zts_signer_keystore.pkcs12
+              subPath: zts_signer_keystore.pkcs12
+              readOnly: true
+            - name: signer-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs/zts_signer_truststore.jks
+              subPath: zts_signer_truststore.jks
+              readOnly: true
+            - name: zms-client-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs/zms_client_keystore.pkcs12
+              subPath: zms_client_keystore.pkcs12
+              readOnly: true
+            - name: zms-client-mtls-stores
+              mountPath: /opt/athenz/zts/var/certs/zms_client_truststore.jks
+              subPath: zms_client_truststore.jks
+              readOnly: true
+            - name: log
+              mountPath: /opt/athenz/zts/logs/zts_server
+            - name: change-log-store
+              mountPath: /opt/athenz/zts/var/zts_store
+          resources: dynamic_parameters
+      volumes:
+        - name: config
+          configMap:
+            name: dynamic_parameters-config
+        - name: zts-key
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zts_private.pem
+                path: zts_private.pem
+                mode: 400
+        - name: tls
+          secret:
+            secretName: dynamic_parameters
+        - name: tls-ca
+          secret:
+            secretName: dynamic_parameters
+        - name: signer-mtls
+          secret:
+            secretName: dynamic_parameters
+        - name: signer-mtls-ca
+          secret:
+            secretName: dynamic_parameters
+        - name: zms-client-mtls
+          secret:
+            secretName: dynamic_parameters
+        - name: zms-client-mtls-ca
+          secret:
+            secretName: dynamic_parameters
+        - name: tls-stores
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zts_keystore.pkcs12
+                path: zts_keystore.pkcs12
+                mode: 400
+              - key: zts_truststore.jks
+                path: zts_truststore.jks
+                mode: 400
+        - name: signer-mtls-stores
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zts_signer_keystore.pkcs12
+                path: zts_signer_keystore.pkcs12
+                mode: 400
+              - key: zts_signer_truststore.jks
+                path: zts_signer_truststore.jks
+                mode: 400
+        - name: zms-client-mtls-stores
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zms_client_keystore.pkcs12
+                path: zms_client_keystore.pkcs12
+                mode: 400
+              - key: zms_client_truststore.jks
+                path: zms_client_truststore.jks
+                mode: 400
+        - name: log
+        - name: change-log-store
+
+---
+
+---
+
+---
+
+---

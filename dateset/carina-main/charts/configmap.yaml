@@ -1,0 +1,34 @@
+# Source: carina-csi-driver/charts/carina-scheduler/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carina-scheduler-config
+  namespace: default
+  labels:
+    class: carina
+    app: csi-carina-scheduler
+    release:  "my-release"
+    helm.sh/chart: carina-scheduler-0.1.0
+    app.kubernetes.io/name: carina-scheduler
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  scheduler-config.yaml: |-
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: true
+      resourceName:  carina-scheduler
+      resourceNamespace: default
+    profiles:
+    - schedulerName: carina-scheduler
+      plugins:
+        filter:
+          enabled:
+            - name: "local-storage"
+              weight: 1
+        score:
+          enabled:
+            - name: "local-storage"
+              weight: 1

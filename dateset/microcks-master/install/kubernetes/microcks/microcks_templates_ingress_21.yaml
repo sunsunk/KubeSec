@@ -1,0 +1,28 @@
+# Source: microcks/templates/ingress.yaml
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "microcks"
+  labels:
+    app: "microcks"
+    group: microcks
+    
+  annotations:
+    
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - "microcks-microcks.192.168.99.100.nip.io"
+    secretName: microcks-microcks-ingress-secret
+  rules:
+  - host: "microcks-microcks.192.168.99.100.nip.io"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: "microcks"
+            port:
+              number: 8080

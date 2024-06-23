@@ -1,0 +1,9 @@
+#! it can be useful to split data values
+#! into multiple files, then combine them
+#! before templating, for example,
+#! to split default and production values
+
+#@ load("@ytt:data", "data")
+
+keys: #@ data.values.keys
+names: #@ data.values.names

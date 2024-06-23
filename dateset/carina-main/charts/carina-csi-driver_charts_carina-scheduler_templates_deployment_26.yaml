@@ -1,0 +1,58 @@
+# Source: carina-csi-driver/charts/carina-scheduler/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release-carina-scheduler
+  labels:
+    class: carina
+    app: csi-carina-scheduler
+    release:  "my-release"
+    helm.sh/chart: carina-scheduler-0.1.0
+    app.kubernetes.io/name: carina-scheduler
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carina-scheduler
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: carina-scheduler
+        app.kubernetes.io/instance: my-release
+    spec:
+      serviceAccountName: carina-scheduler-sa
+      securityContext:
+        {}
+      containers:
+        - name: carina-scheduler
+          securityContext:
+            {}
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/carina-scheduler:v0.11.0"
+          imagePullPolicy: IfNotPresent
+          command: ["carina-scheduler"]
+          args:
+          - --config=/etc/kube/scheduler-config.yaml
+          - --v=3
+          volumeMounts:
+            - name: scheduler-config
+              mountPath: /etc/kube/
+            - name: config
+              mountPath: /etc/carina/
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      volumes:
+        - name: scheduler-config
+          configMap:
+            name: carina-scheduler-config
+        - name: config
+          configMap:
+            name: my-release-csi-config

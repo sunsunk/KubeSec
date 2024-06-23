@@ -1,0 +1,42 @@
+// This assembly is included in:
+//
+// overview/overview.adoc
+// deploying/assembly_deploy-intro.adoc
+
+[id="overview-components_{context}"]
+= Strimzi Operators
+
+[role="_abstract"]
+Operators are a method of packaging, deploying, and managing Kubernetes applications.
+They provide a way to extend the Kubernetes API and simplify the administration tasks associated with specific applications.
+
+Strimzi operators support tasks related to a Kafka deployment.
+Strimzi custom resources provide the deployment configuration.
+This includes configuration for Kafka clusters, topics, users, and other components.
+Leveraging custom resource configuration, Strimzi operators create, configure, and manage Kafka components within a Kubernetes environment.
+Using operators reduces the need for manual intervention and streamlines the process of managing Kafka in a Kubernetes cluster.
+
+Strimzi provides the following operators for managing a Kafka cluster running within a Kubernetes cluster.
+
+Cluster Operator:: Deploys and manages Apache Kafka clusters, Kafka Connect, Kafka MirrorMaker, Kafka Bridge, Kafka Exporter, Cruise Control, and the Entity Operator
+Entity Operator:: Comprises the Topic Operator and User Operator
+Topic Operator:: Manages Kafka topics
+User Operator:: Manages Kafka users
+
+The Cluster Operator can deploy the Topic Operator and User Operator as part of an *Entity Operator* configuration at the same time as a Kafka cluster.
+
+.Operators within the Strimzi architecture
+
+image:operators.png[Operators within the Strimzi architecture]
+
+//description of Cluster Operator
+include::../../modules/overview/con-overview-components-cluster-operator.adoc[leveloffset=+1]
+
+//description of Topic Operator
+include::../../modules/overview/con-overview-components-topic-operator.adoc[leveloffset=+1]
+
+//description of User Operator
+include::../../modules/overview/con-overview-components-user-operator.adoc[leveloffset=+1]
+
+//description of feature gates
+include::../../modules/overview/con-feature-gates-overview.adoc[leveloffset=+1]

@@ -1,0 +1,34 @@
+# Cargo build directory
+/target
+
+# Mbed Crypto key files
+*.psa_its
+
+# Editor swap files
+*.swp
+
+
+tags
+
+# MacOS folder attributes file
+*DS_Store
+
+# VS Code config folder
+*vscode
+
+# Git patch files
+*.patch
+
+# Parsec key info mappings directories
+mappings/
+kim-mappings/
+
+# TPM simulator state file
+NVChip
+.devcontainer
+
+# Quickstart tarball
+quickstart/*.tar.gz
+
+# IDE settings files
+.idea

@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-canary
+  name: dynamic_parameters-canary
+  namespace: dynamic_parameters
+  labels:
+    app.kubernetes.io/name: dynamic_parameters
+    
+    product: aes
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dynamic_parameters
+      app.kubernetes.io/instance: dynamic_parameters
+      profile: canary
+  updateStrategy:
+  strategy:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dynamic_parameters
+        
+        product: aes
+        profile: canary
+      annotations:
+        checksum/config: dynamic_parameters
+    spec:
+      terminationGracePeriodSeconds: dynamic_parameters
+      securityContext:
+      securityContext:
+      restartPolicy: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      volumes:
+        - name: ambassador-pod-info
+          downwardAPI:
+            items:
+              - fieldRef:
+                  fieldPath: metadata.labels
+                path: labels
+        - name: stats-exporter-mapping-config
+          configMap:
+            name: dynamic_parameters-exporter-config
+            items:
+            - key: exporterConfiguration
+              path: mapping-config.yaml
+        - name: ambassador-config
+          configMap:
+            name: dynamic_parameters-file-config
+            items:
+            - key: ambassadorConfig
+              path: ambassador-config.yaml
+      initContainers:
+      - name: wait-for-apiext
+        image: istio/kubectl:1.5.10
+        imagePullPolicy: IfNotPresent
+        securityContext:
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            deployment_name=dynamic_parameters
+            deployment_namespace=dynamic_parameters
+            while true; do
+              echo "checking if deployment/$deployment_name in namespace: $deployment_namespace exists."
+              if kubectl get deployment "$deployment_name" -n $deployment_namespace > /dev/null 2>&1; then
+                echo "$deployment_name.$deployment_namespace exists."
+                echo "checking if $deployment_name.$deployment_namespace is fully available..."
+                kubectl wait --for=condition=available deployment/"$deployment_name" -n $deployment_namespace --timeout=5m
+                if [ $? -eq 0 ]; then
+                  echo "$deployment_name.$deployment_namespace is available"
+                  while true; do
+                  if [[ $current_replicas != $desired_replicas ]]; then
+                    echo "$deployment_name.$deployment_namespace is in the process of restarting. Have: $current_replicas, want $desired_replicas"
+                    sleep 3
+                  else
+                    echo "$deployment_name.$deployment_namespace is fully ready and not currently restarting.  Have: $current_replicas, want $desired_replicas"
+                    break
+                  fi
+                  done
+                  break
+                else
+                  echo "$deployment_name.$deployment_namespace did not become available within the timeout"
+                fi
+              else
+                echo "$deployment_name.$deployment_namespace does not exist yet. Waiting..."
+                sleep 3
+              fi
+            done
+      containers:
+        - name: prometheus-exporter
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - name: metrics
+              containerPort: 9102
+            - name: listener
+              containerPort: 8125
+          args:
+            - --statsd.listen-udp=:8125
+            - --web.listen-address=:9102
+            - --statsd.mapping-config=/statsd-exporter/mapping-config.yaml
+          volumeMounts:
+            - name: stats-exporter-mapping-config
+              mountPath: /statsd-exporter/
+              readOnly: true
+          resources:
+        - name: dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters
+          image: dynamic_parameters
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - name: dynamic_parameters
+              containerPort: dynamic_parameters
+              protocol: dynamic_parameters
+              hostPort: dynamic_parameters
+            - name: admin
+              containerPort: dynamic_parameters
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: STATSD_ENABLED
+              value: "true"
+            - name: STATSD_HOST
+              value: "localhost"
+            - name: AMBASSADOR_SINGLE_NAMESPACE
+              value: "YES"
+            - name: AMBASSADOR_NAMESPACE
+              value: dynamic_parameters
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: dynamic_parameters
+              value: dynamic_parameters
+          securityContext:
+          livenessProbe:
+            httpGet:
+              path: /ambassador/v0/check_alive
+              port: admin
+          readinessProbe:
+            httpGet:
+              path: /ambassador/v0/check_ready
+              port: admin
+          startupProbe:
+            httpGet:
+              path: /ambassador/v0/check_ready
+              port: admin
+          volumeMounts:
+            - name: ambassador-pod-info
+              mountPath: /tmp/ambassador-pod-info
+              readOnly: true
+            - name: ambassador-config
+              mountPath: /ambassador/ambassador-config/ambassador-config.yaml
+              subPath: ambassador-config.yaml
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      imagePullSecrets:
+      dnsPolicy: dynamic_parameters
+      hostNetwork: dynamic_parameters
+
+---

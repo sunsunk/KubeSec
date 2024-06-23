@@ -1,0 +1,37 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: clustermesh-apiserver-generate-certs
+  namespace: dynamic_parameters
+  annotations:
+  labels:
+    app.kubernetes.io/part-of: cilium
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - cilium-ca
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - clustermesh-apiserver-server-cert
+      - clustermesh-apiserver-admin-cert
+      - clustermesh-apiserver-remote-cert
+      - clustermesh-apiserver-client-cert
+    verbs:
+      - update
+
+---

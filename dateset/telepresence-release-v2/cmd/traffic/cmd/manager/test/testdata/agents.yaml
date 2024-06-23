@@ -1,0 +1,59 @@
+---
+hello:
+  name: hello
+  namespace: default
+  hostname: hello-abcdef-123
+  product: telepresence-agent
+  version: "1"
+  mechanisms:
+    - name: tcp
+      product: oss
+      version: "1"
+helloPro:
+  name: hello-pro
+  namespace: default
+  hostname: hello-pro-abcdef-123
+  product: telepresence-agent
+  version: "1"
+  mechanisms:
+    - name: tcp
+      product: oss
+      version: "1"
+    - name: http
+      product: plus
+      version: "1"
+    - name: grpc
+      product: plus
+      version: "1"
+demo1:
+  name: demo
+  namespace: default
+  hostname: demo-abcdef-123
+  product: telepresence-agent
+  version: "1"
+  mechanisms:
+    - name: tcp
+      product: oss
+      version: "1"
+    - name: http
+      product: plus
+      version: "1"
+    - name: grpc
+      product: plus
+      version: "1"
+demo2:
+  name: demo
+  namespace: default
+  hostname: demo-abcdef-456
+  product: telepresence-agent
+  version: "1"
+  mechanisms:
+    - name: grpc
+      product: plus
+      version: "1"
+    - name: tcp
+      product: oss
+      version: "1"
+    - name: http
+      product: plus
+      version: "1"

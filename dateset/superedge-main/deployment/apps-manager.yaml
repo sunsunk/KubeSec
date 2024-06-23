@@ -1,0 +1,113 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apps-manager-service-account
+  namespace: edge-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: apps-manager-cluster-role
+rules:
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - "*"
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - nodes
+      - services
+      - secrets
+      - namespaces
+      - events
+    verbs:
+      - "*"
+  - apiGroups:
+      - apps.superedge.io
+    resources:
+      - "*"
+    verbs:
+      - "*"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: apps-manager-cluster-role-binding
+  namespace: edge-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apps-manager-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: apps-manager-service-account
+    namespace: edge-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: apps-manager
+  name: apps-manager
+  namespace: edge-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: apps-manager
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 10%
+  template:
+    metadata:
+      labels:
+        k8s-app: apps-manager
+    spec:
+      serviceAccount: apps-manager-service-account
+      serviceAccountName: apps-manager-service-account
+      priorityClassName: system-node-critical
+      hostNetwork: true
+      restartPolicy: Always
+      containers:
+        - name: apps-manager
+          image: superedge.tencentcloudcr.com/superedge/apps-manager:v0.7.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /usr/local/bin/apps-manager
+            - --hostname=$(NODE_NAME)
+            - v=4
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+          resources:
+            limits:
+              cpu: 50m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/kubernetes/manifests/
+              name: kube-manifests
+            - mountPath: /etc/kubernetes/edge-manifests/
+              name: edge-manifests
+      volumes:
+        - hostPath:
+            path: /etc/kubernetes/edge-manifests/
+            type: DirectoryOrCreate
+          name: edge-manifests
+        - hostPath:
+            path: /etc/kubernetes/manifests/
+            type: DirectoryOrCreate
+          name: kube-manifests
+

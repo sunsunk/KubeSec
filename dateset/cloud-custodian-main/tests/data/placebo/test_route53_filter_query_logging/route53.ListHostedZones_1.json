@@ -1,0 +1,30 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "HostedZones": [
+            {
+                "Id": "/hostedzone/Z0423603VKO3K9HA5YQD",
+                "Name": "custodian.io.",
+                "CallerReference": "6aaa3172-47b9-4c2e-84aa-acd9081fa3fa",
+                "Config": {
+                    "Comment": "custodian.io",
+                    "PrivateZone": false
+                },
+                "ResourceRecordSetCount": 2
+            },
+            {
+                "Id": "/hostedzone/Z10481101M6AKWLAEHU70",
+                "Name": "vpc.internal.",
+                "CallerReference": "2022-11-15 09:29:34.722",
+                "Config": {
+                    "Comment": "Private Route53 hosted zone - vpc-0d9dd54496f180583",
+                    "PrivateZone": true
+                },
+                "ResourceRecordSetCount": 2
+            }
+        ],
+        "IsTruncated": false,
+        "MaxItems": "100"
+    }
+}

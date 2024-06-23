@@ -1,0 +1,7 @@
+^> juice-shop@\S+ start
+^> node build/app
+^info: 
+^\(node:18\) \[DEP0152\] DeprecationWarning: Custom PerformanceEntry accessors are deprecated. Please use the detail property.
+^\(Use `node --trace-deprecation ...` to show where the warning was created\)
+^info: Port 3000 is available \(OK\)
+^info: Server listening on port 3000

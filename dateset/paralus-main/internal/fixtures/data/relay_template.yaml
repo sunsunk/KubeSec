@@ -1,0 +1,231 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: paralus-system
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paralus-kube-proxy-audit
+  namespace: paralus-system
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+ 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: paralus-kube-proxy
+  name: paralus-kube-proxy
+  namespace: paralus-system
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels:
+      app: paralus-kube-proxy
+  template:
+    metadata:
+      labels:
+        app: paralus-kube-proxy
+    spec:
+      containers:
+      - args:
+        - --mode=server
+        - --log-level=3
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: PARALUS_RELAY_PEERSERVICE
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.peering.host
+              name: paralus-kube-proxy-config
+        - name: SENTRY_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.addr
+              name: paralus-kube-proxy-config
+        - name: BOOTSTRAP_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.addr
+              name: paralus-kube-proxy-config
+        - name: RELAY_PEERING_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: peer.token
+              name: paralus-kube-proxy-config
+        - name: RELAY_USER_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: user.token
+              name: paralus-kube-proxy-config
+        - name: RELAY_USER_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: user.host.port
+              name: paralus-kube-proxy-config
+        - name: RELAY_CONNECTOR_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: connector.token
+              name: paralus-kube-proxy-config
+        - name: RELAY_CONNECTOR_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: connector.host.port
+              name: paralus-kube-proxy-config
+        - name: RELAY_NETWORK_ID
+          valueFrom:
+            configMapKeyRef:
+              key: relaynetwork.id
+              name: paralus-kube-proxy-config
+              
+        - name: AUDIT_PATH
+          valueFrom:
+            configMapKeyRef:
+              key: audit.path
+              name: paralus-kube-proxy-config
+        image: "{{ .DownloadData.RelayImage }}"
+        imagePullPolicy: IfNotPresent
+        name: paralus-kube-proxy
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/paralus/audit
+          name: audit
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: audit
+        persistentVolumeClaim:
+          claimName: paralus-kube-proxy-audit
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paralus-kube-proxy-config
+  namespace: paralus-system
+data:
+  audit.path: "/opt/paralus/audit"
+  sentry.addr: "{{ .DownloadData.SentryAddr }}"
+  sentry.peering.host: "{{ .DownloadData.PeerHost }}"
+  peer.token: "{{ .DownloadData.PeerToken }}"
+  user.token: "{{ .DownloadData.UserToken }}"
+  connector.token: "{{ .DownloadData.ConnectorToken }}"
+  connector.host.port: "{{ .DownloadData.RelayHostPort }}"
+  user.host.port: "{{ .DownloadData.UserHostPort }}"
+  relaynetwork.id: "{{ .DownloadData.RelayNetworkID }}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paralus-kube-proxy
+  namespace: paralus-system
+spec:
+  ports:
+  - name: tcp-relay
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  - name: http-relay-monitoring
+    port: 8003
+    protocol: TCP
+    targetPort: 8003
+  selector:
+    app: paralus-kube-proxy
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app: paralus-kube-proxy-tail
+  name: paralus-kube-proxy-tail
+  namespace: paralus-system
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paralus-kube-proxy-tail
+  template:
+    metadata:
+      labels:
+        app: paralus-kube-proxy-tail
+    spec:
+      containers:
+      - args:
+        - --mode=tail
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: PARALUS_RELAY_PEERSERVICE
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.peering.host
+              name: paralus-kube-proxy-config
+        - name: SENTRY_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.addr
+              name: paralus-kube-proxy-config
+        - name: BOOTSTRAP_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: sentry.addr
+              name: paralus-kube-proxy-config
+        - name: RELAY_PEERING_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: peer.token
+              name: paralus-kube-proxy-config
+        - name: AUDIT_PATH
+          valueFrom:
+            configMapKeyRef:
+              key: audit.path
+              name: paralus-kube-proxy-config
+        image: "{{ .DownloadData.RelayImage }}"
+        imagePullPolicy: IfNotPresent
+        name: paralus-kube-proxy-tail
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/paralus/audit
+          name: audit
+      volumes:
+      - name: audit
+        persistentVolumeClaim:
+          claimName: paralus-kube-proxy-audit

@@ -1,0 +1,24 @@
+---
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: linstor-satellite
+  patch: |
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: linstor-satellite
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: $VOLUME_NAME
+              hostPath:
+                path: $HOST_PATH
+                type: DirectoryOrCreate
+          containers:
+            - name: linstor-satellite
+              volumeMounts:
+                - name: $VOLUME_NAME
+                  mountPath: $HOST_PATH

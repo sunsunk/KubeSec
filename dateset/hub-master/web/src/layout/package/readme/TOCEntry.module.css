@@ -1,0 +1,20 @@
+.btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.dropdownItem:hover {
+  background-color: var(--color-black-5);
+}
+
+.level0 {
+  padding-left: 1.5rem;
+}
+
+.level1 {
+  padding-left: 2.5rem;
+}
+
+.level2 {
+  padding-left: 3.5rem;
+}

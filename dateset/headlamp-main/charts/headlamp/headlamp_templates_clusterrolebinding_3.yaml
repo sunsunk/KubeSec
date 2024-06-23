@@ -1,0 +1,19 @@
+# Source: headlamp/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-release-headlamp-admin
+  labels:
+    helm.sh/chart: headlamp-0.20.0
+    app.kubernetes.io/name: headlamp
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.23.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: my-release-headlamp
+  namespace: default

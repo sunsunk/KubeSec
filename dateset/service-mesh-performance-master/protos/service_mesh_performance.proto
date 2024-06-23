@@ -1,0 +1,209 @@
+syntax = "proto3";
+
+package smp;
+
+option csharp_namespace = "Smp";
+option go_package = "./spec;smp";
+option java_multiple_files = true;
+option java_outer_classname = "ServiceMeshPerformanceProto";
+option java_package = "com.smp";
+option objc_class_prefix = "smp";
+option php_namespace = "Smp";
+option ruby_package = "Smp";
+
+import "google/protobuf/timestamp.proto";
+import "protos/metadata.proto";
+import "protos/service_mesh.proto";
+
+message PerformanceTestConfig {
+  message Client {
+    enum Protocol {
+      PROTOCOL_INVALID = 0;
+      PROTOCOL_HTTP = 1;
+      PROTOCOL_TCP = 2;
+      PROTOCOL_UDP = 3;
+      PROTOCOL_GRPC = 4;
+    }
+    bool internal = 1;
+    string load_generator = 2;
+    Protocol protocol = 3;
+    int32 connections = 4;
+    int64 rps = 5;
+    map<string, string> headers = 6;
+    map<string, string> cookies = 7;
+    string body = 8;
+    string content_type = 9;
+    repeated string endpoint_urls = 10;
+    string ssl_certificate = 11;
+    string additional_options = 12;
+  }
+  // Spec version
+  string smp_version = 1;
+  string id = 2;
+  string name = 3;
+  map<string, string> labels = 4;
+  // Single or distributed load generators
+  repeated Client clients = 5;
+  // Length of time the endpoint will be under load
+  string duration = 6;
+}
+
+message PerformanceTestResult {
+  // latency histogram in ms and average
+  message Latency {
+    double min = 1;
+    double average = 2;
+    double p50 = 3;
+    double p90 = 4;
+    double p99 = 5;
+    double max = 6;
+  }
+  // Spec version
+  string smp_version = 1;
+  string id = 2;
+  map<string, string> labels = 3;
+  // All times in UTC
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  Latency latencies_ms = 6;
+  double actual_qps = 7;
+  string details_uri = 8;
+  string test_id = 9;
+  string mesh_config_id = 10;
+  string env_id = 11;
+  // CPU
+  message CPU {
+    // cpu in mCores
+    int32 cpu_mcores = 1;
+    double user = 2;
+    double nice = 3;
+    double system = 4;
+    double idle = 5;
+    double iowait = 6;
+    double hardware_interrupt = 7;
+    double software_interrupt = 8;
+    double steal = 9;
+  }
+  // Memory
+  message Memory {
+    // memory in MB
+    double mem_total_mb = 1;
+    double mem_free_mb = 2;
+    double mem_used_mb = 3;
+  }
+  // Swap
+  message Swap {
+    // swap in MB
+    double swap_total_mb = 1;
+    double swap_free_mb = 2;
+    double swap_used_mb = 3;
+  }
+}
+
+message ServiceMeshConfig {
+  message IngressGateway {
+    int32 count = 1;
+    // cpu in mCores
+    int32 cpu_mcores = 2;
+    // memory in MB
+    int32 mem_mb = 3;
+    // traffic sent thru ingress gateway
+    int32 rps = 4;
+    // Total bytes sent thru ingress
+    int32 bps = 5;
+  }
+  message EgressGateway {
+    int32 count = 1;
+    // cpu in mCores
+    int32 cpu_mcores = 2;
+    // memory in MB
+    int32 mem_mb = 3;
+    // traffic sent thru egress gateway
+    int32 rps = 4;
+    // Total bytes sent thru egress
+    int32 bps = 5;
+  }
+  message Sidecar {
+    int32 count = 1;
+    // cpu used by all sidecars except ingress / egress
+    int32 cpu_mcores = 2;
+    int32 mem_mb = 3;
+    // Total rps traversing all sidecars
+    int32 rps = 4;
+    // Total bytes sent thru sidecars
+    int32 bps = 5;
+  }
+  message MeshTelemetry {
+    int32 count = 1;
+    // cpu used by all mesh_telemetry pods
+    int32 cpu_mcores = 2;
+    int32 mem_mb = 3;
+    // Total rps traversing all proxies (sidecars+ingress+egress)
+    int32 rps = 4;
+  }
+  message MeshPolicy {
+    int32 count = 1;
+    // cpu used by all mesh_policy pods
+    int32 cpu_mcores = 2;
+    int32 mem_mb = 3;
+    // Total rps traversing all proxies (sidecars+ingress+egress)
+    int32 rps = 4;
+    int32 cache_hit_rate = 5;
+  }
+  message MeshControlPlane {
+    int32 count = 1;
+    // cpu used by mesh_pilot pods
+    int32 cpu_mcores = 2;
+    int32 mem_mb = 3;
+    int32 endpoints = 4;
+    // services + service entries
+    int32 services = 5;
+    int32 sidecars = 6;
+    int32 virtual_services = 7;
+    int32 destination_rules = 8;
+    // how long does it take a listener change to propagate to 90% proxies
+    int32 lds_latency_ms = 9;
+    // how long does it take for cluster change to propagate to 90% proxies
+    int32 cds_latency_ms = 10;
+  }
+  string smp_version = 1;
+  string id = 2;
+  map<string, string> labels = 3;
+  IngressGateway ingress_gateway = 4;
+  Sidecar sidecar = 5;
+  MeshTelemetry mesh_telemetry = 6;
+  MeshPolicy mesh_policy = 7;
+  MeshControlPlane mesh_control_plane = 8;
+  bool mesh_policy_enabled = 9;
+  bool mesh_telemetry_enabled = 10;
+  bool mtls_enabled = 11;
+  int32 proxy_concurrency = 12;
+  string mesh_build = 13;
+  string proxy_build = 14;
+  string exp_group_uuid = 15;
+  string exp_uuid = 16;
+  string profile = 17;
+  ServiceMesh mesh_type = 18;
+  ApplicationMetadata application_metadata = 19;
+}
+
+message EnvironmentConfig {
+  message Node {
+    string type = 1;
+    int32 cores = 2;
+    int64 mem_mb = 3;
+  }
+  message IndividualWorkload {
+    string name = 1;
+    int32 count = 2;
+    int32 cpu_mcores = 3;
+    int32 mem_mb = 4;
+  }
+  string smp_version = 1;
+  string id = 2;
+  map<string, string> labels = 3;
+  string kubernetes_version = 4;
+  repeated Node nodes = 5;
+  repeated IndividualWorkload individual_workloads = 6;
+  TrafficMetadata traffic_metadata = 7;
+}

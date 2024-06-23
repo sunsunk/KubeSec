@@ -1,0 +1,65 @@
+name: ci-test-systemd
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "KubeArmor/**"
+      - "tests/**"
+      - "protobuf/**"
+      - ".github/workflows/ci-test-systemd.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "KubeArmor/**"
+      - "tests/**"
+      - "protobuf/**"
+      - ".github/workflows/ci-test-systemd.yml"
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  build:
+    name: Test KubeArmor in Systemd Mode
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Install the latest LLVM toolchain
+        run: ./.github/workflows/install-llvm.sh
+
+      - name: Compile libbpf
+        run: ./.github/workflows/install-libbpf.sh
+
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          install-only: true
+          version: v1.12.2
+
+      - name: Build Systemd Release
+        run: make local-release
+        working-directory: KubeArmor
+
+      - name: Install KubeArmor
+        run: sudo apt install -y ./dist/kubearmor*amd64.deb
+        working-directory: KubeArmor
+
+      - name: Check journalctl
+        run: sudo journalctl -u kubearmor --no-pager
+      
+      - name: Test kubearmor using ginkgo 
+        run: |
+          go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+          make
+        working-directory: ./tests/nonk8s_env
+        timeout-minutes: 30
+        
+      

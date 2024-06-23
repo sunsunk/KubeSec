@@ -1,0 +1,81 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_docker//container:image.bzl", "container_image")
+load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
+
+package(default_visibility = ["//src/cloud:__subpackages__"])
+
+container_layer(
+    name = "conf",
+    directory = "/usr/local/openresty/nginx/conf",
+    files = [
+        "headers_common.conf",
+        "nginx.conf",
+        "pixie_api.conf",
+        "pixie_cache.conf",
+        "pixie_compression.conf",
+        "pixie_filter.conf",
+        "pixie_health_check.conf",
+        "pixie_server_defaults.conf",
+        "pixie_vars.conf",
+    ],
+)
+
+container_layer(
+    name = "conf_private",
+    directory = "/usr/local/openresty/nginx/conf/private",
+    files = glob(["private/*.conf"]),
+)
+
+container_layer(
+    name = "ui_assets",
+    directory = "/assets",
+    tars = ["//src/ui:ui_bundle"],
+)
+
+container_layer(
+    name = "installer",
+    directory = "/installer",
+    files = [
+        "//src/pixie_cli:installer_script",
+    ],
+)
+
+container_layer(
+    name = "entrypoint",
+    directory = "/scripts",
+    files = [
+        "entrypoint.sh",
+    ],
+)
+
+container_image(
+    name = "proxy_server_image",
+    base = "@openresty//image",
+    entrypoint = ["/scripts/entrypoint.sh"],
+    layers = [
+        ":conf",
+        ":conf_private",
+        ":ui_assets",
+        ":installer",
+        ":entrypoint",
+    ],
+    visibility = [
+        "//k8s:__subpackages__",
+        "//src/cloud:__subpackages__",
+    ],
+)

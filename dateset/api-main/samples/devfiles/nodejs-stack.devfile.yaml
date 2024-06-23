@@ -1,0 +1,48 @@
+schemaVersion: 2.0.0
+metadata:
+  name: nodejs-stack
+projects:
+  - name: project    
+    git:
+      remotes:
+        origin: "https://github.com/che-samples/web-nodejs-sample.git"
+components:
+  - name: nodejs
+    container:
+      image: quay.io/eclipse/che-nodejs10-ubi:nightly
+      memoryLimit: 512Mi
+      endpoints:
+        - name: nodejs
+          protocol: http
+          targetPort: 3000
+      mountSources: true
+commands:
+  - id: download-dependencies
+    exec:
+      component: nodejs
+      commandLine: npm install
+      workingDir: ${PROJECTS_ROOT}/project/app
+      group:
+        kind: build
+  - id: run-the-app
+    exec:
+      component: nodejs
+      commandLine: nodemon app.js
+      workingDir: ${PROJECTS_ROOT}/project/app
+      group:
+        kind: run
+        isDefault: true
+  - id: run-the-app-debugging-enabled
+    exec:
+      component: nodejs
+      commandLine: nodemon --inspect app.js
+      workingDir: ${PROJECTS_ROOT}/project/app
+      group:
+        kind: run
+  - id: stop-the-app
+    exec:
+      component: nodejs
+      commandLine: >-
+          node_server_pids=$(pgrep -fx '.*nodemon (--inspect )?app.js' | tr "\\n" " ") &&
+          echo "Stopping node server with PIDs: ${node_server_pids}" && 
+          kill -15 ${node_server_pids} &>/dev/null && echo 'Done.'

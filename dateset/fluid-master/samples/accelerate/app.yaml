@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fluid-copy-test
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: busybox
+          image: busybox
+          command: ["/bin/sh"]
+          args: ["-c", "set -x; time cp -r /data/hbase ./"]
+          volumeMounts:
+            - mountPath: /data
+              name: hbase-vol
+      volumes:
+        - name: hbase-vol
+          persistentVolumeClaim:
+            claimName: hbase

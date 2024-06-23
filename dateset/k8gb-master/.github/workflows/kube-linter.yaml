@@ -1,0 +1,41 @@
+name: KubeLinter
+
+on:
+  push:
+    paths:
+      - 'chart/k8gb/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'chart/k8gb/**'
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+
+      - name: Create ../results directory for sarif files
+        shell: bash
+        run: mkdir -p ../results
+
+      - name: Scan k8gb chart
+        id: kube-lint-repo
+        uses: stackrox/kube-linter-action@e5759fab01e612c139fe23f264820ba0cf73320c
+        with:
+          directory: chart/k8gb
+          version: 0.2.5
+          format: sarif
+          output-file: ../results/kube-linter.sarif
+
+      - name: Upload sarif output to GitHub
+        uses: github/codeql-action/upload-sarif@84ba7fb56d0ed1dee55d9ad6931750c9fb10117b
+        continue-on-error: true

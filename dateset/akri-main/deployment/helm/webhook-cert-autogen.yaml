@@ -1,0 +1,221 @@
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: akri-webhook-configuration-patch
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: akri-webhook-configuration-patch
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+rules:
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - update
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: akri-webhook-configuration-patch
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: akri-webhook-configuration-patch
+subjects:
+  - kind: ServiceAccount
+    name: akri-webhook-configuration-patch
+    namespace: "default"
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: akri-webhook-configuration-patch
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: akri-webhook-configuration-patch
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: akri-webhook-configuration-patch
+subjects:
+  - kind: ServiceAccount
+    name: akri-webhook-configuration-patch
+    namespace: "default"
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: akri-webhook-configuration-create
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      name: akri-webhook-configuration-create
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: admission-webhook
+    spec:
+      containers:
+        - name: create
+          image: "registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
+          imagePullPolicy: IfNotPresent
+          args:
+            - create
+            - --host=akri-webhook-configuration,akri-webhook-configuration.default.svc
+            - --namespace=default
+            - --secret-name=akri-webhook-configuration
+            - --cert-name=tls.crt
+            - --key-name=tls.key
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      restartPolicy: OnFailure
+      serviceAccountName: akri-webhook-configuration-patch
+
+---
+# Source: akri/templates/webhook-cert-autogen.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: akri-webhook-configuration-patch
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      name: akri-webhook-configuration-patch
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: admission-webhook
+    spec:
+      containers:
+        - name: patch
+          image: "registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
+          imagePullPolicy: IfNotPresent
+          args:
+            - patch
+            - --webhook-name=akri-webhook-configuration
+            - --namespace=default
+            - --patch-mutating=false
+            - --secret-name=akri-webhook-configuration
+            - --patch-failure-policy=Fail
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+      restartPolicy: OnFailure
+      serviceAccountName: akri-webhook-configuration-patch

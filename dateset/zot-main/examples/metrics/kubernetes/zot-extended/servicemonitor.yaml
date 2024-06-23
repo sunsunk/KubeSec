@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: zot-extended
+  labels:
+    app: zot-extended
+spec:
+  endpoints:
+  - interval: 10s
+    port: zot-extended
+    scrapeTimeout: 5s
+    basicAuth:
+      password:
+        name: basic-auth
+        key: password
+      username:
+        name: basic-auth
+        key: user
+  selector:
+    matchLabels:
+      app: zot-extended
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+data:
+  password: bWV0cmljcw== # metrics
+  user: bWV0cmljcw==     # metrics
+type: Opaque
+

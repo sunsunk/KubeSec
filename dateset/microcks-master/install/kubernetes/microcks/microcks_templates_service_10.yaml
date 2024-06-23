@@ -1,0 +1,25 @@
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks"
+  labels:
+    app: "microcks"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    name: spring
+  type: "ClusterIP"
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: spring
+    group: microcks

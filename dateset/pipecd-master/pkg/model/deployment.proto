@@ -1,0 +1,157 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+import "pkg/model/common.proto";
+
+// DeploymentStatus represents the current status of a deployment.
+enum DeploymentStatus {
+    // DEPLOYMENT_PENDING means the deployment has just been triggered but still in the queue.
+    // The stages for generated at this time are just temporary and not fixed.
+    DEPLOYMENT_PENDING = 0;
+    // DEPLOYMENT_PLANNED means the deployment has just been decided the running pipeline.
+    // At this time, the stages are fixed and not changed later.
+    DEPLOYMENT_PLANNED = 1;
+    // DEPLOYMENT_RUNNING means the controller is controlling this deployment.
+    DEPLOYMENT_RUNNING = 2;
+    // DEPLOYMENT_ROLLING_BACK means the controller is rolling back this deployment.
+    DEPLOYMENT_ROLLING_BACK = 3;
+    // DEPLOYMENT_SUCCESS means the deployment was completed successfully.
+    DEPLOYMENT_SUCCESS = 4;
+    // DEPLOYMENT_FAILURE means the deployment was completed with a failure.
+    DEPLOYMENT_FAILURE = 5;
+    // DEPLOYMENT_CANCELLED means the deployment was cancelled by someone.
+    DEPLOYMENT_CANCELLED = 6;
+}
+
+// StageStatus represents the current status of a stage of a deployment.
+enum StageStatus {
+    STAGE_NOT_STARTED_YET = 0;
+    STAGE_RUNNING = 1;
+    STAGE_SUCCESS = 2;
+    STAGE_FAILURE = 3;
+    STAGE_CANCELLED = 4;
+    STAGE_SKIPPED = 5;
+    STAGE_EXITED = 6;
+}
+
+// Deployment represents a particular deployment for an application.
+// When a new deployment can be created:
+// - New commit was added and it mades a change on application configuration.
+// - User clicked on Sync button at application web page.
+// - Triggered by another deployment.
+message Deployment {
+    reserved 4;
+
+    // The generated unique identifier.
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string application_id = 2 [(validate.rules).string.min_len = 1];
+    string application_name = 3 [(validate.rules).string.min_len = 1];
+    string piped_id = 5 [(validate.rules).string.min_len = 1];
+    string project_id = 6 [(validate.rules).string.min_len = 1];
+    ApplicationKind kind = 7 [(validate.rules).enum.defined_only = true];
+    ApplicationGitPath git_path = 8 [(validate.rules).message.required = true];
+    // The name of cloud provider where to deploy this application.
+    // This must be one of the provider names registered in the piped.
+    // Deprecated: use PlatformProvider instead.
+    string cloud_provider = 9 [deprecated=true];
+    // The name of platform provider where to deploy this application.
+    // This must be one of the provider names registered in the piped.
+    string platform_provider = 11;
+
+    // Custom attributes to identify applications.
+    map<string, string> labels = 10;
+
+    DeploymentTrigger trigger = 20 [(validate.rules).message.required = true];
+    // Simple description about what this deployment does.
+    // e.g. Scale from 10 to 100 replicas.
+    // e.g. Update image from v1.5.0 to v1.6.0.
+    string summary = 22;
+    // TODO: Remove version from deployment model.
+    string version = 23;
+    repeated ArtifactVersion versions = 24;
+
+    // Hash value of the most recently successfully deployed commit.
+    string running_commit_hash = 21;
+    string running_config_filename = 60;
+
+    DeploymentStatus status = 30 [(validate.rules).enum.defined_only = true];
+    // The human-readable description why the deployment is at current status.
+    string status_reason = 31;
+    repeated PipelineStage stages = 32;
+    map<string,string> metadata = 33;
+
+    // Reference to the chain which the deployment belongs to.
+    // Empty means the deployment is a standalone deployment.
+    string deployment_chain_id = 40;
+    // Index represents the offset of the node which this deployment
+    // belongs to.
+    uint32 deployment_chain_block_index = 41;
+
+    int64 completed_at = 100 [(validate.rules).int64.gte = 0];
+    int64 created_at = 101 [(validate.rules).int64.gte = 0];
+    int64 updated_at = 102 [(validate.rules).int64.gte = 0];
+}
+
+enum TriggerKind {
+    ON_COMMIT = 0;
+    ON_COMMAND = 1;
+    ON_OUT_OF_SYNC = 2;
+    ON_CHAIN = 3;
+}
+
+message DeploymentTrigger {
+    Commit commit = 1 [(validate.rules).message.required = true];
+    // Who triggered this deployment via web page.
+    string commander= 2;
+    int64 timestamp = 3 [(validate.rules).int64.gt = 0];
+    SyncStrategy sync_strategy = 4;
+    string strategy_summary = 5;
+}
+
+message PipelineStage {
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string desc = 3;
+    // Stage index from the stage list in configuration.
+    int32 index = 4;
+    // Whether this stage is the predefined one by planner.
+    bool predefined = 5;
+    repeated string requires = 6;
+    // Whether this stage should be rendered or not.
+    bool visible = 7;
+    StageStatus status = 8 [(validate.rules).enum.defined_only = true];
+    // The human-readable description why the stage is at current status.
+    string status_reason = 9;
+    map<string,string> metadata = 10;
+    int32 retried_count = 11;
+    int64 completed_at = 13 [(validate.rules).int64.gte = 0];
+    int64 created_at = 14 [(validate.rules).int64.gt = 0];
+    int64 updated_at = 15 [(validate.rules).int64.gt = 0];
+}
+
+message Commit {
+    string hash = 1 [(validate.rules).string.min_len = 1];
+    string message = 2 [(validate.rules).string.min_len = 1];
+    string author = 3 [(validate.rules).string.min_len = 1];
+    string branch = 4 [(validate.rules).string.min_len = 1];
+    int64 pull_request = 5;
+    string url = 6;
+    int64 created_at = 14 [(validate.rules).int64.gt = 0];
+}

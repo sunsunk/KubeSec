@@ -1,0 +1,14 @@
+# Source: hwameistor/templates/api-server.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-apiserver
+  namespace: default
+  labels:
+    app: hwameistor-apiserver
+spec:
+  selector:
+    app: hwameistor-apiserver
+  ports:
+    - port: 80
+      targetPort: http

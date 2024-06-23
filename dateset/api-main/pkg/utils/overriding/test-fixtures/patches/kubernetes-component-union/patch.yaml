@@ -1,0 +1,6 @@
+components:
+
+
+  - name: component-to-update
+    kubernetes:
+      uri: "componentToUpdateUri"

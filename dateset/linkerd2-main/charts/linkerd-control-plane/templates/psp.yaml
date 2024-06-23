@@ -1,0 +1,91 @@
+---
+###
+### Control Plane PSP
+###
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: linkerd-dynamic_parameters-control-plane
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "runtime/default"
+  labels:
+    linkerd.io/control-plane-ns: dynamic_parameters
+spec:
+  allowPrivilegeEscalation: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  allowedCapabilities:
+  - NET_ADMIN
+  - NET_RAW
+  requiredDropCapabilities:
+  - ALL
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  seLinux:
+    rule: RunAsAny
+  runAsUser:
+    rule: MustRunAsNonRoot
+    rule: RunAsAny
+  supplementalGroups:
+    rule: MustRunAs
+    ranges:
+    - min: 10001
+      max: 65535
+    - min: 1
+      max: 65535
+  fsGroup:
+    rule: MustRunAs
+    ranges:
+    - min: 10001
+      max: 65535
+    - min: 1
+      max: 65535
+  volumes:
+  - configMap
+  - emptyDir
+  - secret
+  - projected
+  - downwardAPI
+  - persistentVolumeClaim
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: linkerd-psp
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-ns: dynamic_parameters
+rules:
+- apiGroups: ['policy', 'extensions']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames:
+  - linkerd-dynamic_parameters-control-plane
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: linkerd-psp
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-ns: dynamic_parameters
+roleRef:
+  kind: Role
+  name: linkerd-psp
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: linkerd-destination
+  namespace: dynamic_parameters
+- kind: ServiceAccount
+  name: linkerd-heartbeat
+  namespace: dynamic_parameters
+- kind: ServiceAccount
+  name: linkerd-identity
+  namespace: dynamic_parameters
+- kind: ServiceAccount
+  name: linkerd-proxy-injector
+  namespace: dynamic_parameters
+
+---

@@ -1,0 +1,60 @@
+.list {
+  max-height: 310px;
+}
+
+.dropdown {
+  top: 45px;
+  max-width: 95%;
+  width: 390px;
+}
+
+.btn {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.25rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  line-height: 1rem;
+  margin-top: 1px;
+}
+
+.btn path {
+  stroke: inherit;
+}
+
+.icon {
+  top: -1px;
+}
+
+.titleWrapper {
+  margin: 25px 0 15px 0;
+}
+
+.title {
+  font-size: 1.85rem;
+}
+
+.minWidth {
+  width: 1%;
+}
+
+.title p {
+  margin-bottom: 0;
+}
+
+.supportLinkWrapper {
+  margin-top: 0.6rem;
+}
+
+@media only screen and (max-width: 575.98px) {
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .supportLinkWrapper {
+    margin-top: 0.25rem;
+  }
+
+  .btn {
+    margin-top: 3px;
+  }
+}

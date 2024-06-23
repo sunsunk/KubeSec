@@ -1,0 +1,85 @@
+name: Basic e2e test
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - ubuntu-latest
+        - windows-latest
+
+    name: e2e ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      with:
+        go-version-file: 'go.mod'
+        check-latest: true
+
+    - name: Build and run ko container
+      env:
+        KO_DOCKER_REPO: ko.local
+      shell: bash
+      run: |
+        set -o errexit
+        set -o nounset
+        set -o pipefail
+        set -x
+
+        # Check that building without push prints the tag (and sha)
+        KO_DOCKER_REPO="" go run ./ build --push=false ./test | grep ":latest@sha256:"
+        KO_DOCKER_REPO="" go run ./ build --push=false -t test ./test | grep ":test@sha256:"
+        KO_DOCKER_REPO="" go run ./ build --push=false -t test --tag-only ./test | grep ":test$"
+
+        # Check that using sbom-dir works.
+        KO_DOCKER_REPO=""  go run ./ build -t test --push=false --sbom-dir ./sbom-data ./test
+        jq . ./sbom-data/test-linux-amd64.spdx.json
+
+        # Check that using sbom-dir works for multi-arch
+        KO_DOCKER_REPO=""  go run ./ build --platform=linux/amd64,linux/arm64 -t test --push=false --sbom-dir ./sbom-data2 ./test
+        jq . ./sbom-data2/test-index.spdx.json
+        jq . ./sbom-data2/test-linux-amd64.spdx.json
+        jq . ./sbom-data2/test-linux-arm64.spdx.json
+
+        export PLATFORM=$(go env GOOS)/$(go env GOARCH)
+
+        if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+          OSVERSION="10.0.20348"
+          PLATFORM=${PLATFORM}:${OSVERSION}
+          export KO_DEFAULTBASEIMAGE=mcr.microsoft.com/windows/nanoserver:ltsc2022
+        else
+          # Explicitly test multiple platform builds (a subset of what's in the base!)
+          export PLATFORM=${PLATFORM},linux/arm64
+        fi
+
+        echo platform is ${PLATFORM}
+        # Build and run the ko binary, which should be runnable.
+        docker run $(go run ./ build ./ --platform=${PLATFORM} --preserve-import-paths) version
+
+        # Build and run the test/ binary, which should log "Hello there" served from KO_DATA_PATH
+        testimg=$(go run ./ build ./test --platform=${PLATFORM} --preserve-import-paths)
+        docker run ${testimg} --wait=false 2>&1 | tee >(grep "Hello there") # Log all output too.
+
+        # Check that symlinks in kodata are chased.
+        # Skip this test on Windows.
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          docker run ${testimg} --wait=false -f b
+        fi
+
+        # Check that using ldflags to set variables works.
+        cat > .ko.yaml << EOF
+        builds:
+        - id: test
+          main: ./test/
+          ldflags:
+          - "-X main.version=${{ github.sha }}"
+        EOF
+        docker run $(go run ./ build ./test/ --platform=${PLATFORM}) --wait=false 2>&1 | grep "${{ github.sha }}"

@@ -1,0 +1,183 @@
+[build]
+  base = "site/"
+  command = "hugo --gc --minify"
+  publish = "site/public"
+
+  [build.environment]
+    HUGO_VERSION = "0.119.0"
+
+[context.production.environment]
+  HUGO_ENV = "production"
+  HUGO_ENABLEGITINFO = "true"
+
+[context.split1]
+  command = "hugo --gc --minify --enableGitInfo"
+
+  [context.split1.environment]
+    HUGO_ENV = "production"
+
+[context.deploy-preview]
+  command = "hugo --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"
+
+[context.branch-deploy]
+  command = "hugo --gc --minify -b $DEPLOY_PRIME_URL"
+
+[context.next.environment]
+  HUGO_ENABLEGITINFO = "true"
+
+[build.processing]
+  skip_processing = true # -> Disable post-processing. Asset optimization is deprecated.
+
+# Reference documentation
+# Optimization blog post: https://www.netlify.com/blog/2019/08/05/control-your-asset-optimization-settings-from-netlify.toml/
+# How to guide: https://docs.netlify.com/configure-builds/file-based-configuration/#post-processing
+# Hugo on Netlify docs: https://gohugo.io/hosting-and-deployment/hosting-on-netlify/
+
+###################
+# Contour redirects
+###################
+
+# Redirect /quickstart/contour.yaml to the deployment that matches :latest.
+#
+# kubectl apply https://projectcontour.io/quickstart/contour.yaml
+[[redirects]]
+  from = "/quickstart/contour.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/release-1.28/examples/render/contour.yaml"
+  status = 302
+
+# Redirect versioned quickstarts so that they can easily be referenced by
+# users or for upgrade testing.
+#
+# kubectl apply https://projectcontour.io/quickstart/v1.4.0/contour.yaml
+[[redirects]]
+  from = "/quickstart/*/contour.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/:splat/examples/render/contour.yaml"
+  status = 302
+
+# Redirect /quickstart/contour-gateway.yaml to the example Contour-Gateway manifest that matches :latest.
+#
+# kubectl apply https://projectcontour.io/quickstart/contour-gateway.yaml
+[[redirects]]
+  from = "/quickstart/contour-gateway.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/release-1.28/examples/render/contour-gateway.yaml"
+  status = 302
+
+# Redirect versioned quickstarts so that they can easily be referenced by
+# users or for upgrade testing.
+#
+# kubectl apply https://projectcontour.io/quickstart/v1.4.0/contour-gateway.yaml
+[[redirects]]
+  from = "/quickstart/*/contour-gateway.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/:splat/examples/render/contour-gateway.yaml"
+  status = 302
+
+# Redirect /quickstart/contour-gateway-provisioner.yaml to the Gateway provisioner manifest that matches :latest.
+#
+# kubectl apply https://projectcontour.io/quickstart/contour-gateway-provisioner.yaml
+[[redirects]]
+  from = "/quickstart/contour-gateway-provisioner.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/release-1.28/examples/render/contour-gateway-provisioner.yaml"
+  status = 302
+
+# Redirect versioned quickstarts so that they can easily be referenced by
+# users or for upgrade testing.
+#
+# kubectl apply https://projectcontour.io/quickstart/v1.4.0/contour-gateway-provisioner.yaml
+[[redirects]]
+  from = "/quickstart/*/contour-gateway-provisioner.yaml"
+  to = "https://raw.githubusercontent.com/projectcontour/contour/:splat/examples/render/contour-gateway-provisioner.yaml"
+  status = 302
+
+#####################################
+# One-time version redirects for move
+# to major-minor docs -- do not edit
+#####################################
+[[redirects]]
+  from = "/docs/v1.24.1/*"
+  to = "/docs/1.24/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.24.0/*"
+  to = "/docs/1.24/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.23.3/*"
+  to = "/docs/1.23/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.23.2/*"
+  to = "/docs/1.23/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.23.1/*"
+  to = "/docs/1.23/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.23.0/*"
+  to = "/docs/1.23/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.22.4/*"
+  to = "/docs/1.22/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.22.3/*"
+  to = "/docs/1.22/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.22.2/*"
+  to = "/docs/1.22/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.22.1/*"
+  to = "/docs/1.22/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.22.0/*"
+  to = "/docs/1.22/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.21.3/*"
+  to = "/docs/1.21/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.21.2/*"
+  to = "/docs/1.21/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.21.1/*"
+  to = "/docs/1.21/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.21.0/*"
+  to = "/docs/1.21/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.20.2/*"
+  to = "/docs/1.20/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.20.1/*"
+  to = "/docs/1.20/:splat"
+  status = 302
+
+[[redirects]]
+  from = "/docs/v1.20.0/*"
+  to = "/docs/1.20/:splat"
+  status = 302

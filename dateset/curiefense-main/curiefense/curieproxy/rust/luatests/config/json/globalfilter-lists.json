@@ -1,0 +1,974 @@
+[
+  {
+    "action": "ye8qyg0h",
+    "active": true,
+    "description": "description",
+    "entries_relation": "OR",
+    "id": "hdrskip",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "header skip=true",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "headers",
+              [
+                "skip",
+                "true"
+              ],
+              "..."
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "skiptrue"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "description",
+    "entries_relation": "OR",
+    "id": "hdrfoobar",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "header foo=bar",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "headers",
+              [
+                "foo",
+                "bar"
+              ],
+              "..."
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "hdrfoobar"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_deny",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args deny",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "deny",
+                "deny"
+              ],
+              "deny"
+            ],
+            [
+              "args",
+              [
+                "deny1",
+                "deny"
+              ],
+              "deny"
+            ],
+            [
+              "args",
+              [
+                "deny:decoded",
+                "deny"
+              ],
+              "deny"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "deny"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_allow",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args allow",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "allow",
+                "allow"
+              ],
+              "allow"
+            ],
+            [
+              "args",
+              [
+                "allow:decoded",
+                "allow"
+              ],
+              "allow"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "allow"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_allowbot",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args allowbot",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "allowbot",
+                "allowbot"
+              ],
+              "allowbot"
+            ],
+            [
+              "args",
+              [
+                "allowbot:decoded",
+                "allowbot"
+              ],
+              "allowbot"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "allowbot"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_denybot",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args denybot",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "denybot",
+                "denybot"
+              ],
+              "denybot"
+            ],
+            [
+              "args",
+              [
+                "denybot:decoded",
+                "denybot"
+              ],
+              "denybot"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "denybot"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_forcedeny",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args forcedeny",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "forcedeny",
+                "forcedeny"
+              ],
+              "forcedeny"
+            ],
+            [
+              "args",
+              [
+                "forcedeny:decoded",
+                "forcedeny"
+              ],
+              "forcedeny"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "forcedeny"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "args",
+    "entries_relation": "OR",
+    "id": "arg_passthrough",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "args passthrough",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "passthrough",
+                "passthrough"
+              ],
+              "passthrough"
+            ],
+            [
+              "args",
+              [
+                "passthrough:decoded",
+                "passthrough"
+              ],
+              "passthrough"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "passthrough"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "New List Description and Remarks",
+    "id": "45f5dda5931e",
+    "mdate": "2021-04-20T14:46:50.195Z",
+    "name": "Sante test",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "headers",
+              [
+                "toto",
+                "simon"
+              ],
+              ""
+            ],
+            [
+              "ip",
+              "1.2.3.4",
+              ""
+            ],
+            [
+              "ip",
+              "4.3.2.1",
+              "comment"
+            ],
+            {
+              "relation": "OR",
+              "entries": [
+                [
+                  "method",
+                  "POST|PUT",
+                  ""
+                ],
+                [
+                  "method",
+                  "GET|HEAD",
+                  "comment 02"
+                ],
+                [
+                  "cookies",
+                  [
+                    "zooloo",
+                    "gooloo"
+                  ],
+                  ""
+                ]
+              ]
+            }
+          ],
+          "relation": "OR"
+        },
+        {
+          "entries": [
+            [
+              "country",
+              "France",
+              "viva"
+            ],
+            [
+              "country",
+              "Italy",
+              ""
+            ],
+            [
+              "query",
+              "foo=bar",
+              ""
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "sante"
+    ]
+  },
+  {
+    "action": "5ktcoafw",
+    "active": true,
+    "description": "...",
+    "entries_relation": "OR",
+    "id": "action_challenge",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "action challenge",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "challenge",
+                ".*"
+              ],
+              "challenge"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "actionchallenge"
+    ]
+  },
+  {
+    "action": "dxfyhx4n",
+    "active": true,
+    "description": "...",
+    "entries_relation": "OR",
+    "id": "action_response",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "action response",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "response",
+                ".*"
+              ],
+              "response"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "actionresponse"
+    ]
+  },
+  {
+    "action": "default",
+    "active": true,
+    "description": "...",
+    "entries_relation": "OR",
+    "id": "action_default",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "action default",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "default",
+                ".*"
+              ],
+              "default"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "actiondefault"
+    ]
+  },
+  {
+    "action": "3lfpo6xe",
+    "active": true,
+    "description": "...",
+    "entries_relation": "OR",
+    "id": "action_redirect",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "action redirect",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "args",
+              [
+                "redirect",
+                ".*"
+              ],
+              "redirect"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "actionredirect"
+    ]
+  },
+  {
+    "action": "default",
+    "active": true,
+    "description": "Check action",
+    "id": "49aea5a8d96b",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "foo",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "ip",
+              "12.13.14.15",
+              null
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "tagbyip"
+    ]
+  },
+  {
+    "action": "default",
+    "active": true,
+    "description": "Check action",
+    "id": "49aea8a8d98b",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "tgb",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "tag",
+              "ip:82-13-14-15",
+              null
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "tagbyiptag"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "Region match",
+    "id": "region_match",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "region match",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "region",
+              "idf",
+              ""
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "francilien"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "Subregion match",
+    "id": "subregion_match",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "subregion match",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "subregion",
+              "75",
+              ""
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "parisien"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "E2E test tag rules",
+    "id": "incl000000001",
+    "mdate": "2020-11-22T00:00:00.000Z",
+    "name": "incl000000001",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "entries": [
+            [
+              "headers",
+              [
+                "Include",
+                "true"
+              ],
+              "annotation"
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "incl000000001"
+    ]
+  },
+  {
+    "action": "addipheader",
+    "active": true,
+    "description": "Add headers",
+    "id": "addheaders",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "add headers",
+    "rule": [
+      "ip",
+      "82.13.8.87",
+      null
+    ],
+    "source": "self-managed",
+    "tags": [
+      "wheaders"
+    ]
+  },
+  {
+    "action": "monitorheader",
+    "active": true,
+    "description": "Monitor request and forward header",
+    "id": "addheaders",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "monitor-header",
+    "rule": [
+      "ip",
+      "82.13.8.89",
+      null
+    ],
+    "source": "self-managed",
+    "tags": [
+      "monitor-header"
+    ]
+  },
+  {
+    "action": "an6yhiyr",
+    "active": true,
+    "description": "Return with content type",
+    "id": "contenttype",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "content type",
+    "rule": [
+      "ip",
+      "82.13.8.88",
+      null
+    ],
+    "source": "self-managed",
+    "tags": [
+      "wcc"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "Return with content type",
+    "id": "contenttype",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "content type",
+    "rule": [
+      "args",
+      [
+        "global",
+        "enabled"
+      ],
+      "gbl"
+    ],
+    "source": "self-managed",
+    "tags": [
+      "global-trigger"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "flow last step",
+    "entries_relation": "OR",
+    "id": "flowlaststep",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "marker for the last step of flow control rules",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.example.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/flowheader",
+              "..."
+            ],
+            [
+              "args",
+              [
+                "step",
+                "^2$"
+              ],
+              "..."
+            ]
+          ]
+        },
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.example.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/action",
+              "..."
+            ],
+            [
+              "args",
+              [
+                "step",
+                "^3$"
+              ],
+              "..."
+            ]
+          ]
+        },
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.example.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/step3",
+              "..."
+            ]
+          ]
+        },
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.example.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/fcban2",
+              "..."
+            ]
+          ]
+        },
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.collision.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/step2",
+              "..."
+            ]
+          ]
+        },
+        {
+          "relation": "AND",
+          "entries": [
+            [
+              "authority",
+              "www.byquery.com",
+              "..."
+            ],
+            [
+              "path",
+              "/flow-test/fc/by-query-step2",
+              "..."
+            ]
+          ]
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "flow-last-step"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "Check JWT email",
+    "id": "jwt-email",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "jwt email",
+    "rule": [
+      "plugins",
+      [
+        "jwt.email",
+        "^.*@secure\\.domain$"
+      ],
+      "comment"
+    ],
+    "source": "self-managed",
+    "tags": [
+      "jwtemail"
+    ]
+  },
+  {
+    "action": "header1",
+    "active": true,
+    "description": "header 1",
+    "id": "header1",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "header 1",
+    "rule": [
+      "path",
+      "/header_acc_1",
+      "..."
+    ],
+    "source": "self-managed",
+    "tags": [
+      "header1"
+    ]
+  },
+  {
+    "action": "header2",
+    "active": true,
+    "description": "header 2",
+    "id": "header2",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "header 2",
+    "rule": [
+      "plugins",
+      [
+        "header.test",
+        "yes"
+      ],
+      "..."
+    ],
+    "source": "self-managed",
+    "tags": [
+      "header2"
+    ]
+  },
+  {
+    "action": "monitor",
+    "active": true,
+    "description": "Branch marker",
+    "id": "branchmarker",
+    "mdate": "2021-07-01T09:50:58.505Z",
+    "name": "branch marker",
+    "rule": [
+      "path",
+      "/branch/tag/test",
+      "..."
+    ],
+    "source": "self-managed",
+    "tags": [
+      "branch:test"
+    ]
+  },
+  {
+    "id": "filter-header",
+    "name": "Filter header",
+    "description": "Filter a particual header value",
+    "tags": [],
+    "active": true,
+    "action": "ye8qyg0h",
+    "rule": {
+      "relation": "OR",
+      "entries": [
+        [
+          "headers",
+          [
+            "test-global-filter-trigger",
+            "header_value"
+          ],
+          ""
+        ]
+      ]
+    },
+    "mdate": "",
+    "source": "self-managed"
+  },
+  {
+    "action": "5ktcoafw",
+    "active": true,
+    "description": "run the challenge with a global filter",
+    "entries_relation": "OR",
+    "id": "gfchallenge",
+    "mdate": "2020-05-23T00:04:41",
+    "name": "gf challenge",
+    "rule": {
+      "relation": "AND",
+      "entries": [
+        {
+          "entries": [
+            [
+              "headers",
+              [
+                "gfchallenge",
+                "true"
+              ],
+              "..."
+            ]
+          ],
+          "relation": "OR"
+        }
+      ]
+    },
+    "source": "self-managed",
+    "tags": [
+      "gfchallenge"
+    ]
+  }
+]

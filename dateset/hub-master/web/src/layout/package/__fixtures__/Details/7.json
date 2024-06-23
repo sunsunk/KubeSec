@@ -1,0 +1,13 @@
+{
+  "packageId": "id",
+  "name": "chartmuseum",
+  "appVersion": "1.1.1",
+  "repository": {
+    "repositoryid": "id",
+    "kind": 0,
+    "name": "incubator",
+    "organizationName": "helm",
+    "organizationDisplayName": "Helm"
+  },
+  "keywords": ["test", "helm", "charts repo"]
+}

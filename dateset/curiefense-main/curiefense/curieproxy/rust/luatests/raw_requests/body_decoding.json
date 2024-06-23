@@ -1,0 +1,488 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/json",
+      "content-type": "application/json",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "{\"deny\": \"deny\"}",
+    "name": "correctly decode json (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectjson",
+        "contentfiltername:expect-json",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectjson",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/json",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "{\"accept\": \"accept\"}",
+    "name": "no content type json (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 473,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect json",
+          "section": "body",
+          "trigger_id": "expectjson",
+          "type": "malformed body",
+          "actual": "no content type specified",
+          "expected": "[Json]",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectjson",
+        "contentfiltername:expect-json",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectjson",
+        "jsonmatched",
+        "status:473",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/json",
+      "content-type": "text/xml",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "{\"accept\": \"accept\"}",
+    "name": "wrong content type json (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 473,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect json",
+          "section": "body",
+          "trigger_id": "expectjson",
+          "type": "malformed body",
+          "actual": "content type is text\/xml",
+          "expected": "[Json]",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectjson",
+        "contentfiltername:expect-json",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectjson",
+        "jsonmatched",
+        "status:473",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/xml",
+      "content-type": "text/xml",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny>deny</deny>",
+    "name": "correctly decode xml (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny1",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectxml",
+        "contentfiltername:expect-xml",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectxml",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/xml",
+      "content-type": "text/xml",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny deny</deny>",
+    "name": "malformed xml (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect xml",
+          "section": "body",
+          "trigger_id": "expectxml",
+          "type": "malformed body",
+          "actual": "invalid attribute at 1:6 cause expected '=' not '<' at 1:11",
+          "expected": "well-formed",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectxml",
+        "contentfiltername:expect-xml",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectxml",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/xml",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny>deny</deny>",
+    "name": "no content type xml (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect xml",
+          "section": "body",
+          "trigger_id": "expectxml",
+          "type": "malformed body",
+          "actual": "no content type specified",
+          "expected": "[Xml]",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectxml",
+        "contentfiltername:expect-xml",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectxml",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/xml",
+      "content-type": "application/json",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny>deny</deny>",
+    "name": "wrong content type xml (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect xml",
+          "section": "body",
+          "trigger_id": "expectxml",
+          "type": "malformed body",
+          "actual": "content type is application\/json",
+          "expected": "[Xml]",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectxml",
+        "contentfiltername:expect-xml",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectxml",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/all",
+      "content-type": "application/json",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny>deny</deny>",
+    "name": "wrong content type xml, expect all (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "cf_restrict_triggers": [
+        {
+          "trigger_name": "expect all",
+          "section": "body",
+          "trigger_id": "expectall",
+          "type": "malformed body",
+          "actual": "expected value at line 1 column 1",
+          "expected": "well-formed",
+          "action": "custom"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectall",
+        "contentfiltername:expect-all",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectall",
+        "status:403",
+        "status-class:4xx",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/all",
+      "content-type": "application/json",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "{\"deny\": \"deny\"}",
+    "name": "json, expect all (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectall",
+        "contentfiltername:expect-all",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectall",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "deny"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "POST",
+      ":path": "/content-filter/expect/all",
+      "content-type": "text/xml",
+      "user-agent": "dummy",
+      "x-forwarded-for": "3.4.5.5"
+    },
+    "body": "<deny>deny</deny>",
+    "name": "xml, expect all (block)",
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny1",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:1",
+        "all",
+        "ip:3-4-5-5",
+        "network:3-4-5-0-24",
+        "sante",
+        "securitypolicy-entry:expectall",
+        "contentfiltername:expect-all",
+        "securitypolicy:default-entry",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfilterid:expectall",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "deny"
+      ]
+    }
+  }
+]

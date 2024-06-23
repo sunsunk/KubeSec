@@ -1,0 +1,14 @@
+name: member-001
+cluster-name: cluster-test
+cluster-role: primary
+cluster-client-url: http://127.0.0.1:2379
+cluster-peer-url: http://127.0.0.1:2380
+cluster-join-urls:
+api-addr: 127.0.0.1:2381
+data-dir: ./data
+wal-dir: ""
+cpu-profile-file:
+memory-profile-file:
+log-dir: ./log
+member-dir: ./member
+debug: false

@@ -1,0 +1,105 @@
+name: Terratest
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
+      - '**.drawio'
+      - '.spelling'
+  pull_request:
+    branches:
+      - master
+    # The specific activity types are listed here to include "labeled" and "unlabeled"
+    # (which are not included by default for the "pull_request" trigger).
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
+      - '**.drawio'
+      - '.spelling'
+permissions:
+  contents: read
+
+jobs:
+  skip-check:
+    runs-on: ubuntu-latest
+    name: Skip the job?
+    outputs:
+          should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+      with:
+        egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+    - id: skip_check
+      uses: fkirc/skip-duplicate-actions@f54720a485d24225d7ee6918004908e5025fec19
+      with:
+        skip_after_successful_duplicate: 'true'
+        do_not_skip: '["workflow_dispatch", "schedule"]'
+
+  terratest:
+    runs-on: ubuntu-22.04
+    needs: skip-check
+    if: ${{ needs.skip-check.outputs.should_skip != 'true' }} && !contains( github.event.pull_request.labels.*.name, 'renovate')
+    steps:
+      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@bfd2fb341f32be7281829126376a12a780ca79fc
+        with:
+          go-version: 1.19.1
+
+      - name: Build artifacts
+        uses: goreleaser/goreleaser-action@c21f56a7bc891b5f73bec61233c4102ef8273150
+        with:
+          version: v1.9.2
+          args: release --rm-dist --skip-publish --skip-validate --snapshot --skip-sbom --skip-sign
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create edgeDNS k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "edgedns"
+          args: -c k3d/edge-dns.yaml
+
+      - name: Create 1st k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "test-gslb1"
+          args: -c k3d/test-gslb1.yaml
+
+      - name: Create 2nd k3s Cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79
+        with:
+          cluster-name: "test-gslb2"
+          args: -c k3d/test-gslb2.yaml
+
+      - name: K8GB deployment
+        run: |
+          make deploy-test-version list-running-pods
+          echo "Cluster 1 (eu):"
+          kubectl get no -owide --context=k3d-test-gslb1
+          echo "Cluster 2 (us):"
+          kubectl get no -owide --context=k3d-test-gslb2
+
+      - name: Run Terratest
+        run: |
+          mkdir -p ${{ github.workspace }}/tmp/terratest
+          set -o pipefail
+          echo "::group::Terratest logs"
+          make terratest | tee ${{ github.workspace }}/tmp/terratest/all.log
+          echo "::endgroup::"
+
+      - name: Print debug info
+        if: always()
+        uses: ./.github/actions/print-debug
+
+      - uses: actions/upload-artifact@ef09cdac3e2d3e60d8ccadda691f4f1cec5035cb
+        if: always()
+        with:
+          name: terratest-logs
+          path: ${{ github.workspace }}/tmp/terratest

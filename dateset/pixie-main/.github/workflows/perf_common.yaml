@@ -1,0 +1,129 @@
+---
+name: perf-eval-common
+on:
+  workflow_call:
+    inputs:
+      suites:
+        required: true
+        description: "Comma separated list of suites to run"
+        type: string
+      ref:
+        required: false
+        default: ''
+        type: string
+      tags:
+        type: string
+        required: false
+        description: "Comma separated list of tags to add to experiments"
+    outputs:
+      experiments:
+        description: "JSON array of the experiments completed (including datastudio links and experiment names)"
+        value: ${{ jobs.get-perf-outputs.outputs.experiments }}
+    secrets:
+      PERF_GCLOUD_KEY:
+        required: true
+      PERF_PX_API_KEY:
+        required: true
+permissions:
+  contents: read
+jobs:
+  get-dev-image-with-extras:
+    uses: ./.github/workflows/get_image.yaml
+    with:
+      image-base-name: "dev_image_with_extras"
+      ref: ${{ inputs.ref }}
+  generate-perf-matrix:
+    needs: get-dev-image-with-extras
+    runs-on: ubuntu-latest-16-cores
+    container:
+      image: ${{ needs.get-dev-image-with-extras.outputs.image-with-tag }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        ref: ${{ inputs.ref }}
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - name: Use github bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Set matrix
+      id: set-matrix
+      run: |
+        matrix="$(bazel run //src/e2e_test/perf_tool -- github_matrix --suite="${{ inputs.suites }}")"
+        echo "Perf matrix: ${matrix}"
+        echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+  run-perf-eval:
+    needs: [get-dev-image-with-extras, generate-perf-matrix]
+    runs-on: ubuntu-latest-16-cores
+    container:
+      image: ${{ needs.get-dev-image-with-extras.outputs.image-with-tag }}
+    strategy:
+      matrix: ${{ fromJson(needs.generate-perf-matrix.outputs.matrix) }}
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        ref: ${{ inputs.ref }}
+        fetch-depth: 0
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - id: get-commit-sha
+      run: |
+        git log
+        echo "commit-sha=$(git log -n 1 --format="%H")" >> $GITHUB_OUTPUT
+    - name: Use github bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        download_toplevel: 'true'
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Install Pixie CLI
+      run: |
+        bazel build -c opt //src/pixie_cli:px
+        p="$(bazel cquery -c opt //src/pixie_cli:px --output starlark --starlark:expr 'target.files.to_list()[0].path')"
+        cp "${p}" /usr/bin/px
+    - id: gcloud-creds
+      uses: ./.github/actions/gcloud_creds
+      with:
+        SERVICE_ACCOUNT_KEY: ${{ secrets.PERF_GCLOUD_KEY }}
+    - name: Run perf for ${{ matrix.suite }}/${{ matrix.experiment_name }}
+      id: run-perf
+      env:
+        PX_API_KEY: ${{ secrets.PERF_PX_API_KEY }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.gcloud-creds.outputs.gcloud-creds }}
+      # yamllint disable rule:indentation
+      run: |
+        echo "$GOOGLE_APPLICATION_CREDENTIALS"
+        bazel run //src/e2e_test/perf_tool -- run --commit_sha "${{ steps.get-commit-sha.outputs.commit-sha }}" \
+          --gke_project pixie-oss \
+          --bq_project pixie-oss \
+          --container_repo "gcr.io/pixie-oss/pixie-perf" \
+          --ds_report_id "9701de3b-f906-4dd2-a1e9-48ca0b1e07e6" \
+          --tags "${{ inputs.tags }}" \
+          --suite "${{ matrix.suite }}" \
+          --experiment_name "${{ matrix.experiment_name }}" > run_output
+      # yamllint enable rule:indentation
+    - name: deactivate gcloud service account
+      run: gcloud auth revoke
+    # Github actions doesn't have native support for gathering outputs from matrix runs.
+    # So we upload an artifact for each one and gather them ourselves in `get-perf-outputs`.
+    - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce  # v3.1.2
+      with:
+        name: ${{ hashFiles('run_output') }}
+        path: run_output
+        if-no-files-found: error
+  get-perf-outputs:
+    runs-on: ubuntu-latest
+    if: success() || failure()
+    needs: run-perf-eval
+    outputs:
+      experiments: ${{ steps.get-outputs.outputs.run_output }}
+    steps:
+    - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a  # v3.0.2
+    - id: get-outputs
+      run: |
+        all_run_output="$(cat */run_output | jq --slurp -c '.[]')"
+        echo "${all_run_output}" | jq
+        echo "run_output=${all_run_output}" >> $GITHUB_OUTPUT

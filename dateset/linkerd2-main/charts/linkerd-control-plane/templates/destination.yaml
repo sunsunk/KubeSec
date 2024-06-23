@@ -1,0 +1,308 @@
+---
+###
+### Destination Controller Service
+###
+kind: Service
+apiVersion: v1
+metadata:
+  name: linkerd-dst
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  type: ClusterIP
+  selector:
+    linkerd.io/control-plane-component: destination
+  ports:
+  - name: grpc
+    port: 8086
+    targetPort: 8086
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: linkerd-dst-headless
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  clusterIP: None
+  selector:
+    linkerd.io/control-plane-component: destination
+  ports:
+  - name: grpc
+    port: 8086
+    targetPort: 8086
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: linkerd-sp-validator
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  type: ClusterIP
+  selector:
+    linkerd.io/control-plane-component: destination
+  ports:
+  - name: sp-validator
+    port: 443
+    targetPort: sp-validator
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: linkerd-policy
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  clusterIP: None
+  selector:
+    linkerd.io/control-plane-component: destination
+  ports:
+  - name: grpc
+    port: 8090
+    targetPort: 8090
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: linkerd-policy-validator
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  type: ClusterIP
+  selector:
+    linkerd.io/control-plane-component: destination
+  ports:
+  - name: policy-https
+    port: 443
+    targetPort: policy-https
+---
+kind: PodDisruptionBudget
+apiVersion: policy/v1
+metadata:
+  name: linkerd-dst
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  annotations:
+spec:
+  maxUnavailable: dynamic_parameters
+  selector:
+    matchLabels:
+      linkerd.io/control-plane-component: destination
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app.kubernetes.io/name: destination
+    app.kubernetes.io/part-of: Linkerd
+    app.kubernetes.io/version: dynamic_parameters
+    linkerd.io/control-plane-component: destination
+    linkerd.io/control-plane-ns: dynamic_parameters
+  name: linkerd-destination
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      linkerd.io/control-plane-component: destination
+      linkerd.io/control-plane-ns: dynamic_parameters
+      
+  strategy:
+  template:
+    metadata:
+      annotations:
+        checksum/config: dynamic_parameters
+        
+        config.linkerd.io/default-inbound-policy: "all-unauthenticated"
+      labels:
+        linkerd.io/control-plane-component: destination
+        linkerd.io/control-plane-ns: dynamic_parameters
+        linkerd.io/workload-ns: dynamic_parameters
+        
+    spec:
+      runtimeClassName: dynamic_parameters
+      
+      
+      
+      containers:
+        The pod needs to accept webhook traffic, and we can't rely on that originating in the
+        cluster network.
+      - 
+      - args:
+        - destination
+        - -addr=:8086
+        - -controller-namespace=dynamic_parameters
+        - -enable-h2-upgrade=dynamic_parameters
+        - -log-level=dynamic_parameters
+        - -log-format=dynamic_parameters
+        - -enable-endpoint-slices=dynamic_parameters
+        - -cluster-domain=dynamic_parameters
+        - -identity-trust-domain=dynamic_parameters
+        - -default-opaque-ports=dynamic_parameters
+        - -enable-pprof=dynamic_parameters
+        - dynamic_parameters
+        - dynamic_parameters
+        env:
+        
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 9996
+          initialDelaySeconds: 10
+        name: destination
+        ports:
+        - containerPort: 8086
+          name: grpc
+        - containerPort: 9996
+          name: admin-http
+        readinessProbe:
+          failureThreshold: 7
+          httpGet:
+            path: /ready
+            port: 9996
+        
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: dynamic_parameters
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+      - args:
+        - sp-validator
+        - -log-level=dynamic_parameters
+        - -log-format=dynamic_parameters
+        - -enable-pprof=dynamic_parameters
+        env:
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 9997
+          initialDelaySeconds: 10
+        name: sp-validator
+        ports:
+        - containerPort: 8443
+          name: sp-validator
+        - containerPort: 9997
+          name: admin-http
+        readinessProbe:
+          failureThreshold: 7
+          httpGet:
+            path: /ready
+            port: 9997
+        
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: dynamic_parameters
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /var/run/linkerd/tls
+          name: sp-tls
+          readOnly: true
+      - args:
+        - --admin-addr=[::]:9990
+        - --control-plane-namespace=dynamic_parameters
+        - --grpc-addr=[::]:8090
+        - --server-addr=[::]:9443
+        - --server-tls-key=/var/run/linkerd/tls/tls.key
+        - --server-tls-certs=/var/run/linkerd/tls/tls.crt
+        - --cluster-networks=dynamic_parameters
+        - --identity-domain=dynamic_parameters
+        - --cluster-domain=dynamic_parameters
+        - --default-policy=dynamic_parameters
+        - --log-level=dynamic_parameters
+        - --log-format=dynamic_parameters
+        - --default-opaque-ports=dynamic_parameters
+        - --probe-networks=dynamic_parameters
+        - dynamic_parameters
+        - dynamic_parameters
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: admin-http
+        name: policy
+        ports:
+        - containerPort: 8090
+          name: grpc
+        - containerPort: 9990
+          name: admin-http
+        - containerPort: 9443
+          name: policy-https
+        readinessProbe:
+          failureThreshold: 7
+          httpGet:
+            path: /ready
+            port: admin-http
+          initialDelaySeconds: 10
+        
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: dynamic_parameters
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /var/run/linkerd/tls
+          name: policy-tls
+          readOnly: true
+      initContainers:
+      - 
+        The destination controller needs to connect to the Kubernetes API before the proxy is able
+        to proxy requests, so we always skip these connections.
+      - 
+      - 
+      priorityClassName: dynamic_parameters
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: linkerd-destination
+      volumes:
+      - name: sp-tls
+        secret:
+          secretName: linkerd-sp-validator-k8s-tls
+      - name: policy-tls
+        secret:
+          secretName: linkerd-policy-validator-k8s-tls
+      - 
+      - 
+      - 
+
+---

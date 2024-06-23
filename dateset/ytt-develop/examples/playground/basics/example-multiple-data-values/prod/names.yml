@@ -1,0 +1,8 @@
+#@ load("@ytt:overlay", "overlay")
+#@data/values
+---
+names:
+#@overlay/match by=overlay.subset("default.example.com")
+#@overlay/remove
+-
+- production.example.com

@@ -1,0 +1,136 @@
+{
+  "index_patterns": [
+    "curieaccesslog-*"
+  ],
+  "template": {
+    "settings": {},
+    "mappings": {
+      "properties": {
+        "timestamp": {
+          "type": "date_nanos"
+        },
+        "curiesession": {
+          "type": "keyword"
+        },
+        "curiesession_ids": {
+          "type": "flattened"
+        },
+        "request_id": {
+          "type": "keyword"
+        },
+        "arguments": {
+          "type": "flattened"
+        },
+        "path": {
+          "type": "keyword"
+        },
+        "path_parts": {
+          "type": "flattened"
+        },
+        "branch": {
+          "type": "keyword"
+        },
+        "authority": {
+          "type": "keyword"
+        },
+        "cookies": {
+          "type": "flattened"
+        },
+        "headers": {
+          "type": "flattened"
+        },
+        "plugins": {
+          "type": "flattened"
+        },
+        "query": {
+          "type": "keyword"
+        },
+        "ip": {
+          "type": "ip"
+        },
+        "method": {
+          "type": "keyword"
+        },
+        "response_code": {
+          "type": "integer"
+        },
+        "logs": {
+          "type": "text"
+        },
+        "processing_stage": {
+          "type": "integer"
+        },
+        "acl_triggers": {
+          "type": "nested"
+        },
+        "rl_triggers": {
+          "type": "nested"
+        },
+        "gf_triggers": {
+          "type": "nested"
+        },
+        "cf_triggers": {
+          "type": "nested"
+        },
+        "cf_restrict_triggers": {
+          "type": "nested"
+        },
+        "reason": {
+          "type": "text"
+        },
+        "tags": {
+          "type": "text"
+        },
+        "proxy": {
+          "type": "flattened"
+        },
+        "security_config": {
+          "type": "object",
+          "properties": {
+            "gf_rules": {
+              "type": "integer"
+            },
+            "rl_rules": {
+              "type": "integer"
+            },
+            "revision": {
+              "type": "keyword"
+            },
+            "acl_active": {
+              "type": "boolean"
+            },
+            "cf_active": {
+              "type": "boolean"
+            },
+            "cf_rules": {
+              "type": "integer"
+            }
+          }
+        },
+        "trigger_counters": {
+          "type": "object",
+          "properties": {
+            "acl": {
+              "type": "integer"
+            },
+            "cf": {
+              "type": "integer"
+            },
+            "gf": {
+              "type": "integer"
+            },
+            "rl": {
+              "type": "integer"
+            },
+            "cf_restrict": {
+              "type": "integer"
+            }
+          }
+        },
+        "profiling": {
+          "type": "flattened"
+        }
+      }
+    }
+  }
+}

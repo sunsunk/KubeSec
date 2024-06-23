@@ -1,0 +1,16 @@
+# Source: carina-csi-driver/templates/tests/deploy-demo.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: carina-raw-ssd-testpvc
+  namespace: default
+  annotations:
+    helm.sh/hook: test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: carina-raw-ssd
+  volumeMode: Filesystem

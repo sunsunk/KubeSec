@@ -1,0 +1,833 @@
+{
+  "$id": "https://porter.sh/schema/v1/manifest.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": {
+    "items": {
+      "anyOf": [
+        {
+          "$ref": "#/mixin.exec/definitions/invokeStep"
+        },
+        {
+          "$ref": "#/mixin.testmixin/definitions/invokeStep"
+        }
+      ]
+    },
+    "type": "array"
+  },
+  "definitions": {
+    "applyTo": {
+      "description": "An optional exhaustive list of actions that apply to this item. When none are specified, all actions apply.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "bundle": {
+      "description": "The definition of a bundle reference",
+      "properties": {
+        "reference": {
+          "description": "The full bundle reference for the dependency in the format REGISTRY/NAME:TAG",
+          "type": "string"
+        },
+        "version": {
+          "description": "Bundle version constraint for version matching, see https://github.com/Masterminds/semver/blob/master/README.md#checking-version-constraints",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference"
+      ],
+      "type": "object"
+    },
+    "credential": {
+      "description": "Credential defines a particular credential, and where it should be placed in the invocation image",
+      "properties": {
+        "applyTo": {
+          "$ref": "#/definitions/applyTo"
+        },
+        "description": {
+          "description": "A user-friendly description of this credential",
+          "type": "string"
+        },
+        "env": {
+          "description": "The environment variable name, such as MY_VALUE, into which the credential value is stored",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of this credential",
+          "type": "string"
+        },
+        "path": {
+          "description": "The path inside of the invocation image where credentials will be mounted",
+          "type": "string"
+        },
+        "required": {
+          "description": "Indicates whether this credential must be supplied. By default, credentials are optional.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "customAction": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "description": "A description of the custom action",
+          "type": "string"
+        },
+        "modifies": {
+          "description": "Specifies that the action will modify resources in any way.",
+          "type": "boolean"
+        },
+        "stateless": {
+          "description": "Specifies that the action does not act on a claim, and does not require credentials.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "dependency": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle": {
+          "$ref": "#/definitions/bundle"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of parameter names to a parameter source, such as bundle.parameters.PARAM, bundle.dependencies.DEP.outputs.OUTPUT, or bundle.credentials.CRED",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "bundle"
+      ],
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": false,
+      "description": "An image represents an application image used in a bundle",
+      "properties": {
+        "description": {
+          "description": "A user-friendly description of this image",
+          "type": "string"
+        },
+        "digest": {
+          "description": "The content digest of the image, i.e. sha256:cafebabe...",
+          "type": "string"
+        },
+        "imageType": {
+          "description": "The type of this image, i.e. docker",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key/value pairs that used to specify identifying attributes of images",
+          "type": "object"
+        },
+        "mediaType": {
+          "description": "The media type of the image",
+          "type": "string"
+        },
+        "repository": {
+          "description": "The repository portion of the image reference, i.e. deislabs/coolapp",
+          "type": "string"
+        },
+        "size": {
+          "description": "The size of the image",
+          "type": "integer"
+        },
+        "tag": {
+          "description": "The tag the image",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository"
+      ],
+      "type": "object"
+    },
+    "maintainer": {
+      "additionalProperties": false,
+      "description": "Bundle Maintainer",
+      "properties": {
+        "email": {
+          "description": "Email of the maintainer",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the maintainer",
+          "type": "string"
+        },
+        "url": {
+          "description": "Url of the maintainer",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "output": {
+      "allOf": [
+        {
+          "$ref": "https://porter.sh/schema/json-schema.json"
+        },
+        {
+          "properties": {
+            "applyTo": {
+              "$ref": "#/definitions/applyTo"
+            },
+            "description": {
+              "description": "A user-friendly description of this output",
+              "type": "string"
+            },
+            "name": {
+              "description": "The name of this output",
+              "type": "string"
+            },
+            "path": {
+              "description": "The path to the location of the output",
+              "type": "string"
+            },
+            "sensitive": {
+              "description": "Indicates whether this output's value is sensitive and should not be logged.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        }
+      ],
+      "description": "A value that is produced by running an invocation image"
+    },
+    "parameter": {
+      "allOf": [
+        {
+          "$ref": "https://porter.sh/schema/json-schema.json"
+        },
+        {
+          "properties": {
+            "applyTo": {
+              "$ref": "#/definitions/applyTo"
+            },
+            "description": {
+              "description": "A user-friendly description of this parameter",
+              "type": "string"
+            },
+            "env": {
+              "description": "The environment variable name, such as MY_VALUE, in which the parameter value is stored",
+              "type": "string"
+            },
+            "name": {
+              "description": "The name of this parameter",
+              "type": "string"
+            },
+            "path": {
+              "description": "The path inside of the invocation image where parameter data is mounted",
+              "type": "string"
+            },
+            "sensitive": {
+              "description": "Indicates whether this parameter's value is sensitive and should not be logged.",
+              "type": "boolean"
+            },
+            "source": {
+              "additionalProperties": false,
+              "description": "Indicates that the parameter should get its value from an external source.",
+              "properties": {
+                "dependency": {
+                  "description": "The name of the dependency that generated the output. If not set, the output must be generated by the current bundle.",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "output": {
+                  "description": "An output name. The parameter's value is set to output's last value.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "output"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        }
+      ],
+      "description": "A parameter that can be passed into the invocation image"
+    },
+    "stateVar": {
+      "description": "A state variable that is generated by the bundle and injected on subsequent runs.",
+      "properties": {
+        "description": {
+          "description": "Description of how the variable is used by the bundle.",
+          "type": "string"
+        },
+        "mixin": {
+          "description": "The name of the mixin that generates and manages this state variable",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of this state variable",
+          "type": "string"
+        },
+        "path": {
+          "description": "The path inside of the invocation image where the state variable data is mounted",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "path"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Describes the format of the Porter manifest, porter.yaml. This does not include the schema of the mixins, use the porter schema command to generate a schema document that includes all installed mixins.",
+  "mixin.exec": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": {
+      "items": {
+        "$ref": "#/mixin.exec/definitions/invokeStep"
+      },
+      "type": "array"
+    },
+    "definitions": {
+      "exec": {
+        "additionalProperties": false,
+        "description": "A step that is executed by the exec mixin",
+        "properties": {
+          "arguments": {
+            "description": "Positional arguments to pass to the command before any flags",
+            "items": {
+              "minItems": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "command": {
+            "description": "The name of the command to run",
+            "type": "string"
+          },
+          "description": {
+            "description": "A description of the mixin step",
+            "type": "string"
+          },
+          "dir": {
+            "description": "The directory in which to execute the command",
+            "type": "string"
+          },
+          "envs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Environment variables to add to the env of the command",
+            "type": "object"
+          },
+          "flags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Flags to pass to the command",
+            "type": "object"
+          },
+          "ignoreError": {
+            "additionalProperties": false,
+            "description": "Ignore the command's errors under certain conditions",
+            "properties": {
+              "all": {
+                "description": "Ignore all errors",
+                "type": "boolean"
+              },
+              "exitCodes": {
+                "description": "Ignore errors when one of the following exit codes are returned",
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              "output": {
+                "additionalProperties": false,
+                "description": "Ignore errors when the command's stderr meets certain conditions",
+                "properties": {
+                  "contains": {
+                    "description": "Ignore errors when stderr contains any of the following strings",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "regex": {
+                    "description": "Ignore errors when stderr matches any of the following regular expressions",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "outputs": {
+            "description": "List of outputs to capture from the command output",
+            "items": {
+              "additionalProperties": false,
+              "oneOf": [
+                {
+                  "required": [
+                    "jsonPath"
+                  ]
+                },
+                {
+                  "required": [
+                    "regex"
+                  ]
+                },
+                {
+                  "required": [
+                    "path"
+                  ]
+                }
+              ],
+              "properties": {
+                "jsonPath": {
+                  "description": "A json path expression that should be executed against the command's stdout to use as the output value",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The output name",
+                  "type": "string"
+                },
+                "path": {
+                  "description": "A path to a file that was generated by the command to use as the output value",
+                  "type": "string"
+                },
+                "regex": {
+                  "description": "A regular expression that should be executed against the command's stdout to use as the output value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "suffix-arguments": {
+            "description": "Positional arguments to pass to the command after any flags",
+            "items": {
+              "minItems": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "suppress-output": {
+            "description": "Do not print output from the command",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "type": "object"
+      },
+      "installStep": {
+        "additionalProperties": false,
+        "properties": {
+          "exec": {
+            "$ref": "#/mixin.exec/definitions/exec"
+          }
+        },
+        "required": [
+          "exec"
+        ],
+        "type": "object"
+      },
+      "invokeStep": {
+        "additionalProperties": false,
+        "properties": {
+          "exec": {
+            "$ref": "#/mixin.exec/definitions/exec"
+          }
+        },
+        "required": [
+          "exec"
+        ],
+        "type": "object"
+      },
+      "uninstallStep": {
+        "additionalProperties": false,
+        "properties": {
+          "exec": {
+            "$ref": "#/mixin.exec/definitions/exec"
+          }
+        },
+        "required": [
+          "exec"
+        ],
+        "type": "object"
+      },
+      "upgradeStep": {
+        "additionalProperties": false,
+        "properties": {
+          "exec": {
+            "$ref": "#/mixin.exec/definitions/exec"
+          }
+        },
+        "required": [
+          "exec"
+        ],
+        "type": "object"
+      }
+    },
+    "properties": {
+      "install": {
+        "items": {
+          "$ref": "#/mixin.exec/definitions/installStep"
+        },
+        "type": "array"
+      },
+      "uninstall": {
+        "items": {
+          "$ref": "#/mixin.exec/definitions/uninstallStep"
+        },
+        "type": "array"
+      },
+      "upgrade": {
+        "items": {
+          "$ref": "#/mixin.exec/definitions/upgradeStep"
+        },
+        "type": "array"
+      }
+    },
+    "type": "object"
+  },
+  "mixin.testmixin": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": {
+      "items": {
+        "$ref": "#/mixin.testmixin/definitions/invokeStep"
+      },
+      "type": "array"
+    },
+    "definitions": {
+      "config": {
+        "additionalProperties": false,
+        "description": "Configuration that can be set when the mixin is declared",
+        "properties": {
+          "testmixin": {
+            "additionalProperties": false,
+            "description": "test mixin configuration",
+            "properties": {
+              "clientVersion": {
+                "description": "Version of the client to install in the bundle",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "installStep": {
+        "additionalProperties": false,
+        "properties": {
+          "testmixin": {
+            "$ref": "#/mixin.testmixin/definitions/testmixin"
+          }
+        },
+        "required": [
+          "testmixin"
+        ],
+        "type": "object"
+      },
+      "invokeStep": {
+        "additionalProperties": false,
+        "properties": {
+          "testmixin": {
+            "$ref": "#/mixin.testmixin/definitions/testmixin"
+          }
+        },
+        "required": [
+          "testmixin"
+        ],
+        "type": "object"
+      },
+      "testmixin": {
+        "additionalProperties": false,
+        "description": "A step that is executed by the test mixin",
+        "properties": {
+          "description": {
+            "description": "A description of the mixin step",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "type": "object"
+      },
+      "uninstallStep": {
+        "additionalProperties": false,
+        "properties": {
+          "testmixin": {
+            "$ref": "#/mixin.testmixin/definitions/testmixin"
+          }
+        },
+        "required": [
+          "testmixin"
+        ],
+        "type": "object"
+      },
+      "upgradeStep": {
+        "additionalProperties": false,
+        "properties": {
+          "testmixin": {
+            "$ref": "#/mixin.testmixin/definitions/testmixin"
+          }
+        },
+        "required": [
+          "testmixin"
+        ],
+        "type": "object"
+      }
+    },
+    "properties": {
+      "install": {
+        "items": {
+          "$ref": "#/mixin.testmixin/definitions/installStep"
+        },
+        "type": "array"
+      },
+      "uninstall": {
+        "items": {
+          "$ref": "#/mixin.testmixin/definitions/uninstallStep"
+        },
+        "type": "array"
+      },
+      "upgrade": {
+        "items": {
+          "$ref": "#/mixin.testmixin/definitions/upgradeStep"
+        },
+        "type": "array"
+      }
+    },
+    "type": "object"
+  },
+  "properties": {
+    "credentials": {
+      "description": "Credentials to be injected into the invocation image",
+      "items": {
+        "$ref": "#/definitions/credential"
+      },
+      "type": "array"
+    },
+    "custom": {
+      "additionalProperties": true,
+      "description": "Custom bundle metadata",
+      "type": "object"
+    },
+    "customActions": {
+      "additionalProperties": {
+        "$ref": "#/definitions/customAction"
+      },
+      "type": "object"
+    },
+    "dependencies": {
+      "additionalProperties": false,
+      "description": "Dependent bundles that must be executed with the bundle",
+      "properties": {
+        "requires": {
+          "description": "Required dependent bundles",
+          "items": {
+            "$ref": "#/definitions/dependency"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "requires"
+      ],
+      "type": "object"
+    },
+    "description": {
+      "description": "A description of the bundle",
+      "type": "string"
+    },
+    "dockerfile": {
+      "description": "The relative path to a Dockerfile to use as a template during porter build",
+      "type": "string"
+    },
+    "images": {
+      "additionalProperties": {
+        "$ref": "#/definitions/image"
+      },
+      "type": "object"
+    },
+    "install": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/mixin.exec/definitions/installStep"
+          },
+          {
+            "$ref": "#/mixin.testmixin/definitions/installStep"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "maintainers": {
+      "description": "Bundle maintainers",
+      "items": {
+        "$ref": "#/definitions/maintainer"
+      },
+      "type": "array"
+    },
+    "mixins": {
+      "items": {
+        "oneOf": [
+          {
+            "description": "Declare a mixin without configuration",
+            "enum": [
+              "exec",
+              "testmixin"
+            ],
+            "type": "string"
+          },
+          {
+            "$ref": "#/mixin.testmixin/definitions/config"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "name": {
+      "description": "The name of the bundle",
+      "type": "string"
+    },
+    "outputs": {
+      "description": "Values that are produced by executing the invocation image",
+      "items": {
+        "$ref": "#/definitions/output"
+      },
+      "type": "array"
+    },
+    "parameters": {
+      "description": "Parameters that can be injected into the invocation image",
+      "items": {
+        "$ref": "#/definitions/parameter"
+      },
+      "type": "array"
+    },
+    "reference": {
+      "description": "The full reference to use when the bundle is published to an OCI registry",
+      "type": "string"
+    },
+    "registry": {
+      "description": "The OCI registry to use when the bundle is published",
+      "type": "string"
+    },
+    "required": {
+      "additionalItems": true,
+      "description": "Required extensions for this bundle",
+      "items": [
+        {
+          "properties": {
+            "docker": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "privileged": {
+                  "description": "Option to set the --privileged flag when running the Docker container",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": [
+            "string",
+            "object"
+          ]
+        }
+      ],
+      "type": "array",
+      "uniqueItems": true
+    },
+    "schemaType": {
+      "default": "Bundle",
+      "description": "The resource type of the current document.",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "default": "1.0.1",
+      "description": "The version of the schema used in this file",
+      "type": "string"
+    },
+    "state": {
+      "description": "State variables that are generated by the bundle and injected on subsequent runs.",
+      "items": {
+        "$ref": "#/definitions/stateVar"
+      },
+      "type": "array"
+    },
+    "uninstall": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/mixin.exec/definitions/uninstallStep"
+          },
+          {
+            "$ref": "#/mixin.testmixin/definitions/uninstallStep"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "upgrade": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/mixin.exec/definitions/upgradeStep"
+          },
+          {
+            "$ref": "#/mixin.testmixin/definitions/upgradeStep"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "The version of the bundle, uses semver",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "name",
+    "mixins",
+    "install",
+    "upgrade",
+    "uninstall"
+  ],
+  "title": "Porter manifest json schema",
+  "type": "object"
+}

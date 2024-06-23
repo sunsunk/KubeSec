@@ -1,0 +1,102 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.go"
+      - "**/*.yaml"
+      - "**/*.sh"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/test.yml"
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/test.yml"
+
+env:
+  GO_VERSION: "1.21"
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Set up Go 1.x.y
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Test
+        shell: bash
+        run: |
+          make test TEST_FLAGS="-race -coverprofile=coverage.txt -covermode=atomic"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3.1.4
+        with:
+          file: ./coverage.txt
+  test-win:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Set up Go 1.x.y
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Test
+        run: |
+          go mod verify
+          go mod download
+          go test -v -gcflags "all=-l" ./pkg/...
+  integration-test-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Set up Go 1.x.y
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Test
+        run: |
+          make integration_test
+
+  test-build-wasmhost:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Set up Go 1.x.y
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Checkout codebase
+        uses: actions/checkout@v3
+
+      - name: Test
+        run: |
+          make wasm

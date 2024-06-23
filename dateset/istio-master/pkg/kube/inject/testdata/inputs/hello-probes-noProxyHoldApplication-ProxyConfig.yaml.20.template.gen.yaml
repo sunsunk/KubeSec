@@ -1,0 +1,1312 @@
+# defaultTemplates defines the default template to use for pods that do not explicitly specify a template
+defaultTemplates: [sidecar]
+policy: enabled
+alwaysInjectSelector:
+  []
+neverInjectSelector:
+  []
+injectedAnnotations:
+template: "dynamic_parameters"
+templates:
+  sidecar: |
+          requests:
+            cpu: "dynamic_parameters"
+            memory: "dynamic_parameters"
+          limits:
+            cpu: "dynamic_parameters"
+            memory: "dynamic_parameters"
+    metadata:
+      labels:
+        security.istio.io/tlsMode: dynamic_parameters
+        networking.istio.io/tunnel: dynamic_parameters
+        service.istio.io/canonical-name: dynamic_parameters
+        service.istio.io/canonical-revision: dynamic_parameters
+        istio.io/rev: dynamic_parameters,
+        kubectl.kubernetes.io/default-logs-container: "dynamic_parameters",
+        kubectl.kubernetes.io/default-container: "dynamic_parameters",
+        k8s.v1.cni.cncf.io/networks: 'dynamic_parameters',
+        sidecar.istio.io/interceptionMode: "dynamic_parameters",
+        traffic.sidecar.istio.io/excludeInboundPorts: "dynamic_parameters",
+        traffic.sidecar.istio.io/includeOutboundPorts: "dynamic_parameters",
+        traffic.sidecar.istio.io/excludeOutboundPorts: "dynamic_parameters",
+    spec:
+          (or .ProxyConfig.HoldApplicationUntilProxyStarts.GetValue .Values.global.proxy.holdApplicationUntilProxyStarts)
+      initContainers:
+      - name: istio-validation
+      - name: istio-init
+        image: "dynamic_parameters"
+        image: "dynamic_parameters"
+        args:
+        - istio-iptables
+        - "-p"
+        - dynamic_parameters
+        - "-z"
+        - dynamic_parameters
+        - "-u"
+        - dynamic_parameters
+        - "-m"
+        - "dynamic_parameters"
+        - "-i"
+        - "dynamic_parameters"
+        - "-x"
+        - "dynamic_parameters"
+        - "-b"
+        - "dynamic_parameters"
+        - "-d"
+        - "15090,15021,dynamic_parameters"
+        - "15090,15021"
+        - "-q"
+        - "dynamic_parameters"
+        - "-o"
+        - "dynamic_parameters"
+        - "-k"
+        - "dynamic_parameters"
+        - "-c"
+        - "dynamic_parameters"
+        - "--log_output_level=dynamic_parameters"
+        - "--log_as_json"
+        - "--run-validation"
+        - "--skip-rule-apply"
+        env:
+        - name: dynamic_parameters
+          value: "dynamic_parameters"
+        resources:
+        securityContext:
+          allowPrivilegeEscalation: dynamic_parameters
+          privileged: dynamic_parameters
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+          readOnlyRootFilesystem: true
+          runAsGroup: dynamic_parameters
+          runAsUser: dynamic_parameters
+          runAsNonRoot: true
+      - name: enable-core-dump
+        args:
+        - -c
+        - sysctl -w kernel.core_pattern=/var/lib/istio/data/core.proxy && ulimit -c unlimited
+        command:
+          - /bin/sh
+        image: "dynamic_parameters"
+        image: "dynamic_parameters"
+        resources:
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - SYS_ADMIN
+            drop:
+            - ALL
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+      containers:
+      - name: istio-proxy
+        image: "dynamic_parameters"
+        image: "dynamic_parameters"
+        ports:
+        - containerPort: 15090
+          protocol: TCP
+          name: http-envoy-prom
+        args:
+        - proxy
+        - sidecar
+        - --domain
+        - $(POD_NAMESPACE).svc.dynamic_parameters
+        - --proxyLogLevel=dynamic_parameters
+        - --proxyComponentLogLevel=dynamic_parameters
+        - --log_output_level=dynamic_parameters
+        - --stsPort=dynamic_parameters
+        - --log_as_json
+        lifecycle:
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - pilot-agent
+              - wait
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - pilot-agent
+              - request
+              - --debug-port=dynamic_parameters
+              - POST
+              - drain
+        env:
+        - name: REWRITE_PROBE_LEGACY_LOCALHOST_DESTINATION
+          value: "true"
+        - name: PILOT_CERT_PROVIDER
+          value: dynamic_parameters
+        - name: CA_ADDR
+          value: dynamic_parameters
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: ISTIO_CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        - name: PROXY_CONFIG
+          value: |
+        - name: ISTIO_META_POD_PORTS
+          value: |-
+            [
+            ]
+        - name: ISTIO_META_APP_CONTAINERS
+          value: "dynamic_parameters"
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.memory
+        - name: GOMAXPROCS
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        - name: COMPLIANCE_POLICY
+          value: "dynamic_parameters"
+        - name: ISTIO_META_CLUSTER_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: "dynamic_parameters"
+        - name: ISTIO_META_NETWORK
+          value: "dynamic_parameters"
+        - name: ISTIO_META_WORKLOAD_NAME
+          value: "dynamic_parameters"
+        - name: ISTIO_META_OWNER
+          value: kubernetes://apis/dynamic_parameters/namespaces/dynamic_parameters/dynamic_parameterss/dynamic_parameters
+        - name: ISTIO_BOOTSTRAP_OVERRIDE
+          value: "/etc/istio/custom-bootstrap/custom_bootstrap.json"
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: TRUST_DOMAIN
+          value: "dynamic_parameters"
+        - name: dynamic_parameters
+          value: "dynamic_parameters"
+        - name: dynamic_parameters
+          value: "dynamic_parameters"
+        startupProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 15021
+          initialDelaySeconds: 0
+          periodSeconds: 1
+          timeoutSeconds: 3
+          failureThreshold: dynamic_parameters
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 15021
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          timeoutSeconds: 3
+          failureThreshold: dynamic_parameters
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - NET_ADMIN
+            drop:
+            - ALL
+          privileged: true
+          readOnlyRootFilesystem: dynamic_parameters
+          runAsGroup: dynamic_parameters
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: dynamic_parameters
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_BIND_SERVICE
+            drop:
+            - ALL
+          privileged: dynamic_parameters
+          readOnlyRootFilesystem: dynamic_parameters
+          runAsGroup: dynamic_parameters
+          runAsNonRoot: false
+          runAsUser: 0
+          runAsNonRoot: true
+          runAsUser: dynamic_parameters
+        resources:
+        volumeMounts:
+        - name: workload-socket
+          mountPath: /var/run/secrets/workload-spiffe-uds
+        - name: credential-socket
+          mountPath: /var/run/secrets/credential-uds
+        - name: gke-workload-certificate
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+          readOnly: true
+        - name: workload-certs
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+        - mountPath: /var/run/secrets/istio
+          name: istiod-ca-cert
+        - mountPath: /var/run/secrets/istio/kubernetes
+          name: kube-ca-cert
+        - mountPath: /var/lib/istio/data
+          name: istio-data
+        - mountPath: /etc/istio/custom-bootstrap
+          name: custom-bootstrap-volume
+        # SDS channel between istioagent and Envoy
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /var/run/secrets/tokens
+          name: istio-token
+        # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+        - name: istio-podinfo
+          mountPath: /etc/istio/pod
+        - mountPath: dynamic_parameters
+          name: lightstep-certs
+          readOnly: true
+        - name: "dynamic_parameters"
+      volumes:
+      - emptyDir:
+        name: workload-socket
+      - emptyDir:
+        name: credential-socket
+      - name: gke-workload-certificate
+        csi:
+          driver: workloadcertificates.security.cloud.google.com
+      - emptyDir:
+        name: workload-certs
+      - name: custom-bootstrap-volume
+        configMap:
+          name: dynamic_parameters
+      # SDS channel between istioagent and Envoy
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-data
+      - name: istio-podinfo
+        downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: "annotations"
+              fieldRef:
+                fieldPath: metadata.annotations
+      - name: istio-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: istio-token
+              expirationSeconds: 43200
+              audience: dynamic_parameters
+      - name: istiod-ca-cert
+        configMap:
+          name: istio-ca-root-cert
+      - name: kube-ca-cert
+        configMap:
+          name: kube-root-ca.crt
+      # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+          secretName: dynamic_parameters
+      - name: "dynamic_parameters"
+      - name: lightstep-certs
+        secret:
+          optional: true
+          secretName: lightstep.cacert
+      imagePullSecrets:
+        - name: dynamic_parameters
+  gateway: |
+    metadata:
+      labels:
+        service.istio.io/canonical-name: dynamic_parameters
+        service.istio.io/canonical-revision: dynamic_parameters
+        istio.io/rev: dynamic_parameters,
+        kubectl.kubernetes.io/default-logs-container: "dynamic_parameters",
+        kubectl.kubernetes.io/default-container: "dynamic_parameters",
+    spec:
+      securityContext:
+        sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: "0"
+      containers:
+      - name: istio-proxy
+        image: "dynamic_parameters"
+        image: "dynamic_parameters"
+        ports:
+        - containerPort: 15090
+          protocol: TCP
+          name: http-envoy-prom
+        args:
+        - proxy
+        - router
+        - --domain
+        - $(POD_NAMESPACE).svc.dynamic_parameters
+        - --proxyLogLevel=dynamic_parameters
+        - --proxyComponentLogLevel=dynamic_parameters
+        - --log_output_level=dynamic_parameters
+        - --stsPort=dynamic_parameters
+        - --log_as_json
+        lifecycle:
+        securityContext:
+          runAsUser: dynamic_parameters
+          runAsGroup: dynamic_parameters
+        env:
+        - name: PILOT_CERT_PROVIDER
+          value: dynamic_parameters
+        - name: CA_ADDR
+          value: dynamic_parameters
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: ISTIO_CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        - name: PROXY_CONFIG
+          value: |
+        - name: ISTIO_META_POD_PORTS
+          value: |-
+            [
+            ]
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.memory
+        - name: GOMAXPROCS
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        - name: COMPLIANCE_POLICY
+          value: "dynamic_parameters"
+        - name: ISTIO_META_APP_CONTAINERS
+          value: "dynamic_parameters"
+        - name: ISTIO_META_CLUSTER_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: "dynamic_parameters"
+        - name: ISTIO_META_NETWORK
+          value: "dynamic_parameters"
+        - name: ISTIO_META_WORKLOAD_NAME
+          value: "dynamic_parameters"
+        - name: ISTIO_META_OWNER
+          value: kubernetes://apis/dynamic_parameters/namespaces/dynamic_parameters/dynamic_parameterss/dynamic_parameters
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: TRUST_DOMAIN
+          value: "dynamic_parameters"
+        - name: dynamic_parameters
+          value: "dynamic_parameters"
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 15021
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          timeoutSeconds: 3
+          failureThreshold: dynamic_parameters
+        volumeMounts:
+        - name: workload-socket
+          mountPath: /var/run/secrets/workload-spiffe-uds
+        - name: credential-socket
+          mountPath: /var/run/secrets/credential-uds
+        - name: gke-workload-certificate
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+          readOnly: true
+        - name: workload-certs
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+        - mountPath: /var/run/secrets/istio
+          name: istiod-ca-cert
+        - mountPath: /var/lib/istio/data
+          name: istio-data
+        # SDS channel between istioagent and Envoy
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /var/run/secrets/tokens
+          name: istio-token
+        # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+        - name: istio-podinfo
+          mountPath: /etc/istio/pod
+      volumes:
+        name: workload-socket
+        name: credential-socket
+      - name: gke-workload-certificate
+        csi:
+          driver: workloadcertificates.security.cloud.google.com
+        name: workload-certs
+      # SDS channel between istioagent and Envoy
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-data
+      - name: istio-podinfo
+        downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: "annotations"
+              fieldRef:
+                fieldPath: metadata.annotations
+      - name: istio-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: istio-token
+              expirationSeconds: 43200
+              audience: dynamic_parameters
+      - name: istiod-ca-cert
+        configMap:
+          name: istio-ca-root-cert
+      # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+          secretName: dynamic_parameters
+      imagePullSecrets:
+        - name: dynamic_parameters
+  grpc-simple: |
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "false"
+    spec:
+      initContainers:
+        - name: grpc-bootstrap-init
+          image: busybox:1.28
+          volumeMounts:
+            - mountPath: /var/lib/grpc/data/
+              name: grpc-io-proxyless-bootstrap
+          env:
+            - name: INSTANCE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ISTIO_NAMESPACE
+              value: |
+          command:
+            - sh
+            - "-c"
+            - |-
+              echo '
+                "xds_servers": [
+                    "server_features" : ["xds_v3"]
+                ],
+                    "GENERATOR": "grpc"
+      containers:
+      - name: dynamic_parameters
+        env:
+          - name: GRPC_XDS_BOOTSTRAP
+            value: /var/lib/grpc/data/bootstrap.json
+          - name: GRPC_GO_LOG_VERBOSITY_LEVEL
+            value: "99"
+          - name: GRPC_GO_LOG_SEVERITY_LEVEL
+            value: info
+        volumeMounts:
+          - mountPath: /var/lib/grpc/data/
+            name: grpc-io-proxyless-bootstrap
+      volumes:
+        - name: grpc-io-proxyless-bootstrap
+  grpc-agent: |
+          requests:
+            cpu: "dynamic_parameters"
+            memory: "dynamic_parameters"
+          limits:
+            cpu: "dynamic_parameters"
+            memory: "dynamic_parameters"
+    metadata:
+      labels:
+        service.istio.io/canonical-name: dynamic_parameters
+        service.istio.io/canonical-revision: dynamic_parameters
+        istio.io/rev: dynamic_parameters,
+        kubectl.kubernetes.io/default-logs-container: "dynamic_parameters",
+        kubectl.kubernetes.io/default-container: "dynamic_parameters",
+        sidecar.istio.io/rewriteAppHTTPProbers: "false",
+    spec:
+      containers:
+      - name: istio-proxy
+        image: "dynamic_parameters"
+        image: "dynamic_parameters"
+        ports:
+        - containerPort: 15020
+          protocol: TCP
+          name: mesh-metrics
+        args:
+        - proxy
+        - sidecar
+        - --domain
+        - $(POD_NAMESPACE).svc.dynamic_parameters
+        - --proxyLogLevel=dynamic_parameters
+        - --proxyComponentLogLevel=dynamic_parameters
+        - --log_output_level=dynamic_parameters
+        - --stsPort=dynamic_parameters
+        - --log_as_json
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - pilot-agent
+              - wait
+              - --url=http://localhost:15020/healthz/ready
+        env:
+        - name: ISTIO_META_GENERATOR
+          value: grpc
+        - name: OUTPUT_CERTS
+          value: /var/lib/istio/data
+        - name: REWRITE_PROBE_LEGACY_LOCALHOST_DESTINATION
+          value: "true"
+        - name: PILOT_CERT_PROVIDER
+          value: dynamic_parameters
+        - name: CA_ADDR
+          value: dynamic_parameters
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: PROXY_CONFIG
+          value: |
+        - name: ISTIO_META_POD_PORTS
+          value: |-
+            [
+            ]
+        - name: ISTIO_META_APP_CONTAINERS
+          value: "dynamic_parameters"
+        - name: ISTIO_META_CLUSTER_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: ISTIO_META_NETWORK
+          value: "dynamic_parameters"
+        - name: ISTIO_META_WORKLOAD_NAME
+          value: "dynamic_parameters"
+        - name: ISTIO_META_OWNER
+          value: kubernetes://apis/dynamic_parameters/namespaces/dynamic_parameters/dynamic_parameterss/dynamic_parameters
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: ISTIO_META_MESH_ID
+          value: "dynamic_parameters"
+        - name: TRUST_DOMAIN
+          value: "dynamic_parameters"
+        - name: dynamic_parameters
+          value: "dynamic_parameters"
+        # grpc uses xds:/// to resolve – no need to resolve VIP
+        - name: ISTIO_META_DNS_CAPTURE
+          value: "false"
+        - name: DISABLE_ENVOY
+          value: "true"
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 15020
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          timeoutSeconds: 3
+          failureThreshold: dynamic_parameters
+        resources:
+        volumeMounts:
+        - name: workload-socket
+          mountPath: /var/run/secrets/workload-spiffe-uds
+        - name: gke-workload-certificate
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+          readOnly: true
+        - name: workload-certs
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+        - mountPath: /var/run/secrets/istio
+          name: istiod-ca-cert
+        - mountPath: /var/lib/istio/data
+          name: istio-data
+        # UDS channel between istioagent and gRPC client for XDS/SDS
+        - mountPath: /etc/istio/proxy
+          name: istio-xds
+        - mountPath: /var/run/secrets/tokens
+          name: istio-token
+        # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+        - name: istio-podinfo
+          mountPath: /etc/istio/pod
+        - name: "dynamic_parameters"
+      - name: dynamic_parameters
+        env:
+          - name: "GRPC_XDS_EXPERIMENTAL_SECURITY_SUPPORT"
+            value: "true"
+          - name: "GRPC_XDS_BOOTSTRAP"
+            value: "/etc/istio/proxy/grpc-bootstrap.json"
+        volumeMounts:
+          - mountPath: /var/lib/istio/data
+            name: istio-data
+          # UDS channel between istioagent and gRPC client for XDS/SDS
+          - mountPath: /etc/istio/proxy
+            name: istio-xds
+          - name: gke-workload-certificate
+            mountPath: /var/run/secrets/workload-spiffe-credentials
+            readOnly: true
+          - name: workload-certs
+            mountPath: /var/run/secrets/workload-spiffe-credentials
+      volumes:
+      - emptyDir:
+        name: workload-socket
+      - name: gke-workload-certificate
+        csi:
+          driver: workloadcertificates.security.cloud.google.com
+      - emptyDir:
+        name: workload-certs
+      - name: custom-bootstrap-volume
+        configMap:
+          name: dynamic_parameters
+      # SDS channel between istioagent and Envoy
+      - emptyDir:
+          medium: Memory
+        name: istio-xds
+      - name: istio-data
+      - name: istio-podinfo
+        downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: "annotations"
+              fieldRef:
+                fieldPath: metadata.annotations
+      - name: istio-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: istio-token
+              expirationSeconds: 43200
+              audience: dynamic_parameters
+      - name: istiod-ca-cert
+        configMap:
+          name: istio-ca-root-cert
+      # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+          secretName: dynamic_parameters
+      - name: "dynamic_parameters"
+      imagePullSecrets:
+        - name: dynamic_parameters
+  waypoint: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+      # Safe since 1.28: https://github.com/kubernetes/kubernetes/pull/117412
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: "dynamic_parameters"
+        uid: "dynamic_parameters"
+    ---
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+            "gateway.istio.io/managed" "istio.io-mesh-controller"
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: "dynamic_parameters"
+        uid: "dynamic_parameters"
+    spec:
+      selector:
+        matchLabels:
+          "dynamic_parameters": "dynamic_parameters"
+      template:
+        metadata:
+          annotations:
+              (omit .InfrastructureAnnotations "kubectl.kubernetes.io/last-applied-configuration" "gateway.istio.io/name-override" "gateway.istio.io/service-account" "gateway.istio.io/controller-version")
+              (strdict "istio.io/rev" (.Revision | default "default"))
+              (strdict
+                "ambient.istio.io/redirection" "disabled"
+                "prometheus.io/path" "/stats/prometheus"
+                "prometheus.io/port" "15020"
+                "prometheus.io/scrape" "true"
+          labels:
+              (strdict
+                "sidecar.istio.io/inject" "false"
+                "service.istio.io/canonical-name" .DeploymentName
+                "service.istio.io/canonical-revision" "latest"
+               )
+              .InfrastructureLabels
+              (strdict
+                "gateway.networking.k8s.io/gateway-name" .Name
+                "istio.io/gateway-name" .Name
+                "gateway.istio.io/managed" "istio.io-mesh-controller"
+        spec:
+          terminationGracePeriodSeconds: 2
+          serviceAccountName: dynamic_parameters
+          containers:
+          - name: istio-proxy
+            ports:
+            - containerPort: 15021
+              name: status-port
+              protocol: TCP
+            - containerPort: 15090
+              protocol: TCP
+              name: http-envoy-prom
+            image: "dynamic_parameters"
+            image: "dynamic_parameters"
+            args:
+            - proxy
+            - waypoint
+            - --domain
+            - $(POD_NAMESPACE).svc.dynamic_parameters
+            - --serviceCluster
+            - dynamic_parameters.$(POD_NAMESPACE)
+            - --proxyLogLevel
+            - dynamic_parameters
+            - --proxyComponentLogLevel
+            - dynamic_parameters
+            - --log_output_level
+            - dynamic_parameters
+            - --log_as_json
+            env:
+            - name: ISTIO_META_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: ISTIO_META_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: PILOT_CERT_PROVIDER
+              value: dynamic_parameters
+            - name: CA_ADDR
+              value: dynamic_parameters
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: INSTANCE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ISTIO_CPU_LIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: PROXY_CONFIG
+              value: |
+            - name: dynamic_parameters
+              value: "dynamic_parameters"
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: ISTIO_META_CLUSTER_ID
+              value: "dynamic_parameters"
+            - name: ISTIO_META_NETWORK
+              value: "dynamic_parameters"
+            - name: ISTIO_META_INTERCEPTION_MODE
+              value: REDIRECT
+            - name: ISTIO_META_WORKLOAD_NAME
+              value: dynamic_parameters
+            - name: ISTIO_META_OWNER
+              value: kubernetes://apis/apps/v1/namespaces/dynamic_parameters/deployments/dynamic_parameters
+            - name: ISTIO_META_MESH_ID
+              value: "dynamic_parameters"
+            - name: ISTIO_META_MESH_ID
+              value: "dynamic_parameters"
+            resources:
+              limits:
+                cpu: "2"
+                memory: 1Gi
+              requests:
+                cpu: 100m
+                memory: 128Mi
+            startupProbe:
+              failureThreshold: 30
+              httpGet:
+                path: /healthz/ready
+                port: 15021
+                scheme: HTTP
+              initialDelaySeconds: 1
+              periodSeconds: 1
+              successThreshold: 1
+              timeoutSeconds: 1
+            readinessProbe:
+              failureThreshold: 4
+              httpGet:
+                path: /healthz/ready
+                port: 15021
+                scheme: HTTP
+              initialDelaySeconds: 0
+              periodSeconds: 15
+              successThreshold: 1
+              timeoutSeconds: 1
+            securityContext:
+              privileged: false
+              runAsGroup: 1337
+              runAsUser: 0
+              capabilities:
+                drop:
+                - ALL
+            volumeMounts:
+            - name: workload-socket
+              mountPath: /var/run/secrets/workload-spiffe-uds
+            - mountPath: /var/run/secrets/istio
+              name: istiod-ca-cert
+            - mountPath: /var/lib/istio/data
+              name: istio-data
+            - mountPath: /etc/istio/proxy
+              name: istio-envoy
+            - mountPath: /var/run/secrets/tokens
+              name: istio-token
+            - mountPath: /etc/istio/pod
+              name: istio-podinfo
+          volumes:
+            name: workload-socket
+          - emptyDir:
+              medium: Memory
+            name: istio-envoy
+          - emptyDir:
+              medium: Memory
+            name: go-proxy-envoy
+            name: istio-data
+            name: go-proxy-data
+          - downwardAPI:
+              items:
+              - fieldRef:
+                  fieldPath: metadata.labels
+                path: labels
+              - fieldRef:
+                  fieldPath: metadata.annotations
+                path: annotations
+            name: istio-podinfo
+          - name: istio-token
+            projected:
+              sources:
+              - serviceAccountToken:
+                  audience: istio-ca
+                  expirationSeconds: 43200
+                  path: istio-token
+          - configMap:
+              name: istio-ca-root-cert
+            name: istiod-ca-cert
+          imagePullSecrets:
+            - name: dynamic_parameters
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: "dynamic_parameters"
+        uid: "dynamic_parameters"
+    spec:
+      ports:
+      - name: dynamic_parameters
+        port: dynamic_parameters
+        protocol: TCP
+        appProtocol: dynamic_parameters
+      selector:
+        "dynamic_parameters": "dynamic_parameters"
+      loadBalancerIP: dynamic_parameters
+      type: dynamic_parameters
+    ---
+  kube-gateway: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+      # Safe since 1.28: https://github.com/kubernetes/kubernetes/pull/117412
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: "dynamic_parameters"
+        uid: "dynamic_parameters"
+    ---
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: dynamic_parameters
+        uid: "dynamic_parameters"
+    spec:
+      selector:
+        matchLabels:
+          "dynamic_parameters": dynamic_parameters
+      template:
+        metadata:
+          annotations:
+              (omit .InfrastructureAnnotations "kubectl.kubernetes.io/last-applied-configuration" "gateway.istio.io/name-override" "gateway.istio.io/service-account" "gateway.istio.io/controller-version")
+              (strdict "istio.io/rev" (.Revision | default "default"))
+              (strdict
+                "prometheus.io/path" "/stats/prometheus"
+                "prometheus.io/port" "15020"
+                "prometheus.io/scrape" "true"
+          labels:
+              (strdict
+                "sidecar.istio.io/inject" "false"
+                "service.istio.io/canonical-name" .DeploymentName
+                "service.istio.io/canonical-revision" "latest"
+               )
+              .InfrastructureLabels
+              (strdict
+                "gateway.networking.k8s.io/gateway-name" .Name
+                "istio.io/gateway-name" .Name
+        spec:
+          securityContext:
+            sysctls:
+            - name: net.ipv4.ip_unprivileged_port_start
+              value: "0"
+          serviceAccountName: dynamic_parameters
+          containers:
+          - name: istio-proxy
+            image: "dynamic_parameters"
+            image: "dynamic_parameters"
+            resources:
+            securityContext:
+              # Safe since 1.22: https://github.com/kubernetes/kubernetes/pull/103326
+              capabilities:
+                drop:
+                - ALL
+              allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: true
+              runAsUser: dynamic_parameters
+              runAsGroup: dynamic_parameters
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                - ALL
+                add:
+                - NET_BIND_SERVICE
+              runAsUser: 0
+              runAsGroup: 1337
+              runAsNonRoot: false
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: true
+            ports:
+            - containerPort: 15021
+              name: status-port
+              protocol: TCP
+            - containerPort: 15090
+              protocol: TCP
+              name: http-envoy-prom
+            args:
+            - proxy
+            - router
+            - --domain
+            - $(POD_NAMESPACE).svc.dynamic_parameters
+            - --proxyLogLevel
+            - dynamic_parameters
+            - --proxyComponentLogLevel
+            - dynamic_parameters
+            - --log_output_level
+            - dynamic_parameters
+            - --stsPort=dynamic_parameters
+            - --log_as_json
+            lifecycle:
+            env:
+            - name: PILOT_CERT_PROVIDER
+              value: dynamic_parameters
+            - name: CA_ADDR
+              value: dynamic_parameters
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: INSTANCE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ISTIO_CPU_LIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: PROXY_CONFIG
+              value: |
+            - name: ISTIO_META_POD_PORTS
+              value: "[]"
+            - name: ISTIO_META_APP_CONTAINERS
+              value: ""
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: ISTIO_META_CLUSTER_ID
+              value: "dynamic_parameters"
+            - name: ISTIO_META_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: ISTIO_META_INTERCEPTION_MODE
+              value: "dynamic_parameters"
+            - name: ISTIO_META_NETWORK
+              value: dynamic_parameters
+            - name: ISTIO_META_WORKLOAD_NAME
+              value: dynamic_parameters
+            - name: ISTIO_META_OWNER
+              value: "kubernetes://apis/apps/v1/namespaces/dynamic_parameters/deployments/dynamic_parameters"
+            - name: ISTIO_META_MESH_ID
+              value: "dynamic_parameters"
+            - name: ISTIO_META_MESH_ID
+              value: "dynamic_parameters"
+            - name: TRUST_DOMAIN
+              value: "dynamic_parameters"
+            - name: dynamic_parameters
+              value: "dynamic_parameters"
+            - name: ISTIO_META_REQUESTED_NETWORK_VIEW
+              value: dynamic_parameters
+            startupProbe:
+              failureThreshold: 30
+              httpGet:
+                path: /healthz/ready
+                port: 15021
+                scheme: HTTP
+              initialDelaySeconds: 1
+              periodSeconds: 1
+              successThreshold: 1
+              timeoutSeconds: 1
+            readinessProbe:
+              failureThreshold: 4
+              httpGet:
+                path: /healthz/ready
+                port: 15021
+                scheme: HTTP
+              initialDelaySeconds: 0
+              periodSeconds: 15
+              successThreshold: 1
+              timeoutSeconds: 1
+            volumeMounts:
+            - name: workload-socket
+              mountPath: /var/run/secrets/workload-spiffe-uds
+            - name: credential-socket
+              mountPath: /var/run/secrets/credential-uds
+            - name: gke-workload-certificate
+              mountPath: /var/run/secrets/workload-spiffe-credentials
+              readOnly: true
+            - name: workload-certs
+              mountPath: /var/run/secrets/workload-spiffe-credentials
+            - mountPath: /var/run/secrets/istio
+              name: istiod-ca-cert
+            - mountPath: /var/lib/istio/data
+              name: istio-data
+            # SDS channel between istioagent and Envoy
+            - mountPath: /etc/istio/proxy
+              name: istio-envoy
+            - mountPath: /var/run/secrets/tokens
+              name: istio-token
+            - name: istio-podinfo
+              mountPath: /etc/istio/pod
+          volumes:
+            name: workload-socket
+            name: credential-socket
+          - name: gke-workload-certificate
+            csi:
+              driver: workloadcertificates.security.cloud.google.com
+            name: workload-certs
+          # SDS channel between istioagent and Envoy
+          - emptyDir:
+              medium: Memory
+            name: istio-envoy
+          - name: istio-data
+          - name: istio-podinfo
+            downwardAPI:
+              items:
+                - path: "labels"
+                  fieldRef:
+                    fieldPath: metadata.labels
+                - path: "annotations"
+                  fieldRef:
+                    fieldPath: metadata.annotations
+          - name: istio-token
+            projected:
+              sources:
+              - serviceAccountToken:
+                  path: istio-token
+                  expirationSeconds: 43200
+                  audience: dynamic_parameters
+          - name: istiod-ca-cert
+            configMap:
+              name: istio-ca-root-cert
+          imagePullSecrets:
+            - name: dynamic_parameters
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+      labels:
+          .InfrastructureLabels
+          (strdict
+            "gateway.networking.k8s.io/gateway-name" .Name
+            "istio.io/gateway-name" .Name
+      name: dynamic_parameters
+      namespace: dynamic_parameters
+      ownerReferences:
+      - apiVersion: gateway.networking.k8s.io/v1beta1
+        kind: Gateway
+        name: dynamic_parameters
+        uid: dynamic_parameters
+    spec:
+      ports:
+      - name: dynamic_parameters
+        port: dynamic_parameters
+        protocol: TCP
+        appProtocol: dynamic_parameters
+      selector:
+        "dynamic_parameters": dynamic_parameters
+      loadBalancerIP: dynamic_parameters
+      type: dynamic_parameters
+    ---
+---

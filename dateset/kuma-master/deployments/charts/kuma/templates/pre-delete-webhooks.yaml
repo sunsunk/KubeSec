@@ -1,0 +1,104 @@
+# HELM first deletes RBAC of Kuma, then it tries to delete Secrets. We've got validating webhook on Secrets.
+# But even that the policy of this webhook is Ignore, it fails because Kuma does not have permission to access Secrets anymore.
+# Therefore we first need to delete webhook so we can delete the rest of the deployment
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+imagePullSecrets:
+  - name: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters-pre-delete-job
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+rules:
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingwebhookconfigurations
+    resourceNames:
+      - dynamic_parameters-validating-webhook-configuration
+    verbs:
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters-pre-delete-job
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters-pre-delete-job
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamic_parameters-delete-webhook
+  namespace: dynamic_parameters
+  labels:
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+spec:
+  template:
+    metadata:
+      name: dynamic_parameters-delete-webhook
+      labels:
+    spec:
+      serviceAccountName: dynamic_parameters
+      nodeSelector:
+      tolerations:
+      restartPolicy: OnFailure
+      securityContext:
+      containers:
+        - name: pre-delete-job
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          command:
+            - 'kubectl'
+            - 'delete'
+            - 'ValidatingWebhookConfiguration'
+            - dynamic_parameters-validating-webhook-configuration
+          securityContext:
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

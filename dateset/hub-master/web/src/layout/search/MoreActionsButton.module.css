@@ -1,0 +1,19 @@
+.iconWrapper {
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 2px;
+  font-size: 1.1rem !important;
+}
+
+.icon {
+  top: -1px;
+}
+
+.dropdown {
+  min-width: 10rem;
+  top: 130% !important;
+}
+
+.arrow {
+  right: 0.025rem !important;
+}

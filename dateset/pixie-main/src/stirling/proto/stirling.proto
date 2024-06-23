@@ -1,0 +1,71 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.stirling.stirlingpb;
+
+option go_package = "stirlingpb";
+
+import "src/shared/types/typespb/types.proto";
+
+// Element stores a datum belonging to an InfoClass. For example,
+// number_of_hits, number_of_misses, buffered, free_bytes
+// in a file_system_cache would be elements in an
+// InfoClass file_system_cache.
+message Element {
+  // name refers to the name of the Element such as user_percentage (Element)
+  // for cpu usage (InfoClass).
+  string name = 1;
+  // The description of the column.
+  string desc = 2;
+  types.DataType type = 3;
+  types.PatternType ptype = 4;
+  types.SemanticType stype = 5;
+  // If the type is INT64, and ptype is GENERAL_ENUM,
+  // then this map can convert values to human readable strings.
+  map<int64, string> decoder = 6;
+}
+
+message TableSchema {
+  string name = 1;
+  string desc = 5;
+  repeated Element elements = 2;
+  bool tabletized = 3;
+  uint64 tabletization_key = 4;
+}
+
+// InfoClass stores a set of Elements that share common timestamps (i.e., they are
+// typically collected together). For example, cpu_usage which could comprise of
+// Elements such as user%, system%, io%, that are collected together in the same
+// BPF program.
+message InfoClass {
+  // Unique identifier of the info class; used for Stirling to PEM communications.
+  // This id is assigned by the data collector's config block when creating a Publish message.
+  uint64 id = 2;
+  TableSchema schema = 3;
+}
+
+// Publish message contains information on
+// all the InfoClasses available
+// to the Data Collector. Data Collector sends this
+// message to an Agent so that an Agent can know what
+// data is being collected.
+message Publish {
+  repeated InfoClass published_info_classes = 1;
+}

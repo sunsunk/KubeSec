@@ -1,0 +1,93 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Packaging licenses for the entire pixie repository.
+# This includes the C API, Java API, and protocol buffer files.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel:licenses.bzl", "fetch_licenses")
+load("//bazel:pl_build_system.bzl", "pl_go_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+go_library(
+    name = "licenses_lib",
+    srcs = ["fetch_licenses.go"],
+    importpath = "px.dev/pixie/tools/licenses",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_blang_semver//:semver",
+        "@com_github_google_go_github_v32//github",
+        "@com_github_puerkitobio_goquery//:goquery",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)
+
+pl_go_binary(
+    name = "fetch_licenses",
+    embed = [":licenses_lib"],
+    visibility = ["//visibility:public"],
+)
+
+fetch_licenses(
+    name = "go_licenses",
+    src = "//:pl_3p_go_sum",
+    disallow_missing = select({
+        "//bazel:stamped": True,
+        "//conditions:default": False,
+    }),
+    fetch_tool = ":fetch_licenses",
+    manual_licenses = "manual_licenses.json",
+    out_found = "go_licenses.json",
+    out_missing = "go_licenses_missing.json",
+    use_pkg_dev_go = True,
+)
+
+fetch_licenses(
+    name = "deps_licenses",
+    src = "//:pl_3p_deps",
+    disallow_missing = select({
+        "//bazel:stamped": True,
+        "//conditions:default": False,
+    }),
+    fetch_tool = ":fetch_licenses",
+    manual_licenses = "manual_licenses.json",
+    out_found = "deps_licenses.json",
+    out_missing = "deps_licenses_missing.json",
+)
+
+genrule(
+    name = "all_licenses",
+    srcs = [
+        "go_licenses.json",
+        "deps_licenses.json",
+        "//src/ui:npm_licenses",
+    ],
+    outs = [
+        "all_licenses.json",
+    ],
+    cmd = """
+        python3 $(location combine_licenses.py) \
+            $(location go_licenses.json) \
+            $(location deps_licenses.json) \
+            $(location //src/ui:npm_licenses) \
+            --output $(location all_licenses.json)
+    """,
+    tools = [
+        "combine_licenses.py",
+    ],
+    visibility = ["//visibility:public"],
+)

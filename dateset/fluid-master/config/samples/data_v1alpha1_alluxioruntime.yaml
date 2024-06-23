@@ -1,0 +1,20 @@
+---
+apiVersion: data.fluid.io/v1alpha1
+kind: AlluxioRuntime
+metadata:
+  name: dataset
+  #namespace: fluid-system
+spec:
+  # Add fields here
+  replicas: 1
+  tieredstore:
+    levels:
+    - mediumtype: MEM
+      path: /dev/shm
+      quota: 2Gi
+      high: "0.95"
+      low: "0.7"
+  fuse:
+    args:
+      - fuse
+      - --fuse-opts=kernel_cache,ro,max_read=131072,attr_timeout=7200,entry_timeout=7200,max_readahead=0

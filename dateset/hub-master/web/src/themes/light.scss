@@ -1,0 +1,238 @@
+[data-theme='light'] {
+  --border-md: #dee2e6;
+  --code-bg-md: #f6f8fa;
+  --body-light-bg: #f9f9f9;
+
+  --color-1-2: rgba(65, 117, 152, 0.02);
+  --color-1-5: rgba(65, 117, 152, 0.05);
+  --color-1-10: rgba(65, 117, 152, 0.1);
+  --color-1-20: rgba(65, 117, 152, 0.2);
+
+  --color-black-5: rgba(0, 0, 0, 0.05);
+  --color-black-10: rgba(0, 0, 0, 0.1);
+  --color-black-15: rgba(0, 0, 0, 0.15);
+  --color-black-25: rgba(0, 0, 0, 0.25);
+  --color-black-35: rgba(0, 0, 0, 0.35);
+  --color-black-50: rgba(0, 0, 0, 0.5);
+  --color-black-75: rgba(0, 0, 0, 0.75);
+  --color-black-90: rgba(0, 0, 0, 0.9);
+
+  --color-white-50: rgba(256, 256, 256, 0.5);
+  --color-white-95: rgba(256, 256, 256, 0.95);
+
+  --color-font: #38383f;
+  --body-bg: #f9f9f9;
+  --light-gray: #e9ecef;
+  --extra-light-gray: #fcfcfc;
+  --gray: #c4c7ca;
+  --mid-gray: #6c757d;
+  --badge-bg: #f3f6f9;
+
+  --color-activity-0: #ebedf0;
+  --color-activity-1: #9be9a8;
+  --color-activity-2: #40c463;
+  --color-activity-3: #30a14e;
+  --color-activity-4: #216e39;
+
+  // $theme-colors for Bootstrap
+  $color1: #417598;
+  $color2: #2d4857;
+  $color3: #6c757d;
+
+  --bs-secondary-rgb: $color2;
+
+  body {
+    background-color: var(--extra-light-gray);
+    color: var(--color-font);
+  }
+
+  .textLight {
+    color: #f8f9fa !important;
+  }
+
+  .textLighter {
+    color: var(--bs-white) !important;
+  }
+
+  a.textLight:hover,
+  a.textLight:focus {
+    color: var(--color-1-200) !important;
+  }
+
+  a.textLighter:hover,
+  a.textLighter:focus {
+    color: #f8f9fa !important;
+  }
+
+  .dropdown-item {
+    color: var(--color-font);
+
+    &:hover,
+    &:focus {
+      color: var(--color-font);
+    }
+  }
+
+  .was-validated .form-check-input:valid ~ .form-check-label,
+  .form-check-input.is-valid ~ .form-check-label,
+  .was-validated .form-check-input:valid ~ .form-check-label,
+  .form-check-input.is-valid ~ .form-check-label {
+    color: var(--color-font);
+  }
+
+  .was-validated .form-check-input:valid:checked ~ .form-check-label::before,
+  .form-check-input.is-valid:checked ~ .form-check-label::before {
+    border-color: var(--color-1-500);
+    background-color: var(--color-1-500);
+  }
+
+  .iconLight {
+    display: inline;
+  }
+
+  .iconDark {
+    display: none;
+  }
+
+  .page-item {
+    &.active .page-link {
+      background-color: var(--color-1-500);
+      border-color: var(--color-1-100);
+    }
+  }
+
+  .text-primary {
+    color: var(--color-1-500) !important;
+
+    &:hover,
+    &:focus {
+      color: var(--color-1-700) !important;
+    }
+  }
+
+  .alert-primary {
+    color: var(--bs-dark);
+    background-color: var(--badge-bg);
+    border-color: var(--gray);
+  }
+
+  .table th {
+    // This color has to be solid (not opacity) due to scrollable tables
+    background-color: var(--code-bg-md);
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: var(--color-black-5);
+  }
+
+  .text-secondary {
+    color: var(--color-1-700) !important;
+
+    &:hover,
+    &:focus {
+      color: var(--color-1-700) !important;
+    }
+  }
+
+  .btn-link,
+  a:not(.dropdown-item) {
+    color: var(--mid-gray);
+
+    &:hover,
+    &:focus {
+      color: var(--mid-gray);
+    }
+  }
+
+  .form-check-input:checked ~ .form-check-label::before {
+    background-color: var(--color-1-500);
+    border-color: var(--color-1-500);
+  }
+
+  .form-switch .form-check-input:checked ~ .form-check-label::before {
+    background-color: $color1;
+    border-color: $color1;
+  }
+
+  .form-select:focus,
+  .form-control:focus {
+    border-color: $color3;
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item:focus {
+    background-color: var(--color-black-5);
+  }
+
+  button.text-dark:hover,
+  button.text-dark:focus {
+    color: #121416 !important;
+  }
+
+  .btn-light {
+    &:not(.disabled):not(:disabled):hover,
+    &:focus,
+    &:active,
+    &.active {
+      background-color: var(--color-black-5);
+    }
+  }
+
+  .btn-primary {
+    background-color: var(--color-1-500) !important;
+    border-color: var(--color-1-500);
+    color: var(--bs-white) !important;
+
+    &:not(.disabled):not(:disabled):hover,
+    &:focus,
+    &:active,
+    &.active {
+      background-color: var(--color-1-600) !important;
+      border-color: var(--color-1-700);
+      color: var(--bs-white);
+    }
+  }
+
+  .btn-secondary,
+  .badge.bg-secondary {
+    background-color: var(--color-1-700) !important;
+    border-color: var(--color-1-700);
+    color: var(--bs-white) !important;
+
+    &:not(.disabled):not(:disabled):hover,
+    &:focus,
+    &:active {
+      background-color: var(--color-1-800) !important;
+      border-color: var(--color-1-900);
+      color: var(--bs-white);
+    }
+  }
+
+  .btn-outline-primary {
+    background-color: var(--bs-white);
+    border-color: var(--color-1-500);
+    color: var(--color-1-500);
+
+    &:not(.disabled):not(:disabled):hover,
+    &:focus,
+    &:active {
+      background-color: var(--color-1-600) !important;
+      border-color: var(--color-1-700) !important;
+      color: var(--bs-white);
+    }
+  }
+
+  .btn-outline-secondary {
+    background-color: var(--bs-white);
+    border-color: var(--color-1-700);
+    color: var(--color-1-700);
+
+    &:not(.disabled):not(:disabled):hover,
+    &:focus,
+    &:active {
+      background-color: var(--color-1-700) !important;
+      border-color: var(--color-1-700) !important;
+      color: var(--bs-white);
+    }
+  }
+}

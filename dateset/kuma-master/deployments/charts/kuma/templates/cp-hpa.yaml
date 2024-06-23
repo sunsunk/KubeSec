@@ -1,0 +1,30 @@
+apiVersion: "autoscaling/v2"
+apiVersion: "autoscaling/v1"
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dynamic_parameters-control-plane
+  namespace: dynamic_parameters
+  labels: dynamic_parameters
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dynamic_parameters-control-plane
+  minReplicas: dynamic_parameters
+  maxReplicas: dynamic_parameters
+  metrics: dynamic_parameters
+  targetCPUUtilizationPercentage: dynamic_parameters
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

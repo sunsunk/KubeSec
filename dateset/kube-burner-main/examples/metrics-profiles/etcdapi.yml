@@ -1,0 +1,100 @@
+# Common
+  metricName: containerCPU-Masters
+
+  metricName: containerMemory-Masters
+
+  metricName: clusterVersion
+  instant: true
+
+- query: kube_node_role
+  metricName: nodeRoles
+  instant: true
+
+  metricName: nodeStatus
+
+  metricName: configmapCount
+
+  metricName: nodeCPU-Masters
+
+  metricName: readOpsSec
+
+  metricName: writeOpsSec
+
+  metricName: diskReadBytesRate
+
+  metricName: diskWriteBytesRate
+
+  metricName: nodeMemoryAvailable-Masters
+
+  metricName: nodeMemoryActive-Masters
+
+  metricName: rxNetworkBytes-Masters
+
+  metricName: txNetworkBytes-Masters
+
+# Etcd metrics
+- query: rate(etcd_disk_wal_write_bytes_total[2m])
+  metricName: etcdWALWriteBytesRate
+
+- query: rate(etcd_network_client_grpc_received_bytes_total[2m])
+  metricName: etcdClientGRPCReceivedBytesRate
+
+- query: rate(etcd_network_client_grpc_sent_bytes_total[2m])
+  metricName: etcdClientGRPCSentBytesRate
+
+- query: sum(rate(etcd_server_leader_changes_seen_total[2m]))
+  metricName: etcdLeaderChangesRate
+
+- query: etcd_server_is_leader > 0
+  metricName: etcdServerIsLeader
+
+- query: histogram_quantile(0.99, irate(etcd_disk_backend_commit_duration_seconds_bucket[2m]))
+  metricName: 99thEtcdDiskBackendCommitDurationSeconds
+
+- query: histogram_quantile(0.99, irate(etcd_disk_wal_fsync_duration_seconds_bucket[2m]))
+  metricName: 99thEtcdDiskWalFsyncDurationSeconds
+
+- query: histogram_quantile(0.99, rate(etcd_network_peer_round_trip_time_seconds_bucket[5m]))
+  metricName: 99thEtcdRoundTripTimeSeconds
+
+- query: etcd_mvcc_db_total_size_in_bytes
+  metricName: etcdDBPhysicalSizeBytes
+
+- query: etcd_mvcc_db_total_size_in_use_in_bytes
+  metricName: etcdDBLogicalSizeBytes
+
+- query: sum by (cluster_version)(etcd_cluster_version)
+  metricName: etcdVersion
+  instant: true
+
+- query: delta(etcd_server_slow_apply_total[2m])
+  metricName: etcdSlowApply
+
+- query: delta(etcd_server_slow_read_indexes_total[2m])
+  metricName: etcdSlowRead
+
+# API server
+
+  metricName: P99APICallsLatency
+
+  metricName: APIRequestRate
+
+  metricName: APIInflightRequests
+
+- query: histogram_quantile(0.99,sum(rate(etcd_request_duration_seconds_bucket[2m])) by (le,operation,apiserver)) > 0
+  metricName: P99APIEtcdRequestLatency
+
+- query: sum(rate(apiserver_flowcontrol_dispatched_requests_total[2m])) by (flow_schema,priority_level)
+  metricName: flowControlRate
+
+# Golang metrics
+
+  metricName: goHeapAllocBytes
+
+  metricName: goHeapInuseBytes
+
+  metricName: goGCDurationSeconds
+
+---
+
+---

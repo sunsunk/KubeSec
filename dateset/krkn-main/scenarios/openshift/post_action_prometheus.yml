@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../plugin.schema.json
+- id: kill-pods
+  config:
+    namespace_pattern: ^openshift-monitoring$
+    label_selector: app=prometheus
+- id: wait-for-pods
+  config:
+    namespace_pattern: ^openshift-monitoring$
+    label_selector: app=prometheus
+    count: 2

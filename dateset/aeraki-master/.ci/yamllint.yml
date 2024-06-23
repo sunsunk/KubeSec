@@ -1,0 +1,26 @@
+---
+extends: default
+
+ignore: |
+  manifests/charts/aeraki/templates/deployment.yaml
+  manifests/charts/aeraki/templates/service.yaml
+  manifests/charts/aeraki/templates/serviceaccount.yaml
+  manifests/charts/aeraki/templates/tcmapiservice.yaml
+  k8s/crd.yaml
+
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+
+rules:
+  truthy: disable
+  # 80 chars should be enough, but don't fail if a line is longer
+  line-length: disable
+  comments-indentation: disable
+  indentation:
+    spaces: consistent
+    indent-sequences: whatever
+    check-multi-line-strings: false
+  braces:
+    level: warning
+    max-spaces-inside: 1

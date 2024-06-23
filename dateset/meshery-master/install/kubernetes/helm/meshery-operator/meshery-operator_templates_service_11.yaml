@@ -1,0 +1,23 @@
+# Source: meshery-operator/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: meshery-operator
+  namespace: default
+  labels:
+    helm.sh/chart: meshery-operator-0.6.0
+    app.kubernetes.io/name: meshery-operator
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    {}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: meshery-operator
+    app.kubernetes.io/instance: my-release

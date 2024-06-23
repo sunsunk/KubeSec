@@ -1,0 +1,7 @@
+{
+  "comment": "no exemplar when opening # is included",
+  "type": "text",
+  "file": "metrics",
+  "shouldParse": false
+}
+

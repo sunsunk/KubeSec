@@ -1,0 +1,22 @@
+# Source: strimzi-kafka-operator/templates/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: strimzi-cluster-operator-entity-operator-delegation
+  namespace: default
+  labels:
+    app: strimzi
+    chart: strimzi-kafka-operator-0.1.1
+    component: entity-operator-role-binding
+    release: my-release
+    heritage: Helm
+# The Entity Operator cluster role must be bound to the cluster operator service account so that it can delegate the cluster role to the Entity Operator.
+# This must be done to avoid escalating privileges which would be blocked by Kubernetes.
+subjects:
+  - kind: ServiceAccount
+    name: strimzi-cluster-operator
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: strimzi-entity-operator
+  apiGroup: rbac.authorization.k8s.io

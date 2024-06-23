@@ -1,0 +1,46 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: pl-cloud
+namespace: plc
+resources:
+- analytics_config.yaml
+- bq_config.yaml
+- contact_config.yaml
+- proxy_envoy.yaml
+- kuberesolver_role.yaml
+- db_config.yaml
+- tls_config.yaml
+- service_config.yaml
+- domain_config.yaml
+- auth_deployment.yaml
+- auth_service.yaml
+- api_deployment.yaml
+- api_service.yaml
+- plugin_deployment.yaml
+- plugin_service.yaml
+- profile_deployment.yaml
+- profile_service.yaml
+- project_manager_deployment.yaml
+- project_manager_service.yaml
+- config_manager_deployment.yaml
+- config_manager_service.yaml
+- metrics_deployment.yaml
+- proxy_deployment.yaml
+- vzconn_deployment.yaml
+- vzmgr_deployment.yaml
+- vzmgr_service.yaml
+- artifact_tracker_deployment.yaml
+- artifact_tracker_service.yaml
+- artifact_config.yaml
+- ory_service_config.yaml
+- indexer_config.yaml
+- indexer_deployment.yaml
+- script_bundles_config.yaml
+- scriptmgr_deployment.yaml
+- scriptmgr_service.yaml
+- scriptmgr_config.yaml
+- cron_script_deployment.yaml
+- cron_script_service.yaml
+- support_access_config.yaml

@@ -1,0 +1,120 @@
+[
+  {
+    "headers": {
+      ":authority": "jwt-test.com",
+      ":method": "GET",
+      ":path": "/jwt/cf",
+      "user-agent": "dummy",
+      "x-forwarded-for": "10.8.8.1"
+    },
+    "name": "plugin system, restrict jwt email, no data (pass)",
+    "response": {
+      "action": "pass",
+      "tags": [
+        "aclid:--default--",
+        "host:jwt-test-com",
+        "securitypolicy:test-for-the-jwt-plugin",
+        "ip:10-8-8-1",
+        "args:0",
+        "sante",
+        "all",
+        "contentfilterid:cf-jwt",
+        "headers:2",
+        "bot",
+        "securitypolicy-entry:default",
+        "contentfiltername:cf-jwt",
+        "cookies:0",
+        "aclname:default-acl"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "jwt-test.com",
+      ":method": "GET",
+      ":path": "/jwt/cf",
+      "user-agent": "dummy",
+      "x-forwarded-for": "10.8.8.1"
+    },
+    "name": "plugin system, jwt, bad domain",
+    "plugins": {
+      "jwt": {
+        "sub": "XXXXXXXXXXX",
+        "country": "US",
+        "person_type": "user",
+        "iss": "shared-security",
+        "name": "Bob",
+        "typ": "Bearer",
+        "exp": 1668287880,
+        "iat": 1668201480,
+        "email": "user@secure.DOMAINE"
+      }
+    },
+    "response": {
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "tags": [
+        "aclid:--default--",
+        "status:403",
+        "host:jwt-test-com",
+        "securitypolicy:test-for-the-jwt-plugin",
+        "ip:10-8-8-1",
+        "args:0",
+        "sante",
+        "all",
+        "status-class:4xx",
+        "contentfilterid:cf-jwt",
+        "headers:2",
+        "bot",
+        "securitypolicy-entry:default",
+        "contentfiltername:cf-jwt",
+        "cookies:0",
+        "aclname:default-acl"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "jwt-test.com",
+      ":method": "GET",
+      ":path": "/jwt/cf",
+      "user-agent": "dummy",
+      "x-forwarded-for": "10.8.8.1"
+    },
+    "name": "plugin system, jwt, correct data",
+    "plugins": {
+      "jwt": {
+        "sub": "XXXXXXXXXXX",
+        "country": "US",
+        "person_type": "user",
+        "iss": "shared-security",
+        "name": "Bob",
+        "typ": "Bearer",
+        "exp": 1668287880,
+        "iat": 1668201480,
+        "email": "user@secure.domain"
+      }
+    },
+    "response": {
+      "action": "pass",
+      "tags": [
+        "aclid:--default--",
+        "host:jwt-test-com",
+        "securitypolicy:test-for-the-jwt-plugin",
+        "ip:10-8-8-1",
+        "args:0",
+        "sante",
+        "all",
+        "contentfilterid:cf-jwt",
+        "headers:2",
+        "bot",
+        "securitypolicy-entry:default",
+        "contentfiltername:cf-jwt",
+        "cookies:0",
+        "aclname:default-acl",
+        "jwtemail"
+      ]
+    }
+  }
+]

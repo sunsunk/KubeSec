@@ -1,0 +1,215 @@
+{{ if .Values.fuse.enabled -}}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "juicefs.fullname" . }}-fuse
+  labels:
+    app: {{ template "juicefs.name" . }}
+    chart: {{ template "juicefs.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: juicefs-fuse
+    {{- include "library.fluid.labels" . | nindent 4 }}
+  ownerReferences:
+  {{- if .Values.owner.enabled }}
+    - apiVersion: {{ .Values.owner.apiVersion }}
+      blockOwnerDeletion: {{ .Values.owner.blockOwnerDeletion }}
+      controller: {{ .Values.owner.controller }}
+      kind: {{ .Values.owner.kind }}
+      name: {{ .Values.owner.name }}
+      uid: {{ .Values.owner.uid }}
+  {{- end }}
+spec:
+  updateStrategy:
+    type: {{ .Values.fuse.updateStrategy.type }}
+  selector:
+    matchLabels:
+      app: {{ template "juicefs.name" . }}
+      chart: {{ template "juicefs.chart" . }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+      role: juicefs-fuse
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      {{- if .Values.fuse.annotations }}
+      {{- range $key, $val := .Values.fuse.annotations}}
+        {{ $key | quote }}: {{ $val | quote }}
+      {{- end }}
+      {{- end }}
+      labels:
+        app: {{ template "juicefs.name" . }}
+        chart: {{ template "juicefs.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        role: juicefs-fuse
+        {{- if .Values.fuse.labels }}
+        {{- range $key, $val := .Values.fuse.labels }}
+        {{ $key | quote }}: {{ $val | quote }}
+        {{- end }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.fuse.criticalPod }}
+      priorityClassName: system-node-critical
+      {{- end }}
+      {{- if .Values.fuse.hostNetwork }}
+      hostNetwork: {{ .Values.fuse.hostNetwork }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      hostPID: {{ .Values.fuse.hostPID }}
+      enableServiceLinks: false
+      nodeSelector:
+      {{- if .Values.fuse.nodeSelector }}
+{{ toYaml .Values.fuse.nodeSelector | trim | indent 8  }}
+      {{- else if .Values.nodeSelector }}
+{{ toYaml .Values.nodeSelector | trim | indent 8  }}
+      {{- end }}
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: juicefs-fuse
+          image: {{ .Values.fuse.image }}:{{ .Values.fuse.imageTag }}
+          imagePullPolicy: {{ .Values.fuse.imagePullPolicy }}
+          {{- if .Values.fuse.resources  }}
+          resources:
+{{ toYaml .Values.fuse.resources | trim | indent 12  }}
+          {{- end }}
+          command: ["sh", "/root/script/script.sh"]
+          env:
+          - name: JFS_FOREGROUND
+            value: "1"
+          {{- if .Values.fuse.envs }}
+{{ toYaml .Values.fuse.envs | trim | indent 10  }}
+          {{- end }}
+          {{- if .Values.configs.metaurlSecret }}
+          - name: METAURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.configs.metaurlSecret }}
+                key: {{ .Values.configs.metaurlSecretKey }}
+          {{- end }}
+          {{- if .Values.configs.accesskeySecret }}
+          - name: ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.configs.accesskeySecret }}
+                key: {{ .Values.configs.accesskeySecretKey }}
+          {{- end }}
+          {{- if .Values.configs.secretkeySecret }}
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.configs.secretkeySecret }}
+                key: {{ .Values.configs.secretkeySecretKey }}
+          {{- end }}
+          {{- if .Values.configs.tokenSecret }}
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.configs.tokenSecret }}
+                key: {{ .Values.configs.tokenSecretKey }}
+          {{- end }}
+          {{- if and .Values.configs.encryptEnvOptions (gt (len .Values.configs.encryptEnvOptions) 0) }}
+            {{- range $encryptEnvOption := .Values.configs.encryptEnvOptions }}
+          - name: {{ $encryptEnvOption.envName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $encryptEnvOption.secretKeyRefName }}
+                key: {{ $encryptEnvOption.secretKeyRefKey }}
+            {{- end }}
+          {{- end }}
+          - name: FLUID_RUNTIME_TYPE
+            value: "juicefs"
+          - name: FLUID_RUNTIME_NS
+            value: {{ .Values.runtimeIdentity.namespace }}
+          - name: FLUID_RUNTIME_NAME
+            value: {{ .Values.runtimeIdentity.name }}
+          ports:
+          {{- if .Values.fuse.metricsPort }}
+          - containerPort: {{ .Values.fuse.metricsPort }}
+            name: metrics
+            protocol: TCP
+          {{- end }}
+          securityContext:
+            runAsUser: 0
+          {{- if .Values.fuse.privileged }}
+            privileged: true
+          {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "umount {{ .Values.fuse.mountPath }}"]
+          volumeMounts:
+            - name: juicefs-fuse-mount
+              mountPath: {{ .Values.fuse.hostMountPath }}
+              mountPropagation: Bidirectional
+            - mountPath: /root/script
+              name: script
+          {{- if .Values.fuse.volumeMounts }}
+{{ toYaml .Values.fuse.volumeMounts | indent 12 }}
+          {{- end }}
+      restartPolicy: Always
+      volumes:
+        - name: juicefs-fuse-mount
+          hostPath:
+            path: {{ .Values.fuse.hostMountPath }}
+            type: DirectoryOrCreate
+        - name: script
+          configMap:
+            name: {{ template "juicefs.fullname" . }}-fuse-script
+            defaultMode: 0755
+        {{- if .Values.fuse.volumes }}
+{{ toYaml .Values.fuse.volumes | indent 8 }}
+        {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "juicefs.fullname" . }}-fuse-script
+  labels:
+    app: {{ template "juicefs.name" . }}
+    chart: {{ template "juicefs.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: juicefs-fuse
+    {{- include "library.fluid.labels" . | nindent 4 }}
+  ownerReferences:
+  {{- if .Values.owner.enabled }}
+  - apiVersion: {{ .Values.owner.apiVersion }}
+    blockOwnerDeletion: {{ .Values.owner.blockOwnerDeletion }}
+    controller: {{ .Values.owner.controller }}
+    kind: {{ .Values.owner.kind }}
+    name: {{ .Values.owner.name }}
+    uid: {{ .Values.owner.uid }}
+  {{- end }}
+data:
+  script.sh: |
+    #!/bin/bash
+    set -e
+
+    if [ {{ .Values.edition }} = community ]; then
+    echo "$(date '+%Y/%m/%d %H:%M:%S').$(printf "%03d" $(($(date '+%N')/1000))) juicefs format start."
+    {{- if .Values.configs.formatCmd }}
+    {{ .Values.configs.formatCmd }}
+    {{- end }}
+    elif [ ! -f /root/.juicefs/{{ .Values.configs.name }}.conf ]; then
+    echo "$(date '+%Y/%m/%d %H:%M:%S').$(printf "%03d" $(($(date '+%N')/1000))) juicefs auth start."
+    {{- if .Values.configs.formatCmd }}
+    {{ .Values.configs.formatCmd }}
+    {{- end }}
+    fi
+
+    {{- if .Values.configs.quotaCmd }}
+    echo "$(date '+%Y/%m/%d %H:%M:%S').$(printf "%03d" $(($(date '+%N')/1000))) juicefs set quota start."
+    {{ .Values.configs.quotaCmd }}
+    {{- end }}
+
+    echo "$(date '+%Y/%m/%d %H:%M:%S').$(printf "%03d" $(($(date '+%N')/1000))) juicefs mount start."
+    {{ .Values.fuse.command }}
+
+{{- end }}

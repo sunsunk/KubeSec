@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carina-deployment
+  namespace: carina
+  labels:
+    app: web-server
+  annotations:
+    carina.storage.io/allow-pod-migration-if-node-notready: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+      annotations:
+        carina.storage.io/allow-pod-migration-if-node-notready: "true"
+    spec:
+      containers:
+        - name: web-server
+          image: nginx:latest
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: mypvc
+              mountPath: /var/lib/www/html
+      volumes:
+        - name: mypvc
+          persistentVolumeClaim:
+            claimName: csi-carina-lvm
+            readOnly: false

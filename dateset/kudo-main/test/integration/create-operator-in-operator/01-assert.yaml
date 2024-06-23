@@ -1,0 +1,24 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: oio-instance
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE
+---
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: inner-instance
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-configmap
+data:
+  foo: bar-xxx

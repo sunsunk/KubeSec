@@ -1,0 +1,174 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+      - release-*
+    tags:
+      - v*
+    paths-ignore:
+      - "**.md"
+      - "website/**"
+      - "docs/**"
+      - "demo/**"
+  pull_request:
+    branches:
+      - main
+      - release-*
+    paths-ignore:
+      - "**.md"
+      - "website/**"
+      - "docs/**"
+      - "demo/**"
+  workflow_dispatch:
+
+env:
+  TRIVY_VERSION: 0.44.0
+  BUILDKIT_VERSION: 0.12.0
+
+jobs:
+  unit-test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: read-all
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.3.1
+        with:
+          egress-policy: audit
+      - name: Check out code
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.22"
+          check-latest: true
+      - name: Unit test
+        shell: bash
+        env:
+          CODECOV_OPTS: "-coverprofile=coverage.txt -covermode=atomic"
+        run: make test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.3.1
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.22"
+          check-latest: true
+      - name: Build copa
+        shell: bash
+        run: |
+          make build
+          make archive
+      - name: Upload copa to build artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: copa_edge_linux_amd64.tar.gz
+          path: dist/linux_amd64/release/copa_edge_linux_amd64.tar.gz
+      - name: Load test cases for patch testing
+        id: load-test-envs-matrix
+        shell: bash
+        run: echo "buildkitenvs=$(.github/workflows/scripts/buildkit-env-matrix.sh)" | tee -a "${GITHUB_OUTPUT}"
+    outputs:
+      buildkitenvs: ${{ steps.load-test-envs-matrix.outputs.buildkitenvs }}
+
+  test-patch:
+    needs: build
+    name: Test patch ${{ matrix.buildkit_mode }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions: read-all
+    strategy:
+      fail-fast: false
+      matrix:
+        buildkit_mode: ${{fromJson(needs.build.outputs.buildkitenvs)}}
+    steps:
+      - name: Download copa from build artifacts
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: copa_edge_linux_amd64.tar.gz
+      - name: Check out code
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.22"
+          check-latest: true
+      - name: Install required tools
+        shell: bash
+        run: .github/workflows/scripts/download-tooling.sh
+      - name: Download copa from build artifacts
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: copa_edge_linux_amd64.tar.gz
+      - name: Extract copa
+        shell: bash
+        run: |
+          tar xzf copa_edge_linux_amd64.tar.gz
+          ./copa --version
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+      - name: Run functional test
+        shell: bash
+        run: |
+          set -eu -o pipefail
+          . .github/workflows/scripts/buildkitenvs/${{ matrix.buildkit_mode}}
+          go test -v ./integration --addr="${COPA_BUILDKIT_ADDR}" --copa="$(pwd)/copa" -timeout 0
+
+  test-plugin:
+    needs: build
+    name: Test plugin
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: read-all
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.3.1
+        with:
+          egress-policy: audit
+      - name: Check out code
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.22"
+          check-latest: true
+      - name: Install scanner-plugin-template
+        shell: bash
+        run: |
+          go install github.com/project-copacetic/scanner-plugin-template@latest
+          mv $(go env GOPATH)/bin/scanner-plugin-template $(go env GOPATH)/bin/copa-fake
+          mv $(go env GOPATH)/bin/copa-fake /usr/local/bin
+      - name: Install required tools
+        shell: bash
+        run: .github/workflows/scripts/download-tooling.sh
+      - name: Download copa from build artifacts
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: copa_edge_linux_amd64.tar.gz
+      - name: Extract copa
+        shell: bash
+        run: |
+          tar xzf copa_edge_linux_amd64.tar.gz
+          ./copa --version
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+      - name: Run e2e tests
+        shell: bash
+        run: |
+          set -eu -o pipefail
+          . .github/workflows/scripts/buildkitenvs/direct/tcp
+          go test -v ./test/e2e --addr="${COPA_BUILDKIT_ADDR}" --copa="$(pwd)/copa" --scanner fake -timeout 0

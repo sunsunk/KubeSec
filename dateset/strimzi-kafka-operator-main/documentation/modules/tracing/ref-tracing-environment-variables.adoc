@@ -1,0 +1,39 @@
+// Module included in the following assemblies:
+//
+// assembly-distributed tracing.adoc
+
+[id='ref-tracing-environment-variables-{context}']
+= Environment variables for tracing
+
+[role="_abstract"]
+Use environment variables when you are enabling tracing for Kafka components or initializing a tracer for Kafka clients.
+
+Tracing environment variables are subject to change. 
+For the latest information, see the {OpenTelemetryDocs}.
+
+The following tables describe the key environment variables for setting up a tracer. 
+
+.OpenTelemetry environment variables
+[cols="2m,1,2",options="header"]
+|===
+
+|Property
+|Required
+|Description
+
+|OTEL_SERVICE_NAME
+|Yes
+|The name of the Jaeger tracing service for OpenTelemetry.
+
+|OTEL_EXPORTER_JAEGER_ENDPOINT
+|Yes
+|The exporter used for tracing.
+
+|OTEL_TRACES_EXPORTER
+|Yes
+|The exporter used for tracing.
+Set to `otlp` by default. If using Jaeger tracing, you need to set this environment variable as `jaeger`.
+If you are using another tracing implementation, xref:proc-enabling-tracing-type-{context}[specify the exporter used].
+
+
+|===

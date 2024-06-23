@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clusternet-reserved
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clusternet-system
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clusternet-mcs
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: clusternet-hub
+  namespace: clusternet-system
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: clusternet-hub-proxy
+  namespace: clusternet-system
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clusternet-hub-proxy
+  namespace: clusternet-system
+  annotations:
+    kubernetes.io/service-account.name: clusternet-hub-proxy
+type: kubernetes.io/service-account-token
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusternet-hub
+  namespace: clusternet-system
+  labels:
+    app: clusternet-hub
+spec:
+  ports:
+    - port: 443
+      name: https
+      protocol: TCP
+      targetPort: 443
+  selector:
+    app: clusternet-hub
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clusternet-hub
+  namespace: clusternet-system
+  labels:
+    app: clusternet-hub
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: clusternet-hub
+  template:
+    metadata:
+      labels:
+        app: clusternet-hub
+    spec:
+      serviceAccountName: clusternet-hub
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+      containers:
+        - name: clusternet-hub
+          image: ghcr.io/clusternet/clusternet-hub:v0.16.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SYSTEM_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: RESERVED_NAMESPACE
+              value: clusternet-reserved
+          ports:
+            - name: peer
+              containerPort: 8123
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          command:
+            - /usr/local/bin/clusternet-hub
+          args:
+            - --secure-port=443
+            - --feature-gates=SocketConnection=true,ShadowAPI=true
+            - --leader-elect-resource-namespace=$(SYSTEM_NAMESPACE)
+            - --reserved-namespace=$(RESERVED_NAMESPACE)
+            - --peer-port=8123
+            # -v=4

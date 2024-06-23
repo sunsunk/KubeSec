@@ -1,0 +1,31 @@
+{
+  "packageManager": "yarn@4.0.2",
+  "name": "@wasmcloud/monorepo",
+  "type": "commonjs",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "turbo:build": "turbo run build --cache-dir .turbo/cache",
+    "turbo:dev": "turbo run dev",
+    "turbo:lint:eslint": "turbo run lint:eslint",
+    "turbo:format:prettier:fix": "turbo run format:prettier:fix",
+    "turbo:format:prettier:check": "turbo run format:prettier:check",
+    "turbo:test:playwright:headless": "turbo run test:playwright:headless",
+    "turbo:test:vitest": "turbo run test:vitest",
+    "turbo:storybook:build": "turbo run storybook:build",
+    "format:prettier": "prettier --ignore-unknown --no-error-on-unmatched-pattern '**/*'",
+    "format:prettier:fix": "yarn format:prettier --write",
+    "format:prettier:check": "yarn format:prettier --check"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.28",
+    "@wasmcloud/prettier-config": "workspace:*",
+    "eslint": "^8.57.0",
+    "eslint-config-turbo": "^1.12.5",
+    "prettier": "^3.2.5",
+    "turbo": "^1.12.5",
+    "typescript": "^5.4.2"
+  }
+}

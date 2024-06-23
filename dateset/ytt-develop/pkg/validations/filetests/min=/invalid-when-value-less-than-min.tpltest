@@ -1,0 +1,11 @@
+#@assert/validate min=10
+value: 9
+
++++
+
+ERR:
+  value
+    from: stdin:2
+    - must be: a value >= 10 (by: stdin:1)
+      found: value < 10
+

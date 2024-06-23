@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "displayName": "Pretty name",
+  "version": "1.0.0",
+  "normalizedName": "pr",
+  "repository": {
+    "repositoryid": "id",
+    "kind": 0,
+    "name": "incubator",
+    "organizationName": "org",
+    "organizationDisplayName": "Org name"
+  }
+}

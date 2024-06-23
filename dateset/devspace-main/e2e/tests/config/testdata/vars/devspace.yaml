@@ -1,0 +1,22 @@
+version: v1beta10
+vars:
+  - name: TEST_OVERRIDE
+    value: devspace.yaml
+  - name: NOT__USED
+  - name: TEST_1
+  - name: TEST_2
+    command: "echo test2"
+dependencies:
+  - name: dep1
+    source:
+      path: dep1
+      configName: dev.yaml
+deployments:
+  - name: test
+    kubectl:
+      manifests:
+        - ${TEST_1}
+        - ${TEST_2}
+        - ${TEST_OVERRIDE}
+        - ${FROM_ENV}
+

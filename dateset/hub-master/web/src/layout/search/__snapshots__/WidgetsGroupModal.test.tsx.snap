@@ -1,0 +1,512 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WidgetsGroupModal creates snapshot 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="modal-backdrop activeBackdrop"
+      data-testid="modalBackdrop"
+    />
+    <div
+      aria-modal="true"
+      class="modal modal active d-block"
+      role="dialog"
+    >
+      <div
+        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable fs-6"
+      >
+        <div
+          class="modal-content border border-3 mx-auto content"
+        >
+          <div
+            class="modal-header d-flex flex-row align-items-center header undefined"
+          >
+            <div
+              class="h3 m-2 flex-grow-1 title"
+            >
+              Widgets group
+            </div>
+            <button
+              aria-label="Close"
+              class="btn-close"
+              type="button"
+            />
+          </div>
+          <div
+            class="modal-body p-4 h-100 d-flex flex-column"
+          >
+            <div
+              class="w-100 position-relative"
+            >
+              <label
+                class="form-label fw-bold label"
+                for="theme"
+              >
+                Theme
+              </label>
+              <div
+                class="d-flex flex-row mb-3"
+              >
+                <div
+                  class="form-check me-4"
+                >
+                  <input
+                    checked=""
+                    class="form-check-input"
+                    id="light"
+                    name="theme"
+                    required=""
+                    type="radio"
+                    value="light"
+                  />
+                  <label
+                    class="form-label text-capitalize form-check-label"
+                    for="light"
+                  >
+                    <div
+                      class="d-flex flex-row align-items-center"
+                    >
+                      <svg
+                        fill="none"
+                        height="1em"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="5"
+                        />
+                        <line
+                          x1="12"
+                          x2="12"
+                          y1="1"
+                          y2="3"
+                        />
+                        <line
+                          x1="12"
+                          x2="12"
+                          y1="21"
+                          y2="23"
+                        />
+                        <line
+                          x1="4.22"
+                          x2="5.64"
+                          y1="4.22"
+                          y2="5.64"
+                        />
+                        <line
+                          x1="18.36"
+                          x2="19.78"
+                          y1="18.36"
+                          y2="19.78"
+                        />
+                        <line
+                          x1="1"
+                          x2="3"
+                          y1="12"
+                          y2="12"
+                        />
+                        <line
+                          x1="21"
+                          x2="23"
+                          y1="12"
+                          y2="12"
+                        />
+                        <line
+                          x1="4.22"
+                          x2="5.64"
+                          y1="19.78"
+                          y2="18.36"
+                        />
+                        <line
+                          x1="18.36"
+                          x2="19.78"
+                          y1="5.64"
+                          y2="4.22"
+                        />
+                      </svg>
+                      <span
+                        class="ms-1"
+                      >
+                        light
+                      </span>
+                    </div>
+                  </label>
+                </div>
+                <div
+                  class="form-check me-4"
+                >
+                  <input
+                    class="form-check-input"
+                    id="dark"
+                    name="theme"
+                    required=""
+                    type="radio"
+                    value="dark"
+                  />
+                  <label
+                    class="form-label text-capitalize form-check-label"
+                    for="dark"
+                  >
+                    <div
+                      class="d-flex flex-row align-items-center"
+                    >
+                      <svg
+                        fill="none"
+                        height="1em"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                        />
+                      </svg>
+                      <span
+                        class="ms-1"
+                      >
+                        dark
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div
+                class="mt-4 mb-3"
+              >
+                <div
+                  class="form-check form-switch ps-0"
+                >
+                  <label
+                    class="form-check-label fw-bold label"
+                    for="header"
+                  >
+                    Header
+                  </label>
+                  <input
+                    class="form-check-input position-absolute ms-2"
+                    id="header"
+                    role="switch"
+                    type="checkbox"
+                    value="true"
+                  />
+                </div>
+                <div
+                  class="form-text text-muted mt-2"
+                >
+                  Display Artifact Hub header at the top of the widget.
+                </div>
+              </div>
+              <div
+                class="mt-4 mb-3"
+              >
+                <div
+                  class="form-check form-switch ps-0"
+                >
+                  <label
+                    class="form-check-label fw-bold label"
+                    for="stars"
+                  >
+                    Stars
+                  </label>
+                  <input
+                    checked=""
+                    class="form-check-input position-absolute ms-2"
+                    id="stars"
+                    role="switch"
+                    type="checkbox"
+                    value="true"
+                  />
+                </div>
+                <div
+                  class="form-text text-muted mt-2"
+                >
+                  Display number of stars given to the package.
+                </div>
+              </div>
+              <div
+                class="d-flex flex-row"
+              >
+                <div>
+                  <label
+                    class="form-label fw-bold label"
+                    for="groupWrapperWidthOpt"
+                  >
+                    Container width
+                  </label>
+                  <div
+                    class="d-flex flex-row"
+                  >
+                    <div
+                      class="form-check me-4"
+                    >
+                      <input
+                        checked=""
+                        class="form-check-input"
+                        id="responsive"
+                        name="groupWrapperWidthOpt"
+                        required=""
+                        type="radio"
+                        value="responsive"
+                      />
+                      <label
+                        class="text-capitalize form-check-label"
+                        for="responsive"
+                      >
+                        <div
+                          class="d-flex flex-row align-items-center"
+                        >
+                          <svg
+                            fill="currentColor"
+                            height="1em"
+                            stroke="currentColor"
+                            stroke-width="0"
+                            viewBox="0 0 16 16"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                          <span
+                            class="ms-1"
+                          >
+                            responsive
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    <div
+                      class="form-check me-4"
+                    >
+                      <input
+                        class="form-check-input"
+                        id="fixed"
+                        name="groupWrapperWidthOpt"
+                        required=""
+                        type="radio"
+                        value="fixed"
+                      />
+                      <label
+                        class="text-capitalize form-check-label"
+                        for="fixed"
+                      >
+                        <div
+                          class="d-flex flex-row align-items-center"
+                        >
+                          <svg
+                            fill="currentColor"
+                            height="1em"
+                            stroke="currentColor"
+                            stroke-width="0"
+                            viewBox="0 0 1024 1024"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M180 176h-60c-4.4 0-8 3.6-8 8v656c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V184c0-4.4-3.6-8-8-8zm724 0h-60c-4.4 0-8 3.6-8 8v656c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V184c0-4.4-3.6-8-8-8zM785.3 504.3L657.7 403.6a7.23 7.23 0 0 0-11.7 5.7V476H378v-62.8c0-6-7-9.4-11.7-5.7L238.7 508.3a7.14 7.14 0 0 0 0 11.3l127.5 100.8c4.7 3.7 11.7.4 11.7-5.7V548h268v62.8c0 6 7 9.4 11.7 5.7l127.5-100.8c3.8-2.9 3.8-8.5.2-11.4z"
+                            />
+                          </svg>
+                          <span
+                            class="ms-1"
+                          >
+                            fixed
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="position-relative inputWrapper"
+                />
+              </div>
+              <div
+                class="mt-4 mb-3"
+              >
+                <div
+                  class="form-check form-switch ps-0"
+                >
+                  <label
+                    class="form-check-label fw-bold label"
+                    for="loading"
+                  >
+                    Loading spinner
+                  </label>
+                  <input
+                    checked=""
+                    class="form-check-input position-absolute ms-2"
+                    id="loading"
+                    role="switch"
+                    type="checkbox"
+                    value="true"
+                  />
+                </div>
+                <div
+                  class="form-text text-muted mt-2"
+                >
+                  Display loading spinner while waiting for search results.
+                </div>
+              </div>
+              <div
+                class="mt-4 mb-3"
+              >
+                <div
+                  class="d-flex flex-row align-items-center"
+                >
+                  <label
+                    class="form-label fw-bold mb-0 label"
+                    for="color"
+                  >
+                    Color
+                  </label>
+                  <div
+                    class="btn btn-sm btn-light border border-1 p-1 ms-2 colorInputWrapper"
+                  >
+                    <div
+                      class="colorInput"
+                      style="background-color: rgb(65, 117, 152);"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="form-text text-muted mt-3 mb-2"
+                >
+                  Color used for widgets border, header and loading spinner.
+                </div>
+                <div
+                  class="pb-2 colorPickerWrapper"
+                >
+                  sketch
+                </div>
+              </div>
+              <div
+                class="mt-3 mb-2"
+              >
+                <label
+                  class="form-label fw-bold label"
+                >
+                  Code
+                </label>
+                <div
+                  class="flex-grow-1 me-3 user-select-none blockWrapper"
+                  data-testid="block-content"
+                >
+                  <pre
+                    style="display: block; overflow-x: auto; padding: 0.5em; color: rgb(0, 0, 0); background: rgb(248, 248, 255);"
+                  >
+                    <code
+                      class="language-text"
+                      style="white-space: pre;"
+                    >
+                      <span>
+                        &lt;div class="artifacthub-widget-group" data-url="http://localhost/" data-theme="light" data-header="false" data-stars="true" data-color="#417598" data-responsive="true"  data-loading="true"&gt;&lt;/div&gt;&lt;script async src="http://localhost/artifacthub-widget.js"&gt;&lt;/script&gt;
+                      </span>
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  class="position-relative undefined"
+                >
+                  <button
+                    aria-label="Copy code to clipboard"
+                    class="btn btn-sm btn-outline-secondary px-2 py-1 text-uppercase"
+                    type="button"
+                  >
+                    <div
+                      aria-hidden="true"
+                      class="d-flex flex-row align-items-center"
+                    >
+                      <div
+                        class="me-2"
+                      >
+                        Copy code to clipboard
+                      </div>
+                      <svg
+                        fill="none"
+                        height="1em"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect
+                          height="13"
+                          rx="2"
+                          ry="2"
+                          width="13"
+                          x="9"
+                          y="9"
+                        />
+                        <path
+                          d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div
+                class="overflow-hidden alertWrapper"
+                data-testid="alertWrapper"
+              />
+            </div>
+          </div>
+          <div
+            class="modal-footer p-3 undefined"
+          >
+            <button
+              aria-label="Close modal"
+              class="btn btn-sm btn-outline-secondary text-uppercase"
+              type="button"
+            >
+              <div
+                class="d-flex flex-row align-items-center"
+              >
+                <svg
+                  class="me-2"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
+                  <path
+                    d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                  />
+                </svg>
+                <div>
+                  Close
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

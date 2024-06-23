@@ -1,0 +1,81 @@
+.navbar {
+  background-color: var(--color-1-500);
+  min-height: 73px;
+}
+
+.navbar:not(.homeNavbar) {
+  box-shadow: 0 8px 6px -6px var(--color-black-15);
+}
+
+.logo {
+  max-height: 20px;
+  height: 20px;
+  max-width: 185px;
+}
+
+.search {
+  max-width: 300px;
+}
+
+.button {
+  letter-spacing: 2px;
+  transition: all 0.3s ease-in-out;
+}
+
+.button:focus {
+  box-shadow: 0;
+}
+
+@media (min-width: 768px) {
+  .navbar:not(.homeNavbar) {
+    position: sticky !important;
+    top: 0;
+    z-index: 1040;
+  }
+
+  :global(.noScroll-modal) .navbar:not(.homeNavbar),
+  :global(.noScroll-sidebar) .navbar:not(.homeNavbar) {
+    /* With different modals across the pages in different kevel to navbar, we cannot keep navbar sticky the navbar with open modals */
+    position: relative !important;
+    z-index: 1;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .mobileWrapper {
+    width: 100%;
+    min-height: 54px;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .search {
+    max-width: 500px;
+  }
+}
+
+@media (hover: hover) {
+  .button:hover::before {
+    content: '';
+    position: absolute;
+    top: -18px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--bs-white);
+    opacity: 0.5;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .search {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: all 1.3s ease-in-out;
+  }
+}

@@ -1,0 +1,28 @@
+# Global rule:
+*                               @hydai
+.devcontainer/                  @hydai
+.github/                        @hydai
+bindings/                       @hydai
+bindings/rust/                  @hydai @yanganto
+bindings/java/                  @dannypsnl
+cmake/                          @ibmibmibm
+docs/                           @hydai
+include/                        @q82419
+lib/                            @q82419
+**/aot/                         @ibmibmibm
+**/host/wasi/                   @ibmibmibm
+**/system/                      @ibmibmibm
+**/api/                         @q82419
+plugins/                        @ibmibmibm
+plugins/wasi_logging/           @michael1017
+rpm/                            @hydai @dm4
+test/                           @q82419
+test/aot/                       @ibmibmibm
+test/host/wasi/                 @ibmibmibm
+test/po/                        @ibmibmibm
+test/span/                      @ibmibmibm
+thirdparty/                     @ibmibmibm
+tools/                          @hydai @ibmibmibm @q82419
+utils/                          @hydai @ibmibmibm @q82419
+utils/install.sh                @SAtacker
+utils/uninstall.sh              @SAtacker

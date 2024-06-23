@@ -1,0 +1,46 @@
+
+.select_namespace {
+    margin-left: 15px;
+    display: inline-block;
+    width: 155px;
+}
+
+div.react-select__control {
+    border: 1px solid $color-border;
+    border-radius: 0;
+    min-height: initial;
+    background-color: transparent;
+}
+
+div.react-select__control:hover {
+    box-shadow: none;
+}
+
+div.react-select__indicator {
+    padding: 0;
+}
+
+div.react-select__menu {
+    border-radius: 0;
+}
+
+div.react-select__option {
+    background-color: transparent;
+}
+
+div.react-select__option:hover {
+    background-color: $color-border;
+}
+
+div.react-select__option--is-selected {
+    color: $color-accent;
+    background-color: $color-border;
+}
+
+span.react-select__indicator-separator {
+    display: none;
+}
+
+div.react-select__single-value {
+    color: $color-font;
+}

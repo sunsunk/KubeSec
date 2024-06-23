@@ -1,0 +1,26 @@
+version: v2beta1
+name: kaniko
+
+vars:
+  IMAGE: myuser/myimage
+
+images:
+  my-image:
+    image: ${IMAGE}
+    kaniko: {}
+
+deployments:
+  my-deployment:
+    helm:
+      values:
+        containers:
+          - image: ${IMAGE}
+
+dev:
+  my-dev:
+    imageSelector: ${IMAGE}
+    terminal: {}
+    ports:
+    - port: 8080
+    sync:
+    - path: ./

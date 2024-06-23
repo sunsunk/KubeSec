@@ -1,0 +1,19 @@
+nav:
+
+  - title: "What is SMP?"
+    section: about
+
+  - title: "Resources"
+    section: engage
+
+  - title: "Implementation"
+    section: implementation
+
+  - title: "Connect"
+    section: subscribe
+
+  - title: "MeshMark"
+    url: meshmark
+  
+  - title: "Dashboard"
+    url: dashboard/all

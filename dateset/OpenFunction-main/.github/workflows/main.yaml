@@ -1,0 +1,212 @@
+#
+# Copyright 2022 The OpenFunction Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Main CI WorkFlow
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'release-*'
+    paths:
+      - '.github/workflows/**'
+      - 'apis/**'
+      - 'config/bundle.yaml'
+      - 'config/samples/function-bindings-sample-serving-only.yaml'
+      - 'config/samples/function-pubsub-sample-serving-only.yaml'
+      - 'config/samples/function-knative-with-dapr-serving-only.yaml'
+      - 'config/samples/function-sample-serving-only.yaml'
+      - 'config/samples/function-with-plugins-serving-only.yaml'
+      - 'controllers/**'
+      - 'hack/generate-cert.sh'
+      - 'pkg/**'
+      - 'Dockerfile'
+      - 'main.go'
+      - 'Makefile'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    name: Verify and Unit Test
+    env:
+      GO111MODULE: "on"
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check License Header
+        uses: apache/skywalking-eyes/header@501a28d2fb4a9b962661987e50cf0219631b32ff
+
+      - name: Install kubebuilder-3.11.1
+        run: |
+          curl -L -o kubebuilder "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v3.11.1/kubebuilder_linux_amd64"
+          chmod +x kubebuilder && mv kubebuilder /usr/local/bin/
+
+      - name: Run basic test
+        run: make test
+
+      - name: Run verify crds test
+        run:  make verify
+
+  e2e_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    name: E2E Tests
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create kind cluster
+        uses: container-tools/kind-action@v1
+        with:
+          version: v0.20.0
+          node_image: kindest/node:v1.26.6
+
+      - name: Create busybox pod
+        run: |
+          kubectl apply -f - <<EOF
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: curl
+          spec:
+            containers:
+              - name: curl
+                image: radial/busyboxplus:curl
+                command:
+                  - sh
+                  - -c
+                  - while true; do sleep 1; done
+          EOF
+
+      - name: Install dependent components
+        run: |
+          # Install kafka
+          helm repo add strimzi https://strimzi.io/charts/
+          helm install kafka-operator -n default strimzi/strimzi-kafka-operator
+          kubectl apply -f config/samples/function-kafka-quick.yaml
+          # Install nats and stan
+          helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+          helm install nats nats/nats
+          helm install stan nats/stan --set stan.nats.url=nats://nats:4222
+
+      - name: Build and Push image
+        run: |
+          docker build . -t kind-registry:5000/openfunction/openfunction:latest -f Dockerfile --build-arg GOPROXY="https://proxy.golang.org"
+          docker push kind-registry:5000/openfunction/openfunction:latest
+
+      - name: Install OpenFunction
+        run: |
+          # Install CRDs
+          make install
+          kubectl apply -f https://openfunction.sh1a.qingstor.com/crds/gateway-api-v0.8.0.yaml
+          # Install OpenFunction Chart
+          helm repo add openfunction https://openfunction.github.io/charts/
+          helm repo update
+          helm install openfunction openfunction/openfunction -n openfunction --create-namespace --devel -f "${GITHUB_WORKSPACE}"/.github/workflows/values
+          sleep 60
+
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v1
+
+      - name: Wait for kafka to be ready
+        run: |
+          for i in {1..600}
+          do
+            status=`kubectl get kafkas.kafka.strimzi.io kafka-server -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'`
+            if [ $status == "True" ]; then
+              echo "The Kafka is ready!"
+              break
+            else
+              sleep 1
+              continue
+            fi
+          done
+        shell: bash
+
+      - name: Knative function e2e test
+        timeout-minutes: 10
+        run: |
+          chmod +x "${GITHUB_WORKSPACE}/.github/workflows/e2e-test.sh"
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh knative
+
+      - name: Knative function with Dapr e2e test
+        timeout-minutes: 10
+        run: |
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh knative_dapr
+
+      - name: Async pubsub function e2e test
+        timeout-minutes: 10
+        run: |
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh async_pubsub
+
+      - name: Async bindings function e2e test
+        timeout-minutes: 10
+        run: |
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh async_bindings
+
+      - name: Function with plugins e2e test
+        timeout-minutes: 10
+        run: |
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh plugin
+
+      - name: Function with events e2e test
+        timeout-minutes: 10
+        run: |
+          # deploy the eventbus backend nats streaming
+          while /bin/true; do
+            nats_status=`kubectl get pod nats-0 -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'`
+            stan_status=`kubectl get pod stan-0 -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'`
+            if [[ "$nats_status" == "True" ]] && [[ "$stan_status" == "True" ]]; then
+              echo "Nats streaming is ready!"
+              break
+            else
+              sleep 1
+              continue
+            fi
+          done
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/e2e-test.sh events
+
+      - name: Output debug info
+        if: ${{ failure() }}
+        run: |
+          chmod +x "${GITHUB_WORKSPACE}/.github/workflows/output.sh"
+          bash "${GITHUB_WORKSPACE}"/.github/workflows/output.sh

@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-csi-config
+  namespace: {{ .Release.Namespace }}
+{{ include "carina-node.labels" . | indent 2 }}
+data:
+  config.json: |-
+{{ toPrettyJson .Values.config | indent 4}}

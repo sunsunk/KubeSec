@@ -1,0 +1,39 @@
+[
+  {
+    "response": {
+      "tags": [
+        "securitypolicy:default-entry",
+        "geo-asn:15557",
+        "headers:1",
+        "contentfilterid:--default--",
+        "geo-city:paris",
+        "network:77-204-144-0-24",
+        "geo-continent-code:eu",
+        "host:localhost:30081",
+        "geo-mobile",
+        "ip:77-204-144-53",
+        "geo-country:france",
+        "args:0",
+        "bot",
+        "cookies:0",
+        "aclname:default-acl",
+        "all",
+        "geo-region:-le-de-france",
+        "geo-org:societe-francaise-du-radiotelephone---sfr-sa",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy-entry:default",
+        "geo-subregion:75000",
+        "geo-continent-name:europe",
+        "aclid:--default--"
+      ],
+      "action": "pass"
+    },
+    "name": "test mobile carrier tagging",
+    "headers": {
+      "x-forwarded-for": "77.204.144.53",
+      ":path": "/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

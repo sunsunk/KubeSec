@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels: 
+    app: dynamic_parameters
+    
+  annotations: 
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels: 
+      app: dynamic_parameters
+  strategy: 
+  template:
+    metadata:
+      annotations:
+      
+      labels: 
+        app: dynamic_parameters
+        
+    spec:
+      
+      containers:
+      - name: dynamic_parameters
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        command:
+        - /bin/karmada-operator
+        - --leader-elect-resource-namespace=dynamic_parameters
+        - --v=2
+        resources: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      affinity: 
+      nodeSelector: 
+      tolerations: 
+
+---

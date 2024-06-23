@@ -1,0 +1,78 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "group:allNonMajor",
+  ],
+  "ignoreDeps": [
+    "github.com/infobloxopen/infoblox-go-client",
+    "zricethezav/gitleaks-action",
+    "actions/setup-go",
+  ],
+  "ignorePaths": [
+    ".github/workflows/release.yaml",
+    ".github/workflows/cut_release.yaml",
+  ],
+  "labels": ["dependencies", "renovate"],
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "*",
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    }, {
+        "matchPackageNames": [
+        "k8gb-io/k8gb",
+      ],
+      "groupName": "update SECURITY-INSIGHTS.yml",
+      "groupSlug": "update-security-insights"
+    }, {
+        "matchPackageNames": [
+        "rancher/k3s",
+      ],
+      "groupName": "update k8s version",
+      "groupSlug": "update-k8s-version"
+    }, {
+      "matchDepTypes": [
+        "action",
+      ],
+      "pinDigests": true
+    },
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^SECURITY-INSIGHTS.yml$"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "k8gb-io/k8gb",
+      "extractVersionTemplate": "^v?(?<version>.*)['\"]?$",
+      "matchStrings": [
+        "\\s*project-release: ['\"]?v?(?<currentValue>[^'\"]+)['\"]?",
+      ],
+    },
+    {
+      "fileMatch": ["^SECURITY-INSIGHTS.yml$"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "k8gb-io/k8gb",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "matchStrings": [
+        "\\s*- sbom-file: ['\"]?(.+)\\/download\\/v(?<currentValue>.+)\\/(.+)['\"]?",
+      ],
+      "autoReplaceStringTemplate": "\n  - sbom-file: https://github.com/{{{depName}}}/releases/download/v{{{newValue}}}/k8gb_{{{newValue}}}_linux_amd64.tar.gz.sbom.json"
+    },
+    // update the files in k3d/ with the up-to-date k8s version
+    {
+      "fileMatch": ["^k3d/.*y[a]?ml.*$"],
+      "datasourceTemplate": "docker",
+      "matchStrings": [
+        "repo: (?<depName>.*)\n(\\s*)image: \"?.+:(?<currentValue>.*?)\"?\n",
+      ],
+      "extractVersionTemplate": "^(?<version>.+)(-k3s2)?$",
+    },
+  ],
+}

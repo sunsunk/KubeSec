@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: pl-monitoring
+  component: vizier
+  vizier-bootstrap: "true"
+kind: Kustomization
+namespace: pl
+resources:
+- cloud_connector_tls_config.yaml
+- cloud_connector_deployment.yaml
+- cloud_connector_service.yaml
+- updater_role.yaml
+- cloud_connector_role.yaml
+- cert_provisioner_role.yaml
+- cert_provisioner_job.yaml
+- vizier_crd_role.yaml

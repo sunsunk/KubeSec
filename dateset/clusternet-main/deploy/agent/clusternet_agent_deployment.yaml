@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clusternet-system
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clusternet-agent
+  namespace: clusternet-system
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clusternet-app-deployer
+  namespace: clusternet-system
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clusternet-app-deployer
+  namespace: clusternet-system
+  annotations:
+    kubernetes.io/service-account.name: clusternet-app-deployer
+type: kubernetes.io/service-account-token
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clusternet-agent
+  namespace: clusternet-system
+  labels:
+    app: clusternet-agent
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: clusternet-agent
+  template:
+    metadata:
+      labels:
+        app: clusternet-agent
+    spec:
+      serviceAccountName: clusternet-agent
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+      containers:
+        - name: clusternet-agent
+          image: ghcr.io/clusternet/clusternet-agent:v0.16.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PARENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: clusternet-agent-cluster-registration
+                  key: parentURL
+            - name: REG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: clusternet-agent-cluster-registration
+                  key: regToken
+            - name: AGENT_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            # Set the CLUSTER_CIDR and SERVICE_CIDR when deploy agent with k8s control-plane not running as static pod
+            # for example，k3s and rke  
+            # - name: CLUSTER_CIDR
+            #   value: 10.233.12.0/18
+            # - name: SERVICE_CIDR
+            #   value: 10.235.12.0/18
+          command:
+            - /usr/local/bin/clusternet-agent
+            - --cluster-reg-token=$(REG_TOKEN)
+            - --cluster-reg-parent-url=$(PARENT_URL)
+            - --leader-elect=true
+            - --leader-elect-resource-namespace=$(AGENT_NAMESPACE)
+            - --feature-gates=SocketConnection=true,AppPusher=true,Recovery=true,Predictor=true
+            - --cluster-sync-mode=Dual
+            - --use-metrics-server=false
+            - --predictor-direct-access=false
+            - --predictor-port=8080
+            - --kube-api-burst=100
+            - --kube-api-qps=50

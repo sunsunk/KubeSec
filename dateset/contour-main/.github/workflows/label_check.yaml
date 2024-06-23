@@ -1,0 +1,67 @@
+name: Release Note Label Check
+
+# Trigger the workflow on pull requests only
+on: 
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GOPROXY: https://proxy.golang.org/
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  # Ensures correct release-note labels are set:
+  # - At least one label
+  # - At most one of the main category labels
+  # - A deprecation label alone or with something other than "none-required"
+  # Ensures you can have a change that is just a deprecation, or include a
+  # deprecation with another release note.
+  check-label:
+    name: Check release-note label set
+    runs-on: ubuntu-latest
+    steps:
+    - uses: mheap/github-action-required-labels@132879b972cb7f2ac593006455875098e73cc7f2 # v5.4.0
+      with:
+        mode: minimum
+        count: 1
+        labels: "release-note/major, release-note/minor, release-note/small, release-note/docs, release-note/infra, release-note/deprecation, release-note/none-required"
+    - uses: mheap/github-action-required-labels@132879b972cb7f2ac593006455875098e73cc7f2 # v5.4.0
+      with:
+        mode: maximum
+        count: 1
+        labels: "release-note/major, release-note/minor, release-note/small, release-note/docs, release-note/infra, release-note/none-required"
+    - uses: mheap/github-action-required-labels@132879b972cb7f2ac593006455875098e73cc7f2 # v5.4.0
+      with:
+        mode: maximum
+        count: 1
+        labels: "release-note/deprecation, release-note/none-required"
+  check-changelog:
+    name: Check for changelog file
+    needs: [check-label]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        persist-credentials: false
+    - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+      with:
+        # * Module download cache
+        # * Build cache (Linux)
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-${{ github.job }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ github.job }}-go-
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      with:
+        go-version: 'stable'
+        cache: false
+    - run: go run ./hack/actions/check-changefile-exists.go
+      env:
+        PR_NUMBER: ${{ github.event.number }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

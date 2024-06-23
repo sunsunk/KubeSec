@@ -1,0 +1,105 @@
+apiVersion: operator.curve.io/v1
+kind: CurveCluster
+metadata:
+  name: curvebs-cluster-cloud
+  # The namespace to deploy CurveBS cluster. 
+  # Curve operator is deployed in this namespace,Do not modify if not necessary
+  namespace: curve
+spec:
+  # The container image used to launch the Curve daemon pods(etcd, mds, chunkserver, snapshotclone).
+  # v1.2 is Pacific and v1.3 is not tested.
+  curveVersion:
+    image: curve2operator/curvebs:monitor-v1.2.6
+    # Container image pull policy, 
+    # By default the pull policy of all containers in that pod will be set to IfNotPresent if it is not explicitly specified and no modification necessary.
+    imagePullPolicy: IfNotPresent
+  # The K8s cluster nodes name in cluster that prepare to deploy Curve daemon pods(etcd, mds, snapshotclone).
+  # For stand-alone deploy, set one node here and see bscluster-onehost.yaml
+  # - node1 -> etcd-a, mds-a, snapshotclone-a
+  # - node2 -> etcd-b, mds-b, snapshotclone-b
+  # - node3 -> etcd-c, mds-c, snapshotclone-c
+  nodes:
+  - curve-operator-node1
+  - curve-operator-node2
+  - curve-operator-node3
+  # hostDataDir where data files and log files will be persisted on host machine. Must be specified.
+  # If you reinstall the cluster, make surce that you delete this directory from each host.
+  hostDataDir: /curvebs
+  etcd:
+    # Port for listening to partner communication. 
+    # Etcd member accept incoming requests from its peers on a specific scheme://IP:port combination and the IP is host ip because we use hostnetwork:true.
+    peerPort: 23800
+    # clientPort for listening server port.
+    clientPort: 23790
+  mds:
+    port: 6700
+    dummyPort: 7700
+  storage:
+    # useSelectedNodes is to control whether to use individual nodes and their configured devices can be specified as well.
+    # This field is not implemented at present and is must set false here.
+    # You can refer following selectoedNodes setting commented if the function is completed later.
+    # But the func is not implemented yet.
+    useSelectedNodes: false
+    # The hosts specified to deployment chunkserver as storage resource.
+    # And you can configure the same nodes above configure that deploy etcd, mds and snapshotclone service.
+    nodes:
+    - curve-operator-node1
+    - curve-operator-node2
+    - curve-operator-node3
+    port: 8200
+    copySets: 100
+    # Make sure the devices configured are available on hosts above.
+    devices:
+    - name: /dev/vdc
+      mountPath: /data/chunkserver0
+      percentage: 30
+    # Not implement yet
+    #selectedNodes:
+    #- node: curve-operator-node1
+    #  - devices:
+    #    name: /dev/vdd
+    #    mountPath: /data/chunkserver1
+    #    percentage: 90
+    #  - devices:
+    #    name: /dev/vdf
+    #    mountPath: /data/chunkserver2
+    #    percentage: 80
+    #- node: curve-operator-node2
+    #  - devices:
+    #    name: 
+    #    mountPath: 
+    #    percentage: 
+  snapShotClone:
+    # set false if there is no S3 service available temporarily or don't need to use the snapshot clone service
+    # Make sure s3 service exist if enable is set true
+    enable: false
+    port: 5555
+    dummyPort: 8800
+    proxyPort: 8900
+    s3Config:
+      # Access Key for the S3 service. Uploading snapshots
+      ak: <>
+      # Access Key for the S3 service. Uploading snapshots
+      sk: <>
+      # S3 service address
+      nosAddress: <>
+      # S3 service bucket name to store snapshots
+      bucketName: <>
+  monitor:
+    enable: false
+    monitorHost: curve-operator-node1
+    nodeExporter:
+      containerImage: prom/node-exporter:latest
+      listenPort: 9100
+    prometheus:
+      containerImage: prom/prometheus:latest
+      dataDir: /tmp/monitor/prometheus
+      listenPort: 9090
+      retentionTime: 7d
+      retentionSize: 256GB
+    grafana:
+      containerImage: grafana/grafana:latest
+      dataDir: /tmp/monitor/grafana
+      listenPort: 3000
+      userName: admin
+      passWord: curve

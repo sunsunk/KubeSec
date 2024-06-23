@@ -1,0 +1,113 @@
+name: ci-test-go
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "KubeArmor/**"
+      - "tests/**"
+      - "protobuf/**"
+      - ".github/workflows/ci-test-go.yml"
+      - "pkg/KubeArmorOperator/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "KubeArmor/**"
+      - "tests/**"
+      - "protobuf/**"
+      - ".github/workflows/ci-test-go.yml"
+      - "pkg/KubeArmorOperator/**"
+    
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  go-fmt:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Check gofmt
+        run: make gofmt
+        working-directory: KubeArmor
+
+  go-lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Run Revive Action on KubeArmor
+        uses: morphy2k/revive-action@v2
+        with:
+          path: "./KubeArmor/..."
+
+  go-lint-tests:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Run Revive Action on KubeArmor tests
+        uses: morphy2k/revive-action@v2
+        with:
+          path: "./tests/..."
+
+  go-sec:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Run Gosec Security Scanner
+        run: make gosec
+        working-directory: KubeArmor
+
+  go-vuln:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Run govulncheck 
+        run: make scan
+        working-directory: KubeArmor
+
+  go-test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'KubeArmor/go.mod'
+
+      - name: Run go test on the KubeArmor/KubeArmor directory
+        run: go test ./...
+        working-directory: KubeArmor
+
+  license:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check License Header
+        uses: apache/skywalking-eyes@ed436a5593c63a25f394ea29da61b0ac3731a9fe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

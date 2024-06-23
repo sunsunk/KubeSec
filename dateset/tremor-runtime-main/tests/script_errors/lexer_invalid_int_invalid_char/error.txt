@@ -1,0 +1,3 @@
+Error: 
+    1 | 12345j
+      |      ^ An unexpected character 'j' was found

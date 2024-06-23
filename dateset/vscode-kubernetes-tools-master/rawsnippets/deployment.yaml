@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: dynamic_parameters
+  name: dynamic_parameters
+  labels:
+    chart: "dynamic_parameters-dynamic_parameters"
+spec:
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+  replicas: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+    spec:
+      containers:
+      - name: dynamic_parameters
+        image: "dynamic_parameters"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: dynamic_parameters
+        livenessProbe:
+          httpGet:
+            path: /
+            port: dynamic_parameters
+        readinessProbe:
+          httpGet:
+            path: /
+            port: dynamic_parameters
+        resources:
+---
+
+---

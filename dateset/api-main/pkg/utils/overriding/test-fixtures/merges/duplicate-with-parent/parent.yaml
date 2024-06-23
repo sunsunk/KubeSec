@@ -1,0 +1,13 @@
+variables:
+  objectVariable: parentValue
+attributes:
+  mainAttribute: false
+components:
+  - container:
+      image: "aValue"
+    name: "existing-in-parent"
+  - image:
+      imageName: "myimage:parent"
+      dockerfile:
+        uri: "uri/Dockerfile"
+    name: "existing-in-parent-2"

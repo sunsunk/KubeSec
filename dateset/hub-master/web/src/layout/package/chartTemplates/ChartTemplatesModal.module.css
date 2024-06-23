@@ -1,0 +1,66 @@
+.diffLine {
+  height: 3rem;
+}
+
+.label {
+  font-size: 0.8rem;
+}
+
+.selectWrapper {
+  max-width: 100%;
+  width: 120px;
+}
+
+.itemIcon {
+  width: 14px;
+}
+
+.dropdown {
+  margin-top: 2.35rem;
+  width: 14rem;
+  height: 17rem;
+  font-size: 0.9rem;
+}
+
+.removeVersionBtn {
+  border-left: 1px solid var(--bs-white) !important;
+}
+
+.versionsList {
+  max-height: calc(100% - 40px);
+}
+
+.btnItem {
+  padding: 0.5rem 1rem;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+@media only screen and (min-width: 576px) {
+  .modalDialog {
+    max-width: 80% !important;
+    min-height: calc(100% - 10rem) !important;
+    max-height: calc(100% - 10rem) !important;
+    margin: 5rem auto !important;
+  }
+}
+
+@media only screen and (max-height: 700px) {
+  .modalDialog {
+    min-height: calc(100% - 6rem) !important;
+    max-height: calc(100% - 6rem) !important;
+    margin: 3rem auto !important;
+  }
+
+  .modalFooter {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+}

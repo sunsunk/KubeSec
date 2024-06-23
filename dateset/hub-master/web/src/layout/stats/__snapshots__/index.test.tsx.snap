@@ -1,0 +1,354 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatsView creates snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="d-flex flex-column flex-grow-1 position-relative"
+  >
+    <main
+      class="container-lg px-sm-4 px-lg-0 pt-5 pb-0 pb-lg-5 noFocus"
+      id="content"
+      role="main"
+      tabindex="-1"
+    >
+      <div
+        class="flex-grow-1 position-relative"
+      >
+        <div
+          class="h2 text-dark text-center title"
+        >
+           Stats
+        </div>
+        <div
+          class="text-center mb-4 mb-sm-5"
+        >
+          <small>
+            <span
+              class="text-muted me-2"
+            >
+              Report generated at:
+            </span>
+            <div
+              class="d-inline"
+            >
+              <div
+                class="wave miniWave"
+                role="status"
+              >
+                <span
+                  class="visually-hidden"
+                >
+                  Loading...
+                </span>
+              </div>
+            </div>
+          </small>
+        </div>
+        <span
+          class="header"
+        >
+          <h2
+            class="position-relative anchorHeader headingWrapper mb-2 mb-sm-4 fw-semibold title"
+          >
+            <div
+              class="position-absolute headerAnchor"
+              data-testid="anchor"
+              id="usage"
+            />
+            <a
+              aria-label="Usage"
+              class="text-reset text-center d-none d-md-block lh-1 float-start headingLink"
+              href="/#usage"
+              role="button"
+            >
+              <svg
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353.75.75 0 0 0-1.18.928 5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061l3-3Z"
+                />
+                <path
+                  d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353.75.75 0 0 0 1.18-.928 5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568l3.627-3.627Z"
+                />
+              </svg>
+            </a>
+            Usage
+          </h2>
+        </span>
+        <div
+          class="row my-1 my-sm-4 pb-0 pb-lg-2"
+        >
+          <div
+            class="col-12"
+          >
+            <div
+              class="mt-2 mt-sm-4 mb-1 mb-sm-4 mb-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row my-1 my-sm-4 pb-2 pb-sm-4"
+        >
+          <div
+            class="col-12"
+          >
+            <div
+              class="mt-2 mt-sm-4 mb-1 mb-sm-4 mb-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="header"
+        >
+          <h2
+            class="position-relative anchorHeader headingWrapper mt-2 mt-sm-4 mb-2 mb-sm-4 fw-semibold title"
+          >
+            <div
+              class="position-absolute headerAnchor"
+              data-testid="anchor"
+              id="packages-and-releases"
+            />
+            <a
+              aria-label="Packages and releases"
+              class="text-reset text-center d-none d-md-block lh-1 float-start headingLink"
+              href="/#packages-and-releases"
+              role="button"
+            >
+              <svg
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353.75.75 0 0 0-1.18.928 5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061l3-3Z"
+                />
+                <path
+                  d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353.75.75 0 0 0 1.18-.928 5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568l3.627-3.627Z"
+                />
+              </svg>
+            </a>
+            Packages and releases
+          </h2>
+        </span>
+        <div
+          class="row my-1 my-sm-4 pb-0 pb-lg-2"
+        >
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="pe-0 pe-lg-3 pe-xxxl-4 mt-2 mt-sm-4 mb-2 mb-sm-4 mb-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="ps-0 ps-lg-3 ps-xxxl-4 mt-2 mt-sm-4"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row my-1 my-sm-4 pb-0 pb-lg-4"
+        >
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="pe-0 pe-lg-3 pe-xxxl-4 mt-2 mt-sm-4 mb-2 mb-sm-4 mb-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="ps-0 ps-lg-3 ps-xxxl-4 mt-2 mt-sm-4 mb-1 mb-sm-4 mb-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="header"
+        >
+          <h2
+            class="position-relative anchorHeader headingWrapper mb-2 mb-sm-4 mt-2 mt-sm-4 fw-semibold title"
+          >
+            <div
+              class="position-absolute headerAnchor"
+              data-testid="anchor"
+              id="repositories"
+            />
+            <a
+              aria-label="Repositories"
+              class="text-reset text-center d-none d-md-block lh-1 float-start headingLink"
+              href="/#repositories"
+              role="button"
+            >
+              <svg
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353.75.75 0 0 0-1.18.928 5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061l3-3Z"
+                />
+                <path
+                  d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353.75.75 0 0 0 1.18-.928 5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568l3.627-3.627Z"
+                />
+              </svg>
+            </a>
+            Repositories
+          </h2>
+        </span>
+        <div
+          class="row my-1 my-sm-4"
+        >
+          <div
+            class="col-12 my-2 my-sm-4"
+          >
+            <div
+              class="card chartWrapper"
+            >
+              <div>
+                Chart
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="header"
+        >
+          <h2
+            class="position-relative anchorHeader headingWrapper mt-1 mt-sm-4 fw-semibold title"
+          >
+            <div
+              class="position-absolute headerAnchor"
+              data-testid="anchor"
+              id="organizations-and-users"
+            />
+            <a
+              aria-label="Organizations and users"
+              class="text-reset text-center d-none d-md-block lh-1 float-start headingLink"
+              href="/#organizations-and-users"
+              role="button"
+            >
+              <svg
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353.75.75 0 0 0-1.18.928 5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061l3-3Z"
+                />
+                <path
+                  d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353.75.75 0 0 0 1.18-.928 5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568l3.627-3.627Z"
+                />
+              </svg>
+            </a>
+            Organizations and users
+          </h2>
+        </span>
+        <div
+          class="row mt-1 mt-sm-4 mb-4"
+        >
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="pe-0 pe-lg-3 pe-xxxl-4 pt-2 pt-sm-4"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-12 col-lg-6"
+          >
+            <div
+              class="ps-0 ps-lg-3 ps-xxxl-4 pt-2 pt-sm-4 my-1 my-sm-4 my-lg-0"
+            >
+              <div
+                class="card chartWrapper"
+              >
+                <div>
+                  Chart
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</DocumentFragment>
+`;

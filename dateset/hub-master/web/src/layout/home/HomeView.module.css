@@ -1,0 +1,133 @@
+.jumbotron {
+  background-color: var(--color-1-500);
+  color: var(--bs-white);
+  padding-top: 7rem !important;
+}
+
+.mainTitle {
+  font-weight: 200;
+}
+
+.search {
+  min-width: 250px;
+  max-width: 500px;
+}
+
+.allPkgBtn {
+  color: var(--extra-light-gray);
+}
+
+.separator {
+  background-color: var(--color-1-900);
+  width: 3px;
+  height: 30px;
+}
+
+.logo {
+  height: 90px;
+  width: auto;
+}
+
+.about {
+  background-color: var(--color-1-600);
+}
+
+.aboutIcon {
+  width: 75px;
+  max-height: 75px;
+}
+
+.legend {
+  font-weight: 300;
+}
+
+.legendIcon {
+  font-size: 70%;
+  line-height: 1rem;
+}
+
+.socialBtn {
+  width: 110px;
+}
+
+.repoGuideText {
+  font-size: 80%;
+}
+
+.inlineLink {
+  font-size: inherit;
+  line-height: 1.15rem;
+}
+
+.iconLink:hover {
+  text-decoration: none !important;
+}
+
+.banner {
+  max-height: 350px;
+  width: 350px;
+  background-color: var(--body-bg) !important;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .mainTitle {
+    font-size: 2.5rem !important;
+  }
+
+  .aboutIcon {
+    width: 55px;
+    max-height: 55px;
+  }
+
+  .extraInfo,
+  .about,
+  .legend {
+    font-size: 1.15rem;
+  }
+
+  .logo {
+    height: 70px;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .jumbotron {
+    padding-top: 5rem !important;
+  }
+
+  .mainTitle {
+    font-size: 1.8rem !important;
+  }
+
+  .aboutIcon {
+    width: 35px;
+    max-height: 35px;
+  }
+
+  .logo {
+    height: 40px;
+  }
+
+  .socialBtn {
+    font-size: 85%;
+    width: 90px;
+  }
+
+  .banner {
+    width: 250px;
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  .secondLine::before {
+    content: '\00a0 ';
+  }
+
+  .search {
+    max-width: 750px;
+  }
+
+  .repoGuideText {
+    font-size: 90%;
+  }
+}

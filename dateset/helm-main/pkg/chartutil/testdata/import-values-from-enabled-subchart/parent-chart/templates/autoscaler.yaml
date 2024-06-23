@@ -1,0 +1,17 @@
+###################################################################################################
+# parent-chart horizontal pod autoscaler
+###################################################################################################
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dynamic_parameters-autoscaler
+  namespace: dynamic_parameters
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: dynamic_parameters
+  minReplicas: dynamic_parameters
+  maxReplicas: dynamic_parameters
+  targetCPUUtilizationPercentage: dynamic_parameters
+---

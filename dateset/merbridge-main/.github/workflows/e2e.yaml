@@ -1,0 +1,295 @@
+name: E2E CI
+
+on:
+  # push:
+  #   branches: [ main, test ]
+  pull_request:
+    branches: [ main, test ]
+    types:
+      - '*'
+
+jobs:
+  istio-e2e:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-e2e-test') }}
+    env: 
+      ISTIO_VERSION: '1.15.2'
+      KIND_VERSION: v0.16.0
+      KERNEL_VERSION: v5.4
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.19
+    - name: install bpftool
+      run: |
+        sudo bash ./scripts/build-bpftool.sh
+    - name: setup kind cluster
+      run: |
+        ./scripts/setup-kind.sh
+    - name: try load and unload
+      run: |
+        uname -a
+        make load
+        make attach
+        make clean
+    - name: install istio
+      run: |
+        cat > /tmp/istio-config <<EOF
+        apiVersion: install.istio.io/v1alpha1
+        kind: IstioOperator
+        spec:
+          meshConfig:
+            defaultConfig:
+              proxyMetadata:
+                # Enable basic DNS proxying
+                ISTIO_META_DNS_CAPTURE: "true"
+                # Enable automatic address allocation, optional
+                ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+        EOF
+        bash ./scripts/install-istio.sh -f /tmp/istio-config
+        rm -f /tmp/istio-config
+    - name: deploy test apps
+      run: |
+        kubectl label ns default istio-injection=enabled
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+        while true; do [ "$(kubectl get po -l app=sleep | grep '2/2')" = "" ] || break && (echo waiting for sleep app ready; sleep 3); done
+        while true; do [ "$(kubectl get po -l app=helloworld | grep '2/2')" = "" ] || break && (echo waiting for helloworld app ready; sleep 3); done
+    - name: test connect without Merbridge
+      run: |
+        kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c sleep -- curl -s -v helloworld:5000/hello
+    - name: install merbridge
+      run: |
+        nohup go run -exec sudo ./app/main.go -k -m istio -d > mbctl.log &
+        while true; do [ "$(cat mbctl.log | grep 'Pod Watcher Ready')" = "" ] || break && (echo waiting for mbctl watcher ready; sleep 3); done
+    - name: test connect with Merbridge
+      run: |
+        set -x
+        kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c sleep -- curl -s -v helloworld:5000/hello
+        sudo cat /sys/kernel/debug/tracing/trace > /tmp/trace-log
+        # check if eBPF works
+        [ "$(sudo cat /tmp/trace-log | grep 'from user container')" = "" ] && (echo eBPF progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 11)
+        [ "$(sudo cat /tmp/trace-log | grep 'bytes with eBPF successfully')" = "" ] && (echo eBPF redirect progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 12)
+        [ "$(sudo cat /tmp/trace-log | grep 'successfully deal DNS redirect query')" = "" ] && (echo DNS Proxy not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 13)
+        sudo rm -f /tmp/trace-log
+
+  # kuma
+
+  kuma-e2e:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-e2e-test') }}
+    env:
+      KUMA_VERSION: '1.7.0'
+      KIND_VERSION: v0.16.0
+      KERNEL_VERSION: v5.4
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.19
+    - name: install bpftool
+      run: |
+        sudo bash ./scripts/build-bpftool.sh
+    - name: setup kind cluster
+      run: |
+        ./scripts/setup-kind.sh
+    - name: try load and unload
+      run: |
+        uname -a
+        make load
+        make attach
+        make clean
+    - name: install kuma
+      run: |
+        ./scripts/install-kuma.sh
+    - name: annotate default namespace to automatically inject kuma to pods it contains
+      run: |
+        kubectl label ns default kuma.io/sidecar-injection=enabled
+    - name: deploy test server app
+      run: |
+        echo '---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: example-server
+        spec:
+          ports:
+          - port: 80
+            name: http
+            appProtocol: http
+          selector:
+            service: example-server
+        ---
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: example-server
+          labels:
+            service: example-server
+        spec:
+          selector:
+            matchLabels:
+              service: example-server
+          template:
+            metadata:
+              labels:
+                service: example-server
+            spec:
+              terminationGracePeriodSeconds: 0
+              containers:
+              - name: nginx
+                image: "nginx:stable"
+                imagePullPolicy: IfNotPresent
+                ports:
+                - containerPort: 80
+                readinessProbe:
+                  httpGet:
+                    path: /
+                    port: 80
+                  initialDelaySeconds: 3
+                  periodSeconds: 3
+                livenessProbe:
+                  httpGet:
+                    path: /
+                    port: 80' | kubectl apply -f -
+        
+        # wait till our example deployment is ready
+        kubectl rollout status deployment example-server
+    - name: deploy test client app
+      run: |
+        echo '---
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: example-client
+          labels:
+            service: example-client
+        spec:
+          strategy:
+            rollingUpdate:
+              maxSurge: 1
+              maxUnavailable: 0
+          selector:
+            matchLabels:
+              service: example-client
+          template:
+            metadata:
+              labels:
+                service: example-client
+            spec:
+              terminationGracePeriodSeconds: 0
+              containers:
+              - name: curl
+                image: curlimages/curl
+                command: ["/bin/sleep", "infinity"]
+                imagePullPolicy: IfNotPresent' | kubectl apply -f -
+        
+        # wait till our example deployment is ready
+        kubectl rollout status deployment example-client
+    - name: apply container patch which disables kuma-init container
+      run: |
+        # this step is just temporary, till kuma won't support disabling kuma-init
+        # containers as a part of configuration
+        
+        cat > /tmp/container-patch.yaml <<EOF
+        apiVersion: kuma.io/v1alpha1
+        kind: ContainerPatch
+        metadata:
+          name: disable-init-container
+          namespace: kuma-system
+        spec:
+          initPatch:
+          - op: replace
+            path: /command
+            value: '["echo"]'
+        EOF
+        
+        kubectl apply -f /tmp/container-patch.yaml
+        rm -f /tmp/container-patch.yaml
+    - name: test connect without Merbridge
+      run: |
+        service_name=$(kubectl get dataplane $(kubectl get po -l service=example-server -o=jsonpath='{..metadata.name}') -o=jsonpath='{..spec.networking.inbound[0].tags.kuma\.io/service}')
+        kubectl exec $(kubectl get po -l service=example-client -o=jsonpath='{..metadata.name}') -c curl -- curl -s -v "$service_name".mesh
+    - name: disable kuma-init containers using container-patch
+      run: |
+        kubectl patch deployment example-server --patch '{"spec": {"template": {"metadata": {"annotations": {"kuma.io/container-patches": "disable-init-container", "kuma.io/virtual-probes": "disabled"}}}}}'
+        kubectl patch deployment example-client --patch '{"spec": {"template": {"metadata": {"annotations": {"kuma.io/container-patches": "disable-init-container"}}}}}'
+    - name: install merbridge
+      run: |
+        nohup go run -exec sudo ./app/main.go -k -m kuma -d > mbctl.log &
+        while true; do [ "$(cat mbctl.log | grep 'Pod Watcher Ready')" = "" ] || break && (echo waiting for mbctl watcher ready; sleep 3); done
+    - name: test connect with Merbridge
+      run: |
+        set -e
+        
+        service_name=$(kubectl get dataplane $(kubectl get po -l service=example-server -o=jsonpath='{..metadata.name}') -o=jsonpath='{..spec.networking.inbound[0].tags.kuma\.io/service}')
+        kubectl exec $(kubectl get po -l service=example-client -o=jsonpath='{..metadata.name}') -c curl -- curl -s -v "$service_name".mesh
+        sudo cat /sys/kernel/debug/tracing/trace > /tmp/trace-log
+        
+        # check if eBPF works
+        [ "$(sudo cat /tmp/trace-log | grep 'from user container')" = "" ] && (echo eBPF progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 11)
+        [ "$(sudo cat /tmp/trace-log | grep 'bytes with eBPF successfully')" = "" ] && (echo eBPF redirect progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 12)
+        [ "$(sudo cat /tmp/trace-log | grep 'successfully deal DNS redirect query')" = "" ] && (echo DNS Proxy not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 13)
+        sudo rm -f /tmp/trace-log
+
+  # osm
+
+  osm-e2e:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-e2e-test') }}
+    env:
+      OSM_VERSION: 'v1.2.3'
+      KIND_VERSION: v0.16.0
+      KERNEL_VERSION: v5.4
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+      - name: install bpftool
+        run: |
+          sudo bash ./scripts/build-bpftool.sh
+      - name: setup kind cluster
+        run: |
+          ./scripts/setup-kind.sh
+      - name: try load and unload
+        run: |
+          uname -a
+          make load
+          make attach
+          make clean
+      - name: install osm
+        run: |
+          bash ./scripts/install-osm.sh
+      - name: deploy test apps
+        run: |
+          kubectl create namespace e2e-test
+          osm namespace add e2e-test
+          kubectl apply -n e2e-test -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+          kubectl apply -n e2e-test -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+          while true; do [ "$(kubectl get po -l app=sleep -n e2e-test | grep '2/2')" = "" ] || break && (echo waiting for sleep app ready; sleep 3); done
+          while true; do [ "$(kubectl get po -l app=helloworld -n e2e-test | grep '2/2')" = "" ] || break && (echo waiting for helloworld app ready; sleep 3); done
+      - name: test connect without Merbridge
+        run: |
+          kubectl exec $(kubectl get po -l app=sleep -n e2e-test -o=jsonpath='{..metadata.name}') -n e2e-test -c sleep -- curl -s -v helloworld:5000/hello
+      - name: install merbridge
+        run: |
+          nohup go run -exec sudo ./app/main.go -k -m osm -d > mbctl.log &
+          while true; do [ "$(cat mbctl.log | grep 'Pod Watcher Ready')" = "" ] || break && (echo waiting for mbctl watcher ready; sleep 3); done
+      - name: test connect with Merbridge
+        run: |
+          set -x
+          kubectl exec $(kubectl get po -l app=sleep -n e2e-test -o=jsonpath='{..metadata.name}') -n e2e-test -c sleep -- curl -s -v helloworld:5000/hello
+          sudo cat /sys/kernel/debug/tracing/trace > /tmp/trace-log
+          # check if eBPF works
+          [ "$(sudo cat /tmp/trace-log | grep 'from user container')" = "" ] && (echo eBPF progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 11)
+          [ "$(sudo cat /tmp/trace-log | grep 'bytes with eBPF successfully')" = "" ] && (echo eBPF redirect progs not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 12)
+          #[ "$(sudo cat /tmp/trace-log | grep 'successfully deal DNS redirect query')" = "" ] && (echo DNS Proxy not work; sudo cat /tmp/trace-log; sudo bpftool prog; sudo bpftool map; cat mbctl.log; sudo ps -ef; exit 13)
+          sudo rm -f /tmp/trace-log

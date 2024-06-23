@@ -1,0 +1,27 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "AcceptRanges": "bytes",
+        "LastModified": {
+            "__class__": "datetime",
+            "year": 2024,
+            "month": 1,
+            "day": 14,
+            "hour": 16,
+            "minute": 46,
+            "second": 21,
+            "microsecond": 0
+        },
+        "ContentLength": 27,
+        "ETag": "\"a7efa1d0ddef5388659563b15ad0799d\"",
+        "ContentType": "application/json",
+        "ServerSideEncryption": "AES256",
+        "Metadata": {},
+        "Body": {
+            "__class__": "StreamingBody",
+            "__module__": "botocore.response",
+            "body": "eyJtb29zZSI6IHsic291cCI6ICJkdWNrIn19"
+        }
+    }
+}

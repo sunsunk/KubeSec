@@ -1,0 +1,1 @@
+delete werf release from Kubernetes

@@ -1,0 +1,514 @@
+apiVersion: v1
+data:
+  grafana_dashboard_applications.json: |-
+      "list": [
+          "builtIn": 1,
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+            "limit": 100,
+            "matchAny": false,
+            "tags": [ ],
+            "type": "dashboard"
+          "type": "dashboard"
+      ]
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [ ],
+    "liveNow": false,
+    "panels": [
+          "type": "prometheus",
+          "uid": "prometheus"
+              "fixedColor": "green",
+              "mode": "fixed"
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+              ]
+          "overrides": [ ]
+          "h": 6,
+          "w": 2,
+          "x": 0,
+          "y": 0
+        "id": 19,
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+            "calcs": [
+              "sum"
+            ],
+            "fields": "",
+            "values": false
+            "valueSize": 80
+          "textMode": "auto"
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "table",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Succeeded",
+        "transformations": [
+            "id": "groupBy",
+                  "aggregations": [
+                    "max"
+                  ],
+                  "operation": "aggregate"
+                  "aggregations": [ ],
+                  "operation": "groupby"
+        ],
+        "type": "stat"
+          "type": "prometheus",
+          "uid": "prometheus"
+            "mappings": [ ],
+              "mode": "percentage",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "orange",
+                  "value": 70
+                  "color": "red",
+                  "value": 85
+              ]
+          "overrides": [ ]
+          "h": 6,
+          "w": 8,
+          "x": 2,
+          "y": 0
+        "id": 4,
+          "orientation": "auto",
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Active Deployments",
+        "type": "gauge"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "fixedColor": "red",
+              "mode": "fixed"
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "red",
+                  "value": null
+              ]
+          "overrides": [ ]
+          "h": 6,
+          "w": 2,
+          "x": 10,
+          "y": 0
+        "id": 3,
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+            "calcs": [
+              "sum"
+            ],
+            "fields": "",
+            "values": false
+            "valueSize": 80
+          "textMode": "auto"
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "table",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Failed",
+        "transformations": [
+            "id": "groupBy",
+                  "aggregations": [
+                    "max"
+                  ],
+                  "operation": "aggregate"
+                  "aggregations": [
+                    "count"
+                  ],
+                  "operation": "groupby"
+        ],
+        "type": "stat"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "mode": "thresholds"
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "red",
+                  "value": 86400
+              ]
+            "unit": "s"
+          "overrides": [ ]
+          "h": 6,
+          "w": 2,
+          "x": 0,
+          "y": 6
+        "id": 10,
+          "displayMode": "gradient",
+          "minVizHeight": 10,
+          "minVizWidth": 0,
+          "orientation": "horizontal",
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          "showUnfilled": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "time_series",
+            "legendFormat": "dynamic_parameters - dynamic_parameters",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Time between Deployments",
+        "type": "bargauge"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "mode": "thresholds"
+            "mappings": [ ],
+            "min": 2,
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "#EAB839",
+                  "value": 43200
+                  "color": "red",
+                  "value": 86400
+              ]
+            "unit": "s"
+          "overrides": [ ]
+          "h": 6,
+          "w": 8,
+          "x": 2,
+          "y": 6
+        "id": 16,
+          "orientation": "auto",
+            "calcs": [
+              "last"
+            ],
+            "fields": "",
+            "values": false
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "table",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Average Time between Deployments",
+        "type": "gauge"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "mode": "thresholds"
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "red",
+                  "value": 80
+              ]
+          "overrides": [ ]
+          "h": 6,
+          "w": 2,
+          "x": 10,
+          "y": 6
+        "id": 14,
+          "displayMode": "gradient",
+          "minVizHeight": 10,
+          "minVizWidth": 0,
+          "orientation": "horizontal",
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          "showUnfilled": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "interval": "",
+            "legendFormat": "dynamic_parameters",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Deployment Time",
+        "type": "bargauge"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "mode": "palette-classic"
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "bars",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 3,
+                "type": "linear"
+              "showPoints": "auto",
+              "spanNulls": false,
+                "group": "A",
+                "mode": "none"
+                "mode": "off"
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "red",
+                  "value": 80
+              ]
+          "overrides": [ ]
+          "h": 9,
+          "w": 9,
+          "x": 0,
+          "y": 12
+        "id": 6,
+            "calcs": [ ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+            "mode": "single",
+            "sort": "none"
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "table",
+            "interval": "1",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Deployments Active",
+        "type": "timeseries"
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+            "mappings": [ ],
+              "mode": "percentage",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "orange",
+                  "value": 70
+                  "color": "red",
+                  "value": 85
+              ]
+          "overrides": [ ]
+          "h": 9,
+          "w": 3,
+          "x": 9,
+          "y": 12
+        "id": 23,
+          "orientation": "auto",
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Successful promotions",
+        "type": "gauge"
+          "type": "jaeger",
+          "uid": "PC9A941E8F2E49454"
+              "mode": "thresholds"
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "red",
+                  "value": 80
+              ]
+          "overrides": [ ]
+          "h": 7,
+          "w": 9,
+          "x": 0,
+          "y": 21
+        "id": 8,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          "showHeader": true
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "jaeger",
+              "uid": "PC9A941E8F2E49454"
+            "operation": "AppPreDeployTasks",
+            "queryType": "search",
+            "refId": "A",
+            "service": "lifecycle-operator",
+            "tags": "keptn.deployment.app.name=$Application"
+        ],
+        "title": "Traces",
+        "type": "table"
+          "type": "prometheus",
+          "uid": "prometheus"
+              "mode": "thresholds"
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            "mappings": [ ],
+              "mode": "absolute",
+              "steps": [
+                  "color": "green",
+                  "value": null
+                  "color": "red",
+                  "value": 80
+              ]
+          "overrides": [
+                "id": "byName",
+                "options": "keptn_deployment_workload_version (lastNotNull)"
+              "properties": [
+                  "id": "custom.width",
+                  "value": 100
+              ]
+          ]
+          "h": 7,
+          "w": 3,
+          "x": 9,
+          "y": 21
+        "id": 21,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          "showHeader": false
+        "pluginVersion": "9.2.1",
+        "targets": [
+              "type": "prometheus",
+              "uid": "prometheus"
+            "editorMode": "builder",
+            "format": "table",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+        ],
+        "title": "Active Workloads",
+        "transformations": [
+            "id": "groupBy",
+                  "aggregations": [ ]
+                  "aggregations": [ ],
+                  "operation": "groupby"
+                  "aggregations": [ ],
+                  "operation": "aggregate"
+            "id": "sortBy",
+              "sort": [
+                  "desc": true,
+                  "field": "keptn_deployment_workload_version"
+              ]
+        ],
+        "type": "table"
+    ],
+    "refresh": "5s",
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [ ],
+      "list": [
+            "selected": true,
+            "text": "podtato-head",
+            "value": "podtato-head"
+            "type": "prometheus",
+            "uid": "prometheus"
+          "definition": "label_values(keptn_deployment_app_name)",
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "Application",
+          "options": [ ],
+            "query": "label_values(keptn_deployment_app_name)",
+            "refId": "StandardVariableQuery"
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+            "type": "prometheus",
+            "uid": "prometheus"
+          "filters": [ ],
+          "hide": 0,
+          "name": "Filters",
+          "skipUrlSync": false,
+          "type": "adhoc"
+      ]
+      "from": "now-2d",
+      "to": "now"
+    "timezone": "",
+    "title": "Keptn Applications",
+    "uid": "nbiPNgN4z",
+    "version": 1,
+    "weekStart": ""
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: grafana-dashboard-keptn-applications
+  namespace: monitoring
+  labels:
+    grafana_dashboard: '1'
+
+---

@@ -1,0 +1,4 @@
+# Invalid Kptfile
+apiVersion: kpt.dev/v1
+kslsls
+;s;s;s

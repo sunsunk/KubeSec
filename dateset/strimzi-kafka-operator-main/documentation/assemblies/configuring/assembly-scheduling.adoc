@@ -1,0 +1,20 @@
+// This assembly is included in the following assemblies:
+//
+// assembly-config.adoc
+
+[id='assembly-scheduling-{context}']
+= Configuring pod scheduling
+
+[role="_abstract"]
+To avoid performance degradation caused by resource conflicts between applications scheduled on the same Kubernetes node, you can schedule Kafka pods separately from critical workloads. 
+This can be achieved by either selecting specific nodes or dedicating a set of nodes exclusively for Kafka.
+
+include::../../modules/configuring/ref-affinity.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-scheduling-brokers-on-different-worker-nodes.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-scheduling-based-on-other-pods.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-scheduling-deployment-to-node-using-node-affinity.adoc[leveloffset=+1]
+
+include::../../modules/configuring/proc-dedicated-nodes.adoc[leveloffset=+1]

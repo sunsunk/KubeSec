@@ -1,0 +1,27 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "ResourceTagSets": [
+            {
+                "ResourceType": "hostedzone",
+                "ResourceId": "Z10481101M6AKWLAEHU70",
+                "Tags": [
+                    {
+                        "Key": "DomainName",
+                        "Value": "vpc.internal"
+                    },
+                    {
+                        "Key": "intuit:cfn:version",
+                        "Value": "1.0.0"
+                    }
+                ]
+            },
+            {
+                "ResourceType": "hostedzone",
+                "ResourceId": "Z0423603VKO3K9HA5YQD",
+                "Tags": []
+            }
+        ]
+    }
+}

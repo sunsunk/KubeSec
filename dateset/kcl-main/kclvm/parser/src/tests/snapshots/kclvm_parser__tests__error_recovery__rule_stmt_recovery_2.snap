@@ -1,0 +1,53 @@
+---
+source: parser/src/tests/error_recovery.rs
+assertion_line: 292
+expression: "crate::tests::parsing_module_string(r#\"rule A[\"#)"
+---
+Module {
+    filename: "",
+    pkg: "",
+    doc: None,
+    name: "",
+    body: [
+        Node {
+            node: Rule(
+                RuleStmt {
+                    doc: None,
+                    name: Node {
+                        node: "A",
+                        filename: "",
+                        line: 1,
+                        column: 5,
+                        end_line: 1,
+                        end_column: 6,
+                    },
+                    parent_rules: [],
+                    decorators: [],
+                    checks: [],
+                    args: Some(
+                        Node {
+                            node: Arguments {
+                                args: [],
+                                defaults: [],
+                                ty_list: [],
+                            },
+                            filename: "",
+                            line: 1,
+                            column: 6,
+                            end_line: 1,
+                            end_column: 7,
+                        },
+                    ),
+                    for_host_name: None,
+                },
+            ),
+            filename: "",
+            line: 1,
+            column: 0,
+            end_line: 1,
+            end_column: 7,
+        },
+    ],
+    comments: [],
+}
+

@@ -1,0 +1,40 @@
+[
+  {
+    "response": {
+      "tags": [
+        "network:111-91-160-0-19",
+        "securitypolicy:default-entry",
+        "cookies:0",
+        "geo-vpn",
+        "headers:1",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "args:0",
+        "ip:111-91-184-0",
+        "geo-country:south-korea",
+        "host:localhost:30081",
+        "geo-org:korea-cable-tv-kwangju-broadcasting",
+        "all",
+        "bot",
+        "geo-continent-code:as",
+        "aclname:default-acl",
+        "geo-region:gwangju",
+        "geo-city:gwangju",
+        "geo-asn:38673",
+        "geo-subregion:61272",
+        "securitypolicy-entry:default",
+        "geo-privacy-service:vpn-gate",
+        "geo-continent-name:asia",
+        "aclid:--default--"
+      ],
+      "action": "pass"
+    },
+    "name": "test privacy vpn tagging",
+    "headers": {
+      "x-forwarded-for": "111.91.184.0",
+      ":path": "/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

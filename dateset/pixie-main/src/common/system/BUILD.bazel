@@ -1,0 +1,163 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_binary", "pl_cc_library", "pl_cc_test")
+
+package(default_visibility = ["//src:__subpackages__"])
+
+pl_cc_library(
+    name = "cc_library",
+    srcs = glob(
+        [
+            "*.h",
+            "*.cc",
+        ],
+        exclude = [
+            "**/*_mock.h",
+            "**/*_test.cc",
+            "**/*_benchmark.cc",
+            "socket_info_tool.cc",
+        ],
+    ),
+    hdrs = ["system.h"],
+    deps = [
+        "//src/common/clock:cc_library",
+        "//src/common/fs:cc_library",
+        "//src/common/minitar:cc_library",
+        "//src/common/zlib:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "kernel_version_test",
+    srcs = ["kernel_version_test.cc"],
+    data = ["//src/common/system/testdata:kernel_version"],
+    tags = [
+        # Getting kernel version from VDSO fails because the system VDSO will be used with userspace qemu,
+        # so we need full qemu emulation to test that for ARM.
+        "requires_full_qemu_emulation",
+    ],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "proc_parser_test",
+    srcs = ["proc_parser_test.cc"],
+    data = ["//src/common/system/testdata:proc_fs"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+# This test demonstrates a bug in ASAN when trying to read /proc/<pid>/stat on a PID that has died.
+# This is not a bug in our code, but rather a bug in ASAN, that is hard to avoid.
+# See the cc file for a more detailed description.
+# This causes flakiness in //src/stirling/core:stirling_test.
+pl_cc_test(
+    name = "proc_parser_bug_test",
+    srcs = ["proc_parser_bug_test.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "tcp_socket_test",
+    srcs = ["tcp_socket_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "udp_socket_test",
+    srcs = ["udp_socket_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "unix_socket_test",
+    srcs = ["unix_socket_test.cc"],
+    deps = [":cc_library"],
+)
+
+pl_cc_test(
+    name = "socket_info_test",
+    srcs = ["socket_info_test.cc"],
+    data = ["//src/common/system/testdata:proc_fs"],
+    flaky = 1,
+    # TODO(oazizi/yzhao): Make this test safe to run with other tests. Right now it relies on global
+    # network state making it flaky.
+    tags = [
+        "exclusive",
+        # The NETLINK_SOCK_DIAG protocol we use is not supported by userspace QEMU.
+        "requires_full_qemu_emulation",
+    ],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+# This test requires root. To run locally:
+#  sudo_bazel_run.sh //src/common/system:socket_info_namespace_test
+pl_cc_test(
+    name = "socket_info_namespace_test",
+    # Downloads a container, so run-time can be higher than other tests.
+    timeout = "moderate",
+    srcs = ["socket_info_namespace_test.cc"],
+    tags = [
+        # This test requires root to call setns().
+        # This tag prevents the test from running on local dev machines.
+        "requires_root",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/common/exec:cc_library",
+        "//src/common/testing/test_utils:cc_library",
+    ],
+)
+
+# This test requires root. To run locally:
+#  sudo_bazel_run.sh //src/common/system:scoped_namespace_test
+pl_cc_test(
+    name = "scoped_namespace_test",
+    srcs = ["scoped_namespace_test.cc"],
+    data = ["//src/common/system/testdata:test_container_image.tar"],
+    tags = [
+        # This test requires root to call setns().
+        # This tag prevents the test from running on local dev machines.
+        "requires_root",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/common/exec:cc_library",
+        "//src/common/testing/test_utils:cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "socket_info_tool",
+    srcs = ["socket_info_tool.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "uid_test",
+    srcs = ["uid_test.cc"],
+    deps = [":cc_library"],
+)

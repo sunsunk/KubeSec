@@ -1,0 +1,11 @@
+#@assert/validate ("fail", lambda v: fail("fails")), when=lambda v: True
+foo: ""
+
++++
+
+ERR:
+  foo
+    from: stdin:2
+    - must be: fail (by: stdin:1)
+      found: fails
+

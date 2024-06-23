@@ -1,0 +1,142 @@
+items:
+  - metadata:
+      name: paralus-sentry-peering-server
+      displayName: "Paralus Sentry Peering Server"
+    spec:
+      infraRef: paralus-sentry-peering
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Server"
+      hosts: 
+        - host: "{{ .sentryPeeringHost }}"
+          type: "HostTypeExternal"
+        - host: "paralus-sentry:7001"
+          type: "HostTypeInternal"
+        - host: "paralus-sentry.paralus-system:7001 "
+          type: "HostTypeInternal"
+        - host: "paralus-sentry.paralus-system.svc.cluster.local:7001"
+          type: "HostTypeInternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-sentry-peering-client
+    spec:
+      infraRef: paralus-sentry-peering
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Client"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-relay-server
+      displayName: "Paralus Core Relay Server"
+      labels:
+        paralus.dev/connectorTemplate: "true"
+    spec:
+      infraRef: paralus-core-relay
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Server"
+      hosts:
+        - host: "{{ .coreRelayServerHost }}"
+          type: "HostTypeExternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-relay-agent
+      labels:
+        paralus.dev/defaultRelay: "true"
+    spec:
+      infraRef: paralus-core-relay
+      autoRegister: false
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Client"
+      hosts: 
+        - host: "{{ .coreRelayServerHost }}"
+          type: "HostTypeExternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-relay-user
+      displayName: "Paralus Core User Server"
+      labels:
+        paralus.dev/defaultUser: "true"
+        paralus.dev/userTemplate: "true"
+        paralus.dev/connectorAgentTemplate: "paralus-core-relay-agent"
+    spec:
+      infraRef: paralus-core-relay-user
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Mixed"
+      hosts: 
+        - host: "{{ .coreRelayUserHost }}"
+          type: "HostTypeExternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-cd-relay-user
+      displayName: "Paralus Core CD Relay User"
+      labels:
+        paralus.dev/defaultCDUser: "true"
+    spec: 
+      infraRef: paralus-core-cd-relay-user
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Mixed"
+      hosts:
+        - host: "{{ .coreCDRelayUserHost }}"
+          type: "HostTypeExternal"
+        - host: "paralus-cd-agent:7000"
+          type: "HostTypeInternal"
+        - host: "paralus-cd-agent.paralus-system:7000 "
+          type: "HostTypeInternal"
+        - host: "paralus-cd-agent.paralus-system.svc.cluster.local:7000"
+          type: "HostTypeInternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-cd-relay-server
+      displayName: "Paralus Core CD Relay Server"
+    spec: 
+      infraRef: paralus-core-cd-relay
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Server"
+      hosts:
+        - host: "{{ .coreCDRelayConnectorHost }}"
+          type: "HostTypeExternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-core-cd-relay-agent
+      displayName: "Paralus Core CD Relay Agent"
+      labels:
+        paralus.dev/defaultCDRelay: "true"
+    spec: 
+      infraRef: paralus-core-cd-relay
+      autoRegister: false
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Client"
+      hosts:
+        - host: "{{ .coreCDRelayConnectorHost }}"
+          type: "HostTypeExternal"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""
+  - metadata:
+      name: paralus-sentry-cd-peering-client
+    spec:
+      infraRef: paralus-sentry-peering
+      autoRegister: true
+      autoApprove: true
+      ignoreMultipleRegister: true
+      templateType: "Client"
+      inClusterTemplate: ""
+      outOfClusterTemplate: ""

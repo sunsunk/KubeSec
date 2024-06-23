@@ -1,0 +1,6 @@
+status: 1
+name: Bad syntax in configuration
+asserts:
+  - source: fg.err.log
+    contains:
+      - An unexpected character 'b' was found

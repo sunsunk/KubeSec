@@ -1,0 +1,453 @@
+name: test
+
+on:
+  push:
+    branches:
+    - master
+    - 'release/**'
+    paths-ignore:
+    - "docs/**"
+    - "website/**"
+    - "**.md"
+  pull_request:
+    paths-ignore:
+    - "docs/**"
+    - "website/**"
+    - "**.md"
+env:
+  LIMACTL_CREATE_ARGS: ""
+
+jobs:
+  lints:
+    name: "Lints"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Install protoc
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+    - name: Verify generated files
+      run: make install-tools generate check-generated
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v4.0.0
+      with:
+        version: v1.55.2
+        args: --verbose --timeout=10m
+    - name: Run yamllint
+      run: yamllint .
+    - name: Install shellcheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+    - name: Run shellcheck
+      run: find . -name '*.sh' | xargs shellcheck
+    - name: Install shfmt
+      run: go install mvdan.cc/sh/v3/cmd/shfmt@v3.4.3
+    - name: Run shfmt
+      run: find . -name '*.sh' | xargs shfmt -s -d
+    - name: Check hyperlinks
+      uses: docker://dkhamsing/awesome_bot:latest
+      with:
+        args: /github/workspace/README.md --allow-dupe --allow-redirect --request-delay 1 --white-list https://img.shields.io,http://127.0.0.1:8080,https://github.com/lima-vm/lima/releases/download,https://xbarapp.com,https://api.github.com
+    - name: Install go-licenses
+      run: go install github.com/google/go-licenses@v1.6.0
+    - name: Check licenses
+      # the allow list corresponds to https://github.com/cncf/foundation/blob/e5db022a0009f4db52b89d9875640cf3137153fe/allowed-third-party-license-policy.md
+      run: go-licenses check --include_tests  ./... --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
+
+  unit:
+    name: "Unit tests"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # For non-Homebrew we have to support an old release of Go
+        go-version: ["1.21.x", "1.22.x"]
+    steps:
+    - name: Install test dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends qemu-utils
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Unit tests
+      run: go test -v ./...
+    - name: Make
+      run: make
+    - name: Install
+      run: sudo make install
+    - name: Uninstall
+      run: sudo make uninstall
+
+  windows:
+    name: "Windows tests"
+    runs-on: windows-2022-8-cores
+    timeout-minutes: 30
+    steps:
+    - name: Enable WSL2
+      run: |
+        wsl --set-default-version 2
+        # Manually install the latest kernel from MSI
+        Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" -OutFile "wsl_update_x64.msi"
+        $pwd = (pwd).Path
+        Start-Process msiexec.exe -Wait -ArgumentList "/I $pwd\wsl_update_x64.msi /quiet"
+        wsl --update
+        wsl --status
+        wsl --list --online
+    - name: Install WSL2 distro
+      timeout-minutes: 3
+      run: |
+        # FIXME: At least one distro has to be installed here,
+        # otherwise `wsl --list --verbose` (called from Lima) fails:
+        # https://github.com/lima-vm/lima/pull/1826#issuecomment-1729993334
+        # The distro image itself is not consumed by Lima.
+        # ------------------------------------------------------------------
+        # Ubuntu-22.04:    gets stuck in some infinite loop during adduser
+        # OracleLinux_9_1: almostly silently fails, and just prints "Usage: adduser [options] LOGIN"
+        wsl --install -d openSUSE-Leap-15.5
+        wsl --list --verbose
+    - name: Set gitconfig
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Unit tests
+      run: go test -v ./...
+    - name: Make
+      run: make
+    - name: Smoke test
+      # Make sure the path is set properly and then run limactl
+      run: |
+        $env:Path = 'C:\Program Files\Git\usr\bin;' + $env:Path
+        Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $env:Path
+        .\_output\bin\limactl.exe start template://experimental/wsl2
+      # TODO: run the full integration tests
+    - name: Debug
+      if: always()
+      run: type C:\Users\runneradmin\.lima\wsl2\ha.stdout.log
+    - name: Debug
+      if: always()
+      run: type C:\Users\runneradmin\.lima\wsl2\ha.stderr.log
+
+  integration:
+    name: Integration tests
+    runs-on: macos-12
+    timeout-minutes: 120
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Cache ~/Library/Caches/lima/download
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Caches/lima/download
+        # hashFiles do not seem to support symlinks
+        key: ${{ runner.os }}-${{ hashFiles('examples/*.yaml') }}
+    - name: Unit tests
+      run: go test -v ./...
+    - name: Make
+      run: make
+    - name: Install
+      run: make install
+    - name: Validate templates
+      run: find -L templates -name '*.yaml' | xargs limactl validate
+    - name: Install test dependencies
+      # QEMU:      required by Lima itself
+      # bash:      required by test-templates.sh (OS version of bash is too old)
+      # coreutils: required by test-templates.sh for the "timeout" command
+      # curl:      required by test-templates.sh to download nerdctl for alpine
+      # jq:        required by test-templates.sh to determine download URL for nerdctl
+      run: |
+        set -x
+        # GitHub runners seem to have lima installed by brew already; we don't want/need it
+        time brew uninstall --ignore-dependencies lima colima
+        time brew install qemu bash coreutils curl jq
+    - name: "Show cache"
+      run: ./hack/debug-cache.sh
+    - name: "Test default.yaml"
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh templates/default.yaml
+    - name: "Test experimental/9p.yaml"
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh templates/experimental/9p.yaml
+    - name: "Test test-misc.yaml"
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh hack/test-templates/test-misc.yaml
+    # GHA macOS is slow and flaky, so we only test a few YAMLS here.
+    # Other yamls are tested on Linux instances.
+    #
+    - name: "Show cache"
+      if: always()
+      run: ./hack/debug-cache.sh
+
+  # Non-default templates are tested on Linux instances of GHA,
+  # as they seem more stable than macOS instances.
+  integration-linux:
+    name: Integration tests (on Linux)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        template:
+        - alpine.yaml
+        - debian.yaml
+        - fedora.yaml
+        - archlinux.yaml
+        - opensuse.yaml
+        - experimental/net-user-v2.yaml
+        - docker.yaml
+        - ../hack/test-templates/alpine-9p-writable.yaml
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/lima/download
+        # hashFiles do not seem to support symlinks
+        # TODO: more fine-grained cache
+        key: ${{ runner.os }}-${{ hashFiles('examples/*.yaml') }}
+    - name: Make
+      run: make
+    - name: Install
+      run: sudo make install
+    - name: Install test dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends ovmf qemu-system-x86 qemu-utils
+        sudo modprobe kvm
+        # `sudo usermod -aG kvm $(whoami)` does not take an effect on GHA
+        sudo chown $(whoami) /dev/kvm
+    - name: "Show cache"
+      run: ./hack/debug-cache.sh
+    - name: "Test"
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh templates/${{ matrix.template }}
+    - name: "Show cache"
+      run: ./hack/debug-cache.sh
+
+  colima:
+    name: Colima
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        colima-version: ["v0.6.5"]
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # fetch-depth is set to 0 to let `limactl --version` print semver-ish version
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/lima/download
+        key: ${{ runner.os }}-colima-${{ matrix.colima-version }}
+    - name: Make
+      run: make
+    - name: Install
+      run: sudo make install
+    - name: Install colima
+      run: |
+        git clone https://github.com/abiosoft/colima
+        cd colima
+        git checkout ${{ matrix.colima-version }}
+        make
+        sudo make install
+    - name: Install test dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends ovmf qemu-system-x86 qemu-utils
+        sudo modprobe kvm
+        # `sudo usermod -aG kvm $(whoami)` does not take an effect on GHA
+        sudo chown $(whoami) /dev/kvm
+    - name: "Show cache"
+      run: ./hack/debug-cache.sh
+    - name: "Test"
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-colima.sh
+    - name: "Show cache"
+      run: ./hack/debug-cache.sh
+
+  vmnet:
+    name: "VMNet test"
+    runs-on: macos-11
+    timeout-minutes: 120
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Cache ~/Library/Caches/lima/download
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Caches/lima/download
+        # hashFiles do not seem to support symlinks
+        key: ${{ runner.os }}-${{ hashFiles('examples/vmnet.yaml') }}
+    - name: Make
+      run: make
+    - name: Install
+      run: make install
+    - name: Install test dependencies
+      run: brew install qemu bash coreutils iperf3
+    - name: Install vde_switch and vde_vmnet (Deprecated)
+      env:
+        VDE_VMNET_VERSION: v0.6.0
+      run: |
+        (
+          brew install autoconf automake
+          cd ~
+          git clone https://github.com/lima-vm/vde_vmnet
+          cd vde_vmnet
+          git checkout $VDE_VMNET_VERSION
+          sudo git config --global --add safe.directory /Users/runner/vde_vmnet
+          sudo make PREFIX=/opt/vde install
+        )
+        limactl sudoers | sudo tee /etc/sudoers.d/lima
+    - name: Unit test (pkg/networks) with vde_vmnet (Deprecated)
+      # Set -count=1 to disable cache
+      run: go test -v -count=1 ./pkg/networks/...
+    - name: Test vde_vmnet (Deprecated)
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh templates/vmnet.yaml
+    - name: Install socket_vmnet
+      env:
+        SOCKET_VMNET_VERSION: v1.1.1
+      run: |
+        (
+          cd ~
+          git clone https://github.com/lima-vm/socket_vmnet
+          cd socket_vmnet
+          git checkout $SOCKET_VMNET_VERSION
+          sudo git config --global --add safe.directory /Users/runner/socket_vmnet
+          sudo make PREFIX=/opt/socket_vmnet install
+        )
+        limactl sudoers | sudo tee /etc/sudoers.d/lima
+    - name: Unit test (pkg/networks) with socket_vmnet
+      # Set -count=1 to disable cache
+      run: go test -v -count=1 ./pkg/networks/...
+    - name: Test socket_vmnet
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-templates.sh templates/vmnet.yaml
+
+  upgrade:
+    name: "Upgrade test"
+    runs-on: macos-12
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        oldver: ["v0.15.1"]
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Cache ~/Library/Caches/lima/download
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Caches/lima/download
+        key: ${{ runner.os }}-upgrade-${{ matrix.oldver }}
+    - name: Install test dependencies
+      run: brew install qemu bash coreutils
+    - name: Test
+      uses: nick-invision/retry@v3
+      with:
+        timeout_minutes: 30
+        retry_on: error
+        max_attempts: 3
+        command: ./hack/test-upgrade.sh ${{ matrix.oldver }} ${{ github.sha }}
+
+  vz:
+    name: "vz"
+    runs-on: macos-13
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        template:
+        - experimental/vz.yaml
+        - fedora.yaml
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Cache ~/Library/Caches/lima/download
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Caches/lima/download
+        # hashFiles do not seem to support symlinks
+        key: ${{ runner.os }}-${{ hashFiles('examples/*.yaml') }}
+    - name: Make
+      run: make
+    - name: Install
+      run: make install
+    - name: Install test dependencies
+      run: brew install bash coreutils jq
+    - name: Uninstall qemu
+      run: brew uninstall --ignore-dependencies --force qemu
+    - name: Test
+      env:
+        LIMACTL_CREATE_ARGS: "--vm-type vz --mount-type virtiofs --rosetta --network vzNAT"
+      run: ./hack/test-templates.sh templates/${{ matrix.template }}

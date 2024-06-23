@@ -1,0 +1,27 @@
+name: Create release packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Build releases
+        run: make builds
+      - name: Creating release packages
+        run: make packages
+      - name: List files
+        run: ls packaging/out/*
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: packages
+          path: |
+            packaging/out/*
+      - uses: AButler/upload-release-assets@v2.0
+        with:
+          files: "packaging/out/*"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

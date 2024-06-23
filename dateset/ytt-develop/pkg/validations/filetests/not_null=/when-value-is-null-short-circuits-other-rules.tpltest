@@ -1,0 +1,11 @@
+#@assert/validate min=1, not_null=True
+value: null
+
++++
+
+ERR:
+  value
+    from: stdin:2
+    - must be: not null (by: stdin:1)
+      found: value is null
+

@@ -1,0 +1,91 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_binary", "pl_cc_library", "pl_cc_test", "pl_cc_test_library")
+
+package(default_visibility = ["//src:__subpackages__"])
+
+pl_cc_library(
+    name = "cc_library",
+    srcs = [
+        "cgo_export_utils.h",
+        "logical_planner.cc",
+        "logical_planner.h",
+    ],
+    hdrs = ["logical_planner.h"],
+    deps = [
+        "//src/carnot/planner/compiler:cc_library",
+        "//src/carnot/planner/distributed:cc_library",
+        "//src/carnot/planner/distributedpb:distributed_plan_pl_cc_proto",
+        "//src/carnot/planner/otel_generator:cc_library",
+    ],
+)
+
+pl_cc_test_library(
+    name = "test_utils",
+    hdrs = ["test_utils.h"],
+    deps = [
+        ":cc_library",
+        "//src/carnot/planner/compiler:test_utils",
+    ],
+)
+
+pl_cc_test(
+    name = "logical_planner_test",
+    srcs = ["logical_planner_test.cc"],
+    deps = [
+        ":cc_library",
+        ":test_utils",
+        "//src/carnot/udf_exporter:cc_library",
+    ],
+)
+
+pl_cc_library(
+    name = "cgo_export",
+    srcs = [
+        "cgo_export.cc",
+    ],
+    hdrs = ["cgo_export.h"],
+    deps = [
+        ":cc_library",
+        "//src/carnot/planner/compiler:cc_library",
+        "//src/carnot/planner/compilerpb:compiler_status_pl_cc_proto",
+        "//src/carnot/planner/distributedpb:distributed_plan_pl_cc_proto",
+    ],
+)
+
+pl_cc_test(
+    name = "cgo_export_test",
+    srcs = ["cgo_export_test.cc"],
+    deps = [
+        ":cgo_export",
+        ":test_utils",
+        "//src/carnot/planner/compiler:test_utils",
+        "//src/carnot/udf_exporter:cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "logical_planner_benchmark",
+    testonly = 1,
+    srcs = ["logical_planner_benchmark.cc"],
+    deps = [
+        ":cc_library",
+        ":test_utils",
+        "//src/common/benchmark:cc_library",
+        "//src/shared/version:test_version_linkstamp",
+    ],
+)

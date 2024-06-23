@@ -1,0 +1,13 @@
+.link {
+  color: var(--color-1-800);
+}
+
+.link:hover {
+  color: inherit;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    color: var(--color-1-800);
+  }
+}

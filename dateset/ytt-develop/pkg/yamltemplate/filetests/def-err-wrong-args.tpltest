@@ -1,0 +1,22 @@
+#@ def call2(a):
+nested1: line-after
+nested2: #@ a
+#@ end
+
+#@ def call1(v):
+#@   call2()
+#@   return v
+#@ end
+
+test1: #@ call1(None)
+
++++
+
+ERR: 
+- function call2 missing 1 argument (a)
+    in call2
+      stdin:2 | nested1: line-after
+    in call1
+      stdin:7 | #@   call2()
+    in <toplevel>
+      stdin:11 | test1: #@ call1(None)

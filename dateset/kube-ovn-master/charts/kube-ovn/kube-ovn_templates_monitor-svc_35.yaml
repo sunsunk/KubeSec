@@ -1,0 +1,16 @@
+# Source: kube-ovn/templates/monitor-svc.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-ovn-monitor
+  namespace: kube-system
+  labels:
+    app: kube-ovn-monitor
+spec:
+  ports:
+    - name: metrics
+      port: 10661
+  type: ClusterIP
+  selector:
+    app: kube-ovn-monitor
+  sessionAffinity: None

@@ -1,0 +1,28 @@
+---
+apiVersion: skaffold/v4beta1
+kind: Config
+build:
+  artifacts:
+  - image: go_http_client
+    context: .
+    bazel:
+      target: //src/stirling/testing/demo_apps/go_http/go_http_client:image.tar
+  - image: go_http_server
+    context: .
+    bazel:
+      target: //src/stirling/testing/demo_apps/go_http/go_http_server:image.tar
+  tagPolicy:
+    dateTime: {}
+  local:
+    push: true
+manifests:
+  kustomize:
+    paths:
+    - src/stirling/testing/demo_apps/go_http/k8s
+profiles:
+- name: aarch64_sysroot
+  patches:
+  - op: add
+    path: /build/artifacts/context=./bazel/args
+    value:
+    - --config=aarch64_sysroot

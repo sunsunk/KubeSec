@@ -1,0 +1,39 @@
+/*
+ * This code runs using bpf in the Linux kernel.
+ * Copyright 2018- The Pixie Authors.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ */
+
+#include <linux/sched.h>
+
+BEGIN
+{
+  printf("Sampling CPU tasks at 99 Hertz... Hit Ctrl-C to end.\n");
+}
+
+profile:hz:99
+{
+  $task = (task_struct*) curtask;
+
+  if (pid != 0) {
+    printf("pid:        %d\n", $task->pid);
+    printf("start_time: %u\n", $task->start_time);
+    printf("utime:      %u\n", $task->utime);
+    printf("stime:      %u\n", $task->stime);
+  }
+}

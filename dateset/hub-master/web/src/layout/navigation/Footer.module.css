@@ -1,0 +1,91 @@
+.footer {
+  background-color: var(--color-1-900);
+}
+
+.mainFooter {
+  padding: 3.5rem 1.5rem;
+}
+
+.invisibleFooter {
+  background-color: var(--color-white-50);
+  border-top-color: transparent !important;
+}
+
+.invisibleFooter .mainFooter {
+  opacity: 0;
+}
+
+.hexagon {
+  line-height: 1rem;
+  font-size: 5rem;
+}
+
+.smallIcon {
+  font-size: 0.65rem;
+}
+
+.link,
+.copyrightContent {
+  color: var(--font-color) !important;
+  opacity: 0.8;
+}
+
+.linkInText {
+  color: var(--font-color) !important;
+}
+
+.AHlogo {
+  height: 35px;
+}
+
+.AHlink:hover,
+.AHlink:focus {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+.trademark {
+  background-color: var(--color-black-50);
+}
+
+.invisibleFooter .trademark {
+  opacity: 0;
+}
+
+@media only screen and (min-width: 992px) {
+  .footerContent > div:not(:last-child) {
+    padding-right: 5rem;
+  }
+}
+
+@media only screen and (min-width: 576px) {
+  .copyrightContent {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .hexagon {
+    font-size: 3rem;
+    width: 100%;
+  }
+
+  .footerContent > div {
+    padding: 0 1rem;
+  }
+
+  .footerContent > div:not(:last-child) {
+    padding-bottom: 1.5rem;
+  }
+
+  .footerContent > div:last-child {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .fullMobileSection {
+    width: 100%;
+  }
+}

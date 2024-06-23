@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluidapp-controller
+  namespace: dynamic_parameters
+  labels:
+    control-plane: fluidapp-controller
+spec:
+  selector:
+    matchLabels:
+      control-plane: fluidapp-controller
+  replicas: dynamic_parameters
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        control-plane: fluidapp-controller
+    spec:
+      imagePullSecrets:
+      serviceAccountName: fluidapp-controller
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: type
+                    operator: NotIn
+                    values:
+                      - virtual-kubelet
+      tolerations:
+      #hostNetwork: true
+      containers:
+      - image: "dynamic_parameters"
+        name: manager
+        command: ["fluidapp-controller", "start"]
+        args:
+          - --development=false
+          - --pprof-addr=:6060
+          - --enable-leader-election
+          - --leader-election-namespace=dynamic_parameters
+        env:
+          - name: FLUID_WORKDIR
+            value: dynamic_parameters
+        ports:
+          - containerPort: 8080
+            name: metrics
+            protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 1536Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 10
+
+---
+
+---

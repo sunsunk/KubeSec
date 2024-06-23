@@ -1,0 +1,21 @@
+# Source: dapr/charts/dapr_sentry/templates/dapr_sentry_service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: dapr-sentry
+  namespace: default
+  labels:
+    app.kubernetes.io/component: sentry
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  selector:
+    app: dapr-sentry
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 443
+    targetPort: 50001
+    name: grpc

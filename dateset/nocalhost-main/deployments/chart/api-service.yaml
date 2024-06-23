@@ -1,0 +1,14 @@
+# Source: nocalhost/templates/api-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nocalhost-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: nocalhost-api

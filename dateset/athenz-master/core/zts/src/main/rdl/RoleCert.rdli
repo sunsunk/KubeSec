@@ -1,0 +1,32 @@
+// Copyright The Athenz Authors
+// Licensed under the terms of the Apache version 2.0 license. See LICENSE file for terms.
+
+include "RoleCert.tdl";
+
+//Return a TLS certificate for a role that the principal can assume.
+//The role arn is in the CN field of the Subject and the principal
+//is in the SAN URI field.
+resource RoleCertificate POST "/rolecert" (name=PostRoleCertificateRequestExt) {
+    RoleCertificateRequest req; //csr request
+    authenticate;
+    exceptions {
+        ResourceError BAD_REQUEST;
+        ResourceError FORBIDDEN;
+        ResourceError NOT_FOUND;
+        ResourceError UNAUTHORIZED;
+        ResourceError TOO_MANY_REQUESTS;
+    }
+}
+
+// Fetch all roles that are tagged as requiring role certificates for principal
+resource RoleAccess GET "/role/cert?principal={principal}" (name=getRolesRequireRoleCert) {
+    EntityName principal (optional); //If not present, will return roles for the user making the call
+    authenticate;
+    exceptions {
+        ResourceError BAD_REQUEST;
+        ResourceError NOT_FOUND;
+        ResourceError FORBIDDEN;
+        ResourceError UNAUTHORIZED;
+        ResourceError TOO_MANY_REQUESTS;
+    }
+}

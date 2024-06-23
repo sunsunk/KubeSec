@@ -1,0 +1,35 @@
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    after_n_builds: 4
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  status: # see https://docs.codecov.com/docs/commit-status
+    patch:
+      default:
+        target: 80%
+    project:
+      default:
+        # basic
+        threshold: 0.1%
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+comment:
+  layout: "reach,diff,flags,files,footer"
+  behavior: default
+  require_changes: no
+
+ignore:
+  - "tremor-cli"
+  - "tremor-script-nif"
+  - "depricated"

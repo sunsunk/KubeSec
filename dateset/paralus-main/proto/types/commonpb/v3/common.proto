@@ -1,0 +1,319 @@
+syntax = "proto3";
+package paralus.dev.types.common.v3;
+
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// ParalusTypeMeta is the type meta for paralus resources
+message ParalusTypeMeta {
+  string apiVersion = 1;
+  string kind = 2;
+}
+
+message Metadata {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "Metadata"
+      description : "metadata of the resource"
+      required : [ "name", "project" ]
+    }
+    example : "{"
+              "\"name\": \"some-name\","
+              "\"project\": \"defaultproject\""
+              "}"
+  };
+  string name = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Name",
+        description : "name of the resource"
+      } ];
+  string displayName = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Display Name",
+        description : "display name of the resource"
+      } ];
+  string description = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Description",
+        description : "description of the resource"
+      } ];
+  map<string, string> labels = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Labels",
+        description : "labels of the resource"
+      } ];
+  map<string, string> annotations = 5
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Annotations",
+        description : "annotations of the resource"
+      } ];
+  string project = 6
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Project",
+        description : "Project of the resource"
+      } ];
+  string organization = 7
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Organization",
+        description : "Organization to which the resource belongs"
+      } ];
+  string partner = 8
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Partner",
+        description : "Partner to which the resource belongs"
+      } ];
+  string id = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string urlScope = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp createdAt = 11
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp modifiedAt = 12
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+message ProjectMeta {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "ProjectMeta"
+      description : "metadata of the project"
+      required : [ "name" ]
+    }
+    example : "{\"name\": \"defaultproject\"}"
+  };
+  string name = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Name",
+        description : "name of the project"
+      } ];
+  string id = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+message SharingSpec {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "SharingSpec"
+      description : "sharing specification for a resource"
+      required : [ "enabled" ]
+    }
+    example : "{"
+              "\"enabled\": true,"
+              "\"projects\": [{\"name\": \"some-project\"}]"
+              "}"
+  };
+  bool enabled = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Enabled",
+        description : "flag to specify if sharing is enabled for resource"
+      } ];
+  repeated ProjectMeta projects = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Projects",
+        description : "list of projects this resource is shared to"
+      } ];
+}
+
+message DriftSpec {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "DriftSpec"
+      description : "drift reconcillation specification for a resource"
+      required : [ "enabled" ]
+    }
+    example : "{"
+              "\"enabled\": true,"
+              "\"action\": \"Deny\""
+              "}"
+  };
+  bool enabled = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Enabled",
+        description : "flag to specify if drift reconcillation is enabled for "
+                      "resource"
+      } ];
+  string action = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Action",
+        description : "flag to specify if sharing is enabled for resource"
+        enum : [ "Notify", "Deny" ]
+      } ];
+}
+
+// $title: ListMetadata
+// $description: metadata for a list of resources
+// $required: enabled
+message ListMetadata {
+  sint64 count = 1;
+  sint64 offset = 2;
+  sint64 limit = 3;
+}
+
+message PlacementLabel {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "PlacementLabel"
+      description : "labels for placement of resource"
+      required : [ "key", "value" ]
+    }
+    example : "{"
+              "\"key\": \"some-key\","
+              "\"value\": \"some-value\""
+              "}"
+  };
+  string key = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Key",
+        description : "Key of the placement label"
+      } ];
+  string value = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Value",
+        description : "Value of the placement label"
+      } ];
+  ;
+}
+
+message PlacementSpec {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "PlacementSpec"
+      description : "placement specification for a resource"
+      required : []
+    }
+    example : "{"
+              "\"labels\": [{\"key\": \"some-key\"},{\"key\": \"some-key\"}]"
+              "}"
+  };
+  repeated PlacementLabel labels = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Labels",
+        description : "list of labels for placement"
+      } ];
+  string selector = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Selector",
+        description : "Kubernetes style label selector"
+      } ];
+}
+
+// $title: ConditionStatus
+// $description: status of a condition for a resource
+enum ConditionStatus {
+  StatusNotSet = 0;
+  StatusSubmitted = 1;
+  StatusOK = 2;
+  StatusFailed = 3;
+}
+
+message Status {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "Status",
+      description : "status of a resource",
+      read_only : true,
+    }
+  };
+  string conditionType = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Condition Type",
+        description : "type of the status condition",
+        read_only : true
+      } ];
+  ConditionStatus conditionStatus = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Condition Status",
+        description : "status of the condition",
+        read_only : true
+        enum : [ "StatusNotSet", "StatusSubmitted", "StatusOK", "StatusFailed" ]
+      } ];
+  google.protobuf.Timestamp lastUpdated = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Last Updated",
+        description : "when the condition status is last updated",
+        read_only : true
+      } ];
+  string reason = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Reason",
+        description : "reason of the last condition status",
+        read_only : true
+      } ];
+}
+
+// QueryOptions is the options for performing queries on resources
+message QueryOptions {
+  // query for filtering
+  string q = 1;
+  // name is unique ID of a resource along with (partnerID, organizationID,
+  // projectID)
+  string name = 2;
+  // selector is used to filter the labels of a resource
+  string selector = 3;
+  string partner = 4;
+  string organization = 5;
+  string project = 6;
+  string group = 7;
+  string role = 8;
+  // displayName only used for update queries to set displayName (READONLY)
+  string displayName = 9;
+  // labels only used for update queries to set labels (READONLY)
+  map<string, string> labels = 10;
+  // annotations only used for update queries to set annotations (READONLY)
+  map<string, string> annotations = 11;
+  sint64 count = 12;
+  sint64 offset = 13;
+  sint64 limit = 14;
+  // ignoreScopeDefault ignores default values for partnerID, organizationID and
+  // projectID
+  bool ignoreScopeDefault = 15;
+  // globalScope sets partnerID,organizationID,projectID = 0
+  bool globalScope = 16;
+  string orderBy = 17;
+  string order = 18;
+  bool deleted = 19;
+
+  bool extended = 20;
+  // urlScope is supposed to be passed in the URL as kind/HashID(value)
+  string urlScope = 21;
+  bool isSSOUser = 22;
+  string username = 23;
+  repeated string groups = 24;
+  string blueprintRef = 25;
+  string publishedVersion = 26;
+  string clusterID = 27;
+  string ID = 28;
+  string account = 29;
+
+  // generic way to specify a type of resource, mainly for use in users endpoint
+  string type = 30;
+}
+
+// ParalusConditionStatus is the status of the status condition
+enum ParalusConditionStatus {
+  NotSet = 0;
+  Pending = 1;
+  InProgress = 2;
+  Success = 3;
+  Failed = 4;
+  Retry = 5;
+  Skipped = 6;
+  Stopped = 7;
+  Expired = 8;
+  Stopping = 9;
+  Submitted = 10;
+  Healthy = 11;
+  Unhealthy = 12;
+  Disconnected = 13;
+}
+
+// HttpBody represents arbitrary HTTP Body. It should only be used for
+// payload formats that can't be represented as JSON
+message HttpBody {
+  // The HTTP Content-Type header value specifying the content type of the body.
+  string content_type = 1;
+
+  // The HTTP request/response body as raw binary.
+  bytes data = 2;
+}
+
+// Empty is an empty message
+message Empty {}

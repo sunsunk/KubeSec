@@ -1,0 +1,137 @@
+#
+# Copyright Pravega Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+site_name: 'Exploring Pravega'
+site_url: 'https://pravega.io/'
+site_description: 'Documentation to help you get familiar with Pravega'
+
+repo_url: 'https://github.com/pravega/pravega'
+edit_uri: 'tree/master/documentation/src/docs'
+
+theme:
+  name: material
+  custom_dir: custom_theme
+  # Necessary for search to work properly
+  #include_search_page: false
+  #search_index_only: true
+  favicon: assets/favicon.ico
+  features:
+    - content.tabs.link
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.highlight
+
+nav:
+  - Overview: 'index.md'
+  - Getting Started:
+    - 'Quick Start': 'getting-started/quick-start.md'
+    - 'Your First Pravega Application': 'beginner_dev_guide.md'
+    - 'Running a Sample Application': 'getting-started.md'
+    - 'Deploying Pravega on Kubernetes': 'getting-started/pravega-on-kubernetes-101.md'
+  - Understanding Pravega:
+    - 'Concepts': 'pravega-concepts.md'
+    - 'Terminology': 'terminology.md'
+    - 'Key Features': 'key-features.md'
+    - 'Reader Groups': 'reader-group-design.md'
+    - 'Watermarking': 'watermarking.md'
+    - 'StateSynchronizer': 'state-synchronizer-design.md'
+    - 'Controller Service': 'controller-service.md'
+    - 'Segment Store Service': 'segment-store-service.md'
+    - 'Segment Containers': 'segment-containers.md' 
+  - Developing Applications:
+    - 'Controller REST API': 'rest/restapis.md'
+    - 'Client APIs': 'javadoc.md'
+    - 'Client & Stream Semantics': 'clients-and-streams.md'
+    - 'Event Reader and Writer': 'basic-reader-and-writer.md'
+    - 'Reader Group Notifications': 'reader-group-notifications.md'
+    - 'State Synchronizer': 'state-synchronizer.md'
+    - 'Transactions': 'transactions.md'
+    - 'StreamCuts': 'streamcuts.md'
+    - 'Working with Metrics': 'metrics.md'
+    - 'Wire Protocol': 'wire-protocol.md'
+  - Ecosystem:
+    - 'Schema Registry': 'https://github.com/pravega/schema-registry/blob/master/README.md'
+    - 'Connectors':
+      - 'Overview': 'connectors.md'
+      - 'Flink Connector': 'https://github.com/pravega/flink-connectors/blob/master/README.md'
+      - 'Spark Connector': 'https://github.com/pravega/spark-connectors/blob/master/README.md'
+      - 'Hadoop Connector': 'https://github.com/pravega/hadoop-connectors/blob/master/README.md'
+      - 'Presto Connector': 'https://github.com/pravega/presto-connector/blob/main/README.md'
+      - 'Boomi Connector': 'https://github.com/pravega/boomi-connector/blob/master/README.md'
+      - 'NiFi Connector': 'https://github.com/pravega/nifi-pravega/blob/master/README.md'
+    - Client Bindings: 'bindings.md'
+    - Tools:
+      - 'User CLI': 'https://github.com/pravega/pravega/blob/master/cli/user/README.md'
+      - 'Gateways': 'gateways.md'
+      - 'Kafka Adapter': 'https://github.com/pravega/kafka-adapter/blob/master/README.md'
+      - 'Pravega Flink Tools': 'https://github.com/pravega/flink-tools/blob/master/README.md'
+      - 'Keycloak Plugin': 'https://github.com/pravega/pravega-keycloak/blob/master/README.md'
+  - 'Deployment':
+    - 'Overview': 'deployment/deployment.md'
+    - 'Running Locally': 'deployment/run-local.md'
+    - 'Manual Install': 'deployment/manual-install.md'
+    - 'Kubernetes Operators': 'admin-guide/operators.md'
+    - 'Docker Swarm': 'deployment/docker-swarm.md'
+  - Admin Guide:
+    - 'Cluster Dependencies': 'admin-guide/cluster-dependencies.md'
+    - 'LTS Right-Sizing': 'admin-guide/lts-sizing.md'
+    - 'Durable Log Configuration': 'admin-guide/durable-log-config.md'
+    - 'Number of Segment Containers': 'admin-guide/num-containers.md'
+    - 'Segment Store Memory': 'admin-guide/segmentstore-memory.md'
+    - 'Deploying Small Bookkeeper Clusters': 'admin-guide/deploying-small-bookkeeper-clusters.md'
+    - 'Security':
+      - 'Overview': 'security/pravega-security-authorization-authentication.md'
+      - 'Authentication/Authorization Plugin': 'auth/auth-plugin.md'
+      - 'Client Auth Interface': 'auth/client-auth.md'
+      - 'Configurations': 'security/pravega-security-configurations.md'
+      - 'Encryption': 'security/pravega-security-encryption.md'
+      - 'Standalone Mode': 'security/securing-standalone-mode-cluster.md'
+      - 'Distributed Mode': 'security/securing-distributed-mode-cluster.md'
+      - 'TLS Artifacts': 'security/generating-tls-artifacts.md'
+    - 'Disaster Recovery':
+      - 'Data Recovery Tools': 'admin-guide/data-recovery-tools.md'
+      - 'Recovery Procedures':
+        - 'Corrupted Table Segment Index': 'recovery-procedures/table-segment-recovery.md'
+        - 'Recover from Table Segment Pre-Index Full': 'recovery-procedures/table-segment-recover-pre-index-full.md'
+        - 'Safely Enable Durable Data Logs': 'recovery-procedures/enable-durable-data-log.md'
+        - 'Recover Pravega from LTS': 'recovery-procedures/lts-recovery-steps.md'
+    - 'Admin CLI': 'https://github.com/pravega/pravega/blob/master/cli/admin/README.md'
+  - Contributing:
+    - 'Join the Community': 'join-community.md'
+    - 'Roadmap': 'roadmap.md'
+    - 'Coding Guidelines': 'contributing.md'
+  - FAQ: 'faq.md'
+extra:
+    version: 0.1
+
+google_analytics: ['UA-1508605-1', 'pravega.io']

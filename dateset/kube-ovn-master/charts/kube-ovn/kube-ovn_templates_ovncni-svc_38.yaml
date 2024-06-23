@@ -1,0 +1,14 @@
+# Source: kube-ovn/templates/ovncni-svc.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-ovn-cni
+  namespace: kube-system
+  labels:
+    app: kube-ovn-cni
+spec:
+  selector:
+    app: kube-ovn-cni
+  ports:
+    - port: 10665
+      name: metrics

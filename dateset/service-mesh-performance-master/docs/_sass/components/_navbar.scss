@@ -1,0 +1,108 @@
+// Styling for the navbar
+#mainNav,#dashBoardNav {
+  background-color: $background-color;
+  .navbar-toggler {
+    font-size: .85rem;
+    right: 0;
+    padding: 1rem;
+    color: $gray-100;
+    border: 0;
+    background-color: $primary-brand-color;
+    @include heading-font;
+  }
+  .navbar-brand {
+    color: $primary-brand-color;
+    @include script-font;
+    &.active,
+    &:active,
+    &:focus,
+    &:hover {
+      color: darken($primary-brand-color, 10%);
+    }
+  }
+  .navbar-nav {
+    text-align: right;
+    .nav-item {
+      .nav-link {
+        padding: 0.25em 0;
+        letter-spacing: 0.75px;
+        color: $white;
+        
+        width: fit-content;
+        margin-right: 0;
+        margin-left: auto;
+        @include heading-font;
+        &.active,
+        &:hover {
+          color:#EBC017;
+        }
+      }
+      .dashboardLink {
+        border: 1px solid yellow;
+        padding: 5px;
+      }
+    }
+  }
+}
+@media(min-width:992px) {
+  #mainNav {
+   
+    padding-top: 25px;
+    padding-bottom: 25px;
+    -webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
+    -moz-transition: padding-top 0.3s, padding-bottom 0.3s;
+    transition: padding-top 0.3s, padding-bottom 0.3s;
+    border: none;
+    background-color: $background-color;
+    .navbar-brand {
+      font-size: 1.50em;
+      -webkit-transition: all 0.3s;
+      -moz-transition: all 0.3s;
+      transition: all 0.3s;
+    }
+    .navbar-nav {
+      .nav-item {
+        .nav-link {
+          font-size: 1.2em;
+          padding: 0.80em 0.80em !important;
+          
+        }
+      }
+    }
+    &.navbar-shrink {
+      padding-top: 0;
+      padding-bottom: 0;
+      background-color: $background-color;
+      .header_logo {
+        height: 60px;
+        transition: all 600ms;
+      }
+      .navbar-brand {
+        font-size: 1.50em;
+        padding: 12px 0;
+      }
+    }
+  }
+}
+
+.logoDetails {
+float:left;
+height:100px;
+
+}
+
+.dashboard-logo{
+  margin-left:-10rem;
+}
+
+@media(max-width:992px) {
+  .logoDetails {
+    height: 80px;
+  }
+}
+
+@media(max-width:768px) {
+  .logoDetails {
+    height: 60px;
+  }
+}

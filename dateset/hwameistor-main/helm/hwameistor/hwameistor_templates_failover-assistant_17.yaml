@@ -1,0 +1,27 @@
+# Source: hwameistor/templates/failover-assistant.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-failover-assistant
+  namespace: default
+  labels:
+    app: hwameistor-failover-assistant
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-failover-assistant
+  template:
+    metadata:
+      labels:
+        app: hwameistor-failover-assistant
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: failover-assistant
+          image: ghcr.io/hwameistor/failover-assistant:v0.14.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}

@@ -1,0 +1,4 @@
+match event of
+  case foo = %[ 2, ~ re|4| ] => foo
+  case _ => "ko"
+end

@@ -1,0 +1,16 @@
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspace
+metadata:
+  name: "with-nodejs-template-parent"
+spec:
+  started: true
+  template:
+    parent:
+      kubernetes:
+        name: nodejs-stack
+    commands:
+      - id: sayhello
+        exec:
+          label: Say Hello
+          commandLine: echo "hello"
+          component: nodejs

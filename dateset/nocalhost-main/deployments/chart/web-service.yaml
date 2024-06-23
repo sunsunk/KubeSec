@@ -1,0 +1,14 @@
+# Source: nocalhost/templates/web-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nocalhost-web
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: nocalhost-web

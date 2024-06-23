@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+imagePullSecrets:
+  - name: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters-cleanup-node-ebpf-job
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+    verbs:
+      - list
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - watch
+      - delete
+      - deletecollection
+  - apiGroups: ["batch"]
+    resources:
+      - jobs
+    verbs:
+      - watch
+      - create
+      - delete
+      - deletecollection
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters-cleanup-node-ebpf-job
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters-cleanup-node-ebpf-job
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamic_parameters-cleanup-node-ebpf-job
+  namespace: dynamic_parameters
+  labels:
+  annotations:
+    "helm.sh/hook": "post-delete"
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+spec:
+  template:
+    metadata:
+      name: dynamic_parameters-cleanup-node-ebpf-job
+      labels:
+    spec:
+      serviceAccountName: dynamic_parameters
+      nodeSelector:
+      tolerations:
+      restartPolicy: OnFailure
+      securityContext:
+      containers:
+        - name: post-delete-job
+          image: dynamic_parameters
+          securityContext:
+          resources:
+             requests:
+               cpu: "20m"
+               memory: "20Mi"
+             limits:
+               cpu: "40m"
+               memory: "40Mi"
+          command:
+            - 'kumactl'
+            - 'uninstall'
+            - 'ebpf'
+            - '--cleanup-image-registry'
+            - dynamic_parameters
+            - '--cleanup-image-repository'
+            - dynamic_parameters
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

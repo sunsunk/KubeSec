@@ -1,0 +1,52 @@
+{
+    "Tests" : [
+        { 
+            "FileName" : "starterProjectsAll.yaml",
+            "ExpectOutcome" : "PASS",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsAll.yaml"] 
+        },
+        { 
+            "FileName" : "starterProjectsMinimum.yaml",
+            "ExpectOutcome" : "PASS",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsMinimum.yaml"] 
+        },
+        { 
+            "FileName" : "starterProjectsNoName.yaml",
+            "ExpectOutcome" : "missing properties: \"name\"",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsNoName.yaml"] 
+        },
+        { 
+            "FileName" : "starterPprojectsMixedCaseName.yaml",
+            "ExpectOutcome" : "does not match pattern",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                "devfiles/starterProjects/starterProjectsMixedCaseName.yaml"] 
+        }, 
+        { 
+            "FileName" : "starterProjectsGitAndZip.yaml",
+            "ExpectOutcome" : "valid against schemas at indexes 0 and 1",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsGitAndZip.yaml"] 
+        },
+        { 
+            "FileName" : "starterProjectsGitNoRemotes.yaml",
+            "ExpectOutcome" : "missing properties: \"remotes\"",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsGitNoRemotes.yaml"] 
+        },
+        { 
+            "FileName" : "starterProjectsZipNoLocation.yaml",
+            "ExpectOutcome" : "expected object, but got null",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsZipNoLocation.yaml"] 
+        },
+        { 
+            "FileName" : "starterProjectsNoGitOrZip.yaml",
+            "ExpectOutcome" : "oneOf failed",
+            "Files": ["devfiles/starterProjects/starterProjectsStart.yaml",
+                        "devfiles/starterProjects/starterProjectsNoGitOrZip.yaml"] 
+        }
+    ]                             
+}

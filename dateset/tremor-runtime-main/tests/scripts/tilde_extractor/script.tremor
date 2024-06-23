@@ -1,0 +1,4 @@
+match event of
+  case ~ json|| => "ok"
+  case _ => "error"
+end

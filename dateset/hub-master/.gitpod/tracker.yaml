@@ -1,0 +1,17 @@
+log:
+  level: debug
+  pretty: true
+db:
+  db:
+  host: localhost
+  port: "5432"
+  database: hub
+  user: gitpod
+images:
+  store: pg
+tracker:
+  concurrency: 1
+  repositoriesNames: []
+  repositoriesKinds: []
+  bypassDigestCheck: false
+  categoryModelPath: ../../ml/category/model

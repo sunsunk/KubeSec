@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-operator
+  namespace: dynamic_parameters
+  annotations: dynamic_parameters
+  labels:
+    app.kubernetes.io/component: keptn-cert-manager
+    app.kubernetes.io/part-of: keptn
+    control-plane: certificate-operator
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      control-plane: certificate-operator
+
+  template:
+    metadata:
+      labels:
+        control-plane: certificate-operator
+
+      annotations:
+        kubectl.kubernetes.io/default-container: certificate-operator
+        
+    spec:
+      containers:
+        - args:
+            - --leader-elect
+          command:
+            - /manager
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LABEL_SELECTOR_KEY
+              value: dynamic_parameters
+            - name: LABEL_SELECTOR_VALUE
+              value: dynamic_parameters
+            - name: KUBERNETES_CLUSTER_DOMAIN
+              value: dynamic_parameters
+          image: 
+          imagePullPolicy: dynamic_parameters
+          name: certificate-operator
+          resources: dynamic_parameters
+          securityContext:
+            capabilities: 
+          livenessProbe: 
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe: 
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: certificate-operator
+      terminationGracePeriodSeconds: 10
+      topologySpreadConstraints: 
+      nodeSelector: 
+      tolerations: 
+
+---

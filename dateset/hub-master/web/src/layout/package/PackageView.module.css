@@ -1,0 +1,329 @@
+.mainContent {
+  margin-top: 35px;
+}
+
+.jumbotron {
+  background-color: var(--color-1-10) !important;
+  padding: 2rem 1rem !important;
+}
+
+.imageWrapper {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.userIcon {
+  font-size: 0.8rem;
+  top: -2px;
+}
+
+.info {
+  background-color: var(--color-1-2) !important;
+  margin-top: 25px;
+  width: 230px;
+}
+
+.subtitle {
+  line-height: 20px;
+}
+
+.mobileSubtitle {
+  font-size: 90%;
+  line-height: 1rem;
+}
+
+.labels {
+  margin-left: 1.25rem;
+}
+
+.repoLabel {
+  top: -2px;
+}
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  -webkit-line-clamp: 6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.badges > div {
+  margin-right: 0.5rem;
+}
+
+.rightColumnWrapper code,
+.codeWrapper code {
+  word-wrap: normal !important;
+  white-space: pre !important;
+}
+
+.userLink {
+  top: -1px;
+}
+
+.link {
+  color: var(--color-font) !important;
+}
+
+.link:hover {
+  color: inherit;
+}
+
+.extraSpace::before {
+  content: ' ';
+  display: inline-flex;
+}
+
+.wrapperWithContentEllipsis {
+  min-width: 0;
+  height: 80px;
+}
+
+.titleWrapper {
+  margin-right: 265px;
+}
+
+.mobileIcon {
+  width: 18px;
+}
+
+.repoIcon {
+  height: 16px;
+  margin-top: -6px;
+}
+
+.tinyIcon {
+  font-size: 0.75rem;
+}
+
+.tinyIcon svg {
+  vertical-align: baseline;
+}
+
+.mw50 {
+  max-width: 50%;
+}
+
+.date {
+  font-size: 70%;
+}
+
+.detailsBody {
+  padding: 0.5rem 1.25rem;
+}
+
+.btnMobileWrapper {
+  max-width: 50%;
+}
+
+.noDataWrapper {
+  margin-top: 6rem !important;
+}
+
+.noDataTitleContent {
+  line-height: 1.75rem;
+}
+
+.additionalInfo {
+  z-index: 10;
+}
+
+.contentWrapper {
+  margin-right: 280px;
+}
+
+.fileIcon {
+  font-size: 5rem;
+  color: var(--mid-gray);
+}
+
+.relatedWrapper {
+  margin-right: 280px;
+}
+
+.manifestWrapper {
+  border-color: var(--color-black-15) !important;
+  background-color: var(--extra-light-gray);
+}
+
+.manifestWrapper code {
+  width: 100%;
+}
+
+.banner {
+  margin-top: 25px;
+  width: 230px;
+  background-color: var(--color-1-2) !important;
+}
+
+[data-theme='dark'] .banner {
+  background-color: var(--body-bg) !important;
+}
+
+.kindIcon {
+  height: 20px;
+  line-height: 14px;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .imageWrapper {
+    min-width: 50px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .readme {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .deprecatedBadge {
+    font-size: 0.6rem !important;
+  }
+
+  .noDataWrapper {
+    margin-top: 3rem !important;
+  }
+
+  .contentWrapper {
+    margin-right: 0;
+  }
+
+  .repoIcon {
+    height: 12px;
+    margin-top: -3px;
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .relatedWrapper {
+    margin-right: 0;
+  }
+
+  .optsWrapper {
+    margin-top: 1.5rem;
+    position: relative !important;
+    padding-right: 0;
+    justify-content: space-between;
+  }
+
+  .titleWrapper {
+    margin-right: 0px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .rightColumnWrapper {
+    margin-top: 10px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .optsWrapper {
+    padding-right: 0;
+  }
+
+  .description {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .mainContent {
+    margin-top: 0;
+  }
+
+  .jumbotron {
+    padding: 1.25rem 0 !important;
+  }
+
+  .title {
+    font-size: 1.15rem !important;
+  }
+
+  .codeWrapper {
+    margin-left: 15px;
+  }
+
+  .repoIcon {
+    margin-top: -3px;
+  }
+
+  .wrapperWithContentEllipsis {
+    height: 50px;
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  .mainContent {
+    flex: 0 0 calc(100% - 330px);
+    max-width: calc(100% - 330px);
+  }
+
+  .relatedPackagesWrapper {
+    max-width: 260px;
+  }
+
+  .info,
+  .banner {
+    width: 260px;
+  }
+
+  .contentWrapper,
+  .relatedWrapper {
+    margin-right: 0;
+  }
+
+  .manifestWrapper {
+    min-width: 75%;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .mainContent {
+    flex: 0 0 calc(100% - 380px);
+    max-width: calc(100% - 380px);
+  }
+
+  .relatedPackagesWrapper {
+    max-width: 310px;
+  }
+
+  .info,
+  .banner {
+    width: 310px;
+  }
+
+  .contentWrapper,
+  .relatedWrapper {
+    margin-right: 0;
+  }
+
+  .manifestWrapper {
+    min-width: 75%;
+  }
+
+  .description {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.moreDetailsSectionWrapper {
+  background-color: var(--color-1-5);
+  margin-top: -8px;
+  border-bottom: 1px solid var(--color-black-5);
+  border-top: 1px solid var(--color-black-5);
+}
+
+@media only screen and (min-width: 767.98px) and (max-width: 1400px) {
+  .relatedPackagesWrapper {
+    max-width: 230px;
+  }
+}

@@ -1,0 +1,42 @@
+# Copyright 2021 The BFE Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+  name: bfe
+  version: git
+  summary: Open-source layer 7 load balancer
+  description: |
+    BFE is an open-source layer 7 load balancer from Baidu.
+
+  license: Apache-2.0
+  base: core18
+  grade: stable
+  confinement: strict
+  architectures:
+    - build-on: [amd64, arm64, ppc64el]
+  
+  parts:
+    bfe:
+      plugin: go
+      go-channel: 1.13/stable
+      go-importpath: github.com/bfenetworks/bfe
+      source: https://github.com/bfenetworks/bfe.git
+      source-type: git
+      override-build: | 
+        make
+        cp -r output/* $SNAPCRAFT_PART_INSTALL/
+
+  apps:
+    bfe:
+      command: bin/bfe -c $SNAP_COMMON/conf -l $SNAP_COMMON/log
+      plugs: [network-bind]

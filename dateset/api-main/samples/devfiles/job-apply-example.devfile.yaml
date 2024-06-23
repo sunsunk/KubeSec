@@ -1,0 +1,28 @@
+schemaVersion: "2.0.0"
+metadata:
+  name: "myDevfile"
+  version: "0.0.1"
+components:
+  - name: cleanup-job
+    kubernetes:
+      inlined: |
+        apiVersion: batch/v1
+        kind: Job
+        metadata:
+          name: pi
+        spec:
+          template:
+            spec:
+              containers:
+              - name: job
+                image: someimage
+                command: ["some",  "command", "with", "parameters"]
+              restartPolicy: Never
+          backoffLimit: 4
+commands:
+  - id: cleanup-job
+    apply:
+      component: cleanup-job      
+events:
+  postStop:
+    - cleanup-job

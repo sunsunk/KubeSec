@@ -1,0 +1,34 @@
+name: Unit Tests on Go Tip
+
+on:
+  push:
+    branches: [main]
+
+# See https://github.com/ossf/scorecard/blob/main/docs/checks.md#token-permissions
+permissions:  # added using https://github.com/step-security/secure-workflows
+  contents: read
+  checks: write
+
+jobs:
+  unit-tests-go-tip:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+
+    - name: Install Go Tip
+      uses: ./.github/actions/setup-go-tip
+
+    - name: Install test deps
+      # even though the same target runs from test-ci, running it separately makes for cleaner log in GH workflow
+      run: make install-test-tools
+
+    - name: Run unit tests
+      run: make test-ci
+
+    - name: Lint
+      run: echo skip linting on Go tip

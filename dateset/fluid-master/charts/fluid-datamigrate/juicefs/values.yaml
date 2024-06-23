@@ -1,0 +1,111 @@
+# Default values for fluid-datamigrate.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name:
+
+owner:
+  enabled: false
+  name: ""
+  kind: ""
+  uid: ""
+  apiVersion: ""
+  blockOwnerDeletion: false
+  controller: false
+
+datamigrate:
+  # Required
+  # Default: once
+  # Description: policy of data migrate
+  policy: ""
+
+  # Optional
+  # Description: schedule for cron policy
+  schedule:
+
+  # Optional
+  # Default: 3
+  # Description: how many times the prefetch job can fail, i.e. `Job.spec.backoffLimit`
+  backoffLimit: 3
+
+  # Required
+  # Description: the dataset that this DataMigrate targets
+  targetDataset: #imagenet
+
+  # Required
+  # Description: the source storage
+  migrateFrom: #<source-storage>
+
+  # Required
+  # Description: the destination storage
+  migrateTo: #<target-filesystem>
+
+  # Optional
+  # Description: the secret that contains the credentials of the source storage
+  encryptOptions:
+
+  # Required
+  # Description: the image that the DataMigrate job uses
+  image: #<juicefs-image>
+
+  # Optional
+  # Description: optional parameter DataMigrate job uses
+  options:
+
+  # Optional
+  # Description: optional labels on DataMigrate pods
+  labels:
+
+  # Optional
+  # Description: optional annotations on DataMigrate pods
+  annotations:
+
+  # Optional
+  # Description: optional image pull secrets on DataLoad pods
+  imagePullSecrets: []
+
+  # Optional
+  # Description: optional native volumes
+  nativeVolumes:
+
+  # Optional
+  # Description: optional native volume mounts
+  nativeVolumeMounts:
+
+  # Optional
+  # Desciption: optional scheduler name for DataMigrate pods
+  schedulerName:
+
+  # Optional
+  # Description: node selector for DataMigrate pods
+  nodeSelector:
+
+  # Optional
+  # Description: affinity specs for DataMigrate pods
+  affinity:
+
+  # Optional
+  # Description: tolerations specs for DataMigrate pods
+  tolerations: []
+
+  # Optional
+  # Description: optional container resources
+  resources: {}
+
+  # Optional
+  # Description: optional parallel task numbers
+  parallelism: 1
+
+  parallelOptions:
+    # Optional
+    # Description: timeout before parallel workers ssh ready
+    sshReadyTimeoutSeconds: 180
+
+    # Optional
+    # Description: ssh port
+    sshPort: 22
+
+    # Required when parallelism > 1
+    # Description: ssh secret name, have two keys ssh-privatekey, ssh-publickey
+    sshSecretName:
+

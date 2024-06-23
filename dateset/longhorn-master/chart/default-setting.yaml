@@ -1,0 +1,15 @@
+# Source: longhorn/templates/default-setting.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: longhorn-default-setting
+  namespace: default
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+data:
+  default-setting.yaml: |-
+    priority-class: longhorn-critical

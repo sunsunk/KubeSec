@@ -1,0 +1,135 @@
+cyclePeriod: 1s
+schedulePeriod: 10s
+maxSchedulingDuration: 5s
+executorTimeout: 1h
+databaseFetchSize: 1000
+pulsarSendTimeout: 5s
+internedStringsCacheSize: 100000
+metrics:
+  port: 9000
+  refreshInterval: 30s
+  metrics:
+    scheduleCycleTimeHistogramSettings:
+      start: 10.0
+      factor: 1.1
+      count: 110
+    reconcileCycleTimeHistogramSettings:
+      start: 10.0
+      factor: 1.1
+      count: 110
+schedulerMetrics:
+  trackedResourceNames:
+    - "cpu"
+    - "memory"
+    - "ephemeral-storage"
+    - "nvidia.com/gpu"
+  resourceRenaming:
+    nvidia.com/gpu: "gpu"
+    amd.com/gpu: "gpu"
+    ephemeral-storage: "ephemeralStorage"
+  matchedRegexIndexByErrorMessageCacheSize: 100
+  resetInterval: "1h"
+pulsar:
+  URL: "pulsar://pulsar:6650"
+  jobsetEventsTopic: "events"
+  maxConnectionsPerBroker: 1
+  compressionType: zlib
+  compressionLevel: faster
+  maxAllowedMessageSize: 4194304 #4Mi
+redis:
+  addrs:
+    - redis:6379
+  password: ""
+  db: 0
+  poolSize: 1000
+postgres:
+  connection:
+    host: postgres
+    port: 5432
+    user: postgres
+    password: psw
+    dbname: postgres
+    sslmode: disable
+leader:
+  mode: standalone
+  leaseLockName: armada-scheduler
+  LeaseLockNamespace: "" # This must be set so viper allows env vars to overwrite it
+  leaseDuration: 15s
+  renewDeadline: 10s
+  retryPeriod: 2s
+  podName: "" # This must be set so viper allows env vars to overwrite it
+  leaderConnection:
+    armadaUrl: "" # <name> will get replaced with the lease owners name
+http:
+  port: 8080
+grpc:
+  port: 50052
+  keepaliveParams:
+    maxConnectionIdle: 5m
+    time: 120s
+    timeout: 20s
+  keepaliveEnforcementPolicy:
+    minTime: 10s
+    permitWithoutStream: true
+  tls:
+    enabled: false
+# You may want to configure indexedNodeLabels and indexedTaints to speed up scheduling.
+scheduling:
+  disableScheduling: false
+  enableAssertions: false
+  nodeEvictionProbability: 1.0
+  nodeOversubscriptionEvictionProbability: 1.0
+  protectedFractionOfFairShare: 1.0
+  nodeIdLabel: "kubernetes.io/hostname"
+  priorityClasses:
+    armada-default:
+      priority: 1000
+      preemptible: false
+      maximumResourceFractionPerQueue:
+        memory: 1.0
+        cpu: 1.0
+    armada-preemptible:
+      priority: 1000
+      preemptible: true
+  defaultPriorityClassName: "armada-default"
+  priorityClassNameOverride: "armada-default"
+  maxQueueLookback: 100000
+  maximumResourceFractionToSchedule:
+    memory: 1.0
+    cpu: 1.0
+  maximumSchedulingRate: 100.0
+  maximumSchedulingBurst: 1000
+  maximumPerQueueSchedulingRate: 50.0
+  maximumPerQueueSchedulingBurst: 1000
+  maxJobSchedulingContextsPerExecutor: 10000
+  maxRetries: 3
+  dominantResourceFairnessResourcesToConsider:
+    - "cpu"
+    - "memory"
+    - "nvidia.com/gpu"
+    - "ephemeral-storage"
+  indexedResources:
+    - name: "nvidia.com/gpu"
+      resolution: "1"
+    - name: "cpu"
+      resolution: "100m"
+    - name: "memory"
+      resolution: "100Mi"
+    - name: "ephemeral-storage"
+      resolution: "1Gi"
+  executorTimeout: "10m"
+  maxUnacknowledgedJobsPerExecutor: 2500
+  alwaysAttemptScheduling: false
+  executorUpdateFrequency: "1m"
+  failureProbabilityEstimation:
+    # Optimised default parameters.
+    numInnerIterations: 10
+    innerOptimiserStepSize: 0.05
+    outerOptimiserStepSize: 0.05
+    outerOptimiserNesterovAcceleration: 0.2
+  nodeQuarantining:
+    failureProbabilityQuarantineThreshold: 0.95
+    failureProbabilityEstimateTimeout: "10m"
+  queueQuarantining:
+    quarantineFactorMultiplier: 0.5 # At most halve the scheduling rate of misbehaving queues.
+    failureProbabilityEstimateTimeout: "10m"

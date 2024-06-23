@@ -1,0 +1,11 @@
+/var/log/nginx*.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        delaycompress
+        postrotate
+                kill -USR1 `pgrep openresty | head -n 1`
+        endscript
+}

@@ -1,0 +1,32 @@
+kind: "DevWorkspace"
+apiVersion: "workspace.devfile.io/v1alpha2"
+metadata:
+  "name": "myDevWorkspace"
+spec:
+  started: true
+  routingClass: 'openshift-auth'
+  template:
+    projects:
+      - name: "my-project"
+        custom:
+          projectSourceClass: "custom-source"
+          embeddedResource:
+            custom-info: "connexion-information"
+    components:
+      - name: "production"
+        kubernetes:
+          uri: "https://somewhere/production-environment.yaml"
+      - name: "mynewcomponent"
+        custom:
+          componentClass: "NewComponentType"
+          embeddedResource:
+            config1: ""
+            config2:
+              config2-1: "" 
+              config2-2: "" 
+    commands:
+      - id: mycustomcommand
+        custom:
+          commandClass: myCommandType
+          embeddedResource:
+            anyCustomConfigValue: ""

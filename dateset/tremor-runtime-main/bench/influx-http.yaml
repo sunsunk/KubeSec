@@ -1,0 +1,26 @@
+# Test maximal througbhput with an empty pipeline
+# and without de/encoding
+---
+onramp:
+  - id: blaster
+    type: blaster
+    codec: influx
+    config:
+      source: ./demo/data/data.influx.xz
+
+offramp:
+  - id: blackhole
+    type: rest
+    codec: influx
+    config:
+      concurrency: 8
+      nodes:
+        - http://localhost:8086/write?db=metrics
+      headers:
+        "Client": "Tremor"
+
+binding:
+  - id: bench
+    links:
+      "/onramp/blaster/{instance}/out": ["/pipeline/main/{instance}/in"]
+      "/pipeline/main/{instance}/out": ["/offramp/blackhole/{instance}/in"]

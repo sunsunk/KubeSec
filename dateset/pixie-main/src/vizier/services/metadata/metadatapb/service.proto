@@ -1,0 +1,316 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.vizier.services.metadata;
+
+option go_package = "metadatapb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "src/api/proto/uuidpb/uuid.proto";
+import "src/carnot/planner/distributedpb/distributed_plan.proto";
+import "src/carnot/planner/dynamic_tracing/ir/logicalpb/logical.proto";
+import "src/common/base/statuspb/status.proto";
+import "src/table_store/schemapb/schema.proto";
+import "src/vizier/messages/messagespb/messages.proto";
+import "src/vizier/services/shared/agentpb/agent.proto";
+import "src/shared/cvmsgspb/cvmsgs.proto";
+
+service MetadataService {
+  // An endpoint used by the query broker which is responsible for streaming the state of the
+  // agents. It first sends the full initial state of the agents, and then it sends state updates
+  // after that.
+  rpc GetAgentUpdates(AgentUpdatesRequest) returns (stream AgentUpdatesResponse);
+  // These RPC calls are used by UDTFs to fetch metadata.
+  rpc GetSchemas(SchemaRequest) returns (SchemaResponse);
+  rpc GetAgentInfo(AgentInfoRequest) returns (AgentInfoResponse);
+  rpc GetWithPrefixKey(WithPrefixKeyRequest) returns (WithPrefixKeyResponse);
+}
+
+service MetadataTracepointService {
+  rpc RegisterTracepoint(RegisterTracepointRequest) returns (RegisterTracepointResponse);
+  rpc GetTracepointInfo(GetTracepointInfoRequest) returns (GetTracepointInfoResponse);
+  rpc RemoveTracepoint(RemoveTracepointRequest) returns (RemoveTracepointResponse);
+}
+
+// MetadataConfigService is responsible for delegating config changes to PEMs.
+service MetadataConfigService {
+  // UpdateConfig updates the PEM config for the given key/value setting.
+  rpc UpdateConfig(UpdateConfigRequest) returns (UpdateConfigResponse);
+}
+
+// CronScriptStoreService is responsible for storing the cron scripts that should be run in this
+// Vizier. It is the responsibility of the queryBroker to keep the store up-to-date. These are
+// backed by the CronScript service in Pixie Cloud.
+service CronScriptStoreService {
+  // GetScripts fetches all scripts in the cron script store.
+  rpc GetScripts(GetScriptsRequest) returns (GetScriptsResponse);
+  // AddOrUpdateScript updates or adds a cron script to the store, based on ID.
+  rpc AddOrUpdateScript(AddOrUpdateScriptRequest) returns (AddOrUpdateScriptResponse);
+  // DeleteScript deletes a cron script from the store by ID.
+  rpc DeleteScript(DeleteScriptRequest) returns (DeleteScriptResponse);
+  // SetScripts sets the list of all cron scripts to match the given set of scripts.
+  rpc SetScripts(SetScriptsRequest) returns (SetScriptsResponse);
+  // RecordExecutionResult records the results of a CronScriptRun.
+  rpc RecordExecutionResult(RecordExecutionResultRequest) returns (RecordExecutionResultResponse);
+  // GetAllExecutionResults returns all of the execution results for cronscripts stored by this
+  // service.
+  rpc GetAllExecutionResults(GetAllExecutionResultsRequest)
+      returns (GetAllExecutionResultsResponse);
+}
+
+message SchemaRequest {}
+
+// The schema response from the metadata service containing the schema that all
+// agents serve.
+message SchemaResponse {
+  px.table_store.schemapb.Schema schema = 2;
+}
+
+message AgentInfoRequest {}
+
+message AgentInfoResponse {
+  // Contains AgentMetadata for each of the agents currently registered with
+  // Vizier.
+  repeated AgentMetadata info = 1;
+}
+
+message AgentMetadata {
+  px.vizier.services.shared.agent.Agent agent = 1;
+  px.vizier.services.shared.agent.AgentStatus status = 2;
+  // Info that describes the carnot instance for the agent.
+  px.carnot.planner.distributedpb.CarnotInfo carnot_info = 3;
+}
+
+message AgentUpdatesRequest {
+  // The maximum amount of time to wait between updates.
+  // Note that since a given update may be streamed across multiple AgentUpdatesResponses,
+  // it's possible that the duration between responses will be less than `update_interval`.
+  google.protobuf.Duration max_update_interval = 1;
+  // The max number of agent updates per response.
+  int32 max_updates_per_response = 2;
+}
+
+// AgentUpdate contains an update about a particular agent.
+message AgentUpdate {
+  uuidpb.UUID agent_id = 1 [ (gogoproto.customname) = "AgentID" ];
+  oneof update {
+    // True if the agent has been deleted.
+    bool deleted = 2;
+    // Updates to the agent's basic information.
+    px.vizier.services.shared.agent.Agent agent = 3;
+    // Updates to the agent's table data info.
+    px.vizier.messages.AgentDataInfo data_info = 4;
+  }
+}
+
+message AgentUpdatesResponse {
+  // A list of agent updates, in the order in which they occurred.
+  repeated AgentUpdate agent_updates = 1;
+  // The latest version of the agent schemas, if they have changed since the last message.
+  // For a given batch of AgentUpdates, the AgentSchemas will always be sent last so that they don't
+  // refer to an agent ID that the client hasn't heard about yet.
+  // Also note the schema will always be sent in its entirety, so it will not be paginated.
+  repeated px.carnot.planner.distributedpb.SchemaInfo agent_schemas = 2;
+  // Whether or not the agent schemas have been updated. This is to differentiate between the case
+  // where there are truly no AgentSchemas present and when there is no update to those agent
+  // schemas.
+  bool agent_schemas_updated = 3;
+  // The AgentUpdateResponses are paginated and sent periodically.
+  // `end_of_update_batch` denotes that the latest batch of updates has completed, and the next
+  // message will be from a new batch of updates.
+  bool end_of_version = 4;
+}
+
+message WithPrefixKeyRequest {
+  // A key prefix for all the key values store in MDS that we are interested in knowning about.
+  string prefix = 1;
+  // The fully qualified proto name for the value stored at the keys.
+  // Omitting this field or using an empty string will skip any value decoding, works well for
+  // primitive types stored in MDS such as ints or strings, but might cause issues with wire
+  // encoded protos since they usually have null bytes.
+  string proto = 2;
+}
+
+message WithPrefixKeyResponse {
+  message KV {
+    // Key for a particular stored field in MDS.
+    string key = 1;
+    // Value for the corresponding field in MDS. Raw value from MDS if `proto` wasn't set.
+    // Else, proto decoded and then JSON marshalled for convenience.
+    bytes value = 2;
+  }
+  // All the key-value pairs that matched the given prefix.
+  repeated KV kvs = 1;
+}
+
+// The request to register tracepoints on all PEMs.
+message RegisterTracepointRequest {
+  message TracepointRequest {
+    px.carnot.planner.dynamic_tracing.ir.logical.TracepointDeployment tracepoint_deployment = 1;
+    // The user-specified name for the tracepoint.
+    string name = 2;
+    // The TTL, in seconds, for how long we want the tracepoint to live.
+    google.protobuf.Duration ttl = 3 [ (gogoproto.customname) = "TTL" ];
+  }
+  repeated TracepointRequest requests = 1;
+}
+
+// The response to a RegisterTracepointRequest.
+message RegisterTracepointResponse {
+  message TracepointStatus {
+    px.statuspb.Status status = 1;
+    // The ID of the tracepoint. This should be the user-specified name for the tracepoint.
+    uuidpb.UUID id = 2 [ (gogoproto.customname) = "ID" ];
+    string name = 3;
+  }
+  repeated TracepointStatus tracepoints = 1;
+  // Overall status of whether tracepoint registration requests were initiated with/without errors.
+  px.statuspb.Status status = 2;
+}
+
+// The request to check the status for a tracepoint with the given names.
+message GetTracepointInfoRequest {
+  // The tracepoint IDs to get the info for. If empty, fetches the info for all known tracepoints.
+  repeated uuidpb.UUID ids = 1 [ (gogoproto.customname) = "IDs" ];
+}
+
+// The status of whether the tracepoint has successfully registered or not.
+message GetTracepointInfoResponse {
+  message TracepointState {
+    // The tracepoint ID.
+    uuidpb.UUID id = 1 [ (gogoproto.customname) = "ID" ];
+    // The state of the tracepoint.
+    px.statuspb.LifeCycleState state = 2;
+    // The status of the tracepoint, specified if the state of the tracepoint is not healthy.
+    repeated px.statuspb.Status statuses = 3;
+    string name = 4;
+    // The desired state for the tracepoint. This can be used to determine whether
+    // the tracepoint is just starting up or in the process of terminating.
+    px.statuspb.LifeCycleState expected_state = 5;
+    repeated string schema_names = 6;
+  }
+  // List of tracepoint states.
+  repeated TracepointState tracepoints = 1;
+}
+
+// The request to evict a tracepoint. This will normally happen via the tracepoint's TTL, but can be
+// initiated via request as well.
+message RemoveTracepointRequest {
+  // The name of the tracepoint to remove.
+  repeated string names = 1;
+}
+
+// The response to the tracepoint removal.
+message RemoveTracepointResponse {
+  // Status of whether the tracepoint removal request was initiated with/without errors.
+  px.statuspb.Status status = 1;
+}
+
+// The request to update a config setting on a PEM.
+message UpdateConfigRequest {
+  // The key of the setting that should be updated.
+  string key = 1;
+  // The new value of the updated setting.
+  string value = 2;
+  // The name of the agent pod to update.
+  string agent_pod_name = 3;
+}
+
+// The response to the request to update a config setting on a PEM.
+message UpdateConfigResponse {
+  // Overall status of whether the config update was initiated with/without errors.
+  px.statuspb.Status status = 1;
+}
+
+// GetScriptsRequest is a request to fetch all scripts in the cron script store.
+message GetScriptsRequest {}
+
+// GetScriptsResponse returns all scripts in the cron script store.
+message GetScriptsResponse {
+  // Map from script ID to cronScript.
+  map<string, cvmsgspb.CronScript> scripts = 1;
+}
+
+// AddOrUpdateScriptRequest is a request to add or update a script in the cron script store.
+message AddOrUpdateScriptRequest {
+  cvmsgspb.CronScript script = 1;
+}
+
+// AddOrUpdateScriptResponse is a response to a AddOrUpdateScriptRequest.
+message AddOrUpdateScriptResponse {}
+
+// DeleteScriptRequest is a request to delete a script from the cron script store.
+message DeleteScriptRequest {
+  uuidpb.UUID script_id = 1 [ (gogoproto.customname) = "ScriptID" ];
+}
+
+// DeleteScriptResponse is a response to a DeleteScriptRequest.
+message DeleteScriptResponse {}
+
+// SetScriptsRequest is a request to set all scripts in the cron script store to the set of given
+// scripts.
+message SetScriptsRequest {
+  // Map from script ID to cronScript.
+  map<string, cvmsgspb.CronScript> scripts = 1;
+}
+
+// SetScriptsResponse is a response to a SetScriptsRequest.
+message SetScriptsResponse {}
+
+// ExecutionStats contains information about the time/data processed by the
+// query.
+message ExecutionStats {
+  // The total execution time for the query in nanoseconds.
+  int64 execution_time_ns = 1;
+  // The time in ns spent compiling the query.
+  int64 compilation_time_ns = 2;
+  // The number of input bytes.
+  int64 bytes_processed = 3;
+  // The number of input records.
+  int64 records_processed = 4;
+}
+
+message RecordExecutionResultRequest {
+  // The ID of the script that was run.
+  uuidpb.UUID script_id = 1 [ (gogoproto.customname) = "ScriptID" ];
+  google.protobuf.Timestamp timestamp = 2;
+  oneof result {
+    px.statuspb.Status error = 3;
+    ExecutionStats execution_stats = 4;
+  }
+}
+
+message RecordExecutionResultResponse {}
+
+message GetAllExecutionResultsRequest {}
+
+message GetAllExecutionResultsResponse {
+  message ExecutionResult {
+    uuidpb.UUID script_id = 1 [ (gogoproto.customname) = "ScriptID" ];
+    google.protobuf.Timestamp timestamp = 2;
+    oneof result {
+      px.statuspb.Status error = 3;
+      ExecutionStats execution_stats = 4;
+    }
+  }
+  repeated ExecutionResult results = 1;
+}

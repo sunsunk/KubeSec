@@ -1,0 +1,21 @@
+apiVersion: pipecd.dev/v1beta1
+kind: KubernetesApp
+spec:
+  name: helm-remote-git-chart
+  labels:
+    env: example
+    team: product
+  input:
+    # Helm chart sourced from another Git repository.
+    helmChart:
+      gitRemote: git@github.com:pipe-cd/manifests.git
+      ref: v0.9.0
+      path: manifests/helloworld
+    helmOptions:
+      valueFiles:
+        - values.yaml
+      releaseName: helm-remote-git-chart
+    helmVersion: 3.8.2
+  description: |
+    This app demonstrates how to deploy a Kubernetes app that uses a Helm chart sourced from the same Git repository.\
+    References: [adding a new app](https://pipecd.dev/docs/user-guide/managing-application/adding-an-application/), [app configuration](https://pipecd.dev/docs/user-guide/configuration-reference/)

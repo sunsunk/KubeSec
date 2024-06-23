@@ -1,0 +1,62 @@
+run:
+  deadline: 60m
+  skip-dirs:
+    - "internal"
+
+linters:
+  enable-all: true
+  disable: funlen,gocognit,exhaustivestruct,paralleltest,forbidigo,ireturn,wrapcheck,exhaustive,maintidx,exhaustruct,nosnakecase,interfacer,structcheck,varcheck,deadcode,ifshort,golint,scopelint,maligned,rowserrcheck,sqlclosecheck,revive,musttag,depguard
+
+linters-settings:
+  dupl:
+    threshold: 200
+  nestif:
+    min-complexity: 26
+  cyclop:
+    max-complexity: 40
+    skip-tests: true
+  varnamelen:
+    check-return: true
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+    ignore-names:
+      - err
+      - ok
+      - gc
+      - wg
+    ignore-decls:
+      - n int
+      - i int
+      - r *os.File
+      - w *os.File
+      - to int64
+      - l *ldap.Conn
+      - w http.ResponseWriter
+      - r *http.Request
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(zotregistry.dev/zot)
+  wsl:
+    allow-assign-and-anything: true
+    enforce-err-cuddling: true
+  nolintlint:
+    allow-unused: true
+  gomnd:
+    settings:
+      mnd:
+        checks: argument,case,condition,operation,return,assign
+        ignored-numbers: 10,64
+  gomoddirectives:
+    replace-allow-list:
+      - github.com/gorilla/mux
+      - github.com/testcontainers/testcontainers-go
+issues:
+  exclude-rules:
+    - path: pkg/extensions/search/schema.resolvers.go
+      linters:
+        - lll
+        - varnamelen
+        - gci

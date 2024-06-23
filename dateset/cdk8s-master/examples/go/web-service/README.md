@@ -1,0 +1,1 @@
+Moved to https://github.com/cdk8s-team/cdk8s-examples/tree/main/go/cdk8s-composition

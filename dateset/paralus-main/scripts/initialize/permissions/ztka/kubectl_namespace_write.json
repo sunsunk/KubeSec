@@ -1,0 +1,9 @@
+{
+  "name": "kubectl.namespace.write",
+  "description": "create, edit kubectl at namespace level",
+  "base_url": "",
+  "resource_urls": [],
+  "resource_action_urls": [],
+  "authenticated": true,
+  "scope": "NAMESPACE"
+}

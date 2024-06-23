@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../plugin.schema.json
+- id: kill-pods
+  config:
+    namespace_pattern: ^kube-system$
+    label_selector: k8s-app=kube-scheduler
+- id: wait-for-pods
+  config:
+    namespace_pattern: ^kube-system$
+    label_selector: k8s-app=kube-scheduler
+    count: 3

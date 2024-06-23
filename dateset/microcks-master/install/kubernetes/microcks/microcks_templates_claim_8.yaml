@@ -1,0 +1,18 @@
+# Source: microcks/templates/claim.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "microcks-mongodb"
+  labels:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+    
+  annotations:
+    
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

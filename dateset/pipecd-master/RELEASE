@@ -1,0 +1,18 @@
+tag: v0.46.0
+
+releaseNoteGenerator:
+  showCommitter: false
+  useReleaseNoteBlock: true
+  usePullRequestLink: true
+
+commitCategories:
+  - title: "Breaking Changes"
+    contains:
+      - change-category/breaking-change
+  - title: "New Features"
+    contains:
+      - change-category/new-feature
+  - title: "Notable Changes"
+    contains:
+      - change-category/notable-change
+  - title: "Internal Changes"

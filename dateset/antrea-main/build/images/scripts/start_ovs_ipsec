@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+# Copyright 2022 Antrea Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+source logging
+source daemon_status
+
+CONTAINER_NAME="antrea-ipsec"
+
+set -euo pipefail
+
+log_info $CONTAINER_NAME "Checking for IPsec prerequisites"
+
+command -v ipsec >/dev/null 2>&1 || { log_error $CONTAINER_NAME "'ipsec' command not available - are the StrongSwan packages installed?"; exit 1; }
+
+IKE_DAEMON="strongswan"
+IPSEC_VERSION=$(ipsec --version)
+
+if [[ ${IPSEC_VERSION,,} =~ "libreswan" ]]; then
+    IKE_DAEMON="libreswan"
+    # Check the NSS database and initialize it when it is not present.
+    ipsec checknss
+fi
+
+# OVS IPsec requires that the GCM module be loaded (/etc/strongswan.d/ovs.conf),
+# and we use the presence of /etc/strongswan.d/charon/gcm.conf to determine
+# whether this is the case (this should be independent of the Linux distribution
+# used). Just in case, we only perform the check if the /etc/strongswan.d/charon
+# directory exists. We do not use "ipsec listplugins" as it requires the IKE
+# daemon to be running already.
+if [[ ${IKE_DAEMON} == "strongswan" && -d "/etc/strongswan.d/charon" && ! -f "/etc/strongswan.d/charon/gcm.conf" ]]; then
+    log_error $CONTAINER_NAME "Cannot detect 'gcm' plugin for StrongSwan, make sure it is installed (libstrongswan-standard-plugins package on Debian systems)"
+    exit 1
+fi
+
+function start_agents {
+    log_info $CONTAINER_NAME "Starting ovs-monitor-ipsec and "${IKE_DAEMON}" agents"
+    /usr/share/openvswitch/scripts/ovs-ctl --ike-daemon="${IKE_DAEMON}" start-ovs-ipsec
+}
+
+function stop_agents {
+    log_info $CONTAINER_NAME "Stopping ovs-monitor-ipsec agent"
+    /usr/share/openvswitch/scripts/ovs-ctl stop-ovs-ipsec
+    log_info $CONTAINER_NAME "Stopping strongSwan agents"
+    ipsec stop
+}
+
+SLEEP_PID=
+
+function quit {
+    log_info $CONTAINER_NAME "Stopping OVS IPsec before quit"
+    stop_agents
+    # terminate background sleep process
+    if [ "$SLEEP_PID" != "" ]; then kill $SLEEP_PID > /dev/null 2>&1 || true; fi
+    exit 0
+}
+
+# Do not trap EXIT as it would then ignore the "exit 0" statement in quit and
+# exit with code 128 + SIGNAL
+trap "quit" INT TERM
+
+start_agents
+
+log_info $CONTAINER_NAME "Started the loop that checks agents status every 30 seconds"
+while true; do
+    # we run sleep in the background so that we can immediately exit when we
+    # receive SIGINT / SIGTERM
+    # see https://stackoverflow.com/questions/32041674/linux-how-to-kill-sleep
+    sleep 30 &
+    SLEEP_PID=$!
+    wait $SLEEP_PID
+
+    if ! check_ovs_ipsec_status ; then
+        log_warning $CONTAINER_NAME "OVS IPsec was stopped. Starting it again"
+
+        start_agents
+    fi
+done

@@ -1,0 +1,126 @@
+.codeWrapper {
+  padding: 10px 0;
+}
+
+.lineNumber {
+  min-width: 32px;
+  color: var(--color-black-25);
+}
+
+.activeLine {
+  opacity: 0;
+  top: -3px;
+  bottom: -3px;
+  left: -10px;
+  right: -24px;
+  background-color: var(--color-black-15);
+  border-left: 2px solid var(--color-black-75);
+  animation: blinker 1s linear 1;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 1;
+  }
+}
+
+.badge {
+  border-color: var(--color-black-15) !important;
+  color: var(--color-font);
+  font-size: 85%;
+  padding-bottom: 0.2rem;
+  margin: 0 2px;
+}
+
+.specialCharacter {
+  margin-left: -6px;
+}
+
+.prevSpace::before {
+  content: ' ';
+}
+
+.definedTmplWrapper {
+  border-color: var(--color-black-15) !important;
+  background-color: var(--extra-light-gray);
+  overscroll-behavior: contain;
+  font-size: 0.75rem;
+  max-height: 180px;
+}
+
+.tmplBuiltIn {
+  color: #60788d;
+}
+
+.tmplBuiltIn.darkTheme {
+  color: #90b4d4;
+}
+
+.tmplComment {
+  color: #727471;
+  font-size: 90%;
+}
+
+.tmplComment.darkTheme {
+  color: #8e908c;
+}
+
+.tmplFunction {
+  color: #8959a8;
+}
+
+.tmplFunction.darkTheme {
+  color: #d696ff;
+}
+
+.tmplFlowControl {
+  color: #667e00;
+}
+
+.tmplFlowControl.darkTheme {
+  color: #99be00;
+}
+
+.tmplValue {
+  color: #b06116;
+}
+
+.tmplValue.darkTheme {
+  color: #f5871f;
+}
+
+.tmplVariable {
+  color: #b45a5a;
+}
+
+.tmplVariable.darkTheme {
+  color: #ff9191;
+}
+
+.tmplDefinedTemplate {
+  color: #c09b28;
+}
+
+.tmplDefinedTemplate.darkTheme {
+  color: #f1c232;
+}
+
+.textarea :global(.form-control) {
+  font-size: 100%;
+  opacity: 1 !important;
+  background-color: var(--extra-light-gray);
+}
+
+.textarea textarea[disabled] {
+  color: var(--color-font) !important;
+}
+
+.anchor {
+  top: -5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activeLine {
+    animation: blinker 2s linear 1;
+  }
+}

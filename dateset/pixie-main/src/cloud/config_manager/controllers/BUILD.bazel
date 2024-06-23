@@ -1,0 +1,62 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel:pl_build_system.bzl", "pl_go_test")
+
+go_library(
+    name = "controllers",
+    srcs = [
+        "server.go",
+        "vizier_feature_flags.go",
+    ],
+    importpath = "px.dev/pixie/src/cloud/config_manager/controllers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/api/proto/uuidpb:uuid_pl_go_proto",
+        "//src/cloud/artifact_tracker/artifacttrackerpb:artifact_tracker_pl_go_proto",
+        "//src/cloud/config_manager/configmanagerpb:service_pl_go_proto",
+        "//src/cloud/vzmgr/vzmgrpb:service_pl_go_proto",
+        "//src/shared/artifacts/versionspb:versions_pl_go_proto",
+        "//src/shared/services/utils",
+        "//src/utils",
+        "//src/utils/shared/tar",
+        "//src/utils/shared/yamls",
+        "//src/utils/template_generator/vizier_yamls",
+        "@com_github_blang_semver//:semver",
+        "@com_github_gofrs_uuid//:uuid",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@com_github_spf13_viper//:viper",
+        "@in_gopkg_launchdarkly_go_sdk_common_v2//lduser",
+        "@in_gopkg_launchdarkly_go_server_sdk_v5//:go-server-sdk_v5",
+        "@io_k8s_apimachinery//pkg/api/resource",
+        "@org_golang_google_grpc//metadata",
+    ],
+)
+
+pl_go_test(
+    name = "controllers_test",
+    srcs = [
+        "server_test.go",
+        "vizier_feature_flags_test.go",
+    ],
+    deps = [
+        ":controllers",
+        "//src/utils/template_generator/vizier_yamls",
+        "@com_github_gofrs_uuid//:uuid",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

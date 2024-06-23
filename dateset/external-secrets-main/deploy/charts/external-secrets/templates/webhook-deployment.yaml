@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-webhook
+  namespace: dynamic_parameters
+  labels:
+    
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      hostNetwork: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      automountServiceAccountToken: dynamic_parameters
+      securityContext:
+      containers:
+        - name: webhook
+          securityContext:
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          args:
+          - webhook
+          - --port=dynamic_parameters
+          - --dns-name=dynamic_parameters-webhook.dynamic_parameters.svc
+          - --cert-dir=dynamic_parameters
+          - --check-interval=dynamic_parameters
+          - --metrics-addr=:dynamic_parameters
+          - --healthz-addr=dynamic_parameters:dynamic_parameters
+          - --lookahead-interval=dynamic_parameters
+          - --dynamic_parameters=dynamic_parameters
+          - --dynamic_parameters
+          ports:
+            - containerPort: dynamic_parameters
+              protocol: TCP
+              name: metrics
+            - containerPort: dynamic_parameters
+              protocol: TCP
+              name: webhook
+          readinessProbe:
+            httpGet:
+              port: dynamic_parameters
+              path: /readyz
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          env:
+          resources:
+          volumeMounts:
+            - name: certs
+              mountPath: dynamic_parameters
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: dynamic_parameters-webhook
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      priorityClassName: dynamic_parameters
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

@@ -1,0 +1,223 @@
+# Copyright 2021- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+''' Kafka Producer-Consumer Latency
+
+This script measures the latency for a Kafka producer-consumer pair.
+Limitations: only works if producer/consumer operate on a single topic.
+'''
+import px
+
+
+def kafka_producers(start_time: str, namespace: str, topic: str):
+    df = px.DataFrame(table='kafka_events.beta', start_time=start_time)
+    df.namespace = df.ctx['namespace']
+
+    # Filter by namespace and topic.
+    # TODO(chengruizhe): Use Json unnest to filter on topic once it's fully supported. Same below.
+    df = df[df.namespace == namespace and px.contains(df.req_body, '"name":"' + topic + '"')]
+
+    df = add_source_dest_columns(df)
+    df = df.groupby(['source', 'client_id', 'req_cmd', 'namespace']).agg()
+    df = df[df.req_cmd == 0]
+    df.producer = df.client_id
+    return df[['producer', 'source']]
+
+
+def kafka_consumers(start_time: str, namespace: str, topic: str):
+    df = px.DataFrame(table='kafka_events.beta', start_time=start_time)
+    df.namespace = df.ctx['namespace']
+
+    # Filter by namespace and topic.
+    df = df[df.namespace == namespace and px.contains(df.req_body, '"name":"' + topic + '"')]
+
+    df = add_source_dest_columns(df)
+    df = df.groupby(['source', 'client_id', 'req_cmd', 'namespace']).agg()
+    df = df[df.req_cmd == 1]
+    df.consumer = df.client_id
+    return df[['consumer', 'source']]
+
+
+def kafka_topics(start_time: str, namespace: str):
+    df = px.DataFrame(table='kafka_events.beta', start_time=start_time)
+    df.namespace = df.ctx['namespace']
+    df = df[df.namespace == namespace]
+
+    # Search for topics within Produce and Fetch commands.
+    df = df[df.req_cmd == 0 or df.req_cmd == 1]
+    df = df[['req_body']]
+
+    # Unnest topics.
+    df.topics = px.pluck(df.req_body, 'topics')
+    df = json_unnest_first5(df, 'topic', 'topics', ['topic'])
+    df = df[df.topic != '']
+    df.topic = px.pluck(df.topic, 'name')
+
+    df = df.groupby(['topic']).agg()
+    return df
+
+
+def kafka_data(start_time: str, namespace: str, producer: str, consumer: str, topic: str):
+    df = px.DataFrame(table='kafka_events.beta', start_time=start_time)
+
+    df.namespace = df.ctx['namespace']
+    df.node = df.ctx['node']
+    df.pod = df.ctx['pod']
+    df.pid = px.upid_to_pid(df.upid)
+
+    df = df[df.namespace == namespace]
+
+    # Filter on the requests to the kafka topic.
+    # This needs to be made more robust once PxL has better JSON querying support.
+    topic_str = '"name":"' + topic + '"'
+    df = df[px.contains(df.req_body, topic_str) or px.contains(df.resp, topic_str)]
+
+    # Produce requests have command 0 and fetch requests have command 1.
+    producer_df = df[df.req_cmd == 0]
+    consumer_df = df[df.req_cmd == 1]
+
+    # Filter to consumer-producer pair of interest. If consumer/producer is empty, all rows are retained.
+    producer_df = producer_df[px.contains(producer_df.client_id, producer)]
+    consumer_df = consumer_df[px.contains(consumer_df.client_id, consumer)]
+
+    consumer_df = extract_partition_offset(consumer_df, topic, 'req_body', 'fetch_offset')
+    producer_df = extract_partition_offset(producer_df, topic, 'resp', 'base_offset')
+
+    df = merge_dfs(consumer_df, producer_df)
+
+    df = format_label(df, consumer, producer)
+    df = df[['series_col', 'time_', 'delay']]
+    return df
+
+
+def format_label(df, consumer: str, producer: str):
+    df.add_producer_id = producer == ""
+    df.add_consumer_id = consumer == ""
+
+    df.client_id_producer = px.select(df.add_producer_id, df.client_id_producer + '/', '')
+    df.client_id_consumer = px.select(df.add_consumer_id, df.client_id_consumer + '/', '')
+
+    df.part_idx_consumer = 'partition-' + df.part_idx_consumer
+    df.series_col = df.client_id_producer + df.client_id_consumer + df.part_idx_consumer
+    return df
+
+
+def merge_dfs(consumer_df, producer_df):
+    # Self-join to match consumer requests with producer requests.
+    df = consumer_df.merge(
+        producer_df,
+        how='inner',
+        left_on=['part_idx', 'offset'],
+        right_on=['part_idx', 'offset'],
+        suffixes=['_consumer', '_producer'])
+
+    # Compute producer consumer latency.
+    # If the consumer's fetch happened before the produce, then set latency to 0,
+    # since it means the consumer is ready waiting for the produce as soon as it arrives.
+    df.delay = (df.time__consumer - df.time__producer) / 1000.0 / 1000.0 / 1000.0
+    df.delay = px.select(df.delay < 0.0, 0.0, df.delay)
+
+    # Add time_ as x-axis for charting
+    df.time_ = df.time__consumer
+    return df
+
+
+def extract_partition_offset(df, topic, body_field, offset_field):
+    df = df[[body_field, 'client_id', 'time_']]
+
+    # Unnest topics.
+    df.topics = px.pluck(df[body_field], 'topics')
+    df = json_unnest_first5(df, 'topic', 'topics', ['topic', 'client_id', 'time_'])
+    df = df[df.topic != '']
+
+    # Keep only the topic we want.
+    df.topic_name = px.pluck(df.topic, 'name')
+    df = df[df.topic_name == topic]
+
+    # Unnest partitions.
+    df.partitions = px.pluck(df.topic, 'partitions')
+    df = json_unnest_first5(df, 'partition', 'partitions', ['partition', 'client_id', 'time_'])
+
+    # Get index, offset, and time
+    df.part_idx = px.pluck(df.partition, 'index')
+    df.offset = px.pluck(df.partition, offset_field)
+    df = df[['client_id', 'part_idx', 'offset', 'time_']]
+    df = df[df.offset != '' and df.part_idx != '']
+    return df
+
+
+def json_unnest_first5(df, dest_col, src_col, fields):
+    ''' Unnest the first 5 values in a JSON array in the src_col, and put it in the
+    dest_col. Fields are the columns to keep in the resulting table.
+    '''
+    df0 = json_array_index(df, dest_col, src_col, fields, 0)
+    df1 = json_array_index(df, dest_col, src_col, fields, 1)
+    df2 = json_array_index(df, dest_col, src_col, fields, 2)
+    df3 = json_array_index(df, dest_col, src_col, fields, 3)
+    df4 = json_array_index(df, dest_col, src_col, fields, 4)
+    df = df0.append(df1).append(df2).append(df3).append(df4)
+    return df
+
+
+def json_array_index(df, dest_col, src_col, fields, idx):
+    df[dest_col] = px.pluck_array(df[src_col], idx)
+    df = df[fields]
+    return df
+
+
+# This needs to be re-written once PxL has better JSON querying support.
+def extract_json_field_value(df, dest_col, src_col, field_name):
+    len = px.length(field_name)
+    df[dest_col] = px.substring(df[src_col], px.find(df[src_col], field_name), 100)
+    df[dest_col] = px.substring(df[dest_col], len, px.find(df[dest_col], ',') - len)
+    return df
+
+
+def add_source_dest_columns(df):
+    ''' Add source and destination columns for the Kafka request.
+
+    Kafka requests are traced server-side (trace_role==2), unless the server is
+    outside of the cluster in which case the request is traced client-side (trace_role==1).
+
+    When trace_role==2, the Kafka request source is the remote_addr column
+    and destination is the pod column. When trace_role==1, the Kafka request
+    source is the pod column and the destination is the remote_addr column.
+
+    Input DataFrame must contain trace_role, upid, remote_addr columns.
+    '''
+    df.pod = df.ctx['pod']
+    df.namespace = df.ctx['namespace']
+
+    # If remote_addr is a pod, get its name. If not, use IP address.
+    df.ra_pod = px.pod_id_to_pod_name(px.ip_to_pod_id(df.remote_addr))
+    df.is_ra_pod = df.ra_pod != ''
+    df.ra_name = px.select(df.is_ra_pod, df.ra_pod, df.remote_addr)
+
+    df.is_server_tracing = df.trace_role == 2
+    df.is_source_pod_type = px.select(df.is_server_tracing, df.is_ra_pod, True)
+    df.is_dest_pod_type = px.select(df.is_server_tracing, True, df.is_ra_pod)
+
+    # Set source and destination based on trace_role.
+    df.source = px.select(df.is_server_tracing, df.ra_name, df.pod)
+    df.destination = px.select(df.is_server_tracing, df.pod, df.ra_name)
+
+    # Filter out messages with empty source / destination.
+    df = df[df.source != '' and df.source != '-']
+    df = df[df.destination != '' and df.destination != '-']
+
+    df = df.drop(['ra_pod', 'is_ra_pod', 'ra_name', 'is_server_tracing'])
+
+    return df

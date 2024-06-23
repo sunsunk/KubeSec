@@ -1,0 +1,183 @@
+# Source: volcano/templates/admission.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-release-admission
+  namespace: default
+
+---
+# Source: volcano/templates/admission.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-release-admission-configmap
+  namespace: default
+data:
+  volcano-admission.conf: |
+    #resourceGroups:
+    #- resourceGroup: management                    # set the resource group name
+    #  object:
+    #    key: namespace                             # set the field and the value to be matched
+    #    value:
+    #    - mng-ns-1
+    #  schedulerName: default-scheduler             # set the scheduler for patching
+    #  tolerations:                                 # set the tolerations for patching
+    #  - effect: NoSchedule
+    #    key: taint
+    #    operator: Exists
+    #  labels:
+    #    volcano.sh/nodetype: management           # set the nodeSelector for patching
+    #- resourceGroup: cpu
+    #  object:
+    #    key: annotation
+    #    value:
+    #    - "volcano.sh/resource-group: cpu"
+    #  schedulerName: volcano
+    #  labels:
+    #    volcano.sh/nodetype: cpu
+    #- resourceGroup: gpu                          # if the object is unsetted, default is:  the key is annotation,
+    #  schedulerName: volcano                      # the annotation key is fixed and is "volcano.sh/resource-group", The corresponding value is the resourceGroup field
+    #  labels:
+    #    volcano.sh/nodetype: gpu
+
+---
+# Source: volcano/templates/admission.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-admission
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+    verbs: ["get", "list", "watch", "create", "update"]
+  # Rules below is used generate admission service secret
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests/approval"]
+    verbs: ["create", "update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "patch"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["queues"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["podgroups"]
+    verbs: ["get", "list", "watch"]
+
+---
+# Source: volcano/templates/admission.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-admission-role
+subjects:
+  - kind: ServiceAccount
+    name: my-release-admission
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: my-release-admission
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Source: volcano/templates/admission.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: volcano-admission
+  name: my-release-admission-service
+  namespace: default
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: volcano-admission
+  sessionAffinity: None
+
+---
+# Source: volcano/templates/admission.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: volcano-admission
+  name: my-release-admission
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: volcano-admission
+  template:
+    metadata:
+      labels:
+        app: volcano-admission
+    spec:
+      serviceAccount: my-release-admission
+      priorityClassName: system-cluster-critical
+      containers:
+        - args:
+            - --enabled-admission=/jobs/mutate,/jobs/validate,/podgroups/mutate,/pods/validate,/pods/mutate,/queues/mutate,/queues/validate
+            - --tls-cert-file=/admission.local.config/certificates/tls.crt
+            - --tls-private-key-file=/admission.local.config/certificates/tls.key
+            - --ca-cert-file=/admission.local.config/certificates/ca.crt
+            - --admission-conf=/admission.local.config/configmap/volcano-admission.conf
+            - --webhook-namespace=default
+            - --webhook-service-name=my-release-admission-service
+            - --enable-healthz=true
+            - --logtostderr
+            - --port=8443
+            - -v=4
+            - 2>&1
+          image: volcanosh/vc-webhook-manager:latest
+          imagePullPolicy: Always
+          name: admission
+          volumeMounts:
+            - mountPath: /admission.local.config/certificates
+              name: admission-certs
+              readOnly: true
+            - mountPath: /admission.local.config/configmap
+              name: admission-config
+      volumes:
+        - name: admission-certs
+          secret:
+            defaultMode: 420
+            secretName: volcano-admission-secret
+        - name: admission-config
+          configMap:
+            name: my-release-admission-configmap
+
+---
+# Source: volcano/templates/admission.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: my-release-admission-init
+  namespace: default
+  labels:
+    app: volcano-admission-init
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: my-release-admission
+      priorityClassName: system-cluster-critical
+      restartPolicy: Never
+      containers:
+        - name: main
+          image: volcanosh/vc-webhook-manager:latest
+          imagePullPolicy: Always
+          command: ["./gen-admission-secret.sh", "--service", "my-release-admission-service", "--namespace",
+                    "default", "--secret", "volcano-admission-secret"]

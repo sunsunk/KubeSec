@@ -1,0 +1,12 @@
+@import '../scss/settings.scss';
+
+.scaleButton {
+    display: flex;
+    flex-direction: column;
+}
+
+.scaleButton_input {
+    font-size: $font-size-large;
+    text-align: right;
+    padding: 0.25rem;
+}

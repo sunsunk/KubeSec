@@ -1,0 +1,13 @@
+.content {
+  min-height: 28px;
+}
+
+.pkgIcon {
+  top: -1px;
+  min-width: 15px;
+  font-size: 80%;
+}
+
+.pkgIcon svg {
+  min-width: 15px;
+}

@@ -1,0 +1,102 @@
+syntax = "proto3";
+package paralus.dev.sentry.rpc;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "Sentry Audit Information Service"
+    version : "2.0"
+    contact : {name : "Paralus Dev"}
+  }
+  schemes : HTTPS
+  consumes : "application/json"
+  consumes : "application/yaml"
+  produces : "application/json"
+  produces : "application/yaml"
+  security_definitions : {
+    security : {
+      key : "BasicAuth"
+      value : {type : TYPE_BASIC}
+    }
+    security : {
+      key : "ApiKeyAuth"
+      value : {type : TYPE_API_KEY in : IN_HEADER name : "X-API-KEYID"}
+    }
+    security : {
+      key : "ApiTokenAuth"
+      value : {
+        type : TYPE_API_KEY in : IN_HEADER name : "X-API-TOKEN"
+      }
+    }
+  }
+  security : {
+    security_requirement : {
+      key : "BasicAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiKeyAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiTokenAuth"
+      value : {}
+    }
+  }
+  responses : {
+    key : "403"
+    value : {
+      description : "Returned when the user does not have permission to access "
+                    "the resource."
+    }
+  }
+  responses : {
+    key : "404"
+    value : {
+      description : "Returned when the resource does not exist."
+      schema : {json_schema : {type : STRING}}
+    }
+  }
+};
+
+message LookupUserRequest {
+    string userCN = 1;
+}
+
+message LookupUserResponse {
+    string userName = 1;
+    string accountID = 2;
+    string isSSO = 3;
+    string organizationID = 4;
+    string partnerID = 5;
+    string sessionType = 6;
+}
+
+message LookupClusterRequest {
+    string clusterSNI = 1;
+}
+
+message LookupClusterResponse {
+    string name = 1;
+    string displayName = 2;
+    string project = 3;
+}
+
+service AuditInformationService {
+    
+    rpc LookupUser(LookupUserRequest)
+        returns (LookupUserResponse) {
+      option (google.api.http) = {
+        get : "/v2/sentry/auditInfo/user"
+      };
+    };
+
+    rpc LookupCluster(LookupClusterRequest)
+        returns (LookupClusterResponse) {
+      option (google.api.http) = {
+        get : "/v2/sentry/auditInfo/cluster"
+      };
+    };
+  }

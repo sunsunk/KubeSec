@@ -1,0 +1,37 @@
+apiVersion: data.fluid.io/v1alpha1
+kind: Dataset
+metadata:
+  name: test
+spec:
+  mounts:
+    - mountPoint: local:///mnt/test1
+      name: test1
+    - mountPoint: local:///mnt/test2
+      name: test2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: nonroot
+              operator: In
+              values:
+                - "true"
+---
+apiVersion: data.fluid.io/v1alpha1
+kind: AlluxioRuntime
+metadata:
+  name: test
+spec:
+  replicas: 2
+  tieredstore:
+    levels:
+      - mediumtype: SSD
+        path: /var/lib/docker/alluxio
+        quota: 2Gi
+        high: "0.95"
+        low: "0.7"
+  runAs:
+    uid: 1005
+    gid: 1005
+    user: myuser
+    group: mygroup

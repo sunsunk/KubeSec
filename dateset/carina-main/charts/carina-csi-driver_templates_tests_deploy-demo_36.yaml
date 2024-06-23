@@ -1,0 +1,38 @@
+# Source: carina-csi-driver/templates/tests/deploy-demo.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carina-raw-ssd-deploy-demo-test
+  namespace: default
+  labels:
+    app: web-server
+    storageclass: carina-raw-ssd
+  annotations:
+    carina.storage.io/allow-pod-migration-if-node-notready: "true"
+    helm.sh/hook: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+      storageclass: carina-raw-ssd
+  template:
+    metadata:
+      labels:
+        app: web-server
+        storageclass: carina-raw-ssd
+      annotations:
+        carina.storage.io/allow-pod-migration-if-node-notready: "true"
+    spec:
+      containers:
+        - name: web-server
+          image: nginx:latest
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: mypvc
+              mountPath: /var/lib/www/html
+      volumes:
+        - name: mypvc
+          persistentVolumeClaim:
+            claimName: carina-raw-ssd-testpvc
+            readOnly: false

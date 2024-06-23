@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - release-*
+  pull_request: {}
+  workflow_dispatch: {}
+
+env:
+  # Common versions
+  GO_VERSION: '1.19'
+  GOLANGCI_VERSION: 'v1.51'
+  DOCKER_BUILDX_VERSION: 'v0.4.2'
+  KUSTOMIZE_VERSION: '3.9.2'
+  KUBEDL_CI: 'true'
+  KIND_VERSION: 'v0.11.1'
+
+jobs:
+  staticcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dominikh/staticcheck-action@v1
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Fetch History
+        run: git fetch --prune --unshallow
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install Kubebuilder
+        run: |
+          os=$(go env GOOS)
+          arch=$(go env GOARCH)
+          curl -L https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.1/kubebuilder_2.3.1_${os}_${arch}.tar.gz | tar -xz -C /tmp/
+          sudo mv /tmp/kubebuilder_2.3.1_${os}_${arch} /usr/local/kubebuilder
+      - name: Cache Go Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - name: Validate Helm Chart
+        run: |  
+          chart_version=$(yq e '.version' helm/kubedl/Chart.yaml)
+          values_version=$(yq e '.version' helm/kubedl/values.yaml)
+          if [ "$chart_version" != "$values_version" ]; then
+            echo "ERROR: Chart version ($chart_version) does not match values version ($values_version)"
+            exit 1
+          fi
+      - name: Run Unit Tests
+        run: |
+          make generate
+          make -j2 test
+          git status
+      - name: Publish Unit Test Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          flags: unittests
+          file: cover.out
+      - name: Check diff
+        run: '[[ -z $(git status -s) ]] || (git diff; printf "Existing modified/untracked files.\nPlease run \"make generate manifests\" and push again.\n"; exit 1)'
+  go-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Cache Go Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - name: Code generate
+        run: |
+          make generate
+      - name: Lint golang code
+        uses: golangci/golangci-lint-action@v3.7.0
+        with:
+          version: ${{ env.GOLANGCI_VERSION }}
+          args: --out-format=colored-line-number --verbose
+          skip-pkg-cache: true
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Setup Kind Cluster
+        uses: engineerd/setup-kind@v0.5.0
+        with:
+          version: ${{ env.KIND_VERSION }}
+      - name: Build image
+        run: |
+          export IMAGE="kubedl/kubedl:e2e-${GITHUB_RUN_ID}"
+          docker build --pull --no-cache . -t $IMAGE
+          kind load docker-image $IMAGE || { echo >&2 "kind not installed or error loading image: $IMAGE"; exit 1; }
+      - name: Install KubeDL
+        run: |
+          set -ex
+          kubectl cluster-info
+          kubectl describe node
+          IMG_TAG=e2e-${GITHUB_RUN_ID} ./scripts/deploy_kubedl.sh
+          for ((i=1;i<10;i++));
+          do
+            set +e
+            PODS=$(kubectl get pod -n kubedl-system | grep 'kubedl' | grep 'Running' | wc -l)
+            set -e
+            if [ "$PODS" -eq 1 ]; then
+              break
+            fi
+            sleep 3
+          done
+          set +e
+          PODS=$(kubectl get pod -n kubedl-system | grep 'kubedl' | grep 'Running' | wc -l)
+          kubectl get all -n kubedl-system -o yaml
+          set -e
+          if [ "$PODS" -eq 1 ]; then
+            echo "kubedl-controller pod is running now"
+          else
+            echo "kubedl-controller pod is not at running state "
+            exit 1
+          fi
+      - name: Run TF simple distributed test job
+        run: |
+          set -ex
+          ./scripts/run_tf_test_job.sh
+          if [ $? -eq 0 ]; then
+            echo "Succeed: ./scripts/run_tf_test_job.sh"
+          else
+            echo "Failed: ./scripts/run_tf_test_job.sh"
+            exit 1
+          fi
+# enable golint checks later.
+#  golangci-lint:
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          submodules: true
+#      - name: Fetch History
+#        run: git fetch --prune --unshallow
+#      - name: Setup Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: ${{ env.GO_VERSION }}
+#      - name: Cache Go Dependencies
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/go/pkg/mod
+#          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+#          restore-keys: ${{ runner.os }}-go-
+#      - name: Code generate
+#        run: |
+#          make generate
+#      - name: Lint golang code
+#        uses: golangci/golangci-lint-action@v2
+#        with:
+#          version: ${{ env.GOLANGCI_VERSION }}
+#          args: --skip-dirs=apis --disable-all  -E deadcode -E gofmt -E goimports -E golint -E ineffassign -E misspell -E vet --timeout=5m

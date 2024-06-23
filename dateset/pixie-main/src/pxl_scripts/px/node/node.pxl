@@ -1,0 +1,120 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+''' Node Overview
+
+This view summarizes the process and network stats for a given input node in a cluster.
+It computes CPU, memory consumption, as well as network traffic statistics.
+It also displays a list of pods that were on that node during the time window.
+
+'''
+import px
+import pxviews
+
+ns_per_ms = 1000 * 1000
+ns_per_s = 1000 * ns_per_ms
+# Window size to use on time_ column for bucketing.
+window_ns = px.DurationNanos(10 * ns_per_s)
+
+
+def pods_for_node(start_time: str, node: px.Node):
+    ''' Gets a list of pods running on the input node.
+
+    Args:
+    @start_time Starting time of the data to examine.
+    @node: The full name of the node to filter on.
+    '''
+    df = pxviews.pod_resource_stats(px.now() + px.parse_duration(start_time), px.now())
+    df = df[df.ctx['node'] == node]
+    df.containers = df.container_count
+    df.start_time = df.pod_start_time
+    df.status = df.pod_status
+    return df[['pod', 'start_time', 'containers', 'status']]
+
+
+def resource_timeseries(start_time: str, node: px.Node, groupby: str):
+    ''' Gets the windowed process stats (CPU, memory, etc) for the input node.
+
+    Args:
+    @start_time Starting time of the data to examine.
+    @node: The full name of the node to filter on.
+    '''
+    df = pxviews.container_process_timeseries(start_time, px.now(), window_ns)
+    df = df[df.ctx['node'] == node]
+    df[groupby] = df.ctx[groupby]
+
+    df = df.groupby(['time_', groupby]).agg(
+        cpu_usage=('cpu_usage', px.sum),
+        actual_disk_read_throughput=('actual_disk_read_throughput', px.sum),
+        actual_disk_write_throughput=('actual_disk_write_throughput', px.sum),
+        total_disk_read_throughput=('total_disk_read_throughput', px.sum),
+        total_disk_write_throughput=('total_disk_write_throughput', px.sum),
+        rss=('rss', px.sum),
+        vsize=('vsize', px.sum),
+    )
+
+    df.groupby_col = df[groupby]
+    return df
+
+
+def network_stats(start_time: str, node: px.Node, groupby: str):
+    ''' Gets the network stats (transmitted/received traffic) for the input node.
+
+    Args:
+    @start_time Starting time of the data to examine.
+    @node: The full name of the node to filter on.
+    '''
+    df = pxviews.pod_network_timeseries(start_time, px.now(), window_ns)
+    df = df[df.ctx['node'] == node]
+    df.groupby_col = df.ctx[groupby]
+
+    # Add up the network values per node.
+    df = df.groupby(['time_', 'groupby_col']).agg(
+        rx_bytes_per_ns=('rx_bytes_per_ns', px.sum),
+        tx_bytes_per_ns=('tx_bytes_per_ns', px.sum),
+        rx_drops_per_ns=('rx_drops_per_ns', px.sum),
+        tx_drops_per_ns=('tx_drops_per_ns', px.sum),
+        rx_errors_per_ns=('rx_errors_per_ns', px.sum),
+        tx_errors_per_ns=('tx_errors_per_ns', px.sum),
+    )
+    return df[['time_', 'groupby_col', 'rx_bytes_per_ns', 'tx_bytes_per_ns',
+               'rx_drops_per_ns', 'tx_drops_per_ns', 'rx_errors_per_ns', 'tx_errors_per_ns']]
+
+
+def stacktraces(start_time: str, node: str):
+    df = pxviews.stacktraces(start_time, px.now())
+
+    # Apply filters.
+    df = df[df.node == node]
+
+    grouping_agg = df.groupby(['node']).agg(
+        node_count_sum=('count', px.sum),
+    )
+
+    # Filter out any non-k8s processes (it's now safe to do so).
+    df = df[df.pod != '']
+
+    # Compute percentages.
+    df = df.merge(
+        grouping_agg,
+        how='inner',
+        left_on='node',
+        right_on='node',
+        suffixes=['', '_x']
+    )
+
+    df.percent = 100.0 * df.count * df.node_num_cpus / df.node_count_sum
+    return df

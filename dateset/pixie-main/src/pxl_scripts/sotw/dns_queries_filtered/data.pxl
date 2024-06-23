@@ -1,0 +1,58 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+''' DNS Queries filtered by query name.
+Lists all DNS queries filtered by a specific query name.
+'''
+import px
+
+
+def dns_requests(start_time: str, query_name_filter: str):
+
+    # The dns_events table pairs DNS requests with their responses.
+    df = px.DataFrame(table='dns_events', start_time=start_time)
+
+    # Add context.
+    df.pod = df.ctx['pod']
+
+    # Convert DNS IP to string.
+    df.dns_server = px.nslookup(df.remote_addr)
+
+    # Parse the DNS response to determine if it was successfully resolved.
+    df.resp_body = px.pluck(df.resp_body, 'answers')
+    df.request_resolved = px.contains(df.resp_body, 'name')
+
+    # Parse the DNS request for query name.
+    # TODO: cleanup this logic when we support object types.
+    df.req_body = px.pluck(df.req_body, 'queries')
+    df.idx1 = px.find(df.req_body, '\"name\":')
+    df.idz = px.length(df.req_body) - (df.idx1 + 8) - 3
+    df.query_name_partial = px.substring(df.req_body, df.idx1 + 8, df.idz)
+    df.idx2 = px.find(df.query_name_partial, ',')
+    df.dns_query_name = px.substring(df.query_name_partial, 0, df.idx2 - 1)
+    df = df.drop(['idx1', 'idx2'])
+
+    # Group all unique pod / dns_server pairings containing query_name_filter as substring.
+    df = df[px.contains(df.dns_query_name, query_name_filter)]
+    df = df.groupby(['pod', 'dns_server', 'dns_query_name']).agg(
+        num_requests=('request_resolved', px.count),
+        resolved=('request_resolved', px.mean),
+        latency=('latency', px.quantiles)
+    )
+
+    df.resolved = px.Percent(df.resolved)
+
+    return df[['pod', 'dns_server', 'dns_query_name', 'num_requests', 'resolved', 'latency']]

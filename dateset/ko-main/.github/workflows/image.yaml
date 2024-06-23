@@ -1,0 +1,39 @@
+name: image
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+      - uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4 # v3.4.0
+
+      # Build ko from HEAD, build and push an image tagged with the commit SHA,
+      # then keylessly sign it with cosign.
+      - name: Publish and sign image
+        env:
+          KO_DOCKER_REPO: ghcr.io/${{ github.repository }}
+          COSIGN_EXPERIMENTAL: 'true'
+        run: |
+          go build ./
+          echo "${{ github.token }}" | ./ko login ghcr.io --username "${{ github.actor }}" --password-stdin
+          img=$(./ko build --bare --platform=all -t latest -t ${{ github.sha }} ./)
+          echo "built ${img}"
+          cosign sign ${img} --yes \
+              -a sha=${{ github.sha }} \
+              -a run_id=${{ github.run_id }} \
+              -a run_attempt=${{ github.run_attempt }}

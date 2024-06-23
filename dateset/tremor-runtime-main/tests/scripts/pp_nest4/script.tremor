@@ -1,0 +1,6 @@
+use foo8:: bar;
+
+match event of
+  case {} => "snot {bar::snot}"
+  case _ => "ko"
+end;

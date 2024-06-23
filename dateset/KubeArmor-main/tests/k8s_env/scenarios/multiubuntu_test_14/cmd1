@@ -1,0 +1,7 @@
+source: ubuntu-3-deployment
+cmd: /home/user1/hello
+result: default
+---
+operation: Process
+condition: /home/user1/hello
+action: default

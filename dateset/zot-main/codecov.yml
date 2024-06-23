@@ -1,0 +1,9 @@
+ignore:
+    - "*_gen.go"
+    - "./pkg/extensions/search/gql_generated"
+    - "./pkg/extensions/minimal.go"
+    - "./cmd/zb/*.go"
+    - "./pkg/test/mocks/*.go"
+    - "./swagger/*.go"
+    - "./pkg/test/test_http_server.go"
+    - "./pkg/meta/proto/gen/*.go"

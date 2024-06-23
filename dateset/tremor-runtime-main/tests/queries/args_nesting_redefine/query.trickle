@@ -1,0 +1,23 @@
+define pipeline outer
+args
+  add = 42
+pipeline
+  define pipeline inner
+  args
+    add
+  pipeline
+    select args from in into out;
+  end;
+
+  create pipeline inner with
+    add = args.add
+  end;
+
+  select event from in into inner;
+  select event from inner into out;
+end;
+
+create pipeline outer;
+
+select event from in into outer;
+select event from outer into out;

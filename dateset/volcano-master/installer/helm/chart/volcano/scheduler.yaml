@@ -1,0 +1,189 @@
+# Source: volcano/templates/scheduler.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-release-scheduler
+  namespace: default
+
+---
+# Source: volcano/templates/scheduler.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-release-scheduler-configmap
+  namespace: default
+data:
+  volcano-scheduler.conf: |
+    actions: "enqueue, allocate, backfill"
+    tiers:
+    - plugins:
+      - name: priority
+      - name: gang
+        enablePreemptable: false
+      - name: conformance
+    - plugins:
+      - name: overcommit
+      - name: drf
+        enablePreemptable: false
+      - name: predicates
+      - name: proportion
+      - name: nodeorder
+      - name: binpack
+
+---
+# Source: volcano/templates/scheduler.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-scheduler
+rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "get", "list", "watch", "delete"]
+  - apiGroups: ["batch.volcano.sh"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "update", "delete"]
+  - apiGroups: ["batch.volcano.sh"]
+    resources: ["jobs/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/status"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "bind", "updateStatus", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/binding"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["list", "watch", "update"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["list", "watch", "update"]
+  - apiGroups: [""]
+    resources: ["namespaces", "services", "replicationcontrollers"]
+    verbs: ["list", "watch", "get"]
+  - apiGroups: [""]
+    resources: ["resourcequotas"]
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get","list", "watch","update","patch"]
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: ["storageclasses", "csinodes", "csidrivers", "csistoragecapacities"]
+    verbs: [ "list", "watch" ]
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["list", "watch"]
+  - apiGroups: ["scheduling.k8s.io"]
+    resources: ["priorityclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["queues"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["queues/status"]
+    verbs: ["update"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["podgroups"]
+    verbs: ["list", "watch", "update"]
+  - apiGroups: ["nodeinfo.volcano.sh"]
+    resources: ["numatopologies"]
+    verbs: ["get", "list", "watch", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["daemonsets", "replicasets", "statefulsets"]
+    verbs: ["list", "watch", "get"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "create", "update", "watch"]
+
+---
+# Source: volcano/templates/scheduler.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-scheduler-role
+subjects:
+  - kind: ServiceAccount
+    name: my-release-scheduler
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: my-release-scheduler
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Source: volcano/templates/scheduler.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+  name: my-release-scheduler-service
+  namespace: default
+  labels:
+    app: volcano-scheduler
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: "metrics"
+  selector:
+    app: volcano-scheduler
+  type: ClusterIP
+
+---
+# Source: volcano/templates/scheduler.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: my-release-scheduler
+  namespace: default
+  labels:
+    app: volcano-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: volcano-scheduler
+  template:
+    metadata:
+      labels:
+        app: volcano-scheduler
+    spec:
+      serviceAccount: my-release-scheduler
+      priorityClassName: system-cluster-critical
+      containers:
+        - name: my-release-scheduler
+          image: volcanosh/vc-scheduler:latest
+          args:
+            - --logtostderr
+            - --scheduler-conf=/volcano.scheduler/volcano-scheduler.conf
+            - --enable-healthz=true
+            - --enable-metrics=true
+            - --leader-elect=false
+            - -v=3
+            - 2>&1
+          env:
+            - name: DEBUG_SOCKET_DIR
+              value: /tmp/klog-socks
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: scheduler-config
+              mountPath: /volcano.scheduler
+            - name: klog-sock
+              mountPath: /tmp/klog-socks
+      volumes:
+        - name: scheduler-config
+          configMap:
+            name: my-release-scheduler-configmap
+        - name: klog-sock
+          hostPath:
+            path: /tmp/klog-socks

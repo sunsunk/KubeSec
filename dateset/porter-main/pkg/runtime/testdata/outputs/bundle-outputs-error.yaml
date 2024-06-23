@@ -1,0 +1,45 @@
+schemaVersion: 1.0.0
+name: outputs
+version: 0.1.0
+registry: "localhost:5000"
+
+mixins:
+  - helm3:
+      repositories:
+        bitnami:
+          url: "https://charts.bitnami.com/bitnami"
+
+credentials:
+- name: kubeconfig
+  path: /home/nonroot/.kube/config
+
+install:
+- helm3:
+    description: "Install MySQL"
+    name: test-mysql
+    chart: bitnami/mysql
+    set:
+      db.name: test-mysql-db
+      db.user: test-mysql-user
+    outputs:
+    - name: mysql-root-password
+      secret: test-mysql
+      key: mysql-root-password
+    - name: mysql-password
+      secret: test-mysql
+      key: mysql-password
+
+uninstall:
+- helm3:
+    description: "Uninstall MySQL"
+    purge: true
+    releases:
+      - test-mysql
+
+outputs:
+- name: mysql-root-password
+  type: string
+- name: mysql-password
+  type: string
+  # this section needs to be an array of strings; hence will cause an error
+  applyTo: install

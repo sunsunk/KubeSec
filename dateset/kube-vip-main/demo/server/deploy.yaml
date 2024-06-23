@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kube-vip-demo
+  name: kube-vip-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-vip-demo
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kube-vip-demo
+    spec:
+      containers:
+      - image: plndr/demo:0.1.3
+        imagePullPolicy: Always
+        name: kube-vip-demo
+        command:
+        - /demo
+        env:
+          - name: serverType
+            value: "udp"
+        resources: {}
+        ports:
+            - containerPort: 10001
+            - containerPort: 10002
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-service
+  namespace: default
+  labels:
+    app: demo-service
+  annotations:
+    kube-vip.io/egress: "true"
+spec:
+  type: LoadBalancer
+  # "Local" preserves the client source IP and avoids a second hop for
+  # LoadBalancer and NodePort
+  externalTrafficPolicy: Local
+  ports:
+  - name: demo-udp
+    port: 10002
+    protocol: UDP
+  selector:
+    app: kube-vip-demo

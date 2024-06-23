@@ -1,0 +1,74 @@
+// Module included in the following assemblies:
+//
+// assembly-config.adoc
+
+[id='proc-configuring-proxy-config-cluster-operator-{context}']
+= Configuring Cluster Operator HTTP proxy settings
+
+[role="_abstract"]
+If you are running a Kafka cluster behind a HTTP proxy, you can still pass data in and out of the cluster.
+For example, you can run Kafka Connect with connectors that push and pull data from outside the proxy.
+Or you can use a proxy to connect with an authorization server.
+
+Configure the Cluster Operator deployment to specify the proxy environment variables.
+The Cluster Operator accepts standard proxy configuration (`HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`) as environment variables.
+The proxy settings are applied to all Strimzi containers.
+
+The format for a proxy address is \http://<ip_address>:<port_number>.
+To set up a proxy with a name and password, the format is \http://<username>:<password>@<ip-address>:<port_number>.
+
+.Prerequisites
+
+* You need an account with permission to create and manage `CustomResourceDefinition` and RBAC (`ClusterRole`, and `RoleBinding`) resources.
+
+.Procedure
+
+. To add proxy environment variables to the Cluster Operator, update its `Deployment` configuration (`install/cluster-operator/060-Deployment-strimzi-cluster-operator.yaml`).
++
+--
+.Example proxy configuration for the Cluster Operator
+[source,yaml,subs="+quotes,attributes"]
+----
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  # ...
+  template:
+    spec:
+      serviceAccountName: strimzi-cluster-operator
+      containers:
+        # ...
+        env:
+        # ...
+        - name: "HTTP_PROXY"
+          value: "http://proxy.com" <1>
+        - name: "HTTPS_PROXY"
+          value: "https://proxy.com" <2>
+        - name: "NO_PROXY"
+          value: "internal.com, other.domain.com" <3>
+  # ...
+----
+<1> Address of the proxy server.
+<2> Secure address of the proxy server.
+<3> Addresses for servers that are accessed directly as exceptions to the proxy server. The URLs are comma-separated.
+--
++
+Alternatively, edit the `Deployment` directly:
++
+[source,shell,subs=+quotes]
+----
+kubectl edit deployment strimzi-cluster-operator
+----
+
+. If you updated the YAML file instead of editing the `Deployment` directly, apply the changes:
++
+[source,shell,subs=+quotes]
+----
+kubectl create -f install/cluster-operator/060-Deployment-strimzi-cluster-operator.yaml
+----
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:{BookURLConfiguring}#property-hostaliases-config-reference[Host aliases^]
+* xref:adding-users-the-strimzi-admin-role-str[Designating Strimzi administrators]

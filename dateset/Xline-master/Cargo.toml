@@ -1,0 +1,22 @@
+[workspace]
+members = [
+    "crates/benchmark",
+    "crates/curp",
+    "crates/curp-external-api",
+    "crates/curp-test-utils",
+    "crates/engine",
+    "crates/simulation",
+    "crates/test-macros",
+    "crates/utils",
+    "crates/xline",
+    "crates/xline-client",
+    "crates/xline-test-utils",
+    "crates/xlineapi",
+    "crates/xlinectl",
+    "crates/xlineutl",
+    "workspace-hack",
+]
+resolver = "2"
+
+[workspace.metadata.cargo-machete]
+ignored = ["prost", "workspace-hack"]

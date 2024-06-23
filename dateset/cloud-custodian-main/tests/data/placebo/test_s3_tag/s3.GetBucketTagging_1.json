@@ -1,0 +1,12 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "TagSet": [
+            {
+                "Key": "original-tag",
+                "Value": "original-value"
+            }
+        ]
+    }
+}

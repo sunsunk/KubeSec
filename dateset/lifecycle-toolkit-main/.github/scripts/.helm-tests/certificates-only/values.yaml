@@ -1,0 +1,7 @@
+certManager:
+  image:
+    tag: v0.0.0
+lifecycleOperator:
+  enabled: false
+metricsOperator:
+  enabled: false

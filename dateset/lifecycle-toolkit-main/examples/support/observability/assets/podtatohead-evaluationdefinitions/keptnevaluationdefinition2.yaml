@@ -1,0 +1,11 @@
+apiVersion: lifecycle.keptn.sh/v1
+kind: KeptnEvaluationDefinition
+metadata:
+  name: my-prometheus-definition2
+  namespace: podtato-kubectl
+spec:
+  objectives:
+    - keptnMetricRef:
+        name: consumed-memory
+        namespace: podtato-kubectl
+      evaluationTarget: "<1000000000000"

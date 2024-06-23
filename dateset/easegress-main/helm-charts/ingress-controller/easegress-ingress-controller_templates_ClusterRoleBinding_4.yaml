@@ -1,0 +1,13 @@
+# Source: easegress-ingress-controller/templates/ClusterRoleBinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-release
+subjects:
+  - kind: ServiceAccount
+    name: my-release
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: my-release
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,70 @@
+// This assembly is included in the following assemblies:
+//
+// assembly-config.adoc
+
+[id='external-logging_{context}']
+= Configuring logging levels
+
+[role="_abstract"]
+Configure logging levels in the custom resources of Kafka components and Strimzi operators.
+You can specify the logging levels directly in the `spec.logging` property of the custom resource.
+Or you can define the logging properties in a ConfigMap that's referenced in the custom resource using the `configMapKeyRef` property.
+
+The advantages of using a ConfigMap are that the logging properties are maintained in one place and are accessible to more than one resource.
+You can also reuse the ConfigMap for more than one resource.
+If you are using a ConfigMap to specify loggers for Strimzi Operators, you can also append the logging specification to add filters.
+
+You specify a logging `type` in your logging specification:
+
+* `inline` when specifying logging levels directly
+* `external` when referencing a ConfigMap
+
+.Example `inline` logging configuration
+[source,shell,subs="+quotes,attributes"]
+----
+# ...
+logging:
+  type: inline
+  loggers:
+    kafka.root.logger.level: INFO
+# ...
+----
+
+.Example `external` logging configuration
+[source,shell,subs="+quotes,attributes"]
+----
+# ...
+logging:
+  type: external
+  valueFrom:
+    configMapKeyRef:
+      name: my-config-map
+      key: my-config-map-key
+# ...
+----
+
+Values for the `name` and `key` of the ConfigMap are mandatory.
+Default logging is used if the `name` or `key` is not set.
+
+== Logging options for Kafka components and operators
+
+For more information on configuring logging for specific Kafka components or operators, see the following sections.
+
+.Kafka component logging
+
+* link:{BookURLConfiguring}#property-kafka-logging-reference[Kafka logging^]
+* link:{BookURLConfiguring}#property-zookeeper-logging-reference[ZooKeeper logging^]
+* link:{BookURLConfiguring}#property-kafka-connect-logging-reference[Kafka Connect and MirrorMaker 2 logging^]
+* link:{BookURLConfiguring}#property-mm-loggers-reference[MirrorMaker logging^]
+* link:{BookURLConfiguring}#property-kafka-bridge-logging-reference[Kafka Bridge logging^]
+* link:{BookURLConfiguring}#property-cruise-control-logging-reference[Cruise Control logging^]
+
+.Operator logging
+
+* xref:ref-operator-cluster-logging-configmap-str[Cluster Operator logging]
+* link:{BookURLConfiguring}#property-topic-operator-logging-reference[Topic Operator logging^]
+* link:{BookURLConfiguring}#property-user-operator-logging-reference[User Operator logging^]
+
+include::../../modules/configuring/proc-creating-configmap.adoc[leveloffset=+1]
+include::../../modules/operators/ref-operator-cluster-logging-configmap.adoc[leveloffset=+1]
+include::../../modules/configuring/proc-creating-logging-filters.adoc[leveloffset=+1]

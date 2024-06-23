@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-sample1
+data:
+  sample1: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-sample2
+data:
+  sample2: ""

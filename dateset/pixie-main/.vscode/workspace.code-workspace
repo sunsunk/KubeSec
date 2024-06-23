@@ -1,0 +1,65 @@
+{
+	"folders": [
+		{
+			"name": "pixielabs",
+			"path": ".."
+		},
+		{
+			"name": "@pixielabs/ui",
+			"path": "../src/ui"
+		}
+	],
+	"settings": {
+		"clang-tidy.checks": [],
+		"clangd.arguments": [
+			"--header-insertion=never"
+		],
+		"bazel.buildifierFixOnFormat": true,
+		"bazel.enableCodeLens": true,
+		"bazel.queriesShareServer": true,
+		"editor.tabSize": 2,
+		"files.associations": {
+			".arclint": "json",
+			".arcconfig": "json",
+			"*.pxl": "python"
+		},
+		"files.exclude": {
+			"**/.bazel-*": true,
+		},
+		"files.trimTrailingWhitespace": true,
+		"git.ignoreSubmodules": true,
+		"[go]": {
+			"editor.insertSpaces": false,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": true
+			}
+		},
+		"go.formatFlags": [
+			"-local=px.dev"
+		],
+		"go.formatTool": "goimports",
+		"go.lintTool": "golangci-lint",
+		"go.toolsEnvVars": {
+			"CGO_ENABLED": 0
+		},
+		"go.toolsManagement.autoUpdate": true,
+		"go.useLanguageServer": false,
+		"gopls": {
+			"build.allowModfileModifications": true,
+			"build.directoryFilters": [
+				"-src/carnot/planner"
+			],
+			"formatting.local": "px.dev",
+			"ui.completion.usePlaceholders": true,
+		},
+		"remote.autoForwardPorts": false,
+		"remote.restoreForwardedPorts": false,
+		"search.exclude": {
+			"**/dist": true,
+			"**/.yarn": true,
+			"**/.pnp.*": true,
+		},
+		"typescript.tsdk": "@pixielabs/ui/.yarn/sdks/typescript/lib",
+		"typescript.enablePromptUseWorkspaceTsdk": true
+	}
+}

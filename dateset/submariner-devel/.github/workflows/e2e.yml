@@ -1,0 +1,76 @@
+---
+name: End to End
+
+on:
+  pull_request:
+    types: [labeled, opened, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  images:
+    name: Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Build the images if necessary
+        uses: submariner-io/shipyard/gh-actions/cache-images@devel
+
+  # Both E2E jobs have the same name; the default job is un-suffixed, the full jobs are suffixed with their matrix combination
+  e2e-default:
+    name: E2E
+    needs: images
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Run E2E deployment and tests
+        uses: submariner-io/shipyard/gh-actions/e2e@devel
+
+      - name: Post mortem
+        if: failure()
+        uses: submariner-io/shipyard/gh-actions/post-mortem@devel
+
+  e2e-full:
+    name: E2E
+    needs: images
+    if: contains(github.event.pull_request.labels.*.name, 'ready-to-test')
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cable-driver: ['', 'wireguard', 'vxlan']
+        extra-toggles: ['', 'ovn']
+        globalnet: ['', 'globalnet']
+        # Run most tests against the latest K8s version
+        k8s_version: ['1.29']
+        exclude:
+          - cable-driver: wireguard
+            extra-toggles: ovn
+        include:
+          - extra-toggles: dual-stack
+          - extra-toggles: dual-stack, globalnet
+          # Oldest Kubernetes version thought to work with SubM.
+          # This should match minK8sMajor.minK8sMinor in subctl/pkg/version/version.go.
+          # If this breaks, we may advance the oldest-working K8s version instead of fixing it. See:
+          # https://submariner.io/development/building-testing/ci-maintenance/
+          - k8s_version: '1.19'
+          # Test top and bottom of supported K8s version range
+          - k8s_version: '1.26'
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Run E2E deployment and tests
+        uses: submariner-io/shipyard/gh-actions/e2e@devel
+        with:
+          using: ${{ matrix.cable-driver }} ${{ matrix.extra-toggles }}
+
+      - name: Post mortem
+        if: failure()
+        uses: submariner-io/shipyard/gh-actions/post-mortem@devel

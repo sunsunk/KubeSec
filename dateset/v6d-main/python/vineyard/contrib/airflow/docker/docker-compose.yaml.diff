@@ -1,0 +1,43 @@
+--- docker-compose.origin.2.6.3.yaml	2023-08-01 14:06:19.556794935 +0800
++++ docker-compose.yaml	2023-08-01 14:04:30.552640301 +0800
+@@ -50,8 +50,12 @@
+   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
+   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
+   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.6.3}
++  image: vineyardcloudnative/vineyard-airflow:2.6.3
+   # build: .
++  build:
++    context: .
++    shm_size: '2gb'
++  shm_size: '2gb'
+   environment:
+     &airflow-common-env
+     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+@@ -147,7 +151,25 @@
+ 
+   airflow-worker:
+     <<: *airflow-common
+-    command: celery worker
++    entrypoint: /bin/bash
++    command:
++      - -c
++      - |
++        # start vineyard
++        python -m vineyard --socket=/tmp/vineyard.sock &
++
++        # setting the environment variables
++        export AIRFLOW__CORE__XCOM_BACKEND=vineyard.contrib.airflow.xcom.VineyardXCom
++        export AIRFLOW__VINEYARD__IPC_SOCKET=/tmp/vineyard.sock
++
++        # waitting for vineyard ready
++        while ! ls /tmp/vineyard.sock > /dev/null 2>&1
++        do
++          sleep 1 && echo -n .
++        done
++
++        # launch the airflow worker
++        exec /entrypoint celery worker
+     healthcheck:
+       test:
+         - "CMD-SHELL"

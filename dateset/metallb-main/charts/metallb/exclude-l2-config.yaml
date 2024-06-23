@@ -1,0 +1,28 @@
+# Source: metallb/templates/exclude-l2-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metallb-excludel2
+  namespace: "default"
+  labels:
+    helm.sh/chart: metallb-0.0.0
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "v0.0.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  excludel2.yaml: |
+    announcedInterfacesToExclude:
+    - ^docker.*
+    - ^cbr.*
+    - ^dummy.*
+    - ^virbr.*
+    - ^lxcbr.*
+    - ^veth.*
+    - ^lo$
+    - ^cali.*
+    - ^tunl.*
+    - ^flannel.*
+    - ^kube-ipvs.*
+    - ^cni.*
+    - ^nodelocaldns.*

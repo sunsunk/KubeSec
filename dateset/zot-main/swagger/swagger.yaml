@@ -1,0 +1,976 @@
+definitions:
+  api.APIKeyPayload:
+    properties:
+      expirationDate:
+        type: string
+      label:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  api.ExtensionList:
+    properties:
+      extensions:
+        items:
+          $ref: '#/definitions/extensions.Extension'
+        type: array
+    type: object
+  api.ImageIndex:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        description: Annotations contains arbitrary metadata for the image index.
+        type: object
+      artifactType:
+        description: ArtifactType specifies the IANA media type of artifact when the
+          manifest is used for an artifact.
+        type: string
+      manifests:
+        description: Manifests references platform specific manifests.
+        items:
+          $ref: '#/definitions/v1.Descriptor'
+        type: array
+      mediaType:
+        description: MediaType specifies the type of this document data structure
+          e.g. `application/vnd.oci.image.index.v1+json`
+        type: string
+      schemaVersion:
+        description: SchemaVersion is the image manifest schema that this image follows
+        type: integer
+      subject:
+        allOf:
+        - $ref: '#/definitions/v1.Descriptor'
+        description: Subject is an optional link from the image manifest to another
+          manifest forming an association between the image manifest and the other
+          manifest.
+    type: object
+  api.ImageManifest:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        description: Annotations contains arbitrary metadata for the image manifest.
+        type: object
+      artifactType:
+        description: ArtifactType specifies the IANA media type of artifact when the
+          manifest is used for an artifact.
+        type: string
+      config:
+        allOf:
+        - $ref: '#/definitions/v1.Descriptor'
+        description: |-
+          Config references a configuration object for a container, by digest.
+          The referenced configuration object is a JSON blob that the runtime uses to set up the container.
+      layers:
+        description: Layers is an indexed list of layers referenced by the manifest.
+        items:
+          $ref: '#/definitions/v1.Descriptor'
+        type: array
+      mediaType:
+        description: MediaType specifies the type of this document data structure
+          e.g. `application/vnd.oci.image.manifest.v1+json`
+        type: string
+      schemaVersion:
+        description: SchemaVersion is the image manifest schema that this image follows
+        type: integer
+      subject:
+        allOf:
+        - $ref: '#/definitions/v1.Descriptor'
+        description: Subject is an optional link from the image manifest to another
+          manifest forming an association between the image manifest and the other
+          manifest.
+    type: object
+  api.RepositoryList:
+    properties:
+      repositories:
+        items:
+          type: string
+        type: array
+    type: object
+  common.ImageTags:
+    properties:
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  extensions.Auth:
+    properties:
+      apikey:
+        type: boolean
+      bearer:
+        $ref: '#/definitions/extensions.BearerConfig'
+      htpasswd:
+        $ref: '#/definitions/extensions.HTPasswd'
+      ldap:
+        properties:
+          address:
+            type: string
+        type: object
+      openid:
+        $ref: '#/definitions/extensions.OpenIDConfig'
+    type: object
+  extensions.BearerConfig:
+    properties:
+      realm:
+        type: string
+      service:
+        type: string
+    type: object
+  extensions.Extension:
+    properties:
+      description:
+        type: string
+      endpoints:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  extensions.HTPasswd:
+    properties:
+      path:
+        type: string
+    type: object
+  extensions.OpenIDConfig:
+    properties:
+      providers:
+        additionalProperties:
+          $ref: '#/definitions/extensions.OpenIDProviderConfig'
+        type: object
+    type: object
+  extensions.OpenIDProviderConfig:
+    properties:
+      name:
+        type: string
+    type: object
+  extensions.StrippedConfig:
+    properties:
+      binaryType:
+        type: string
+      commit:
+        type: string
+      distSpecVersion:
+        type: string
+      http:
+        properties:
+          auth:
+            $ref: '#/definitions/extensions.Auth'
+        type: object
+      releaseTag:
+        type: string
+    type: object
+  v1.Descriptor:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        description: Annotations contains arbitrary metadata relating to the targeted
+          content.
+        type: object
+      artifactType:
+        description: ArtifactType is the IANA media type of this artifact.
+        type: string
+      data:
+        description: |-
+          Data is an embedding of the targeted content. This is encoded as a base64
+          string when marshalled to JSON (automatically, by encoding/json). If
+          present, Data can be used directly to avoid fetching the targeted content.
+        items:
+          type: integer
+        type: array
+      digest:
+        description: Digest is the digest of the targeted content.
+        type: string
+      mediaType:
+        description: MediaType is the media type of the object this schema refers
+          to.
+        type: string
+      platform:
+        allOf:
+        - $ref: '#/definitions/v1.Platform'
+        description: |-
+          Platform describes the platform which the image in the manifest runs on.
+
+          This should only be used when referring to a manifest.
+      size:
+        description: Size specifies the size in bytes of the blob.
+        type: integer
+      urls:
+        description: URLs specifies a list of URLs from which this object MAY be downloaded
+        items:
+          type: string
+        type: array
+    type: object
+  v1.Platform:
+    properties:
+      architecture:
+        description: |-
+          Architecture field specifies the CPU architecture, for example
+          `amd64` or `ppc64le`.
+        type: string
+      os:
+        description: OS specifies the operating system, for example `linux` or `windows`.
+        type: string
+      os.features:
+        description: |-
+          OSFeatures is an optional field specifying an array of strings,
+          each listing a required OS feature (for example on Windows `win32k`).
+        items:
+          type: string
+        type: array
+      os.version:
+        description: |-
+          OSVersion is an optional field specifying the operating system
+          version, for example on Windows `10.0.14393.1066`.
+        type: string
+      variant:
+        description: |-
+          Variant is an optional field specifying a variant of the CPU, for
+          example `v7` to specify ARMv7 when architecture is `arm`.
+        type: string
+    type: object
+info:
+  contact: {}
+  description: APIs for Open Container Initiative Distribution Specification
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Open Container Initiative Distribution Specification
+  version: v1.1.0
+paths:
+  /v2/:
+    get:
+      consumes:
+      - application/json
+      description: Check if this API version is supported
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok".
+          schema:
+            type: string
+      summary: Check API support
+  /v2/_catalog:
+    get:
+      consumes:
+      - application/json
+      description: List all image repositories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.RepositoryList'
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: List image repositories
+  /v2/_oci/ext/discover:
+    get:
+      consumes:
+      - application/json
+      description: List all extensions present on registry
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.ExtensionList'
+      summary: List Registry level extensions
+  /v2/_zot/ext/cosign:
+    post:
+      consumes:
+      - application/octet-stream
+      description: Upload cosign public keys for verifying signatures
+      parameters:
+      - description: Public key content
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request".
+          schema:
+            type: string
+        "500":
+          description: internal server error".
+          schema:
+            type: string
+      summary: Upload cosign public keys for verifying signatures
+  /v2/_zot/ext/mgmt:
+    get:
+      consumes:
+      - application/json
+      description: Get current server configuration
+      parameters:
+      - description: specify resource
+        enum:
+        - config
+        in: query
+        name: resource
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/extensions.StrippedConfig'
+        "500":
+          description: internal server error".
+          schema:
+            type: string
+      summary: Get current server configuration
+  /v2/_zot/ext/notation:
+    post:
+      consumes:
+      - application/octet-stream
+      description: Upload notation certificates for verifying signatures
+      parameters:
+      - description: truststore type
+        in: query
+        name: truststoreType
+        type: string
+      - description: Certificate content
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request".
+          schema:
+            type: string
+        "500":
+          description: internal server error".
+          schema:
+            type: string
+      summary: Upload notation certificates for verifying signatures
+  /v2/_zot/ext/userprefs:
+    put:
+      consumes:
+      - application/json
+      description: Add bookmarks/stars info
+      parameters:
+      - description: specify action
+        enum:
+        - toggleBookmark
+        - toggleStar
+        in: query
+        name: action
+        required: true
+        type: string
+      - description: repository name
+        in: query
+        name: repo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request".
+          schema:
+            type: string
+        "403":
+          description: forbidden
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Add bookmarks/stars info
+  /v2/{name}/blobs/{digest}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image's blob/layer given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: blob/layer digest
+        in: path
+        name: digest
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: accepted
+          schema:
+            type: string
+      summary: Delete image blob/layer
+    get:
+      consumes:
+      - application/json
+      description: Get an image's blob/layer given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: blob/layer digest
+        in: path
+        name: digest
+        required: true
+        type: string
+      produces:
+      - application/vnd.oci.image.layer.v1.tar+gzip
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.ImageManifest'
+      summary: Get image blob/layer
+    head:
+      consumes:
+      - application/json
+      description: Check an image's blob/layer given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: blob/layer digest
+        in: path
+        name: digest
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            constants.DistContentDigestKey:
+              type: object
+          schema:
+            $ref: '#/definitions/api.ImageManifest'
+      summary: Check image blob/layer
+  /v2/{name}/blobs/uploads:
+    post:
+      consumes:
+      - application/json
+      description: Create a new image blob/layer upload
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: accepted
+          headers:
+            Location:
+              description: /v2/{name}/blobs/uploads/{session_id}
+              type: string
+            Range:
+              description: 0-0
+              type: string
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create image blob/layer upload
+  /v2/{name}/blobs/uploads/{session_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image's blob/layer given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: upload session_id
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete image blob/layer
+    get:
+      consumes:
+      - application/json
+      description: Get an image's blob/layer upload given a session_id
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: upload session_id
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: no content
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get image blob/layer upload
+    patch:
+      consumes:
+      - application/json
+      description: Resume an image's blob/layer upload given an session_id
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: upload session_id
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: accepted
+          headers:
+            Location:
+              description: /v2/{name}/blobs/uploads/{session_id}
+              type: string
+            Range:
+              description: 0-128
+              type: string
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "416":
+          description: range not satisfiable
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Resume image blob/layer upload
+    put:
+      consumes:
+      - application/json
+      description: Update and finish an image's blob/layer upload given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: upload session_id
+        in: path
+        name: session_id
+        required: true
+        type: string
+      - description: blob/layer digest
+        in: query
+        name: digest
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update image blob/layer upload
+  /v2/{name}/manifests/{reference}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image's manifest given a reference or a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: image reference or digest
+        in: path
+        name: reference
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Delete image manifest
+    get:
+      consumes:
+      - application/json
+      description: Get an image's manifest given a reference or a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: image reference or digest
+        in: path
+        name: reference
+        required: true
+        type: string
+      produces:
+      - application/vnd.oci.image.manifest.v1+json
+      responses:
+        "200":
+          description: OK
+          headers:
+            constants.DistContentDigestKey:
+              type: object
+          schema:
+            $ref: '#/definitions/api.ImageManifest'
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get image manifest
+    head:
+      consumes:
+      - application/json
+      description: Check an image's manifest given a reference or a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: image reference or digest
+        in: path
+        name: reference
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          headers:
+            constants.DistContentDigestKey:
+              type: object
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error".
+          schema:
+            type: string
+      summary: Check image manifest
+    put:
+      consumes:
+      - application/json
+      description: Update an image's manifest given a reference or a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: image reference or digest
+        in: path
+        name: reference
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update image manifest
+  /v2/{name}/referrers/{digest}:
+    get:
+      consumes:
+      - application/json
+      description: Get referrers given a digest
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: digest
+        in: path
+        name: digest
+        required: true
+        type: string
+      - description: artifact type
+        in: query
+        name: artifactType
+        type: string
+      produces:
+      - application/vnd.oci.image.index.v1+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.ImageIndex'
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get referrers for a given digest
+  /v2/{name}/tags/list:
+    get:
+      consumes:
+      - application/json
+      description: List all image tags in a repository
+      parameters:
+      - description: repository name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: limit entries for pagination
+        in: query
+        name: "n"
+        required: true
+        type: integer
+      - description: last tag value for pagination
+        in: query
+        name: last
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.ImageTags'
+        "400":
+          description: bad request".
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+      summary: List image tags
+  /zot/auth/apikey:
+    delete:
+      consumes:
+      - application/json
+      description: Revokes one current user API key based on given key ID
+      parameters:
+      - description: api token id (UUID)
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Revokes one current user API key
+    get:
+      consumes:
+      - application/json
+      description: Get list of all API keys for a logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get list of API keys for the current user
+    post:
+      consumes:
+      - application/json
+      description: Can create an api key for a logged in user, based on the provided
+        label and scopes.
+      parameters:
+      - description: api token id (UUID)
+        in: body
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/api.APIKeyPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create an API key for the current user
+  /zot/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout by removing current session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok".
+          schema:
+            type: string
+        "500":
+          description: internal server error".
+          schema:
+            type: string
+      summary: Logout by removing current session
+swagger: "2.0"

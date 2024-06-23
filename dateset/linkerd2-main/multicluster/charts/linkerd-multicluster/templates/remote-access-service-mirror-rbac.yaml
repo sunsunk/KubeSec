@@ -1,0 +1,70 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+rules:
+- apiGroups: ["apps"]
+  resources: ["replicasets"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "endpoints", "services"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: ["discovery.k8s.io"]
+  resources: ["endpointslices"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: ["policy.linkerd.io"]
+  resources: ["servers"]
+  verbs: ["list", "get", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get"]
+  resourceNames: ["linkerd-config"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dynamic_parameters-token
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+    kubernetes.io/service-account.name: dynamic_parameters
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters
+subjects:
+- kind: ServiceAccount
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+
+---

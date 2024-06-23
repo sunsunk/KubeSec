@@ -1,0 +1,51 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+.coverprofile
+prometheus-data
+trickster-data
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
+
+# IDE Files
+.vscode/
+
+# Test Coverage Profile Output
+.coverprofile
+
+# output path
+OPATH
+bin
+
+# MacOS and other operating system artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# dep
+cacheKey.data
+cacheKey.expiration
+
+#Goland IDE
+.idea/
+
+#log testing
+out.log
+
+tags
+
+# any generated test cert/keys that testing did not cleanup due to user abort
+.pem

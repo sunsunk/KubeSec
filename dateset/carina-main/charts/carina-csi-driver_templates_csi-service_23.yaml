@@ -1,0 +1,27 @@
+# Source: carina-csi-driver/templates/csi-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-controller
+  namespace: default
+  labels:
+    class: carina
+    app: csi-carina-controller
+    release:  "my-release"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "carina-csi-driver"
+    app.kubernetes.io/version: "0.11.0"
+    helm.sh/chart: "carina-csi-driver-v0.11.0"
+spec:
+  selector:
+    app: csi-carina-controller
+  ports:
+    - name: webhook
+      protocol: TCP
+      port: 443
+      targetPort: 8443
+    - name: metrics
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

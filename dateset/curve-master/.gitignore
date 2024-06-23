@@ -1,0 +1,180 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# clion
+.idea
+cmake-build-debug
+CMakeLists.txt
+bin
+*.temp
+.clwb
+*.swp
+
+# cscope
+cscope.out
+cscope.in.out
+cscope.po.out
+cscope.files
+tags
+
+.sconsign.dblite
+build.err
+build.log
+
+# python
+*.pyc
+
+
+# protobuf
+*.pb.h
+*.pb.cc
+
+# bazel
+bazel-*
+bazel-bin
+bazel-curve
+bazel-genfiles
+bazel-out
+bazel-testlogs
+
+# vscode
+.vscode
+
+# vimprj
+.vimprj/
+
+#log
+*.log
+runlog/
+
+# history
+.gdb_history
+
+.clang-format
+.clangd
+!curve-snapshotcloneserver-nginx/app/lib
+!nebd/nebd-package/usr/bin
+
+# build output
+build
+
+# mac
+.DS_Store
+
+test/client/configs/*
+!test/client/configs/.gitkeep
+
+projects/*
+docker/curvebs
+docker/base/*
+docker/debian*/*so*
+!docker/base/Dockerfile
+!docker/base/Makefile
+
+# curvefs
+curvefs/devops/projects/
+curvefs/devops/ssh/
+curvefs/devops/inventory
+curvefs/BUILD_MODE
+*.pyc
+.facts/
+*retry
+# monitor
+curvefs/monitor/prometheus/target.json
+
+curvefs/docker/*/curvefs
+curvefs/docker/curvefs
+curvefs/docker/base/*
+curvefs/docker/debian*/*so*
+!curvefs/docker/base/Dockerfile
+!curvefs/docker/base/Makefile
+curvefs/BUILD_MODE
+
+.BUILD_MODE
+__not_found__
+
+# thirdparties
+thirdparties/rocksdb/lib/
+thirdparties/rocksdb/include/
+thirdparties/rocksdb/rocksdb/
+thirdparties/rocksdb/*log
+thirdparties/rocksdb/*.tar.gz
+thirdparties/aws/*.tar.gz
+thirdparties/etcdclient/tmp/
+thirdparties/etcdclient/*.h
+thirdparties/memcache/*.tar.gz
+thirdparties/memcache/libmemcached-*/
+
+/external
+/bazel-*
+/compile_commands.json
+/.cache/
+
+docker/curvebs
+docker/*/curvebs
+
+curvefs/docker/curvefs
+curvefs/docker/*/curvefs
+storage_*
+
+tools-v2/sbin/*
+tools-v2/proto/proto/*
+tools-v2/proto/curvefs/*
+tools-v2/*/*.test
+tools-v2/__debug_bin
+tools-v2/vendor/
+
+.test
+.note
+.playground
+.dumpfile
+metastore_test.dat
+GPATH
+GRTAGS
+GTAGS
+core.*
+
+test/integration/*.conf
+test/integration/client/config/client.conf*
+test/integration/snapshotcloneserver/config/*.conf
+
+.pre-commit-config.yaml
+
+*.deb
+*.whl
+
+*.class
+curvefs/sdk/java/target/
+curvefs/sdk/java/native/build
+curvefs/sdk/libcurvefs/examples/bin
+curvefs/sdk/output/
+hadoop-test/
+nnbench-test/
+dependency-reduced-pom.xml

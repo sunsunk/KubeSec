@@ -1,0 +1,32 @@
+version: v2beta1
+name: buildkit
+
+# Define an image to use
+vars:
+  IMAGE: myusername/devspace
+
+# Build the dockerfile with buildkit
+images:
+  my-image:
+    image: ${IMAGE}
+    buildKit: {}
+
+# Deploy the built image with helm and the component chart
+deployments:
+  my-deployment:
+    helm:
+      values:
+        containers:
+          - image: ${IMAGE}
+
+# Is started after images were built and deployments deployed
+dev:
+  my-dev:
+    imageSelector: ${IMAGE}
+    logs: {}
+    ports:
+    - port: 3000
+    sync:
+    - path: ./
+      excludePaths:
+        - node_modules

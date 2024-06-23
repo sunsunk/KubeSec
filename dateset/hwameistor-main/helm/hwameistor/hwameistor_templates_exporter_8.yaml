@@ -1,0 +1,15 @@
+# Source: hwameistor/templates/exporter.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-exporter
+  namespace: default
+  labels:
+    app: hwameistor-exporter
+spec:
+  selector:
+    app: hwameistor-exporter
+  ports:
+    - port: 80
+      targetPort: http-metrics
+      name: http-metrics

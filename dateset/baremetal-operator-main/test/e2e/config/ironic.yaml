@@ -1,0 +1,57 @@
+images:
+# Use locally built e2e images
+- name: quay.io/metal3-io/baremetal-operator:e2e
+  loadBehavior: tryLoad
+- name: quay.io/metal3-io/ironic:e2e
+  loadBehavior: tryLoad
+# Save some time and network by using cached images if available
+- name: quay.io/metal3-io/baremetal-operator:release-0.4
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-cainjector:v1.13.1
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-webhook:v1.13.1
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-controller:v1.13.1
+  loadBehavior: tryLoad
+
+# These variables can be overridden with environment variables.
+variables:
+  # These settings are for the "default" cluster, which is used for all tests except upgrade ones
+  DEPLOY_IRONIC: "true"
+  DEPLOY_BMO: "true"
+  DEPLOY_CERT_MANAGER: "true"
+  BMO_KUSTOMIZATION: "../../config/overlays/e2e"
+  IRONIC_KUSTOMIZATION: "../../ironic-deployment/overlays/e2e"
+
+  # These settings are for the separate cluster that are used for upgrade tests
+  UPGRADE_DEPLOY_IRONIC: "true"
+  UPGRADE_DEPLOY_BMO: "true"
+  UPGRADE_DEPLOY_CERT_MANAGER: "true"
+  UPGRADE_BMO_KUSTOMIZATION_FROM: "../../config/overlays/e2e-release-0.5"
+
+  IMAGE_URL: "http://192.168.222.1/cirros-0.6.2-x86_64-disk.img"
+  IMAGE_CHECKSUM: "c8fc807773e5354afe61636071771906"
+  CERT_MANAGER_VERSION: "v1.13.1"
+  SSH_CHECK_PROVISIONED: "true"
+  CIRROS_USERNAME: "cirros"
+  CIRROS_PASSWORD: "gocubsgo"
+  SSH_PRIV_KEY: "./images/ssh_testkey"
+  SSH_PUB_KEY: "./images/ssh_testkey.pub"
+
+intervals:
+  inspection/wait-unmanaged: ["1m", "5s"]
+  default/wait-registering: ["1m", "5s"]
+  inspection/wait-registration-error: ["1m", "5s"]
+  external-inspection/wait-available: ["1m", "1s"]
+  default/wait-inspecting: ["2m", "2s"]
+  default/wait-available: ["10m", "1s"]
+  default/wait-deployment: ["5m", "1s"]
+  default/wait-namespace-deleted: ["10m", "1s"]
+  ironic/wait-deployment: ["10m", "2s"]
+  default/wait-power-state: ["10m", "100ms"]
+  default/wait-provisioning: ["1m", "1s"]
+  default/wait-provisioned: ["10m", "1s"]
+  default/wait-deprovisioning: ["1m", "10ms"]
+  default/wait-deleted: ["20s", "10ms"]
+  default/wait-secret-deletion: ["1m", "1s"]
+  default/wait-connect-ssh: ["2m", "10s"]

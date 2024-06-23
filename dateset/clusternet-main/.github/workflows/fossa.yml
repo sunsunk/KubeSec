@@ -1,0 +1,31 @@
+name: FOSSA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    if: github.repository_owner == 'clusternet'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+      - run: go version
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v8
+      - uses: fossas/fossa-action@main
+        name: Scanning with FOSSA
+        with:
+          api-key: fd54541712e36e546e713482332962f7
+          branch: ${{ steps.branch-name.outputs.current_branch }}
+      - uses: fossas/fossa-action@main
+        name: Executing tests with FOSSA
+        with:
+          api-key: fd54541712e36e546e713482332962f7
+          run-tests: true

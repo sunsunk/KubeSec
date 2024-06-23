@@ -1,0 +1,416 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: controller-manager
+    app.kubernetes.io/managed-by: paralus
+  name: paralus-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: system-sa
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+---
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: paralus-privileged-scc
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    kubernetes.io/description: 'privileged allows access to all privileged and host
+      features and the ability to run as any user, any group, any fsGroup, and with
+      any SELinux context.  WARNING: this is the most relaxed SCC and should be used
+      only for cluster administration. Grant with caution.'
+    release.openshift.io/create-only: "true"
+  labels:
+    rep-workload: "paralus-privileged-scc"
+    app.kubernetes.io/managed-by: paralus
+allowHostDirVolumePlugin: true
+allowHostIPC: true
+allowHostNetwork: true
+allowHostPID: true
+allowHostPorts: true
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
+allowedCapabilities:
+- '*'
+allowedUnsafeSysctls:
+- '*'
+defaultAddCapabilities: null
+fsGroup:
+  type: RunAsAny
+groups:
+- system:cluster-admins
+- system:nodes
+- system:masters
+priority: null
+readOnlyRootFilesystem: false
+requiredDropCapabilities: null
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+seccompProfiles:
+- '*'
+supplementalGroups:
+  type: RunAsAny
+users:
+- system:serviceaccount:paralus-system:default
+- system:serviceaccount:paralus-system:system-sa
+- system:serviceaccount:paralus-system:ingress-nginx
+- system:serviceaccount:paralus-system:ingress-nginx-admission
+- system:serviceaccount:paralus-system:gatekeeper-admin
+- system:serviceaccount:paralus-system:gatekeeper-update-namespace-label
+volumes:
+- '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: paralus:manager
+  labels:
+    app.kubernetes.io/managed-by: paralus
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- nonResourceURLs:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - namespaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - namespaces/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - tasklets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - tasklets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - tasks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.paralus.dev
+  resources:
+  - tasks/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: paralus:paralus-system:manager-rolebinding
+  labels:
+    app.kubernetes.io/managed-by: paralus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: paralus:manager
+subjects:
+- kind: ServiceAccount
+  name: system-sa
+  namespace: paralus-system
+- kind: ServiceAccount
+  name: default
+  namespace: paralus-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: paralus:proxy-role
+  labels:
+    app.kubernetes.io/managed-by: paralus
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: paralus:paralus-system:proxy-rolebinding
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: paralus:proxy-role
+subjects:
+- kind: ServiceAccount
+  name: system-sa
+  namespace: paralus-system
+- kind: ServiceAccount
+  name: default
+  namespace: paralus-system
+---
+apiVersion: scheduling.k8s.io/v1
+description: This priority class should be used for paralus service pods only.
+kind: PriorityClass
+metadata:
+  name: paralus-cluster-critical
+  labels:
+    app.kubernetes.io/managed-by: paralus
+value: 1000000000
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: paralus:leader-election-role
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: paralus:leader-election-rolebinding
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: paralus:leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: system-sa
+  namespace: paralus-system
+- kind: ServiceAccount
+  name: default
+  namespace: paralus-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+data:
+  httpProxy: "dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters"
+  httpsProxy: "dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters"
+  noProxy: "dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters"
+  proxyAuth: "dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters"
+  bootstrapCA: "dynamic_parametersdynamic_parametersdynamic_parametersdynamic_parametersdynamic_parameters"
+  allowInsecureBootstrap: "dynamic_parametersdynamic_parameters dynamic_parametersdynamic_parametersdynamic_parameters"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: relay-agent-config
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+data:
+  clusterID: dynamic_parametersdynamic_parametersdynamic_parameters
+  relays: 'dynamic_parametersdynamic_parametersdynamic_parameters'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: relay-agent
+  namespace: paralus-system
+  labels:
+    app.kubernetes.io/managed-by: paralus
+spec:
+  selector:
+    matchLabels:
+      app: relay-agent
+  replicas: 1
+  progressDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels:
+        app: relay-agent
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+      terminationGracePeriodSeconds: 10
+      priorityClassName: paralus-cluster-critical
+      serviceAccountName: system-sa
+      initContainers:
+      - name: set-limits
+        image: "busybox:1.33"
+        command: ["sh", "-c", "ulimit -n 65536"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: relay-agent
+        image: "dynamic_parameters"
+        args: ["--mode=client", "--log-level=3"]
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MAX_DIALS
+          valueFrom:
+            configMapKeyRef:
+              name: relay-agent-config
+              key: maxDials
+              optional: true
+        - name: DIALOUT_PROXY
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: httpsProxy
+              optional: true
+        - name: DIALOUT_PROXY_AUTHENTICATION
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: proxyAuth
+              optional: true
+        - name: HTTP_PROXY
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: httpProxy
+              optional: true
+        - name: HTTPS_PROXY
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: httpsProxy
+              optional: true
+        - name: NO_PROXY
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: noProxy
+              optional: true
+        - name: BOOTSTRAP_CA_CERT
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: bootstrapCA
+              optional: true
+        - name: ALLOW_INSECURE_BOOTSTRAP
+          valueFrom:
+            configMapKeyRef:
+              name: proxy-config
+              key: allowInsecureBootstrap
+              optional: true
+        volumeMounts:
+          - name: relay-agent-config
+            mountPath: /etc/config
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi     
+      volumes:
+      - name: relay-agent-config
+        configMap:
+          name: relay-agent-config
+
+---
+
+---

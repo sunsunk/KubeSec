@@ -1,0 +1,40 @@
+# Dependencies
+/.vendor-new/
+
+# Created by devspace init
+/.devspace/
+/chart/
+/test
+
+# Build files
+*.exe
+*.exe~
+
+# History Plugin for VS Code
+.history/
+
+/devspace
+/debug*
+/__debug*
+.DS_STORE
+.idea
+.devspace/
+tags
+
+# VS Code
+.vscode/ipch
+
+# Vim
+*.vim
+
+/ui/node_modules
+/ui/build/static/js/*.js.map
+
+# Created by running unit tests ./hack/coverage.bash
+coverage.txt
+./main
+profile.out
+
+
+# Ignore DevSpace cache and log folder
+.devspace/

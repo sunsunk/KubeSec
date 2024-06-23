@@ -1,0 +1,40 @@
+// This assembly is included in the following assemblies:
+//
+// deploying/assembly-deploy-kafka-connect.adoc
+
+[id='using-kafka-connect-with-plug-ins-{context}']
+= Adding Kafka Connect connectors
+
+[role="_abstract"]
+Kafka Connect uses connectors to integrate with other systems to stream data.
+A connector is an instance of a Kafka `Connector` class, which can be one of the following type:
+
+Source connector:: A source connector is a runtime entity that fetches data from an external system and feeds it to Kafka as messages.
+Sink connector:: A sink connector is a runtime entity that fetches messages from Kafka topics and feeds them to an external system.
+
+include::../../shared/snip-intro-connectors.adoc[]
+
+Add connector plugins to Kafka Connect in one of the following ways:
+
+* xref:creating-new-image-using-kafka-connect-build-{context}[Configure Kafka Connect to build a new container image with plugins automatically]
+* xref:creating-new-image-from-base-{context}[Create a Docker image from the base Kafka Connect image] (manually or using continuous integration)
+
+After plugins have been added to the container image, you can start, stop, and manage connector instances in the following ways:
+
+* xref:proc-deploying-kafkaconnector-{context}[Using Strimzi’s `KafkaConnector` custom resource]
+* xref:con-exposing-kafka-connect-api-{context}[Using the Kafka Connect API] 
+
+You can also create new connector instances using these options.
+
+//Procedure to create container images using Strimzi and Kafka Connect build
+include::../../modules/deploying/proc-deploy-kafka-connect-using-kafka-connect-build.adoc[leveloffset=+1]
+//Procedure to create container images from base image
+include::../../modules/deploying/proc-deploy-kafka-connect-new-image-from-base.adoc[leveloffset=+1]
+//Procedure to deploy a KafkaConnector resource
+include::../../modules/deploying/proc-deploying-kafkaconnector.adoc[leveloffset=+1]
+//Exposing the Kafka Connect API
+include::../../modules/deploying/con-exposing-kafka-connect-api.adoc[leveloffset=+1]
+//Securing the Kafka Connect API
+include::../../modules/deploying/con-securing-kafka-connect-api.adoc[leveloffset=+1]
+//Switching from the Kafka Connect API to KafkaConnector
+include::../../modules/deploying/con-switching-api-to-kafka-connector.adoc[leveloffset=+1]

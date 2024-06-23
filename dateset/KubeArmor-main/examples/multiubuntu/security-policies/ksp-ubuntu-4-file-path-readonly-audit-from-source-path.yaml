@@ -1,0 +1,36 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-ubuntu-4-file-path-readonly-audit-from-source-path
+  namespace: multiubuntu
+spec:
+  severity: 10
+  message: "a critical file was accessed"
+  tags:
+  - WARNING
+  selector:
+    matchLabels:
+      container: ubuntu-4
+  file:
+    matchPaths:
+    - path: /etc/passwd
+      readOnly: true
+      fromSource: 
+      - path: /bin/cat
+    - path: /secret.txt
+    - path: /credentials/password
+      readOnly: true
+      fromSource: 
+      - path: /bin/cat
+  action:
+    Audit
+
+# test
+# $ cat /etc/passwd
+# root:x:0:0:root:/root:/bin/bash (audit)
+# $ echo "test" >> /secret.txt
+# (nothing is displayed) (audit)
+# $ cat /credentials/password
+# password file (audit)
+# $ cat /credentials/keys/priv.key
+# key file (no log)

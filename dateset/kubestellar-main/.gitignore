@@ -1,0 +1,29 @@
+.kcp*
+*.log
+coverage.*
+cover.out
+tools
+build
+.vscode
+docs/scripts/generated_script.sh
+
+# local chart of the controller manager for dev/test
+local-chart/
+
+# etc distributions
+/etcd-v*
+
+# Draw.io backup files
+.*.png.bkp
+
+# JetBrains IDE files
+.idea/
+*.iml
+
+# Mac trash
+.DS_Store
+
+# word counts
+/counts
+
+

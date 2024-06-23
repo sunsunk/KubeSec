@@ -1,0 +1,686 @@
+[
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "limitcountry",
+    "include": [],
+    "key": [
+      {
+        "attrs": "country"
+      }
+    ],
+    "name": "Rate Limit Example Rule 3/3",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "limitsimple",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit Example Rule 3/3",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "limitinclude",
+    "include": [
+      "hdrfoobar"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit Example Rule 3/3",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [
+      "hdrfoobar"
+    ],
+    "id": "limitexclude",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit Example Rule 3/3",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "includecompany",
+    "include": [
+      "asn:CLOUDFARE",
+      "authority:foo"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit Example with company",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "d5vnu3hs",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "redirector",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit redirection",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "sk9lz9q4",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "3 requests per 10 seconds",
+    "exclude": [],
+    "id": "e2e1000000007",
+    "include": [
+      "geo-country:united-states"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate Limit Rule 3/10 scope-country-include",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "a7ge3v0l",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 10
+  },
+  {
+    "description": "3 requests per 2 seconds",
+    "exclude": [],
+    "id": "f971e92459e2",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Rate limit ban",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "ijcy5mwz",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 2
+  },
+  {
+    "description": ":)",
+    "exclude": [],
+    "id": "mlimitA",
+    "include": [],
+    "key": [
+      {
+        "headers": "H1"
+      }
+    ],
+    "name": "Multilimit test A",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 2
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 5
+  },
+  {
+    "description": ":)",
+    "exclude": [],
+    "id": "mlimitB",
+    "include": [],
+    "key": [
+      {
+        "headers": "H2"
+      }
+    ],
+    "name": "Multilimit test B",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 5
+  },
+  {
+    "description": ":)",
+    "exclude": [],
+    "id": "4d1d9d405fc9",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Limit per method",
+    "pairwith": {
+      "attrs": "method"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 5
+  },
+  {
+    "description": ":)",
+    "exclude": [],
+    "id": "4d1d9d405hdr",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Limit per header",
+    "pairwith": {
+      "headers": "Limitheader"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 2
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 5
+  },
+  {
+    "description": "Multiple thresholds. The last threshold to check that ban works even if it doesn't have the highest limit.",
+    "exclude": [],
+    "id": "limitmultithreshold",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "First tag then ban",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "monitor",
+        "limit": 2
+      },
+      {
+        "action": "ijcy5mwz",
+        "limit": 4
+      },
+      {
+        "action": "default",
+        "limit": 6
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 4
+  },
+  {
+    "description": "Test identical limits attached to the same location",
+    "exclude": [],
+    "id": "samelocationA",
+    "include": [],
+    "key": [
+      {
+        "headers": "org"
+      }
+    ],
+    "name": "Same location limit, A",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "monitor",
+        "limit": 1
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 20
+  },
+  {
+    "description": "Test identical limits attached to the same location",
+    "exclude": [],
+    "id": "samelocationB",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Same location limit, B",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 1
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 20
+  },
+  {
+    "description": "Limit per hostname",
+    "exclude": [],
+    "id": "limithostname",
+    "include": [],
+    "key": [
+      {
+        "attrs": "securitypolicyid"
+      }
+    ],
+    "name": "Limit Hostname",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 1
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 20
+  },
+  {
+    "description": "Limit per url",
+    "exclude": [],
+    "id": "limiturl",
+    "include": [],
+    "key": [
+      {
+        "attrs": "securitypolicyentryid"
+      }
+    ],
+    "name": "Limit url",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 1
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 20
+  },
+  {
+    "description": "The global limit",
+    "exclude": [],
+    "global": true,
+    "active": true,
+    "id": "global_limit",
+    "include": [
+      "global-trigger"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "global limit",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 2
+      }
+    ],
+    "timeframe": 30
+  },
+  {
+    "description": "Inactive global limit",
+    "exclude": [],
+    "global": true,
+    "active": false,
+    "id": "inactive_global_limit",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "inactive global limit",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 0
+      }
+    ],
+    "timeframe": 30
+  },
+  {
+    "description": "always blocking limit",
+    "exclude": [],
+    "global": false,
+    "active": true,
+    "id": "ablock",
+    "tags": [
+      "alwaysblock"
+    ],
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "always blocking limit",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 0
+      }
+    ],
+    "timeframe": 30
+  },
+  {
+    "description": "Inactive limit",
+    "exclude": [],
+    "global": false,
+    "active": false,
+    "id": "inactive_limit",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "inactive limit",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 0
+      }
+    ],
+    "timeframe": 30
+  },
+  {
+    "description": "3 requests in 3s",
+    "exclude": [],
+    "id": "limitnetwork",
+    "include": [],
+    "key": [
+      {
+        "attrs": "network"
+      }
+    ],
+    "name": "Rate Limit Example Rule 3/3",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 3
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 3
+  },
+  {
+    "description": "rate limit skip threshold",
+    "exclude": [],
+    "id": "skipthreshold",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "rate limit skip threshold",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "default",
+        "limit": 1
+      },
+      {
+        "action": "monitor",
+        "limit": 2
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 60
+  },
+  {
+    "description": "rate limit challenge",
+    "exclude": [],
+    "id": "alwayschallenge",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "rate limit always challenge",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "5ktcoafw",
+        "limit": 0
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 60
+  },
+  {
+    "description": "rate limit skip",
+    "exclude": [],
+    "id": "alwaysskip",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "rate limit always skip",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "ye8qyg0h",
+        "limit": 0
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 60
+  },
+  {
+    "description": "rate limit ichallenge",
+    "exclude": [],
+    "id": "alwaysichallenge",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "rate limit always ichallenge",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "ichallenge",
+        "limit": 0
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 60
+  },
+  {
+    "description": "rate limit no skip threshold",
+    "exclude": [],
+    "id": "noskipthreshold",
+    "include": [],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "rate limit skip threshold",
+    "pairwith": {
+      "self": "self"
+    },
+    "thresholds": [
+      {
+        "action": "monitor",
+        "limit": 1
+      },
+      {
+        "action": "default",
+        "limit": 2
+      }
+    ],
+    "global": false,
+    "active": true,
+    "timeframe": 60
+  }
+]

@@ -1,0 +1,13 @@
+# in-toto runtime requirements including securesystemslib with extras
+#
+# 'pip-compile' is used to generate 'requirements-pinned.txt' with all
+# immediate and transitive dependencies based on this file, pinned to their
+# latest version.
+#
+# 'requirements-pinned.txt' is updated on GitHub with Dependabot, which
+# triggers CI/CD builds to automatically test against updated dependencies.
+securesystemslib[crypto,pynacl]>=0.28.0
+attrs
+python-dateutil
+iso8601
+pathspec

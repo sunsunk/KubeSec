@@ -1,0 +1,12 @@
+version: v2beta1
+
+dependencies:
+  dependency2:
+    path: ../dependency2
+
+deployments:
+  nginx:
+    helm:
+      values:
+        containers:
+          - image: nginx

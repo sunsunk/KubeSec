@@ -1,0 +1,34 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+import px
+
+
+def upids_for_namespace(start_time: str, namespace: px.Namespace):
+    ''' Gets a list of UPIDs running on `namespace`.
+
+    Args:
+    @start_time Starting time of the data to examine.
+    @namespace: The namespace to filter on.
+    '''
+    df = px.DataFrame(table='process_stats', start_time=start_time)
+    df = df[df.ctx['namespace'] == namespace]
+    df.pod = df.ctx['pod_name']
+    df.container = df.ctx['container_name']
+    df.cmdline = df.ctx['cmdline']
+    df = df.groupby(['pod', 'container', 'upid', 'cmdline']).agg()
+    df.pod_create_time = px.pod_name_to_start_time(df.pod)
+    return df

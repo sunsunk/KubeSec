@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-demo-client
+  labels:
+    name: postgres-demo-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres-demo-client
+  template:
+    metadata:
+      labels:
+        name: postgres-demo-client
+    spec:
+      containers:
+      - name: postgres-demo-client
+        image: gcr.io/pl-dev-infra/demos/postgres/demo:latest
+        imagePullPolicy: Always
+        args:
+        - --address=postgres:5432
+        - --count=100000

@@ -1,0 +1,9 @@
+{{ if .Values.olm }}
+apiVersion: tackle.konveyor.io/v1alpha1
+kind: Tackle
+metadata:
+    name: tackle
+    namespace: konveyor-tackle
+spec:
+    feature_auth_required: 'false'
+{{ end }}

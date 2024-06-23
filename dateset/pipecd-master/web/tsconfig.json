@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ],
+      "~~/*": [
+        "./*"
+      ],
+      "pipecd/*": [
+        "../*",
+      ]
+    },
+    "allowUnreachableCode": false,
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "preserveConstEnums": true,
+    "pretty": true,
+    "removeComments": false,
+    "resolveJsonModule": false,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2019",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "types": [
+      "node",
+      "jest"
+    ],
+    "esModuleInterop": true,
+    "rootDirs": [
+      ".",
+    ],
+    "declaration": true
+  },
+  "include": [
+    "./src/**/*.*",
+    "./jest.after-env.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "ignoreDiagnostics": [
+      7005
+    ]
+  }
+}

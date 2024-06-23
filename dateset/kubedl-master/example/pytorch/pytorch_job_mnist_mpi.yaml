@@ -1,0 +1,23 @@
+apiVersion: training.kubedl.io/v1alpha1
+kind: "PyTorchJob"
+metadata:
+  name: "pytorch-dist-sendrecv-example"
+  namespace: "kubedl"
+spec:
+  pytorchReplicaSpecs:
+    Master:
+      replicas: 1
+      restartPolicy: ExitCode
+      template:
+        spec:
+          containers:
+            - name: pytorch
+              image: kubedl/pytorch-dist-example
+    Worker:
+      replicas: 2
+      restartPolicy: ExitCode
+      template:
+        spec:
+          containers:
+            - name: pytorch
+              image: kubedl/pytorch-dist-example

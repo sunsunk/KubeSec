@@ -1,0 +1,1610 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: vineyardds.k8s.v6d.io
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  labels:
+  {{- include "vineyard-operator.labels" . | nindent 4 }}
+spec:
+  conversion:
+    strategy: Webhook
+    webhook:
+      clientConfig:
+        service:
+          name: webhook-service
+          namespace: '{{ .Release.Namespace }}'
+          path: /convert
+      conversionReviewVersions:
+      - v1
+  group: k8s.v6d.io
+  names:
+    kind: Vineyardd
+    listKind: VineyarddList
+    plural: vineyardds
+    singular: vineyardd
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.current
+      name: Current
+      type: string
+    - jsonPath: .spec.replicas
+      name: Desired
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              etcdReplicas:
+                default: 1
+                type: integer
+              metric:
+                default:
+                  enable: false
+                  image: vineyardcloudnative/vineyard-grok-exporter:latest
+                  imagePullPolicy: IfNotPresent
+                properties:
+                  enable:
+                    default: false
+                    type: boolean
+                  image:
+                    default: vineyardcloudnative/vineyard-grok-exporter:latest
+                    type: string
+                  imagePullPolicy:
+                    default: IfNotPresent
+                    type: string
+                type: object
+              pluginImage:
+                default:
+                  backupImage: ghcr.io/v6d-io/v6d/backup-job
+                  daskRepartitionImage: ghcr.io/v6d-io/v6d/dask-repartition
+                  distributedAssemblyImage: ghcr.io/v6d-io/v6d/distributed-assembly
+                  localAssemblyImage: ghcr.io/v6d-io/v6d/local-assembly
+                  recoverImage: ghcr.io/v6d-io/v6d/recover-job
+                properties:
+                  backupImage:
+                    default: ghcr.io/v6d-io/v6d/backup-job
+                    type: string
+                  daskRepartitionImage:
+                    default: ghcr.io/v6d-io/v6d/dask-repartition
+                    type: string
+                  distributedAssemblyImage:
+                    default: ghcr.io/v6d-io/v6d/distributed-assembly
+                    type: string
+                  localAssemblyImage:
+                    default: ghcr.io/v6d-io/v6d/local-assembly
+                    type: string
+                  recoverImage:
+                    default: ghcr.io/v6d-io/v6d/recover-job
+                    type: string
+                type: object
+              replicas:
+                default: 3
+                type: integer
+              securityContext:
+                properties:
+                  allowPrivilegeEscalation:
+                    type: boolean
+                  capabilities:
+                    properties:
+                      add:
+                        items:
+                          type: string
+                        type: array
+                      drop:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  privileged:
+                    type: boolean
+                  procMount:
+                    type: string
+                  readOnlyRootFilesystem:
+                    type: boolean
+                  runAsGroup:
+                    format: int64
+                    type: integer
+                  runAsNonRoot:
+                    type: boolean
+                  runAsUser:
+                    format: int64
+                    type: integer
+                  seLinuxOptions:
+                    properties:
+                      level:
+                        type: string
+                      role:
+                        type: string
+                      type:
+                        type: string
+                      user:
+                        type: string
+                    type: object
+                  seccompProfile:
+                    properties:
+                      localhostProfile:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - type
+                    type: object
+                  windowsOptions:
+                    properties:
+                      gmsaCredentialSpec:
+                        type: string
+                      gmsaCredentialSpecName:
+                        type: string
+                      hostProcess:
+                        type: boolean
+                      runAsUserName:
+                        type: string
+                    type: object
+                type: object
+              service:
+                default:
+                  port: 9600
+                  type: ClusterIP
+                properties:
+                  port:
+                    default: 9600
+                    type: integer
+                  type:
+                    default: ClusterIP
+                    type: string
+                type: object
+              vineyard:
+                default:
+                  image: vineyardcloudnative/vineyardd:latest
+                  imagePullPolicy: IfNotPresent
+                  size: ""
+                  socket: /var/run/vineyard-kubernetes/{{ "{{.Namespace}}/{{.Name}}" }}
+                  streamThreshold: 80
+                  syncCRDs: true
+                properties:
+                  cpu:
+                    type: string
+                  env:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                        valueFrom:
+                          properties:
+                            configMapKeyRef:
+                              properties:
+                                key:
+                                  type: string
+                                name:
+                                  type: string
+                                optional:
+                                  type: boolean
+                              required:
+                              - key
+                              type: object
+                            fieldRef:
+                              properties:
+                                apiVersion:
+                                  type: string
+                                fieldPath:
+                                  type: string
+                              required:
+                              - fieldPath
+                              type: object
+                            resourceFieldRef:
+                              properties:
+                                containerName:
+                                  type: string
+                                divisor:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
+                                resource:
+                                  type: string
+                              required:
+                              - resource
+                              type: object
+                            secretKeyRef:
+                              properties:
+                                key:
+                                  type: string
+                                name:
+                                  type: string
+                                optional:
+                                  type: boolean
+                              required:
+                              - key
+                              type: object
+                          type: object
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  image:
+                    default: vineyardcloudnative/vineyardd:latest
+                    type: string
+                  imagePullPolicy:
+                    default: IfNotPresent
+                    type: string
+                  memory:
+                    type: string
+                  reserveMemory:
+                    default: false
+                    type: boolean
+                  size:
+                    default: ""
+                    type: string
+                  socket:
+                    default: /var/run/vineyard-kubernetes/{{ "{{.Namespace}}/{{.Name}}" }}
+                    type: string
+                  spill:
+                    properties:
+                      name:
+                        default: ""
+                        type: string
+                      path:
+                        default: ""
+                        type: string
+                      persistentVolumeClaimSpec:
+                        properties:
+                          accessModes:
+                            items:
+                              type: string
+                            type: array
+                          dataSource:
+                            properties:
+                              apiGroup:
+                                type: string
+                              kind:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - kind
+                            - name
+                            type: object
+                          dataSourceRef:
+                            properties:
+                              apiGroup:
+                                type: string
+                              kind:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - kind
+                            - name
+                            type: object
+                          resources:
+                            properties:
+                              limits:
+                                additionalProperties:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
+                                type: object
+                              requests:
+                                additionalProperties:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
+                                type: object
+                            type: object
+                          selector:
+                            properties:
+                              matchExpressions:
+                                items:
+                                  properties:
+                                    key:
+                                      type: string
+                                    operator:
+                                      type: string
+                                    values:
+                                      items:
+                                        type: string
+                                      type: array
+                                  required:
+                                  - key
+                                  - operator
+                                  type: object
+                                type: array
+                              matchLabels:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                            type: object
+                          storageClassName:
+                            type: string
+                          volumeMode:
+                            type: string
+                          volumeName:
+                            type: string
+                        type: object
+                      persistentVolumeSpec:
+                        properties:
+                          accessModes:
+                            items:
+                              type: string
+                            type: array
+                          awsElasticBlockStore:
+                            properties:
+                              fsType:
+                                type: string
+                              partition:
+                                format: int32
+                                type: integer
+                              readOnly:
+                                type: boolean
+                              volumeID:
+                                type: string
+                            required:
+                            - volumeID
+                            type: object
+                          azureDisk:
+                            properties:
+                              cachingMode:
+                                type: string
+                              diskName:
+                                type: string
+                              diskURI:
+                                type: string
+                              fsType:
+                                type: string
+                              kind:
+                                type: string
+                              readOnly:
+                                type: boolean
+                            required:
+                            - diskName
+                            - diskURI
+                            type: object
+                          azureFile:
+                            properties:
+                              readOnly:
+                                type: boolean
+                              secretName:
+                                type: string
+                              secretNamespace:
+                                type: string
+                              shareName:
+                                type: string
+                            required:
+                            - secretName
+                            - shareName
+                            type: object
+                          capacity:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            type: object
+                          cephfs:
+                            properties:
+                              monitors:
+                                items:
+                                  type: string
+                                type: array
+                              path:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              secretFile:
+                                type: string
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              user:
+                                type: string
+                            required:
+                            - monitors
+                            type: object
+                          cinder:
+                            properties:
+                              fsType:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              volumeID:
+                                type: string
+                            required:
+                            - volumeID
+                            type: object
+                          claimRef:
+                            properties:
+                              apiVersion:
+                                type: string
+                              fieldPath:
+                                type: string
+                              kind:
+                                type: string
+                              name:
+                                type: string
+                              namespace:
+                                type: string
+                              resourceVersion:
+                                type: string
+                              uid:
+                                type: string
+                            type: object
+                          csi:
+                            properties:
+                              controllerExpandSecretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              controllerPublishSecretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              driver:
+                                type: string
+                              fsType:
+                                type: string
+                              nodePublishSecretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              nodeStageSecretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              readOnly:
+                                type: boolean
+                              volumeAttributes:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              volumeHandle:
+                                type: string
+                            required:
+                            - driver
+                            - volumeHandle
+                            type: object
+                          fc:
+                            properties:
+                              fsType:
+                                type: string
+                              lun:
+                                format: int32
+                                type: integer
+                              readOnly:
+                                type: boolean
+                              targetWWNs:
+                                items:
+                                  type: string
+                                type: array
+                              wwids:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          flexVolume:
+                            properties:
+                              driver:
+                                type: string
+                              fsType:
+                                type: string
+                              options:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                            required:
+                            - driver
+                            type: object
+                          flocker:
+                            properties:
+                              datasetName:
+                                type: string
+                              datasetUUID:
+                                type: string
+                            type: object
+                          gcePersistentDisk:
+                            properties:
+                              fsType:
+                                type: string
+                              partition:
+                                format: int32
+                                type: integer
+                              pdName:
+                                type: string
+                              readOnly:
+                                type: boolean
+                            required:
+                            - pdName
+                            type: object
+                          glusterfs:
+                            properties:
+                              endpoints:
+                                type: string
+                              endpointsNamespace:
+                                type: string
+                              path:
+                                type: string
+                              readOnly:
+                                type: boolean
+                            required:
+                            - endpoints
+                            - path
+                            type: object
+                          hostPath:
+                            properties:
+                              path:
+                                type: string
+                              type:
+                                type: string
+                            required:
+                            - path
+                            type: object
+                          iscsi:
+                            properties:
+                              chapAuthDiscovery:
+                                type: boolean
+                              chapAuthSession:
+                                type: boolean
+                              fsType:
+                                type: string
+                              initiatorName:
+                                type: string
+                              iqn:
+                                type: string
+                              iscsiInterface:
+                                type: string
+                              lun:
+                                format: int32
+                                type: integer
+                              portals:
+                                items:
+                                  type: string
+                                type: array
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              targetPortal:
+                                type: string
+                            required:
+                            - iqn
+                            - lun
+                            - targetPortal
+                            type: object
+                          local:
+                            properties:
+                              fsType:
+                                type: string
+                              path:
+                                type: string
+                            required:
+                            - path
+                            type: object
+                          mountOptions:
+                            items:
+                              type: string
+                            type: array
+                          nfs:
+                            properties:
+                              path:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              server:
+                                type: string
+                            required:
+                            - path
+                            - server
+                            type: object
+                          nodeAffinity:
+                            properties:
+                              required:
+                                properties:
+                                  nodeSelectorTerms:
+                                    items:
+                                      properties:
+                                        matchExpressions:
+                                          items:
+                                            properties:
+                                              key:
+                                                type: string
+                                              operator:
+                                                type: string
+                                              values:
+                                                items:
+                                                  type: string
+                                                type: array
+                                            required:
+                                            - key
+                                            - operator
+                                            type: object
+                                          type: array
+                                        matchFields:
+                                          items:
+                                            properties:
+                                              key:
+                                                type: string
+                                              operator:
+                                                type: string
+                                              values:
+                                                items:
+                                                  type: string
+                                                type: array
+                                            required:
+                                            - key
+                                            - operator
+                                            type: object
+                                          type: array
+                                      type: object
+                                    type: array
+                                required:
+                                - nodeSelectorTerms
+                                type: object
+                            type: object
+                          persistentVolumeReclaimPolicy:
+                            type: string
+                          photonPersistentDisk:
+                            properties:
+                              fsType:
+                                type: string
+                              pdID:
+                                type: string
+                            required:
+                            - pdID
+                            type: object
+                          portworxVolume:
+                            properties:
+                              fsType:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              volumeID:
+                                type: string
+                            required:
+                            - volumeID
+                            type: object
+                          quobyte:
+                            properties:
+                              group:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              registry:
+                                type: string
+                              tenant:
+                                type: string
+                              user:
+                                type: string
+                              volume:
+                                type: string
+                            required:
+                            - registry
+                            - volume
+                            type: object
+                          rbd:
+                            properties:
+                              fsType:
+                                type: string
+                              image:
+                                type: string
+                              keyring:
+                                type: string
+                              monitors:
+                                items:
+                                  type: string
+                                type: array
+                              pool:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              user:
+                                type: string
+                            required:
+                            - image
+                            - monitors
+                            type: object
+                          scaleIO:
+                            properties:
+                              fsType:
+                                type: string
+                              gateway:
+                                type: string
+                              protectionDomain:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                type: object
+                              sslEnabled:
+                                type: boolean
+                              storageMode:
+                                type: string
+                              storagePool:
+                                type: string
+                              system:
+                                type: string
+                              volumeName:
+                                type: string
+                            required:
+                            - gateway
+                            - secretRef
+                            - system
+                            type: object
+                          storageClassName:
+                            type: string
+                          storageos:
+                            properties:
+                              fsType:
+                                type: string
+                              readOnly:
+                                type: boolean
+                              secretRef:
+                                properties:
+                                  apiVersion:
+                                    type: string
+                                  fieldPath:
+                                    type: string
+                                  kind:
+                                    type: string
+                                  name:
+                                    type: string
+                                  namespace:
+                                    type: string
+                                  resourceVersion:
+                                    type: string
+                                  uid:
+                                    type: string
+                                type: object
+                              volumeName:
+                                type: string
+                              volumeNamespace:
+                                type: string
+                            type: object
+                          volumeMode:
+                            type: string
+                          vsphereVolume:
+                            properties:
+                              fsType:
+                                type: string
+                              storagePolicyID:
+                                type: string
+                              storagePolicyName:
+                                type: string
+                              volumePath:
+                                type: string
+                            required:
+                            - volumePath
+                            type: object
+                        type: object
+                      spillLowerRate:
+                        default: "0.3"
+                        type: string
+                      spillUpperRate:
+                        default: "0.8"
+                        type: string
+                    type: object
+                  streamThreshold:
+                    default: 80
+                    format: int64
+                    type: integer
+                  syncCRDs:
+                    default: true
+                    type: boolean
+                type: object
+              volume:
+                default:
+                  mountPath: ""
+                  pvcName: ""
+                properties:
+                  mountPath:
+                    default: ""
+                    type: string
+                  pvcName:
+                    default: ""
+                    type: string
+                type: object
+              volumeMounts:
+                items:
+                  properties:
+                    mountPath:
+                      type: string
+                    mountPropagation:
+                      type: string
+                    name:
+                      type: string
+                    readOnly:
+                      type: boolean
+                    subPath:
+                      type: string
+                    subPathExpr:
+                      type: string
+                  required:
+                  - mountPath
+                  - name
+                  type: object
+                type: array
+              volumes:
+                items:
+                  properties:
+                    awsElasticBlockStore:
+                      properties:
+                        fsType:
+                          type: string
+                        partition:
+                          format: int32
+                          type: integer
+                        readOnly:
+                          type: boolean
+                        volumeID:
+                          type: string
+                      required:
+                      - volumeID
+                      type: object
+                    azureDisk:
+                      properties:
+                        cachingMode:
+                          type: string
+                        diskName:
+                          type: string
+                        diskURI:
+                          type: string
+                        fsType:
+                          type: string
+                        kind:
+                          type: string
+                        readOnly:
+                          type: boolean
+                      required:
+                      - diskName
+                      - diskURI
+                      type: object
+                    azureFile:
+                      properties:
+                        readOnly:
+                          type: boolean
+                        secretName:
+                          type: string
+                        shareName:
+                          type: string
+                      required:
+                      - secretName
+                      - shareName
+                      type: object
+                    cephfs:
+                      properties:
+                        monitors:
+                          items:
+                            type: string
+                          type: array
+                        path:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        secretFile:
+                          type: string
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        user:
+                          type: string
+                      required:
+                      - monitors
+                      type: object
+                    cinder:
+                      properties:
+                        fsType:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        volumeID:
+                          type: string
+                      required:
+                      - volumeID
+                      type: object
+                    configMap:
+                      properties:
+                        defaultMode:
+                          format: int32
+                          type: integer
+                        items:
+                          items:
+                            properties:
+                              key:
+                                type: string
+                              mode:
+                                format: int32
+                                type: integer
+                              path:
+                                type: string
+                            required:
+                            - key
+                            - path
+                            type: object
+                          type: array
+                        name:
+                          type: string
+                        optional:
+                          type: boolean
+                      type: object
+                    csi:
+                      properties:
+                        driver:
+                          type: string
+                        fsType:
+                          type: string
+                        nodePublishSecretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        readOnly:
+                          type: boolean
+                        volumeAttributes:
+                          additionalProperties:
+                            type: string
+                          type: object
+                      required:
+                      - driver
+                      type: object
+                    downwardAPI:
+                      properties:
+                        defaultMode:
+                          format: int32
+                          type: integer
+                        items:
+                          items:
+                            properties:
+                              fieldRef:
+                                properties:
+                                  apiVersion:
+                                    type: string
+                                  fieldPath:
+                                    type: string
+                                required:
+                                - fieldPath
+                                type: object
+                              mode:
+                                format: int32
+                                type: integer
+                              path:
+                                type: string
+                              resourceFieldRef:
+                                properties:
+                                  containerName:
+                                    type: string
+                                  divisor:
+                                    anyOf:
+                                    - type: integer
+                                    - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
+                                  resource:
+                                    type: string
+                                required:
+                                - resource
+                                type: object
+                            required:
+                            - path
+                            type: object
+                          type: array
+                      type: object
+                    emptyDir:
+                      properties:
+                        medium:
+                          type: string
+                        sizeLimit:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                      type: object
+                    ephemeral:
+                      properties:
+                        volumeClaimTemplate:
+                          properties:
+                            metadata:
+                              type: object
+                            spec:
+                              properties:
+                                accessModes:
+                                  items:
+                                    type: string
+                                  type: array
+                                dataSource:
+                                  properties:
+                                    apiGroup:
+                                      type: string
+                                    kind:
+                                      type: string
+                                    name:
+                                      type: string
+                                  required:
+                                  - kind
+                                  - name
+                                  type: object
+                                dataSourceRef:
+                                  properties:
+                                    apiGroup:
+                                      type: string
+                                    kind:
+                                      type: string
+                                    name:
+                                      type: string
+                                  required:
+                                  - kind
+                                  - name
+                                  type: object
+                                resources:
+                                  properties:
+                                    limits:
+                                      additionalProperties:
+                                        anyOf:
+                                        - type: integer
+                                        - type: string
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      type: object
+                                    requests:
+                                      additionalProperties:
+                                        anyOf:
+                                        - type: integer
+                                        - type: string
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      type: object
+                                  type: object
+                                selector:
+                                  properties:
+                                    matchExpressions:
+                                      items:
+                                        properties:
+                                          key:
+                                            type: string
+                                          operator:
+                                            type: string
+                                          values:
+                                            items:
+                                              type: string
+                                            type: array
+                                        required:
+                                        - key
+                                        - operator
+                                        type: object
+                                      type: array
+                                    matchLabels:
+                                      additionalProperties:
+                                        type: string
+                                      type: object
+                                  type: object
+                                storageClassName:
+                                  type: string
+                                volumeMode:
+                                  type: string
+                                volumeName:
+                                  type: string
+                              type: object
+                          required:
+                          - spec
+                          type: object
+                      type: object
+                    fc:
+                      properties:
+                        fsType:
+                          type: string
+                        lun:
+                          format: int32
+                          type: integer
+                        readOnly:
+                          type: boolean
+                        targetWWNs:
+                          items:
+                            type: string
+                          type: array
+                        wwids:
+                          items:
+                            type: string
+                          type: array
+                      type: object
+                    flexVolume:
+                      properties:
+                        driver:
+                          type: string
+                        fsType:
+                          type: string
+                        options:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                      required:
+                      - driver
+                      type: object
+                    flocker:
+                      properties:
+                        datasetName:
+                          type: string
+                        datasetUUID:
+                          type: string
+                      type: object
+                    gcePersistentDisk:
+                      properties:
+                        fsType:
+                          type: string
+                        partition:
+                          format: int32
+                          type: integer
+                        pdName:
+                          type: string
+                        readOnly:
+                          type: boolean
+                      required:
+                      - pdName
+                      type: object
+                    gitRepo:
+                      properties:
+                        directory:
+                          type: string
+                        repository:
+                          type: string
+                        revision:
+                          type: string
+                      required:
+                      - repository
+                      type: object
+                    glusterfs:
+                      properties:
+                        endpoints:
+                          type: string
+                        path:
+                          type: string
+                        readOnly:
+                          type: boolean
+                      required:
+                      - endpoints
+                      - path
+                      type: object
+                    hostPath:
+                      properties:
+                        path:
+                          type: string
+                        type:
+                          type: string
+                      required:
+                      - path
+                      type: object
+                    iscsi:
+                      properties:
+                        chapAuthDiscovery:
+                          type: boolean
+                        chapAuthSession:
+                          type: boolean
+                        fsType:
+                          type: string
+                        initiatorName:
+                          type: string
+                        iqn:
+                          type: string
+                        iscsiInterface:
+                          type: string
+                        lun:
+                          format: int32
+                          type: integer
+                        portals:
+                          items:
+                            type: string
+                          type: array
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        targetPortal:
+                          type: string
+                      required:
+                      - iqn
+                      - lun
+                      - targetPortal
+                      type: object
+                    name:
+                      type: string
+                    nfs:
+                      properties:
+                        path:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        server:
+                          type: string
+                      required:
+                      - path
+                      - server
+                      type: object
+                    persistentVolumeClaim:
+                      properties:
+                        claimName:
+                          type: string
+                        readOnly:
+                          type: boolean
+                      required:
+                      - claimName
+                      type: object
+                    photonPersistentDisk:
+                      properties:
+                        fsType:
+                          type: string
+                        pdID:
+                          type: string
+                      required:
+                      - pdID
+                      type: object
+                    portworxVolume:
+                      properties:
+                        fsType:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        volumeID:
+                          type: string
+                      required:
+                      - volumeID
+                      type: object
+                    projected:
+                      properties:
+                        defaultMode:
+                          format: int32
+                          type: integer
+                        sources:
+                          items:
+                            properties:
+                              configMap:
+                                properties:
+                                  items:
+                                    items:
+                                      properties:
+                                        key:
+                                          type: string
+                                        mode:
+                                          format: int32
+                                          type: integer
+                                        path:
+                                          type: string
+                                      required:
+                                      - key
+                                      - path
+                                      type: object
+                                    type: array
+                                  name:
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                type: object
+                              downwardAPI:
+                                properties:
+                                  items:
+                                    items:
+                                      properties:
+                                        fieldRef:
+                                          properties:
+                                            apiVersion:
+                                              type: string
+                                            fieldPath:
+                                              type: string
+                                          required:
+                                          - fieldPath
+                                          type: object
+                                        mode:
+                                          format: int32
+                                          type: integer
+                                        path:
+                                          type: string
+                                        resourceFieldRef:
+                                          properties:
+                                            containerName:
+                                              type: string
+                                            divisor:
+                                              anyOf:
+                                              - type: integer
+                                              - type: string
+                                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                              x-kubernetes-int-or-string: true
+                                            resource:
+                                              type: string
+                                          required:
+                                          - resource
+                                          type: object
+                                      required:
+                                      - path
+                                      type: object
+                                    type: array
+                                type: object
+                              secret:
+                                properties:
+                                  items:
+                                    items:
+                                      properties:
+                                        key:
+                                          type: string
+                                        mode:
+                                          format: int32
+                                          type: integer
+                                        path:
+                                          type: string
+                                      required:
+                                      - key
+                                      - path
+                                      type: object
+                                    type: array
+                                  name:
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                type: object
+                              serviceAccountToken:
+                                properties:
+                                  audience:
+                                    type: string
+                                  expirationSeconds:
+                                    format: int64
+                                    type: integer
+                                  path:
+                                    type: string
+                                required:
+                                - path
+                                type: object
+                            type: object
+                          type: array
+                      type: object
+                    quobyte:
+                      properties:
+                        group:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        registry:
+                          type: string
+                        tenant:
+                          type: string
+                        user:
+                          type: string
+                        volume:
+                          type: string
+                      required:
+                      - registry
+                      - volume
+                      type: object
+                    rbd:
+                      properties:
+                        fsType:
+                          type: string
+                        image:
+                          type: string
+                        keyring:
+                          type: string
+                        monitors:
+                          items:
+                            type: string
+                          type: array
+                        pool:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        user:
+                          type: string
+                      required:
+                      - image
+                      - monitors
+                      type: object
+                    scaleIO:
+                      properties:
+                        fsType:
+                          type: string
+                        gateway:
+                          type: string
+                        protectionDomain:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        sslEnabled:
+                          type: boolean
+                        storageMode:
+                          type: string
+                        storagePool:
+                          type: string
+                        system:
+                          type: string
+                        volumeName:
+                          type: string
+                      required:
+                      - gateway
+                      - secretRef
+                      - system
+                      type: object
+                    secret:
+                      properties:
+                        defaultMode:
+                          format: int32
+                          type: integer
+                        items:
+                          items:
+                            properties:
+                              key:
+                                type: string
+                              mode:
+                                format: int32
+                                type: integer
+                              path:
+                                type: string
+                            required:
+                            - key
+                            - path
+                            type: object
+                          type: array
+                        optional:
+                          type: boolean
+                        secretName:
+                          type: string
+                      type: object
+                    storageos:
+                      properties:
+                        fsType:
+                          type: string
+                        readOnly:
+                          type: boolean
+                        secretRef:
+                          properties:
+                            name:
+                              type: string
+                          type: object
+                        volumeName:
+                          type: string
+                        volumeNamespace:
+                          type: string
+                      type: object
+                    vsphereVolume:
+                      properties:
+                        fsType:
+                          type: string
+                        storagePolicyID:
+                          type: string
+                        storagePolicyName:
+                          type: string
+                        volumePath:
+                          type: string
+                      required:
+                      - volumePath
+                      type: object
+                  required:
+                  - name
+                  type: object
+                type: array
+            type: object
+          status:
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      format: date-time
+                      type: string
+                    lastUpdateTime:
+                      format: date-time
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              current:
+                format: int32
+                type: integer
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

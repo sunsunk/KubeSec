@@ -1,0 +1,86 @@
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+#
+# Global settings
+#
+global.logfile=./chunkserver.log
+global.ip=172.17.0.4
+global.port=8200
+global.subnet=127.0.0.0/24
+global.enable_external_server=false
+global.external_ip=127.0.0.1
+global.external_subnet=127.0.0.0/24
+global.chunk_size=4194304
+global.location_limit=3000
+
+#
+# Testing purpose settings
+#
+test.create_testcopyset=false
+test.testcopyset_poolid=666
+test.testcopyset_copysetid=888888
+test.testcopyset_conf=172.17.0.2:8200:0,172.17.0.3:8200:0,172.17.0.4:8200:0
+
+#
+# Copyset settings
+#
+copyset.check_term=true
+copyset.disable_cli=false
+copyset.log_applied_task=false
+copyset.election_timeout_ms=5000
+copyset.snapshot_interval_s=30
+copyset.catchup_margin=50
+copyset.chunk_data_uri=local:///root/data/0/cs/data
+copyset.raft_log_uri=local:///root/data/0/cs/log
+copyset.raft_meta_uri=local:///root/data/0/cs/meta
+copyset.raft_snapshot_uri=local:///root/data/0/cs/snapshot
+
+#
+# Clone settings
+#
+clone.disable_curve_client=false
+clone.disable_s3_adapter=false
+clone.slice_size=1048576
+clone.enable_paste=false
+clone.thread_num=10
+clone.queue_depth=100
+curve.root_username=root
+curve.root_password=
+curve.config_path=conf/cs_client.conf
+s3.config_path=conf/s3.conf
+curve.curve_file_timeout_s=30
+
+#
+# Local FileSystem settings
+#
+fs.enable_renameat2=true
+
+#
+# metrics settings
+# true means on, false means off
+#
+metric.onoff=true
+
+#
+# Storage engine settings
+#
+storeng.sync_write=false
+
+#
+# QoS settings
+#
+

@@ -1,0 +1,22 @@
+# Deploy a helm chart sourced from a Helm Chart Repository without using pipeline.
+apiVersion: pipecd.dev/v1beta1
+kind: KubernetesApp
+spec:
+  name: helm-remote-chart
+  labels:
+    env: example
+    team: product
+  input:
+    # Helm chart sourced from a Helm Chart Repository.
+    helmChart:
+      repository: oci://ghcr.io/pipe-cd
+      name: chart/helloworld
+      version: v0.30.0
+    helmOptions:
+      valueFiles:
+        - values.yaml
+      releaseName: helm-remote-chart
+    helmVersion: 3.8.2
+  description: |
+    This app demonstrates how to deploy a Kubernetes app that uses a Helm chart sourced from a remote HTTP Chart server.\
+    References: [adding a new app](https://pipecd.dev/docs/user-guide/managing-application/adding-an-application/), [app configuration](https://pipecd.dev/docs/user-guide/configuration-reference/)

@@ -1,0 +1,27 @@
+# For produced assets.
+dist/*
+
+# Coverage results.
+coverage/
+
+# Cypress integration/e2e tests
+cypress/downloads/
+cypress/screenshots/
+cypress/videos/
+cypress.env.json
+
+# For Jenkins test results.
+junit.xml
+
+# Yarn/npm files.
+node_modules
+yarn-error.log
+
+# We don't use zero installs. See https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

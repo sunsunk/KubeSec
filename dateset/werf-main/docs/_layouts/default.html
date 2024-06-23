@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="{% if page.lang == "ru" %}ru{% else %}en{% endif %}">
+<head>
+  {%- include head.html.liquid %}
+  <script>
+    $(document).ready(function() {
+      // Initialize navgoco with default options
+      $("#mysidebar").navgoco({
+        caretHtml: '',
+        accordion: false,
+        openClass: 'active', // open
+        save: false, // leave false or nav highlighting doesn't work right
+        cookie: {
+          name: 'navgoco',
+          expires: false,
+          path: '/'
+        },
+        slide: {
+          duration: 400,
+          easing: 'swing'
+        }
+      });
+
+      $("#collapseAll").click(function(e) {
+        e.preventDefault();
+        $("#mysidebar").navgoco('toggle', false);
+      });
+
+      $("#expandAll").click(function(e) {
+        e.preventDefault();
+        $("#mysidebar").navgoco('toggle', true);
+      });
+
+      // Turn off sliding. (https://api.jquery.com/slideup/)
+      let fxOrig = jQuery.fx.off;
+      jQuery.fx.off = true;
+
+      // Expand first level.
+      $(`#mysidebar > li`).each((_, parent) => {
+        $("#mysidebar").navgoco('toggle', true, $($(parent).children('[data-index]')).attr('data-index'));
+      });
+
+      // Activate page item in sidebar and expands its ancestors.
+      let page_url='{{ page.url }}';
+      let active_item = $(`#mysidebar li[data-page-url="${page_url}"]`);
+      active_item.addClass('active');
+      active_item.parents('li')
+        .addClass('active')
+        .each((_, parent) => {
+          $("#mysidebar").navgoco('toggle', true, $($(parent).children('[data-index]')).attr('data-index'));
+        });
+
+      // Restore sliding.
+      jQuery.fx.off = fxOrig;
+    });
+
+  </script>
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
+  {%- if page.datatable == true %}
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.5/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.js"></script>
+  <script>
+    $(document).ready(function(){
+
+      $('table.datatable').DataTable({
+          paging: false,
+          stateSave: true
+        });
+    });
+  </script>
+  {%- endif %}
+
+</head>
+<body>
+  <div class="page">
+    <div class="page__content">
+      <!--#include virtual="/includes/topnav.html" -->
+      <!-- Page Content -->
+      {{ content }}
+    </div>
+
+    <!--#include virtual="/includes/footer.html" -->
+  </div>
+  {%- if site.url == 'https://werf.io' or site.url == 'https://ru.werf.io' %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6HXQYKHJ6P"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6HXQYKHJ6P');
+    </script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+      ym(49679848, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/49679848" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+  {%- endif %}
+</body>
+</html>

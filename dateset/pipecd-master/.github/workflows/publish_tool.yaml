@@ -1,0 +1,48 @@
+name: publish_tool
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+env:
+  GHCR: ghcr.io
+
+jobs:
+  tool:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        image:
+          - actions-gh-release
+          - actions-plan-preview
+          - codegen
+          - piped-base
+          - piped-base-okd
+          - firestore-emulator
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Determine version
+        run: echo "PIPECD_VERSION=$(git describe --tags --always --abbrev=7)" >> $GITHUB_ENV
+
+      # Login to push container images.
+      - name: Log in to the container registry
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b #v2.0.0
+        with:
+          registry: ${{ env.GHCR }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Building and pushing container images.
+      - name: Build and push ${{ matrix.image }} image
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 #v5.0.0
+        with:
+          context: tool/${{ matrix.image }}
+          tags: ${{ env.GHCR }}/pipe-cd/${{ matrix.image }}:${{ env.PIPECD_VERSION }}
+          push: true

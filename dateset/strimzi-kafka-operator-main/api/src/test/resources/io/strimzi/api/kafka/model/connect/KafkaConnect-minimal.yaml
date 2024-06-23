@@ -1,0 +1,6 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: test-kafka-connect
+spec:
+  bootstrapServers: kafka:9092

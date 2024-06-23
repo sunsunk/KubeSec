@@ -1,0 +1,23 @@
+{
+    "version": "1.0.0",
+    "service": "api",
+    "services": {
+        "api": {},
+        "ui": {
+            "user": "root"
+        },
+        "yamas": {
+            "user": "nobody",
+            "group": "sys"
+        }
+    },
+    "accounts": [
+        {
+            "domain": "athenz",
+            "user": "nobody",
+            "account": "123456789012"
+        }
+    ],
+    "ssh_principals": "host1.athenz.io,host2.athenz.io",
+    "sandns_x509_cnames": "svc1.athenz.io,svc2.athenz.io"
+}

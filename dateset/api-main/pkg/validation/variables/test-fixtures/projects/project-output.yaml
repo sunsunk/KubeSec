@@ -1,0 +1,8 @@
+name: project1
+clonePath: "/FOO"
+git:
+  checkoutFrom:
+    revision: "FOO"
+  remotes:
+    "foo": "BAR"
+    "FOOBAR": "BARFOO"

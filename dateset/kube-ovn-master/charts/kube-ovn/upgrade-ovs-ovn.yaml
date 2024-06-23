@@ -1,0 +1,175 @@
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+---
+
+---
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+---
+
+---
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovs-ovn-upgrade
+  namespace: dynamic_parameters
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded
+
+---
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.k8s.io/system-only: "true"
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": hook-succeeded
+  name: system:ovs-ovn-upgrade
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+    resourceNames:
+      - ovs-ovn
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    resourceNames:
+      - ovn-central
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - list
+      - get
+      - watch
+      - delete
+
+---
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ovs-ovn-upgrade
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": hook-succeeded
+roleRef:
+  name: system:ovs-ovn-upgrade
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: ovs-ovn-upgrade
+    namespace: dynamic_parameters
+
+---
+# Source: kube-ovn/templates/upgrade-ovs-ovn.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "dynamic_parameters-post-upgrade-hook"
+  namespace: dynamic_parameters
+  labels:
+    app.kubernetes.io/managed-by: dynamic_parameters
+    app.kubernetes.io/instance: dynamic_parameters
+    app.kubernetes.io/version: dynamic_parameters
+    helm.sh/chart: "dynamic_parameters-dynamic_parameters"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  completions: 1
+  template:
+    metadata:
+      name: "dynamic_parameters"
+      labels:
+        app.kubernetes.io/managed-by: dynamic_parameters
+        app.kubernetes.io/instance: dynamic_parameters
+        helm.sh/chart: "dynamic_parameters-dynamic_parameters"
+        app: post-upgrade
+        component: job
+    spec:
+      tolerations:
+        - key: ""
+          operator: "Exists"
+          effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - post-upgrade
+                  - key: component
+                    operator: In
+                    values:
+                      - job
+      restartPolicy: Never
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: "linux"
+      serviceAccount: ovs-ovn-upgrade
+      serviceAccountName: ovs-ovn-upgrade
+      containers:
+        - name: ovs-ovn-upgrade
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ENABLE_SSL
+              value: "dynamic_parameters"
+            - name: OVN_DB_IPS
+              value: "dynamic_parameters"
+          command:
+            - bash
+            - -eo
+            - pipefail
+            - -c
+            - /kube-ovn/upgrade-ovs.sh 2>&1 | tee -a /var/log/kube-ovn/upgrade-ovs.log
+          volumeMounts:
+            - mountPath: /var/log/kube-ovn
+              name: kube-ovn-log
+            - mountPath: /var/run/tls
+              name: kube-ovn-tls
+      volumes:
+        - name: kube-ovn-log
+          hostPath:
+            path: dynamic_parameters/kube-ovn
+        - name: kube-ovn-tls
+          secret:
+            optional: true
+            secretName: kube-ovn-tls

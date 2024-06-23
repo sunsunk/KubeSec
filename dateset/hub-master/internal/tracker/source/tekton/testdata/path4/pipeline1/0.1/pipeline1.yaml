@@ -1,0 +1,73 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline1
+  labels:
+    app.kubernetes.io/version: "0.1.0"
+  annotations:
+    artifacthub.io/changes: |
+      - Added cool feature
+      - Fixed minor bug
+    artifacthub.io/license: Apache-2.0
+    artifacthub.io/links: |
+      - name: link1
+        url: https://link1.url
+      - name: link2
+        url: https://link2.url
+    artifacthub.io/maintainers: |
+      - name: user1
+        email: user1@email.com
+      - name: user2
+        email: user2@email.com
+    artifacthub.io/provider: Some organization
+    artifacthub.io/recommendations: |
+      - url: https://artifacthub.io/packages/helm/artifact-hub/artifact-hub
+    artifacthub.io/screenshots: |
+      - title: Screenshot 1
+        url: https://artifacthub.io/screenshot1.jpg
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+    tekton.dev/tags: tag1, tag2
+    tekton.dev/displayName: "Pipeline 1"
+    tekton.dev/signature: "pipeline signature val"
+spec:
+  description: Test pipeline
+  params:
+    - name: say-hello-image
+      type: string
+      default: "bash:latest"
+    - name: say-world-image
+      type: string
+      default: "alpine"
+  tasks:
+    - name: say-hello
+      runAfter: []
+      params:
+        - name: say-hello-image
+          value: "$(params.say-hello-image)"
+      taskSpec:
+        params:
+          - name: say-hello-image
+        steps:
+        - image: "$(params.say-hello-image)"
+          script: echo 'hello'
+    - name: say-world
+      runAfter:
+          - say-hello
+      params:
+        - name: say-world-image
+          value: "$(params.say-world-image)"
+      taskSpec:
+        params:
+          - name: say-world-image
+        steps:
+        - image: "$(params.say-world-image)"
+          script: echo 'world'
+    - name: say-final
+      runAfter:
+        - say-world
+        - say-hello
+      taskSpec:
+        steps:
+        - image: alpine
+          script: echo 'final'

@@ -1,0 +1,25 @@
+.badge {
+  background-color: var(--badge-bg);
+  border-color: var(--gray) !important;
+  height: 19px;
+  line-height: 0.8rem;
+}
+
+.size-xs {
+  font-size: 0.5rem;
+  padding: 0.15em 0.4em;
+  height: 14px;
+}
+
+.size-xs .icon {
+  font-size: 0.95em;
+}
+
+.size-sm {
+  font-size: 0.7rem;
+  padding: 0.2em 0.4em;
+}
+
+.size-sm .icon {
+  font-size: 1em;
+}

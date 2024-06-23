@@ -1,0 +1,84 @@
+name: Build and upload Windows app artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildBranch:
+        description: 'Headlamp ref/branch/tag'
+        required: true
+        default: 'main'
+      signBinaries:
+        description: Sign the binaries
+        default: true
+        type: boolean
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: build-helper
+    - uses: actions/checkout@v4
+      with:
+        repository: headlamp-k8s/headlamp
+        ref: ${{ github.event.inputs.buildBranch }}
+        path: headlamp
+    - name: Setup nodejs
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        cache-dependency-path: |
+          headlamp/app/package-lock.json
+          headlamp/frontend/package-lock.json
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.22.*'
+        cache-dependency-path: |
+          headlamp/backend/go.sum
+    - name: Dependencies
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install make
+    - name: Fetch certificates
+      if: ${{ inputs.signBinaries }}
+      shell: pwsh
+      run: |
+        az login --service-principal -u ${{ secrets.WINDOWS_CLIENT_ID }} -p ${{ secrets.AZ_LOGIN_PASS }}  --tenant 72f988bf-86f1-41af-91ab-2d7cd011db47
+        az keyvault secret download --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} --vault-name headlamp --name HeadlampAuthCert --file c:\HeadlampAuthCert.pfx --encoding base64
+        az keyvault secret download --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} --vault-name headlamp --name ESRPHeadlampReqCert --file c:\HeadlampReqCert.pfx --encoding base64
+    - name: Set up certificates
+      if: ${{ inputs.signBinaries }}
+      shell: pwsh
+      run: |
+        Import-PfxCertificate -FilePath c:\HeadlampAuthCert.pfx -CertStoreLocation Cert:\LocalMachine\My -Exportable
+        Import-PfxCertificate -FilePath c:\HeadlampReqCert.pfx -CertStoreLocation Cert:\LocalMachine\My -Exportable
+
+    - name: Download and Set up ESRPClient
+      if: ${{ inputs.signBinaries }}
+      shell: pwsh
+      run: |
+        nuget.exe sources add -name esrp -source ${{ secrets.ESRP_NUGET_INDEX_URL }} -username headlamp -password ${{ secrets.AZ_DEVOPS_TOKEN }}
+        nuget.exe install Microsoft.EsrpClient -Version 1.2.80 -source  ${{ secrets.ESRP_NUGET_INDEX_URL }} | out-null
+
+    - name: App Windows
+      shell: pwsh
+      working-directory: headlamp
+      run: |
+        if ("${{ inputs.signBinaries }}" -eq "true") {
+          $env:ESRP_PATH="$(Get-Location)\..\Microsoft.EsrpClient.1.2.80\tools\EsrpClient.exe"
+          $env:HEADLAMP_WINDOWS_CLIENT_ID="${{ secrets.WINDOWS_CLIENT_ID }}"
+          $env:HEADLAMP_WINDOWS_SIGN_EMAIL="${{ secrets.WINDOWS_SIGN_EMAIL }}"
+        } else {
+          echo "Not signing binaries"
+        }
+        make app-win
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Win exes
+        path: ./headlamp/app/dist/Headlamp*.*
+        if-no-files-found: error
+        retention-days: 2

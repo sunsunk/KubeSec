@@ -1,0 +1,18 @@
+.input,
+.input + label {
+  cursor: pointer;
+}
+
+.label::before,
+.label::after {
+  top: 0.15rem;
+}
+
+.input:disabled,
+.input:disabled + label {
+  cursor: auto;
+}
+
+.icon {
+  top: -3px;
+}

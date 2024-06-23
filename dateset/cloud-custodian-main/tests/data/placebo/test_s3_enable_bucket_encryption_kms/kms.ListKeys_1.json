@@ -1,0 +1,13 @@
+{
+    "status_code": 200,
+    "data": {
+        "Keys": [
+            {
+                "KeyId": "2192ecc0-3991-4dac-b479-cc08bda8a4de",
+                "KeyArn": "arn:aws:kms:us-east-1:644160558196:key/2192ecc0-3991-4dac-b479-cc08bda8a4de"
+            }
+        ],
+        "Truncated": false,
+        "ResponseMetadata": {}
+    }
+}

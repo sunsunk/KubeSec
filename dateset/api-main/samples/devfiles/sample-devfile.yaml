@@ -1,0 +1,28 @@
+schemaVersion: "2.0.0"
+metadata:
+  name: "devfile example"
+  version: "1.0.0"
+projects:
+  - name: "my-project"
+    git:
+      remotes:
+        origin: "https://github.com/devfile/api"
+      checkoutFrom:
+        revision: "main"
+        remote: origin
+components:
+  - name: "mycontainer"
+    container:
+      image: "busybox"
+      memoryLimit: "128M"
+      mountSources: true
+      endpoints:
+        - name: term-websockets
+          exposure: public
+          protocol: ws
+          attributes:
+            type: terminal
+          targetPort: 4000
+  - name: "production"
+    kubernetes:
+      uri: "https://somewhere/production-environment.yaml"

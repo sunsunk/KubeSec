@@ -1,0 +1,51 @@
+[submodule "thirdparty/etcd-cpp-apiv3"]
+	path = thirdparty/etcd-cpp-apiv3
+	url = https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3.git
+	shallow = true
+[submodule "thirdparty/pybind11"]
+	path = thirdparty/pybind11
+	url = https://github.com/pybind/pybind11.git
+	shallow = true
+[submodule "thirdparty/cpprestsdk"]
+	path = thirdparty/cpprestsdk
+	url = https://github.com/microsoft/cpprestsdk.git
+	shallow = true
+[submodule "thirdparty/mimalloc"]
+	path = thirdparty/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
+	shallow = true
+[submodule "thirdparty/boost-leaf"]
+	path = modules/graph/thirdparty/boost-leaf
+	url = https://github.com/boostorg/leaf.git
+	shallow = true
+[submodule "modules/hosseinmoein-dataframe/thirdparty/DataFrame"]
+	path = modules/hosseinmoein-dataframe/thirdparty/DataFrame
+	url = https://github.com/hosseinmoein/DataFrame.git
+	shallow = true
+[submodule "thirdparty/redis-plus-plus"]
+	path = thirdparty/redis-plus-plus
+	url = https://github.com/sewenew/redis-plus-plus.git
+	shallow = true
+[submodule "thirdparty/hiredis"]
+	path = thirdparty/hiredis
+	url = https://github.com/redis/hiredis.git
+  shallow = true
+[submodule "thirdparty/zstd"]
+	path = thirdparty/zstd
+	url = https://github.com/facebook/zstd.git
+	shallow = true
+[submodule "thirdparty/libcuckoo"]
+	path = thirdparty/libcuckoo
+	url = https://github.com/efficient/libcuckoo.git
+	shallow = true
+[submodule "modules/graph/thirdparty/GraphAr"]
+	path = modules/graph/thirdparty/GraphAr
+	url = https://github.com/alibaba/GraphAr.git
+	shallow = true
+[submodule "modules/graph/thirdparty/libgrape-lite"]
+	path = modules/graph/thirdparty/libgrape-lite
+	url = https://github.com/alibaba/libgrape-lite.git
+	shallow = true
+[submodule "modules/graph/thirdparty/powturbo"]
+	path = modules/graph/thirdparty/powturbo
+	url = https://github.com/powturbo/TurboPFor-Integer-Compression.git

@@ -1,0 +1,115 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253",
+      "gfchallenge": "true"
+    },
+    "name": "gf challenge (bot)",
+    "human": "invalid",
+    "exec": "return function(actual, request_map) return request_map.reason == \"Challenge - global filter - gf challenge - [header gfchallenge=true]\" end",
+    "response": {
+      "action": "custom_response",
+      "status": 247,
+      "block_mode": true,
+      "acl_triggers": [],
+      "gf_triggers": [
+        {
+          "section": "headers",
+          "value": "true",
+          "trigger_name": "gf challenge",
+          "action": "challenge",
+          "name": "gfchallenge",
+          "trigger_id": "gfchallenge"
+        }
+      ],
+      "tags": [
+        "securitypolicy:default-entry",
+        "contentfiltername:default-contentfilter",
+        "geo-continent-code:na",
+        "geo-country:united-states",
+        "cookies:0",
+        "securitypolicy-entry:default",
+        "contentfilterid:--default--",
+        "geo-continent-name:north-america",
+        "geo-city:nil",
+        "geo-region:nil",
+        "gfchallenge",
+        "geo-org:emerald-onion",
+        "bot",
+        "host:localhost:30081",
+        "ip:23-129-64-253",
+        "args:0",
+        "headers:3",
+        "geo-subregion:nil",
+        "geo-asn:396507",
+        "sante",
+        "all",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "network:23-129-64-0-24",
+        "challenge",
+        "challenge-phase01",
+        "status:247",
+        "status-class:2xx"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253",
+      "gfchallenge": "true"
+    },
+    "name": "gf challenge (human)",
+    "human": "passive",
+    "exec": "return function(actual, request_map) if type(request_map.reason) == \"string\" then print (request_map.reason) return false else return true end end",
+    "response": {
+      "action": "pass",
+      "acl_triggers": [],
+      "gf_triggers": [
+        {
+          "section": "headers",
+          "value": "true",
+          "trigger_name": "gf challenge",
+          "action": "monitor",
+          "name": "gfchallenge",
+          "trigger_id": "gfchallenge"
+        }
+      ],
+      "tags": [
+        "securitypolicy:default-entry",
+        "contentfiltername:default-contentfilter",
+        "geo-continent-code:na",
+        "geo-country:united-states",
+        "cookies:1",
+        "securitypolicy-entry:default",
+        "contentfilterid:--default--",
+        "geo-continent-name:north-america",
+        "geo-city:nil",
+        "geo-region:nil",
+        "gfchallenge",
+        "geo-org:emerald-onion",
+        "human",
+        "host:localhost:30081",
+        "ip:23-129-64-253",
+        "args:0",
+        "headers:3",
+        "geo-subregion:nil",
+        "geo-asn:396507",
+        "sante",
+        "all",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "network:23-129-64-0-24",
+        "precision-l1"
+      ]
+    }
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "name": "e2e-test",
+  "description": "E2E test for verifying Backstage packages",
+  "version": "0.2.14",
+  "private": true,
+  "backstage": {
+    "role": "cli"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/e2e-test"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "yarn nodemon --",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "test:e2e": "yarn start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean"
+  },
+  "bin": "bin/e2e-test",
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/create-app": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "chalk": "^4.0.0",
+    "commander": "^12.0.0",
+    "cross-fetch": "^4.0.0",
+    "fs-extra": "^11.2.0",
+    "handlebars": "^4.7.3",
+    "mysql2": "^3.0.0",
+    "pgtools": "^1.0.0",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^18.17.8",
+    "@types/puppeteer": "^5.4.4",
+    "nodemon": "^3.0.1"
+  },
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/e2e-test",
+    "ext": "ts"
+  }
+}

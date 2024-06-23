@@ -1,0 +1,29 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+- name: start snapshotcloneserver_nginx
+  shell:  sudo docker run --name {{ snapshot_nginx_name }}
+            -p {{ nginx_docker_external_port }}:{{ nginx_docker_internal_port }}
+            -v {{ snapshotcloneserver_nginx_dir }}/app:/usr/local/openresty/nginx/app
+            -v {{ snapshotcloneserver_nginx_dir }}/conf:/usr/local/openresty/nginx/conf
+            -v {{ snapshotcloneserver_nginx_dir }}/logs:/usr/local/openresty/nginx/logs
+            -d hub.c.163.com/opencurve/nginx:latest
+
+- name: wait until server is up
+  ping_port: "{{ nginx_docker_external_port }}"
+  wait_timeout: "{{ wait_service_timeout }}"
+  include_tasks: common_tasks/wait_until_server_up.yml

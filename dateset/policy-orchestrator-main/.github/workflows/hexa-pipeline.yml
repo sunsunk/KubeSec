@@ -1,0 +1,43 @@
+name: hexa-pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  run-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/hexa-test-suite.yml
+    secrets: inherit
+
+  google-pipeline-admin:
+    needs: [ run-tests ]
+    permissions:
+      contents: read
+      id-token: 'write'
+    uses: ./.github/workflows/provider-google-cloud-admin.yml
+    secrets: inherit
+
+#  google-pipeline-demo:
+#    needs: [ run-tests ]
+#    permissions:
+#      contents: read
+#      id-token: 'write'
+#    uses: ./.github/workflows/provider-google-cloud-demo.yml
+#    secrets: inherit
+
+  amazon-pipeline-demo:
+    needs: [ run-tests ]
+    permissions:
+      contents: read
+      id-token: 'write'
+    uses: ./.github/workflows/provider-amazon-web-services-demo.yml
+    secrets: inherit
+
+  azure-pipeline-demo:
+    needs: [ run-tests ]
+    permissions:
+      contents: read
+      id-token: 'write'
+    uses: ./.github/workflows/provider-microsoft-azure-demo.yml
+    secrets: inherit

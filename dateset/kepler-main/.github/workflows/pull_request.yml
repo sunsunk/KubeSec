@@ -1,0 +1,62 @@
+name: Pull request
+
+on:
+  branch_protection_rule:
+  pull_request:
+    paths-ignore:
+      - 'doc/**'
+      - 'enhancements/**'
+      - '*.md'
+
+jobs:
+  # for each PR run go command line check
+  golang:
+    uses: ./.github/workflows/golang.yml
+  # for each PR run unit test
+  unit_test:
+    uses: ./.github/workflows/unit_test.yml
+  # for each PR ensure for local developer usage
+  developer_local:
+    uses: ./.github/workflows/developer_local.yml
+  # for each PR run integration test    
+  integration_test:
+    uses: ./.github/workflows/integration_test.yml
+
+  changes_image:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: changes
+      with:
+        filters: |
+          src:
+            - './.github/workflows/image.yml'
+            - './build/Dockerfile'
+            - './build/Dockerfile.kepler-validator'
+
+  image:
+    needs: changes_image
+    if: ${{ needs.changes_image.outputs.src == 'true' }}
+    uses: ./.github/workflows/image.yml
+    with:
+      pushImage: false
+    secrets:
+        username: ${{ secrets.BOT_NAME }}
+        password: ${{ secrets.BOT_TOKEN }}
+
+  changes_baseimage:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: changes
+      with:
+        filters: |
+          src:
+            - './.github/workflows/image_base.yml'
+            - './build/Dockerfile.builder'

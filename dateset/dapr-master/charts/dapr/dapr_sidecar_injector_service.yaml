@@ -1,0 +1,21 @@
+# Source: dapr/charts/dapr_sidecar_injector/templates/dapr_sidecar_injector_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dapr-sidecar-injector
+  namespace: default
+  labels:
+    app.kubernetes.io/component: sidecar-injector
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  selector:
+    app: dapr-sidecar-injector
+  type: ClusterIP
+  ports:
+  - port: 443
+    targetPort: https
+    protocol: TCP
+    name: https

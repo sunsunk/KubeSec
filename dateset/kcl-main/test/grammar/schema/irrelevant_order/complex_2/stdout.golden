@@ -1,0 +1,14 @@
+node:
+  name: prod-frontend
+  metadata:
+    name: prod-frontend
+  finalizers:
+  - test
+  kubeNamespace:
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: prod-frontend
+    spec:
+      finalizers:
+      - test

@@ -1,0 +1,329 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PolicyRow should render 1`] = `
+.emotion-0 {
+  box-sizing: border-box;
+  margin-top: 10px;
+  box-shadow: 0 1px 4px #d9d9d9;
+  box-shadow: 0 1px 4px #d9d9d9;
+  border: 1px solid #fff;
+  -webkit-border-image: none;
+  border-image: none;
+  -webkit-border-image: initial;
+  border-image: initial;
+  padding: 5px 0 5px 15px;
+}
+
+.emotion-2 {
+  text-align: center;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 10%;
+}
+
+.emotion-4 {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  margin: 3px;
+  outline: 0px;
+  position: relative;
+  vertical-align: bottom;
+}
+
+.emotion-4>input[type='radio'] {
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+}
+
+.emotion-4>input[type='radio']+label {
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 10px 0 0;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.emotion-4>input[type='radio']+label:before {
+  background: #fff;
+  border: 2px solid rgba(54,151,242,0.5);
+  border-radius: 50%;
+  box-sizing: border-box;
+  content: '';
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  margin: 0px 3px -3px 0px;
+  -webkit-transition: all 0.25s ease-in;
+  transition: all 0.25s ease-in;
+  width: 16px;
+}
+
+.emotion-4>input[type='radio']:hover+label:before {
+  border: 2px solid #3697f2;
+}
+
+.emotion-4>input[type='radio']:focus+label:before {
+  border: 2px solid rgba(54,151,242,0.5);
+}
+
+.emotion-4>input[type='radio']:checked+label:before {
+  border: 2px solid #3697f2;
+}
+
+.emotion-4>input[type='radio']:disabled+label {
+  color: #d5d5d5;
+  cursor: not-allowed;
+}
+
+.emotion-4>input[type='radio']:disabled+label:before {
+  border: 2px solid #d5d5d5;
+  cursor: not-allowed;
+}
+
+.emotion-4>input[type='radio']:checked+label:after {
+  background-color: #3697f2;
+  border-radius: 50%;
+  box-sizing: border-box;
+  content: '';
+  height: 8px;
+  line-height: 8px;
+  left: 4px;
+  position: absolute;
+  top: 4px;
+  -webkit-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+  width: 8px;
+}
+
+.emotion-4>input[type='radio']:disabled:checked+label:after {
+  color: #d5d5d5;
+  border: 2px solid #d5d5d5;
+  background-color: #d5d5d5;
+  cursor: not-allowed;
+}
+
+.emotion-5 {
+  text-align: left;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 20%;
+}
+
+.emotion-7 {
+  text-align: left;
+  padding: 5px 0 5px 0;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 15%;
+}
+
+.emotion-9 {
+  width: 100%;
+  border-spacing: 0 0;
+  display: table;
+  border-collapse: separate;
+  border-color: grey;
+}
+
+.emotion-11 {
+  text-align: left;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 70%;
+}
+
+.emotion-13 {
+  text-align: left;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 30%;
+}
+
+.emotion-19 {
+  fill: #188fff;
+  cursor: pointer;
+  vertical-align: text-bottom;
+}
+
+.emotion-25 {
+  fill: #d5d5d5;
+  cursor: inherit;
+  vertical-align: text-bottom;
+}
+
+.emotion-26 {
+  text-align: center;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  width: 15%;
+}
+
+<tr
+  class="emotion-0 emotion-1"
+  data-testid="policy-row"
+>
+  <td
+    class="emotion-2 emotion-3"
+    width="10%"
+  >
+    <div
+      class="emotion-4 denali-radiobutton"
+      data-testid="radiobutton-wrapper"
+    >
+      <input
+        checked=""
+        disabled=""
+        id="radiobutton-sections-undefined-active-true-active"
+        name="sections-undefined-active-true"
+        type="radio"
+        value="active"
+      />
+      <label
+        for="radiobutton-sections-undefined-active-true-active"
+      />
+    </div>
+  </td>
+  <td
+    class="emotion-5 emotion-3"
+    width="20%"
+  >
+    sections
+  </td>
+  <td
+    class="emotion-7 emotion-3"
+    width="15%"
+  >
+    <table
+      class="emotion-9 emotion-10"
+    >
+      <thead />
+      <tbody>
+        <tr>
+          <td
+            class="emotion-11 emotion-3"
+            width="70%"
+          />
+          <td
+            class="emotion-13 emotion-3"
+            width="30%"
+          />
+        </tr>
+      </tbody>
+    </table>
+  </td>
+  <td
+    class="emotion-5 emotion-3"
+    width="20%"
+  >
+    Invalid date
+  </td>
+  <td
+    class="emotion-2 emotion-3"
+    width="10%"
+  >
+    <svg
+      class="emotion-19"
+      data-testid="icon"
+      height="1.25em"
+      id=""
+      viewBox="0 0 1024 1024"
+      width="1.25em"
+    >
+      <title>
+        list-check
+      </title>
+      <path
+        d="M512 256v0c0-23.564 19.103-42.667 42.667-42.667v0h341.333c23.564 0 42.667 19.103 42.667 42.667v0 0c0 23.564-19.103 42.667-42.667 42.667v0h-341.333c-23.564 0-42.667-19.103-42.667-42.667v0zM554.667 554.667h341.333c23.564 0 42.667-19.103 42.667-42.667v0 0c0-23.564-19.103-42.667-42.667-42.667v0h-341.333c-23.564 0-42.667 19.103-42.667 42.667v0 0c0 23.564 19.103 42.667 42.667 42.667v0zM554.667 810.667h341.333c23.564 0 42.667-19.103 42.667-42.667v0 0c0-23.564-19.103-42.667-42.667-42.667v0h-341.333c-23.564 0-42.667 19.103-42.667 42.667v0 0c0 23.564 19.103 42.667 42.667 42.667v0zM213.333 554.667h42.667c23.564 0 42.667-19.103 42.667-42.667v0 0c0-23.564-19.103-42.667-42.667-42.667v0h-42.667c-23.564 0-42.667 19.103-42.667 42.667v0 0c0 23.564 19.103 42.667 42.667 42.667v0zM213.333 810.667h42.667c23.564 0 42.667-19.103 42.667-42.667v0 0c0-23.564-19.103-42.667-42.667-42.667v0h-42.667c-23.564 0-42.667 19.103-42.667 42.667v0 0c0 23.564 19.103 42.667 42.667 42.667v0zM264.533 328.533l213.333-213.333c8.083-7.434 13.13-18.061 13.13-29.867s-5.047-22.432-13.101-29.84l-0.029-0.026c-7.434-8.083-18.061-13.13-29.867-13.13s-22.432 5.047-29.84 13.101l-0.026 0.029-183.467 183.467-55.467-55.467c-7.461-8.401-18.291-13.668-30.351-13.668-13.957 0-26.267 7.055-33.558 17.793l-0.091 0.142c-5.319 7.276-8.51 16.4-8.51 26.27 0 12.199 4.876 23.259 12.785 31.338l-0.008-0.008 85.333 83.2c7.434 8.083 18.061 13.13 29.867 13.13s22.432-5.047 29.84-13.101l0.026-0.029z"
+      />
+    </svg>
+  </td>
+  <td
+    class="emotion-2 emotion-3"
+    width="10%"
+  >
+    <svg
+      class="emotion-19"
+      data-testid="icon"
+      height="1.25em"
+      id=""
+      viewBox="0 0 1024 1024"
+      width="1.25em"
+    >
+      <title>
+        tag
+      </title>
+      <path
+        d="M492.8 145.067l360.533 360.533v347.733h-347.733l-360.533-360.533 347.733-347.733zM492.8 42.667c-11.712 0.172-22.255 5.037-29.86 12.793l-0.007 0.007-407.467 407.467c-8.083 7.434-13.13 18.061-13.13 29.867s5.047 22.432 13.101 29.84l0.029 0.026 416 416h424.533c23.564 0 42.667-19.103 42.667-42.667v0-424.533l-416-416c-7.612-7.763-18.155-12.628-29.835-12.8l-0.032-0z"
+      />
+      <path
+        d="M746.667 661.333c0 47.128-38.205 85.333-85.333 85.333s-85.333-38.205-85.333-85.333c0-47.128 38.205-85.333 85.333-85.333s85.333 38.205 85.333 85.333z"
+      />
+    </svg>
+  </td>
+  <td
+    class="emotion-2 emotion-3"
+    width="10%"
+  >
+    <svg
+      class="emotion-25"
+      data-testid="icon"
+      height="1.25em"
+      id=""
+      viewBox="0 0 48 48"
+      width="1.25em"
+    >
+      <title>
+        You have created the maximum number of versions allowed.
+      </title>
+      <path
+        d="M36,12V6a2,2,0,0,0-2-2H6A2,2,0,0,0,4,6V34a2,2,0,0,0,2,2h6v6a2,2,0,0,0,2,2H42a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2ZM8,32V8H32V32Zm32,8H16V36H34a2,2,0,0,0,2-2V16h4Z"
+      />
+    </svg>
+  </td>
+  <td
+    class="emotion-26 emotion-3"
+    width="15%"
+  >
+    <svg
+      class="emotion-25"
+      data-testid="icon"
+      height="1.25em"
+      id=""
+      viewBox="0 0 48 48"
+      width="1.25em"
+    >
+      <title>
+        you can not delete a version that is active. Please change active version to delete this version
+      </title>
+      <path
+        d="M41.4,42.6l-36-36a1.9,1.9,0,0,0-2.8,0A1.8,1.8,0,0,0,2.3,9l6.8,6.9,2.7,27.3a2,2,0,0,0,2,1.8H34.2a2,2,0,0,0,2-1.8V43l2.4,2.4a1.9,1.9,0,0,0,2.8,0A1.9,1.9,0,0,0,41.4,42.6Zm-9-1.6H15.6l-2-20.6L31.7,38.5l.9.9Z"
+      />
+      <path
+        d="M43,8.8a2.3,2.3,0,0,1-.6,1.6A2,2,0,0,1,41,11H29a2,2,0,0,1-2-2V7H21V9a2,2,0,0,1-2,2H15.8l-4-4H17V5a2,2,0,0,1,2-2H29a2,2,0,0,1,2,2V7h9.9A2.1,2.1,0,0,1,43,8.8Z"
+      />
+      <path
+        d="M36.8,15a2,2,0,0,0-2,1.8l-1.2,12,3.7,3.6,1.5-15.2A2,2,0,0,0,36.8,15Z"
+      />
+    </svg>
+  </td>
+</tr>
+`;

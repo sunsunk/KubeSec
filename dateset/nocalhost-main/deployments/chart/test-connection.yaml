@@ -1,0 +1,20 @@
+# Source: nocalhost/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "my-release-nocalhost-test-connection"
+  labels:
+    helm.sh/chart: nocalhost-0.5.6
+    app.kubernetes.io/name: nocalhost
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "v0.5.6"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['my-release-nocalhost:80']
+  restartPolicy: Never

@@ -1,0 +1,58 @@
+# Copyright 2019 Google Inc.  All Rights Reserved.
+
+run:
+  deadline: 5m
+  skip-dirs:
+    thirdparty/
+
+linters:
+  # please, do not use `enable-all`: it's deprecated and will be removed soon.
+  # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
+  disable-all: true
+  enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+# funlen triggers on test functions which it shouldn't
+#    - funlen
+    - exportloopref
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+#    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - revive
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - whitespace
+
+issues:
+  exclude:
+     - Using the variable on range scope `tc` in function literal
+
+linters-settings:
+  dupl:
+    threshold: 400
+  lll:
+    line-length: 170
+  gocyclo:
+    min-complexity: 30
+  golint:
+    min-confidence: 0.85

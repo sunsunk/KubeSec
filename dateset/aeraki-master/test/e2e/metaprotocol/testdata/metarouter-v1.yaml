@@ -1,0 +1,17 @@
+---
+apiVersion: metaprotocol.aeraki.io/v1alpha1
+kind: MetaRouter
+metadata:
+  name: test-metaprotocol-route
+spec:
+  exportTo:
+  - metaprotocol
+  - default
+  hosts:
+    - org.apache.dubbo.samples.basic.api.demoservice
+  routes:
+    - name: v1
+      route:
+        - destination:
+            host: org.apache.dubbo.samples.basic.api.demoservice
+            subset: v1

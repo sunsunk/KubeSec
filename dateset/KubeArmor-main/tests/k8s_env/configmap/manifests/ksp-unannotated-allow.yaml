@@ -1,0 +1,44 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-unannotated-allow
+  namespace: unannotated
+spec:
+  severity: 10
+  message: "a critical directory was accessed"
+  tags:
+  - WARNING
+  selector:
+    matchLabels:
+      container: unannotated
+  file:
+    matchDirectories:
+    - dir: /etc/
+      recursive: true
+    - dir: /lib/x86_64-linux-gnu/
+      recursive: true
+    - dir: /credentials/
+    - dir: /pts/
+    - dir: /bin/
+    - dir: /usr/bin/
+    - dir: /proc/
+      recursive: true
+    - dir: /dev/
+      recursive: true
+    matchPaths:
+    - path: /dev/tty
+    - path: /lib/terminfo/x/xterm
+    - path: /root/.bash_history
+    - path: /root/.bashrc
+  process:
+    matchDirectories:
+    - dir: /bin/ # required to change root to user1
+    - dir: /usr/bin/ # used in changing accounts
+  action: 
+    Allow
+
+# test
+# $ cat /credentials/password
+# password file
+# $ cat /credentials/keys/priv.key
+# cat: /credentials/keys/priv.key: Permission denied

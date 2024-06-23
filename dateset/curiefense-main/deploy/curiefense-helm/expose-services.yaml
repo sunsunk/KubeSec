@@ -1,0 +1,45 @@
+# This file exposes services as nodeport.
+# Designed to be used on a single-node test cluster, such as minikube.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: uiserver-nodeport-http
+  name: uiserver-nodeport-http
+  namespace: curiefense
+spec:
+  ports:
+  - name: 30080-80
+    nodePort: 30080
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: 30443-443
+    nodePort: 30443
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app.kubernetes.io/name: uiserver
+  type: NodePort
+  externalTrafficPolicy: "Local"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: confserver-nodeport
+  name: confserver-nodeport
+  namespace: curiefense
+spec:
+  ports:
+  - name: 30000-80
+    nodePort: 30000
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app.kubernetes.io/name: confserver
+  type: NodePort
+  externalTrafficPolicy: "Local"

@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-http-client
+  labels:
+    name: go-http-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: go-http-client
+  template:
+    metadata:
+      labels:
+        name: go-http-client
+    spec:
+      containers:
+      - name: go-http-client
+        image: go_http_client
+        args:
+        - --address=http-server:50051
+        - --count=0
+        - --sleep=1000
+        - --reqSize=16384
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 10m
+            memory: 512Mi

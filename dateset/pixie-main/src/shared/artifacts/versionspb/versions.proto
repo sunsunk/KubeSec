@@ -1,0 +1,76 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.versions;
+
+option go_package = "versionspb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+// ArtifactType is the type of artifact that was released.
+enum ArtifactType {
+  AT_UNKNOWN = 0;
+  AT_LINUX_AMD64 = 1;
+  AT_DARWIN_AMD64 = 2;
+  AT_CONTAINER_SET_YAMLS = 50;
+  AT_CONTAINER_SET_TEMPLATE_YAMLS = 60;
+  AT_CONTAINER_SET_LINUX_AMD64 = 100;
+}
+
+// ArtifactSet stores a list artifacts. This is typically stored in a VERSIONS file in JSON format.
+message ArtifactSet {
+  // The name of the artifact: (cli, vizier).
+  string name = 1;
+  // List of artifacts, sorted by release date.
+  repeated Artifact artifact = 2;
+}
+
+// ArtifactMirrors stores the urls for all mirrors of a single artifact type.
+message ArtifactMirrors {
+  ArtifactType artifact_type = 1;
+  // The sha256sum of the artifact.
+  string sha256 = 2 [ (gogoproto.customname) = "SHA256" ];
+  // The urls of each mirror of an artifact.
+  repeated string urls = 3 [ (gogoproto.customname) = "URLs" ];
+}
+
+// Artifact stores information about a specific artifact version.
+message Artifact {
+  // The timestamp that this artifact was released.
+  google.protobuf.Timestamp timestamp = 1;
+  // The commit hash that this artifact was built using.
+  string commit_hash = 2;
+  // The version string of the artifact (in either CalVer or SemVer).
+  string version_str = 3;
+  // This is a list of artifact types that are available. The artifacts need to be in a canonical
+  // location: gs://<artifact_bucket>/<name>/version_str/<name>_<type>[.sha256]. The location is
+  // only valid for artifacts that are individual binaries. For example, the linux "cli" will of
+  // version 2019.10.03-1 will be located at:
+  // gs://<artifact_bucket>/cli/2019.10.03-1/cli_linux_amd64 with it's sha hash at:
+  // gs://<artifact_bucket>/cli/2019.10.03-1/cli_linux_amd64.sha256.
+  // For container_sets, the path is typically gcr.io/..../image_name:<version_str>.
+  repeated ArtifactType available_artifacts = 4 [ deprecated = true ];
+  // The changelog for this version (in markdown format).
+  string changelog = 5;
+  // Effectively a map from ArtifactType to a list of all mirrors for that artifact, but protobuf
+  // disallows enums as map keys, so the map is represented by a list of pairs.
+  repeated ArtifactMirrors available_artifact_mirrors = 6;
+}

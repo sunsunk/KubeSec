@@ -1,0 +1,23 @@
+# Source: meshery-operator/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: meshery-controller-role
+  labels:
+    helm.sh/chart: meshery-operator-0.6.0
+    app.kubernetes.io/name: meshery-operator
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

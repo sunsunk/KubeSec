@@ -1,0 +1,14 @@
+FROM quay.io/sustainable_computing_io/kepler_builder:ubi-9-libbpf-1.2.0 as builder
+
+WORKDIR /workspace
+COPY . .
+
+# Build validator
+RUN make build-validator
+
+# build image
+FROM registry.access.redhat.com/ubi9:9.2
+
+COPY --from=builder /workspace/_output/bin/validator /usr/bin/validator
+
+RUN chmod +x /usr/bin/validator

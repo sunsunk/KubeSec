@@ -1,0 +1,23 @@
+# Source: logging-operator/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-logging-operator
+  namespace: default
+  labels:
+    app.kubernetes.io/name: logging-operator
+    helm.sh/chart: logging-operator-0.0.0
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: logging-operator
+    app.kubernetes.io/instance: my-release

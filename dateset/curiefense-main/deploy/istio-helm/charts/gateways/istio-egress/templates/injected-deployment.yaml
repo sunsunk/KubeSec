@@ -1,0 +1,97 @@
+     Any settings from values.gateways should be here - these are options specific to the gateway.
+     Global settings, like the image, various env vars and volumes, etc will be injected.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    release: dynamic_parameters
+    istio.io/rev: dynamic_parameters
+    install.operator.istio.io/owning-resource: dynamic_parameters
+    operator.istio.io/component: "EgressGateways"
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+  strategy:
+    rollingUpdate:
+      maxSurge: dynamic_parameters
+      maxUnavailable: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        heritage: Tiller
+        release: istio
+        chart: gateways
+        install.operator.istio.io/owning-resource: dynamic_parameters
+        operator.istio.io/component: "EgressGateways"
+        sidecar.istio.io/inject: "true"
+        istio.io/rev: dynamic_parameters
+      annotations:
+        prometheus.io/port: "15020"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/stats/prometheus"
+        sidecar.istio.io/inject: "true"
+        inject.istio.io/templates: "dynamic_parameters"
+    spec:
+      securityContext:
+        runAsUser: 1337
+        runAsGroup: 1337
+        runAsNonRoot: true
+        fsGroup: 1337
+      serviceAccountName: dynamic_parameters-service-account
+      priorityClassName: "dynamic_parameters"
+      containers:
+        - name: istio-proxy
+          image: auto
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - containerPort: dynamic_parameters
+              protocol: dynamic_parameters
+            - containerPort: 15090
+              protocol: TCP
+              name: http-envoy-prom
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          resources:
+          env:
+          - name: ISTIO_META_UNPRIVILEGED_POD
+            value: "true"
+          - name: dynamic_parameters
+            value: dynamic_parameters
+          volumeMounts:
+          - name: dynamic_parameters
+            mountPath: dynamic_parameters
+            readOnly: true
+          - name: dynamic_parameters
+            mountPath: dynamic_parameters
+            readOnly: true
+      volumes:
+      - name: dynamic_parameters
+        secret:
+          secretName: dynamic_parameters
+          optional: true
+      - name: dynamic_parameters
+        configMap:
+          name: dynamic_parameters
+          optional: true
+      affinity:
+      
+      tolerations:
+      tolerations:
+
+---
+
+---
+
+---
+
+---
+
+---

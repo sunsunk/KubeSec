@@ -1,0 +1,5 @@
+resources:
+  - service.yaml
+  #- manifests.yaml
+  - webhook.yaml
+  - mutating_webhook.yaml

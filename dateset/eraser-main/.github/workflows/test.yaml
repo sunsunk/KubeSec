@@ -1,0 +1,189 @@
+name: test
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "hack/**"
+      - "docs/**"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "hack/**"
+      - "docs/**"
+env:
+  REGISTRY: ghcr.io
+
+permissions: read-all
+
+jobs:
+  generate-bucket-id:
+    name: "Generate build id for storage"
+    uses: ./.github/workflows/build-id.yaml
+
+  build-images:
+    name: "Build images for e2e tests"
+    uses: ./.github/workflows/e2e-build.yaml
+    needs:
+      - generate-bucket-id
+    with:
+      bucket-id: ${{ needs.generate-bucket-id.outputs.bucket-id }}
+
+  e2e-test:
+    name: "Run e2e tests"
+    uses: ./.github/workflows/e2e-test.yaml
+    permissions:
+      contents: write
+    needs:
+      - build-images
+      - generate-bucket-id
+    with:
+      bucket-id: ${{ needs.generate-bucket-id.outputs.bucket-id }}
+
+  lint:
+    name: "Lint"
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - name: lint manager
+        uses: golangci/golangci-lint-action@3cfe3a4abbb849e10058ce4af15d205b6da42804 # v4.0.0
+        with:
+          version: latest
+          args: --timeout=10m
+      - name: lint remover
+        uses: golangci/golangci-lint-action@3cfe3a4abbb849e10058ce4af15d205b6da42804 # v4.0.0
+        with:
+          version: latest
+          working-directory: pkg/remover
+          skip-pkg-cache: true
+          args: --timeout=10m
+      - name: lint collector
+        uses: golangci/golangci-lint-action@3cfe3a4abbb849e10058ce4af15d205b6da42804 # v4.0.0
+        with:
+          version: latest
+          working-directory: pkg/collector
+          skip-pkg-cache: true
+          args: --timeout=10m
+      - name: lint trivvy scanner
+        uses: golangci/golangci-lint-action@3cfe3a4abbb849e10058ce4af15d205b6da42804 # v4.0.0
+        with:
+          version: latest
+          working-directory: pkg/scanners/trivy
+          skip-pkg-cache: true
+          args: --timeout=10m
+
+  unit-test:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
+        with:
+          egress-policy: audit
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          key: ${{ runner.OS }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Unit test
+        run: make test
+      - name: Codecov upload
+        uses: codecov/codecov-action@c16abc29c95fcf9174b58eb7e1abf4c866893bc8
+        with:
+          flags: unittests
+          file: ./cover.out
+          fail_ci_if_error: false
+
+  check-manifest:
+    name: "Check codegen and manifest"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
+        with:
+          egress-policy: audit
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - name: Check go.mod and manifests
+        run: |
+          go mod tidy
+          git diff --exit-code
+          make generate manifests
+          git diff --exit-code
+
+  scan_vulnerabilities:
+    name: "[Trivy] Scan for vulnerabilities"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
+        with:
+          egress-policy: audit
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+
+      - name: Get repo
+        run: |
+          echo "REPO=$(echo $GITHUB_REPOSITORY | awk '{print tolower($0)}')" >> $GITHUB_ENV
+      - name: Download trivy
+        run: |
+          pushd $(mktemp -d)
+          wget https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
+          tar zxvf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
+          echo "$(pwd)" >> $GITHUB_PATH
+        env:
+          TRIVY_VERSION: "0.50.0"
+
+      - name: Build eraser-manager
+        run: |
+          make docker-build-manager MANAGER_REPO=${{ env.REGISTRY }}/${REPO}-manager MANAGER_TAG=test
+      - name: Build remover
+        run: |
+          make docker-build-remover REMOVER_REPO=${{ env.REGISTRY }}/remover REMOVER_TAG=test
+      - name: Build collector
+        run: |
+          make docker-build-collector COLLECTOR_REPO=${{ env.REGISTRY }}/collector COLLECTOR_TAG=test
+      - name: Build trivy scanner
+        run: |
+          make docker-build-trivy-scanner TRIVY_SCANNER_REPO=${{ env.REGISTRY }}/${REPO}-trivy-scanner TRIVY_SCANNER_TAG=test
+      - name: Run trivy for remover
+        run: trivy image --ignore-unfixed --exit-code=1 --vuln-type=os,library ${{ env.REGISTRY }}/remover:test
+
+      - name: Run trivy for eraser-manager
+        run: trivy image --ignore-unfixed --exit-code=1 --vuln-type=os,library ${{ env.REGISTRY }}/${REPO}-manager:test
+
+      - name: Run trivy for collector
+        run: trivy image --ignore-unfixed --exit-code=1 --vuln-type=os,library ${{ env.REGISTRY }}/collector:test
+
+      - name: Run trivy for trivy-scanner
+        run: trivy image --ignore-unfixed --exit-code=1 --vuln-type=os,library ${{ env.REGISTRY }}/${REPO}-trivy-scanner:test

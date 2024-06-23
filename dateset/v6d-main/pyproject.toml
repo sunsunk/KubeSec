@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+exclude = '''
+(
+    .*\/\.git\/.*
+    | .*\/benchmark\/.*
+    | .*\/build\/.*
+    | .*\/dist\/.*
+    | .*\/misc\/.*
+    | .*\/python\-libs\/.*
+    | .*\/kedro\-starters\/.*
+    | .*\/thirdparty\/.*
+    | .*\/python/vineyard/contrib/kedro/benchmark\/.*
+)
+'''
+skip-string-normalization = true

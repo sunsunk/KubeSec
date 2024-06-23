@@ -1,0 +1,180 @@
+---
+# App defaults
+app_name: "{{ lookup('env', 'APP_NAME') or 'tackle' }}"
+app_namespace: "{{ lookup('env', 'WATCH_NAMESPACE') or 'konveyor-tackle' }}"
+app_profile: "{{ lookup('env', 'PROFILE') }}"
+app_version: "{{ lookup('env', 'VERSION') }}"
+
+# Feature defaults
+feature_auth_required: "{{ false if app_profile == 'konveyor' else true }}"
+feature_auth_type: keycloak
+feature_isolate_namespace: true
+
+# Environment
+openshift_cluster: false
+image_pull_policy: "Always"
+http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
+https_proxy: "{{ lookup('env', 'HTTPS_PROXY') }}"
+no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
+
+# Components
+hub_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_TACKLE_HUB') }}"
+hub_component_name: "hub"
+hub_service_name: "{{ app_name }}-{{ hub_component_name }}"
+hub_serviceaccount_name: "{{ app_name }}-hub"
+hub_secret_name: "{{ hub_service_name }}"
+hub_deployment_name: "{{ hub_service_name }}"
+hub_deployment_replicas: "1"
+hub_deployment_strategy: "Recreate"
+hub_container_name: "{{ hub_service_name }}"
+hub_container_limits_cpu: "1"
+hub_container_limits_memory: "2Gi"
+hub_container_requests_cpu: "500m"
+hub_container_requests_memory: "1Gi"
+hub_database_filename: "hub.db"
+hub_database_volume_name: "{{ hub_service_name }}-database"
+hub_database_volume_size: "10Gi"
+hub_database_volume_path: "/database"
+hub_database_volume_claim_name: "{{ hub_service_name }}-database-volume-claim"
+hub_bucket_volume_name: "{{ hub_service_name }}-bucket"
+hub_bucket_volume_size: "100Gi"
+hub_bucket_volume_path: "/buckets"
+hub_bucket_volume_claim_name: "{{ hub_service_name }}-bucket-volume-claim"
+hub_bucket_volume_claim_mode: ReadWriteOnce
+hub_addon_working_path: "/working"
+hub_task_sa: "{{ app_name }}-hub"
+hub_tls_enabled: false
+hub_tls_secret_name: "{{ hub_service_name }}-serving-cert"
+hub_port: "{{ '8443' if hub_tls_enabled | bool else '8080' }}"
+hub_proto: "{{ 'https' if hub_tls_enabled | bool else 'http' }}"
+hub_url: "{{ hub_proto }}://{{ hub_service_name }}.{{ app_namespace }}.svc:{{ hub_port }}"
+hub_log_level: 3
+hub_metrics_enabled: true
+hub_metrics_port: "2112"
+
+pathfinder_delete_db_volume: false
+pathfinder_database_name: "pathfinder"
+pathfinder_database_component_name: "postgresql"
+pathfinder_database_service_name: "{{ app_name }}-{{ pathfinder_database_name }}-{{ pathfinder_database_component_name }}"
+pathfinder_database_secret_name: "{{ pathfinder_database_service_name }}"
+pathfinder_database_deployment_name: "{{ pathfinder_database_service_name }}"
+pathfinder_database_data_volume_claim_name: "{{ pathfinder_database_service_name }}-volume-claim"
+
+pathfinder_component_name: "pathfinder"
+pathfinder_service_name: "{{ app_name }}-{{ pathfinder_component_name }}"
+pathfinder_deployment_name: "{{ pathfinder_service_name }}"
+
+keycloak_database_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_TACKLE_POSTGRES') }}"
+keycloak_database_name: "keycloak"
+keycloak_database_component_name: "postgresql"
+keycloak_database_service_name: "{{ app_name }}-{{ keycloak_database_name }}-{{ keycloak_database_component_name }}"
+keycloak_database_service_k8s_resource_name: "{{ app_name }}-kcpgsql"
+keycloak_database_secret_name: "{{ keycloak_database_service_name }}"
+keycloak_database_deployment_name: "{{ keycloak_database_service_name }}"
+keycloak_database_deployment_strategy: "Recreate"
+keycloak_database_deployment_replicas: "1"
+keycloak_database_container_name: "{{ keycloak_database_service_name }}"
+keycloak_database_container_limits_cpu: "500m"
+keycloak_database_container_limits_memory: "800Mi"
+keycloak_database_container_requests_cpu: "100m"
+keycloak_database_container_requests_memory: "350Mi"
+keycloak_database_data_volume_name: "{{ keycloak_database_service_name }}-database"
+keycloak_database_data_volume_size: "1Gi"
+keycloak_database_data_volume_path: "/var/lib/pgsql"
+keycloak_database_data_volume_claim_name: "{{ keycloak_database_service_name }}-volume-claim"
+keycloak_database_db_name: "keycloak_db"
+keycloak_database_db_name_b64: "{{ keycloak_database_db_name | b64encode }}"
+
+keycloak_sso_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_KEYCLOAK_SSO') }}"
+keycloak_init_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_KEYCLOAK_INIT') }}"
+keycloak_sso_name: "keycloak"
+keycloak_sso_component_name: "sso"
+keycloak_sso_service_name: "{{ app_name }}-{{ keycloak_sso_name }}-{{ keycloak_sso_component_name }}"
+keycloak_sso_configmap_name: "{{ keycloak_sso_service_name }}"
+keycloak_sso_secret_name: "{{ keycloak_sso_service_name }}"
+keycloak_sso_deployment_name: "{{ keycloak_sso_service_name }}"
+keycloak_sso_deployment_strategy: "Recreate"
+keycloak_sso_deployment_replicas: "1"
+keycloak_sso_container_name: "{{ keycloak_sso_service_name }}"
+keycloak_sso_container_limits_cpu: "1000m"
+keycloak_sso_container_limits_memory: "2Gi"
+keycloak_sso_container_requests_cpu: "300m"
+keycloak_sso_container_requests_memory: "600Mi"
+keycloak_sso_liveness_init_delay: "60"
+keycloak_sso_readiness_init_delay: "60"
+keycloak_sso_admin_username: "admin"
+keycloak_sso_admin_username_b64: "{{ keycloak_sso_admin_username | b64encode }}"
+keycloak_sso_java_opts: "-Dcom.redhat.fips=false"
+keycloak_sso_realm: "{{ app_name }}"
+keycloak_sso_req_passwd_update: true
+keycloak_sso_client_id: "{{ app_name }}-ui"
+keycloak_sso_tls_enabled: false
+keycloak_sso_tls_secret_name: "{{ keycloak_sso_service_name }}-serving-cert"
+keycloak_sso_port: "{{ '8443' if keycloak_sso_tls_enabled | bool else '8080' }}"
+keycloak_sso_proto: "{{ 'https' if keycloak_sso_tls_enabled | bool else 'http' }}"
+keycloak_sso_url: "{{ keycloak_sso_proto }}://{{ keycloak_sso_service_name }}.{{ app_namespace }}.svc:{{ keycloak_sso_port }}"
+
+ui_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_TACKLE_UI') }}"
+ui_component_name: "ui"
+ui_service_name: "{{ app_name }}-{{ ui_component_name }}"
+ui_serviceaccount_name: "{{ app_name }}-{{ ui_component_name }}"
+ui_configmap_name: "{{ ui_service_name }}-config"
+ui_deployment_name: "{{ ui_service_name }}"
+ui_deployment_replicas: "1"
+ui_container_name: "{{ ui_service_name }}"
+ui_container_limits_cpu: "500m"
+ui_container_limits_memory: "800Mi"
+ui_container_requests_cpu: "100m"
+ui_container_requests_memory: "350Mi"
+ui_ingress_name: "{{ app_name }}"
+# Ingress class names of "nginx" and "alb" are expected
+ui_ingress_class_name: "nginx"
+ui_ingress_proxy_body_size: "500m"
+ui_route_name: "{{ app_name }}"
+ui_tls_enabled: false
+ui_tls_secret_name: "{{ ui_service_name }}-serving-cert"
+ui_port: "{{ '8443' if ui_tls_enabled | bool else '8080' }}"
+ui_proto: "{{ 'https' if ui_tls_enabled | bool else 'http' }}"
+ui_node_extra_ca_certs: "/opt/app-root/src/ca.crt"
+ui_route_tls_termination: "edge"
+ui_route_tls_insecure_termination_policy: "Redirect"
+# ui_ingress_path_type should only be defined if you need to override
+# the default value for the ingress controller you are using
+# ui_ingress_path_type:
+
+
+oauth_provider: openshift
+oauth_default_openshift_sar: --openshift-sar={"namespace":"{{ app_namespace }}","resource":"services","resourceName":"{{ ui_service_name }}","verb":"get"}
+oauth_access_rule: "{{ oauth_default_openshift_sar if oauth_provider == 'openshift' }}"
+oauth_image_fqin: "{{ lookup('env', 'RELATED_IMAGE_OAUTH_PROXY') }}"
+oauth_ssl_port: 9443
+
+admin_name: "admin"
+
+analyzer_fqin: "{{ lookup('env', 'RELATED_IMAGE_ADDON_ANALYZER') }}"
+analyzer_name: "analyzer"
+analyzer_component_name: "addon"
+analyzer_service_name: "{{ app_name }}-{{ analyzer_name }}-{{ analyzer_component_name }}"
+analyzer_container_limits_cpu: "1"
+analyzer_container_limits_memory: "4Gi"
+analyzer_container_requests_cpu: "1"
+analyzer_container_requests_memory: "4Gi"
+
+cache_name: "cache"
+cache_data_volume_size: "100Gi"
+cache_data_volume_name: "{{ app_name }}-{{ cache_name }}-data"
+cache_data_volume_claim_name: "{{ app_name }}-{{ cache_name }}-volume-claim"
+cache_data_volume_claim_mode: "ReadWriteMany"
+cache_mount_path: "/cache"
+rwx_supported: false
+
+# RH-SSO specific
+rhsso_name: "rhsso"
+rhsso_service_name: "{{ app_name }}-{{ rhsso_name }}"
+rhsso_secret_name: "credential-{{ rhsso_service_name }}"
+rhsso_api_version: "keycloak.org/v1alpha1"
+rhsso_external_access: false
+rhsso_tls_enabled: true
+rhsso_port: "{{ '8443' if rhsso_tls_enabled | bool else '8080' }}"
+rhsso_proto: "{{ 'https' if rhsso_tls_enabled | bool else 'http' }}"
+rhsso_url: "{{ rhsso_proto }}://keycloak.{{ app_namespace }}.svc:{{ rhsso_port }}"

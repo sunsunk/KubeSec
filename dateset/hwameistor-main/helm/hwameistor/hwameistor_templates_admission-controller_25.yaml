@@ -1,0 +1,5 @@
+# Source: hwameistor/templates/admission-controller.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: hwameistor-admission-mutate

@@ -1,0 +1,27 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: test-dubbo-route
+spec:
+  hosts:
+    - org.apache.dubbo.samples.basic.api.demoservice
+  http:
+    - name: route-batchjob
+      match:
+        - headers:
+            batchJob:
+              exact: "true"
+      route:
+        - destination:
+            host: org.apache.dubbo.samples.basic.api.demoservice
+            subset: batchjob
+    - name: route-user
+      match:
+        - headers:
+            batchJob:
+              exact: "false"
+      route:
+        - destination:
+            host: org.apache.dubbo.samples.basic.api.demoservice
+            subset: user

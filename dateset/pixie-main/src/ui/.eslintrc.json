@@ -1,0 +1,288 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:react-hooks/recommended"
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "coverage/**"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "globals": {
+    "BigInt": true,
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "rules": {
+    "quotes": [
+      "error",
+      "single",
+      "avoid-escape"
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*test.ts",
+          "**/*test.tsx",
+          "jest-esm-transform.js",
+          "src/testing/**/*",
+          "**/*stories.tsx",
+          "webpack.config.js",
+          "webpack-utils.js"
+        ]
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "assets/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "configurable/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "!app/**",
+            "group": "external"
+          },
+          {
+            "pattern": "app/**",
+            "group": "internal"
+          }
+        ],
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["parent", "sibling", "index"]
+        ],
+        "pathGroupsExcludedImportTypes": ["parent", "sibling", "index"],
+        "newlines-between": "always"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/utils/env.tsx",
+        "*test.ts",
+        "*test.tsx",
+        "./*.js",
+        "src/testing/**/*"
+      ],
+      "excludedFiles": [
+        "cypress/**/*",
+        "cypress.config.mjs"
+      ],
+      "env": {
+        "node": true,
+        "jest/globals": true
+      }
+    },
+    {
+      "files": [
+        "cypress/**/*.ts"
+      ],
+      "plugins": ["cypress", "@typescript-eslint"],
+      "extends": [
+        "airbnb-typescript/base",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "env": {
+        "cypress/globals": true
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": ["./cypress/tsconfig.json"]
+      }
+    },
+    {
+      "files": ["./tools/licenses/*.js"],
+      "env": {
+        "node": true
+      }
+    },
+    {
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
+      "excludedFiles": [
+        "cypress/**/*",
+        "cypress.config.mjs"
+      ],
+      "extends": [
+        "airbnb-typescript/base",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "settings": {
+        "react": {
+          "version": "detect"
+        }
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        "project": ["./tsconfig.json"]
+      },
+      "plugins": [
+        "jest",
+        "react",
+        "react-memo",
+        "@typescript-eslint"
+      ],
+      "rules": {
+        "max-len": [
+          "error",
+          {
+            "code": 120
+          }
+        ],
+        "no-mixed-operators": [
+          "error",
+          {
+            "groups": [
+              ["&", "|", "^", "~", "<<", ">>", ">>>"],
+              ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+              ["&&", "||"],
+              ["in", "instanceof"]
+            ]
+          }
+        ],
+        "no-restricted-syntax": 0,
+        "no-continue": 0,
+        "no-plusplus": 0,
+        "function-paren-newline": 0,
+        "import/extensions": 0,
+        "import/order": [
+          "error",
+          {
+            "alphabetize": {
+              "order": "asc",
+              "caseInsensitive": true
+            },
+            "pathGroups": [
+              {
+                "pattern": "react",
+                "group": "external",
+                "position": "before"
+              },
+              {
+                "pattern": "assets/**",
+                "group": "internal"
+              },
+              {
+                "pattern": "configurable/**",
+                "group": "internal"
+              },
+              {
+                "pattern": "!app/**",
+                "group": "external"
+              },
+              {
+                "pattern": "app/**",
+                "group": "internal"
+              }
+            ],
+            "pathGroupsExcludedImportTypes": ["parent", "sibling", "index"],
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              ["parent", "sibling", "index"],
+              "object",
+              "type"
+            ],
+            "newlines-between": "always"
+          }
+        ],
+        "import/prefer-default-export": 0,
+        "react/jsx-props-no-spreading": 0,
+        "react/destructuring-assignment": 0,
+        "react/display-name": [2, {"ignoreTranspilerName": true}],
+        "react/no-array-index-key": 0,
+        "react-memo/require-memo": 1,
+        "react-memo/require-usememo": 1,
+        "react-memo/require-usememo-children": 0,
+        "prefer-arrow-callback": ["error", {"allowNamedFunctions": true}],
+        "prefer-destructuring": ["error", {"object": true, "array": false}],
+        "react/jsx-filename-extension": [
+          "warn",
+          {
+            "extensions": [
+              ".tsx"
+            ]
+          }
+        ],
+        "react/prop-types": [
+          "error",
+          {
+            "skipUndeclared": true
+          }
+        ],
+        "jsx-quotes": [
+          "error",
+          "prefer-single"
+        ],
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "ignoreRestSiblings": true
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*test.ts",
+        "*test.tsx",
+        "*mock.ts",
+        "*mock.tsx",
+        "src/testing/**/*"
+      ],
+      "rules": {
+        "react/display-name": [0],
+        "react-memo/require-memo": 0,
+        "react-memo/require-usememo": 0,
+        "react-memo/require-usememo-children": 0
+      }
+    }
+  ]
+}

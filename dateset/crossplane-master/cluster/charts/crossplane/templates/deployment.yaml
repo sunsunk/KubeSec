@@ -1,0 +1,180 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    release: dynamic_parameters
+    
+  annotations: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+      release: dynamic_parameters
+  strategy:
+    type: dynamic_parameters
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: dynamic_parameters
+        release: dynamic_parameters
+        
+    spec:
+      securityContext:
+      priorityClassName: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      hostNetwork: dynamic_parameters
+      initContainers:
+        - image: "dynamic_parameters:dynamic_parameters"
+          args:
+          - core
+          - init
+          - --provider
+          - "dynamic_parameters"
+          - --configuration
+          - "dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          name: dynamic_parameters-init
+          resources:
+          securityContext:
+          env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters-init
+                resource: limits.cpu
+                divisor: "1"
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters-init
+                resource: limits.memory
+                divisor: "1"
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: "WEBHOOK_SERVICE_NAME"
+            value: dynamic_parameters-webhooks
+          - name: "WEBHOOK_SERVICE_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: "WEBHOOK_SERVICE_PORT"
+            value: "9443"
+          - name: "WEBHOOK_ENABLED"
+            value: "false"
+          - name: "ESS_TLS_SERVER_SECRET_NAME"
+            value: ess-server-certs
+          - name: "TLS_CA_SECRET_NAME"
+            value: crossplane-root-ca
+          - name: "TLS_SERVER_SECRET_NAME"
+            value: crossplane-tls-server
+          - name: "TLS_CLIENT_SECRET_NAME"
+            value: crossplane-tls-client
+      containers:
+      - image: "dynamic_parameters:dynamic_parameters"
+        args:
+        - core
+        - start
+        - dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        name: dynamic_parameters
+        resources:
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 2
+          tcpSocket:
+            port: readyz
+        ports:
+        - name: readyz
+          containerPort: 8081
+        - name: metrics
+          containerPort: 8080
+        - name: webhooks
+          containerPort: 9443
+        securityContext:
+        env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters
+                resource: limits.cpu
+                divisor: "1"
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: dynamic_parameters
+                resource: limits.memory
+                divisor: "1"
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: LEADER_ELECTION
+            value: "dynamic_parameters"
+          - name: CA_BUNDLE_PATH
+            value: "/certs/dynamic_parameters"
+          - name: "WEBHOOK_ENABLED"
+            value: "false"
+          - name: "TLS_SERVER_SECRET_NAME"
+            value: crossplane-tls-server
+          - name: "TLS_SERVER_CERTS_DIR"
+            value: /tls/server
+          - name: "TLS_CLIENT_SECRET_NAME"
+            value: crossplane-tls-client
+          - name: "TLS_CLIENT_CERTS_DIR"
+            value: /tls/client
+          - name: dynamic_parameters
+            value: dynamic_parameters
+        volumeMounts:
+          - mountPath: /cache
+            name: package-cache
+          - mountPath: /certs
+            name: ca-certs
+          - mountPath: /tls/server
+            name: tls-server-certs
+          - mountPath: /tls/client
+            name: tls-client-certs
+      volumes:
+      - name: package-cache
+        persistentVolumeClaim:
+          claimName: dynamic_parameters
+        configMap:
+          name: dynamic_parameters
+        emptyDir:
+          medium: dynamic_parameters
+          sizeLimit: dynamic_parameters
+      - name: ca-certs
+        configMap:
+          name: dynamic_parameters
+          items:
+            - key: dynamic_parameters
+              path: dynamic_parameters
+      - name: tls-server-certs
+        secret:
+          secretName: crossplane-tls-server
+      - name: tls-client-certs
+        secret:
+          secretName: crossplane-tls-client
+      nodeSelector: dynamic_parameters
+      tolerations: dynamic_parameters
+      affinity: dynamic_parameters
+      dnsPolicy: dynamic_parameters
+
+---

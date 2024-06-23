@@ -1,0 +1,104 @@
+# Source: dapr/charts/dapr_rbac/templates/sentry.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dapr-sentry
+  namespace: default
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+
+---
+# Source: dapr/charts/dapr_rbac/templates/sentry.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-sentry
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["create"]
+  - apiGroups: ["dapr.io"]
+    resources: ["configurations"]
+    verbs: ["list", "get", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "get", "watch"]
+
+---
+# Source: dapr/charts/dapr_rbac/templates/sentry.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-sentry
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+subjects:
+- kind: ServiceAccount
+  name: dapr-sentry
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dapr-sentry
+
+---
+# Source: dapr/charts/dapr_rbac/templates/sentry.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-sentry
+  namespace: default
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "update","delete"]
+    resourceNames: ["dapr-trust-bundle"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "update", "watch", "list"]
+    resourceNames: ["dapr-trust-bundle"]
+  - apiGroups: ["dapr.io"]
+    resources: ["configurations"]
+    verbs: ["list", "get", "watch"]
+
+---
+# Source: dapr/charts/dapr_rbac/templates/sentry.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dapr-sentry
+  namespace: default
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+subjects:
+- kind: ServiceAccount
+  name: dapr-sentry
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dapr-sentry

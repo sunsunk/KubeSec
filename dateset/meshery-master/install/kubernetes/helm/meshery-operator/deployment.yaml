@@ -1,0 +1,64 @@
+# Source: meshery-operator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meshery-operator
+  namespace: default
+  labels:
+    helm.sh/chart: meshery-operator-0.6.0
+    app.kubernetes.io/name: meshery-operator
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: meshery-operator
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: meshery-operator
+        app.kubernetes.io/instance: my-release
+    spec:
+      serviceAccountName: meshery-operator
+      securityContext:
+        {}
+      containers:
+        - name: manager
+          securityContext:
+            {}
+          # TODO: Need to confirm the meshery-operator image version
+          image: "layer5/meshery-operator:stable-latest"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9443
+              # hostPort: 9443
+              name: server
+            - containerPort: 8080
+              # TODO it's not a good idea we take account to the 8080 port, is there we need communicate through the physical ports
+              # hostPort: 8080
+              name: metrics
+          env:
+          args:
+            - --metrics-addr=127.0.0.1:8080
+            - --enable-leader-election
+          resources:
+            {}
+          command:
+            - /manager
+        - name: kube-rbac-proxy
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.5.0
+          imagePullPolicy: Always
+          ports:
+          - name: https
+            containerPort: 8443
+          args:
+            - --secure-listen-address=0.0.0.0:8443
+            - --upstream=http://127.0.0.1:8080/
+            - --logtostderr=false
+            - --v=10
+          resources:
+            {}

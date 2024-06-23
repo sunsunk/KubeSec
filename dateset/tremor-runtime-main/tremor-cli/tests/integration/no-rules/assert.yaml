@@ -1,0 +1,6 @@
+status: 1
+name: With no rules no data passes
+asserts:
+  - source: fg.err.log
+    contains:
+      - und the token `end` but expected one of

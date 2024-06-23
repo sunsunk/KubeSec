@@ -1,0 +1,70 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_cross_binary", "go_library")
+load("//bazel:pl_build_system.bzl", "pl_go_binary", "pl_go_sdk_version_template_to_label", "pl_supported_go_sdk_versions")
+
+package(default_visibility = ["//src/stirling:__subpackages__"])
+
+go_library(
+    name = "lib",
+    srcs = ["test_go_binary.go"],
+    importpath = "px.dev/pixie/src/stirling/obj_tools/testdata/go",
+)
+
+pl_go_binary(
+    name = "test_go_binary",
+    embed = [":lib"],
+    gc_goopts = select({
+        "//bazel:debug_build": [],
+        "//conditions:default": [
+            "-N",
+            "-l",
+        ],
+    }),
+)
+
+[
+    go_cross_binary(
+        name = pl_go_sdk_version_template_to_label("test_go_%s_binary", sdk_version),
+        sdk_version = sdk_version,
+        tags = ["manual"],
+        target = ":test_go_binary",
+    )
+    for sdk_version in pl_supported_go_sdk_versions
+]
+
+filegroup(
+    name = "test_binaries",
+    testonly = True,
+    srcs = [
+        "sockshop_payments_service",
+        # This binary was built with go 1.13 for GOARCH=386. This ensures that the 32 bit little
+        # endian case buildinfo logic is tested
+        # (https://github.com/golang/go/blob/1dbbafc70fd3e2c284469ab3e0936c1bb56129f6/src/debug/buildinfo/buildinfo.go#L192-L208).
+        # Newer versions of go generate the endian agnostic buildinfo header
+        # (https://github.com/golang/go/blob/1dbbafc70fd3e2c284469ab3e0936c1bb56129f6/src/debug/buildinfo/buildinfo.go#L189-L190)
+        # and so it cannot be tested without compiling against an older Go version.
+        # These older 32 bit binaries have been the source of bugs, so this test case verifies we don't
+        # introduce a regression (https://github.com/pixie-io/pixie/issues/1300).
+        "test_go1_13_i386_binary",
+        ":test_go_1_17_binary",
+        ":test_go_1_18_binary",
+        ":test_go_1_19_binary",
+        ":test_go_1_20_binary",
+        ":test_go_1_21_binary",
+    ],
+)

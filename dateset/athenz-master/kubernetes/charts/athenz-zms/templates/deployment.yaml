@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    app: "dynamic_parameters"
+    chart: "dynamic_parameters"
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+spec:
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+      release: dynamic_parameters
+  strategy: dynamic_parameters
+  serviceAccountName: dynamic_parameters
+  replicas: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        chart: dynamic_parameters
+        release: dynamic_parameters
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: dynamic_parameters
+    spec:
+
+      schedulerName: dynamic_parameters
+      affinity: dynamic_parameters
+      nodeSelector: dynamic_parameters
+      tolerations: dynamic_parameters
+      securityContext:
+        fsGroup: dynamic_parameters
+        runAsGroup:  dynamic_parameters
+        runAsUser: dynamic_parameters
+
+      initContainers:
+        - name: tls-keystore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZMS_KEYSTORE_PATH
+              value: /opt/athenz/zms/var/certs/zms_keystore.pkcs12
+            - name: ZMS_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: keystore
+            - name: ZMS_CERT_PATH
+              value: /opt/athenz/zms/var/tls/tls.crt
+            - name: ZMS_CERT_KEY_PATH
+              value: /opt/athenz/zms/var/tls/tls.key
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: tls
+              mountPath: /opt/athenz/zms/var/tls
+            - name: tls-stores
+              mountPath: /opt/athenz/zms/var/certs
+        - name: tls-truststore
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZMS_TRUSTSTORE_PATH
+              value: /opt/athenz/zms/var/certs/zms_truststore.jks
+            - name: ZMS_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: truststore
+          command:
+            - "/bin/sh"
+            - "-c"
+            - >-
+          volumeMounts:
+            - name: tls-ca
+              mountPath: /opt/athenz/zms/var/tls/CAs
+            - name: tls-stores
+              mountPath: /opt/athenz/zms/var/certs
+      containers:
+        - name: zms
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: ZMS_DB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: jdbc
+            - name: ZMS_RODB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: jdbcRo
+            - name: ZMS_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: keystore
+            - name: ZMS_TRUSTSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: truststore
+            - name: ZMS_PORT
+              value: "4443"
+          ports:
+            - name: zms
+              containerPort: 4443
+            - name: metrics
+              containerPort: dynamic_parameters
+          livenessProbe:
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            httpGet:
+              path: /zms/v1/status
+              port: zms
+              scheme: HTTPS
+          readinessProbe:
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            successThreshold: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            httpGet:
+              path: /zms/v1/status
+              port: zms
+              scheme: HTTPS
+          volumeMounts:
+            - name: config
+              mountPath: /opt/athenz/zms/conf/zms_server
+            - name: zms-key
+              mountPath: /opt/athenz/zms/var/keys
+            - name: tls-stores
+              mountPath: /opt/athenz/zms/var/certs
+            - name: log
+              mountPath: /opt/athenz/zms/logs/zms_server
+          resources: dynamic_parameters
+      volumes:
+        - name: config
+          configMap:
+            name: dynamic_parameters-config
+        - name: zms-key
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zms_private.pem
+                path: zms_private.pem
+                mode: 400
+        - name: tls
+          secret:
+            secretName: dynamic_parameters
+        - name: tls-ca
+          secret:
+            secretName: dynamic_parameters
+        - name: tls-stores
+          secret:
+            secretName: dynamic_parameters
+            items:
+              - key: zms_keystore.pkcs12
+                path: zms_keystore.pkcs12
+                mode: 400
+              - key: zms_truststore.jks
+                path: zms_truststore.jks
+                mode: 400
+        - name: log
+
+---
+
+---

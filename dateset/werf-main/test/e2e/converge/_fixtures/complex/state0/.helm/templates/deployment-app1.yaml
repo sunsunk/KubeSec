@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  annotations:
+    sa.external-dependency.werf.io/resource: serviceaccount/default
+spec:
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      imagePullSecrets:
+        - name: registry
+      containers:
+        - name: app
+          image: dynamic_parameters
+          command:
+            - sh
+            - -ec
+            - |
+              echo app1 started
+              tail -f /dev/null
+
+---
+
+---

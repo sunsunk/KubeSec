@@ -1,0 +1,52 @@
+@charset "utf-8"
+
+@import "sass/utilities/initial-variables"
+@import "sass/utilities/functions"
+
+@font-face
+  font-family: "Gotham"
+  src: url(/fonts/Gotham-Book.otf)
+
+$navbar-base-height: 5rem
+
+$red: #c42227
+$primary: $red
+$cncf-blue: #426cab
+$family-sans-serif: "Gotham", sans-serif
+$navbar-burger-color: $primary !important
+$navbar-height: $navbar-base-height
+$navbar-item-img-max-height: $navbar-base-height * .7
+$link: $primary
+$strong-color: $cncf-blue
+
+@import "sass/utilities/derived-variables"
+
+@import "bulma"
+
+%logo
+  +desktop
+    width: 30%
+  +touch
+    width: 70%
+
+.is-cncf-logo
+  @extend %logo
+  margin-top: 1.5rem
+
+.is-main-logo
+  @extend %logo
+
+.has-text-cncf-blue
+  color: $cncf-blue
+
+=bg-image($url)
+  background-image: url($url)
+
+.page
+  &.home
+    .has-background-image
+      background-color: $white-ter
+      +bg-image("/images/hero-bg.png")
+
+    .hero-foot
+      margin: 1rem 4rem

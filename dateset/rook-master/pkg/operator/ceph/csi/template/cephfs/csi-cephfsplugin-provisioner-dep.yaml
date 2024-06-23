@@ -1,0 +1,237 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: csi-cephfsplugin-provisioner
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+     app: csi-cephfsplugin-provisioner
+  template:
+    metadata:
+      labels:
+        app: csi-cephfsplugin-provisioner
+        contains: csi-cephfsplugin-metrics
+        dynamic_parameters: "dynamic_parameters"
+    spec:
+      serviceAccountName: rook-csi-cephfs-provisioner-sa
+      priorityClassName: dynamic_parameters
+      containers:
+        - name: csi-attacher
+          image: dynamic_parameters
+          args:
+            - "--v=dynamic_parameters"
+            - "--csi-address=$(ADDRESS)"
+            - "--leader-election=true"
+            - "--timeout=dynamic_parameters"
+            - "--leader-election-namespace=dynamic_parameters"
+            - "--leader-election-lease-duration=dynamic_parameters"
+            - "--leader-election-renew-deadline=dynamic_parameters"
+            - "--leader-election-retry-period=dynamic_parameters"
+          env:
+            - name: ADDRESS
+              value: /csi/csi-provisioner.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-snapshotter
+          image:  dynamic_parameters
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--v=dynamic_parameters"
+            - "--timeout=dynamic_parameters"
+            - "--leader-election=true"
+            - "--leader-election-namespace=dynamic_parameters"
+            - "--leader-election-lease-duration=dynamic_parameters"
+            - "--leader-election-renew-deadline=dynamic_parameters"
+            - "--leader-election-retry-period=dynamic_parameters"
+            - "--extra-create-metadata=true"
+            - "--enable-volume-group-snapshots=dynamic_parameters"
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-resizer
+          image: dynamic_parameters
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--v=dynamic_parameters"
+            - "--timeout=dynamic_parameters"
+            - "--leader-election=true"
+            - "--leader-election-namespace=dynamic_parameters"
+            - "--leader-election-lease-duration=dynamic_parameters"
+            - "--leader-election-renew-deadline=dynamic_parameters"
+            - "--leader-election-retry-period=dynamic_parameters"
+            - "--handle-volume-inuse-error=false"
+            - "--feature-gates=RecoverVolumeExpansionFailure=true"
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-provisioner
+          image: dynamic_parameters
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--v=dynamic_parameters"
+            - "--timeout=dynamic_parameters"
+            - "--retry-interval-start=500ms"
+            - "--leader-election=true"
+            - "--leader-election-namespace=dynamic_parameters"
+            - "--feature-gates=HonorPVReclaimPolicy=true"
+            - "--prevent-volume-mode-conversion=true"
+            - "--leader-election-lease-duration=dynamic_parameters"
+            - "--leader-election-renew-deadline=dynamic_parameters"
+            - "--leader-election-retry-period=dynamic_parameters"
+            - "--extra-create-metadata=true"
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-cephfsplugin
+          image: dynamic_parameters
+          args:
+            - "--nodeid=$(NODE_ID)"
+            - "--type=cephfs"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--v=dynamic_parameters"
+            - "--controllerserver=true"
+            - "--drivername=dynamic_parameterscephfs.csi.ceph.com"
+            - "--pidlimit=-1"
+            - "--forcecephkernelclient=dynamic_parameters"
+            - "--setmetadata=dynamic_parameters"
+            - "--clustername=dynamic_parameters"
+            - "--csi-addons-endpoint=$(CSIADDONS_ENDPOINT)"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi-provisioner.sock
+            - name: CSIADDONS_ENDPOINT
+              value: unix:///csi/csi-addons.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: host-sys
+              mountPath: /sys
+            - name: lib-modules
+              mountPath: /lib/modules
+              readOnly: true
+            - name: host-dev
+              mountPath: /dev
+            - name: ceph-csi-config
+              mountPath: /etc/ceph-csi-config/
+            - name: keys-tmp-dir
+              mountPath: /tmp/csi/keys
+            - name: ceph-config
+              mountPath: /etc/ceph/ceph.conf
+              subPath: ceph.conf
+        - name: csi-addons
+          image: dynamic_parameters
+          args :
+            - "--node-id=$(NODE_ID)"
+            - "--v=dynamic_parameters"
+            - "--csi-addons-address=$(CSIADDONS_ENDPOINT)"
+            - "--controller-port=dynamic_parameters"
+            - "--pod=$(POD_NAME)"
+            - "--namespace=$(POD_NAMESPACE)"
+            - "--pod-uid=$(POD_UID)"
+            - "--stagingpath=dynamic_parameters/plugins/kubernetes.io/csi/"
+            - "--leader-election-namespace=dynamic_parameters"
+            - "--leader-election-lease-duration=dynamic_parameters"
+            - "--leader-election-renew-deadline=dynamic_parameters"
+            - "--leader-election-retry-period=dynamic_parameters"
+          ports:
+            - containerPort: dynamic_parameters
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CSIADDONS_ENDPOINT
+              value: unix:///csi/csi-addons.sock
+          imagePullPolicy: dynamic_parameters
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: liveness-prometheus
+          image: dynamic_parameters
+          args:
+            - "--type=liveness"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--metricsport=dynamic_parameters"
+            - "--metricspath=/metrics"
+            - "--polltime=60s"
+            - "--timeout=3s"
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi-provisioner.sock
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+          imagePullPolicy: dynamic_parameters
+      volumes:
+        - name: socket-dir
+            medium: "Memory"
+        - name: host-sys
+          hostPath:
+            path: /sys
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+        - name: host-dev
+          hostPath:
+            path: /dev
+        - name: ceph-csi-config
+          configMap:
+            name: rook-ceph-csi-config
+            items:
+              - key: csi-cluster-config-json
+                path: config.json
+        - name: keys-tmp-dir
+            medium: "Memory"
+        - name: ceph-config
+          configMap:
+            name: csi-ceph-conf-override
+            items:
+            - key: ceph.conf
+              path: ceph.conf
+
+---

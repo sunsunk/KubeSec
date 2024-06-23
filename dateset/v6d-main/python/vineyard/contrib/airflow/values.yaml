@@ -1,0 +1,116 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+---
+# Default values for airflow.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Images
+images:
+  airflow:
+    repository: vineyardcloudnative/vineyard-airflow
+    tag: 2.6.3
+    # Specifying digest takes precedence over tag.
+    digest: ~
+    pullPolicy: IfNotPresent
+
+# Select certain nodes for airflow pods.
+affinity:
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/instance
+          operator: In
+          values:
+          - vineyard-system-vineyardd-sample
+      namespaces:
+      - vineyard-system
+      topologyKey: kubernetes.io/hostname
+
+# Airflow executor
+# One of: LocalExecutor, LocalKubernetesExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
+executor: "CeleryExecutor"
+
+# Environment variables for all airflow containers
+env:
+- name: "VINEYARD_IPC_SOCKET"
+  value: "/var/run/vineyard.sock"
+- name: "AIRFLOW__VINEYARD__IPC_SOCKET"
+  value: "/var/run/vineyard.sock"
+
+# Airflow Worker Config
+workers:
+  # Mount additional volumes into worker. It can be templated like in the following example:
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
+  extraVolumes:
+    - name: "vineyard-sock"
+      hostPath:
+        path: /var/run/vineyard-kubernetes/vineyard-system/vineyardd-sample
+        type: ""
+  extraVolumeMounts:
+    - name: "vineyard-sock"
+      mountPath: "/var/run"
+      readOnly: true
+
+# Airflow scheduler settings
+scheduler:
+  env:
+  - name: AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL
+    value: "10"
+  # Mount additional volumes into scheduler. It can be templated like in the following example:
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
+  extraVolumes:
+    - name: "vineyard-sock"
+      hostPath:
+        path: /var/run/vineyard-kubernetes/vineyard-system/vineyardd-sample
+        type: ""
+  extraVolumeMounts:
+    - name: "vineyard-sock"
+      mountPath: "/var/run"
+      readOnly: true
+
+webserver:
+  # Create initial user.
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: airflow
+    email: airflow@example.com
+    firstName: airflow
+    lastName: user
+    password: airflow

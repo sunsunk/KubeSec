@@ -1,0 +1,149 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vizier-metadata
+spec:
+  serviceName: vizier-metadata
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vizier-metadata
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: vizier-metadata
+        plane: control
+      annotations:
+        px.dev/metrics_scrape: 'true'
+        px.dev/metrics_port: '50400'
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: Exists
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: Exists
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux
+      serviceAccountName: metadata-service-account
+      initContainers:
+      - name: nats-wait
+        # yamllint disable-line rule:line-length
+        image: gcr.io/pixie-oss/pixie-dev-public/curl:multiarch-7.87.0@sha256:f7f265d5c64eb4463a43a99b6bf773f9e61a50aaa7cefaf564f43e42549a01dd
+        # yamllint disable rule:indentation
+        command: ['sh', '-c', 'set -xe;
+          URL="${PROTOCOL}://${SERVICE_NAME}:${SERVICE_PORT}${HEALTH_PATH}";
+          until [ $(curl -m 0.5 -s -o /dev/null -w "%{http_code}" -k ${URL}) -eq 200 ]; do
+            echo "waiting for ${URL}";
+            sleep 2;
+          done;']
+        # yamllint enable rule:indentation
+        env:
+        - name: SERVICE_NAME
+          value: "pl-nats-mgmt"
+        - name: SERVICE_PORT
+          value: "8222"
+        - name: HEALTH_PATH
+          value: ""
+        - name: PROTOCOL
+          value: "http"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      containers:
+      - name: app
+        image: vizier-metadata_server_image:latest
+        env:
+        - name: PL_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              key: jwt-signing-key
+              name: pl-cluster-secrets
+        - name: PL_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PL_MAX_EXPECTED_CLOCK_SKEW
+          value: "2000"
+        - name: PL_RENEW_PERIOD
+          value: "7500"
+        - name: PL_ETCD_OPERATOR_ENABLED
+          value: "false"
+        envFrom:
+        - configMapRef:
+            name: pl-tls-config
+        volumeMounts:
+        - mountPath: /certs
+          name: certs
+        - mountPath: /metadata
+          name: metadata-volume
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 50400
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 50400
+          initialDelaySeconds: 30
+          failureThreshold: 5
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        runAsUser: 10100
+        runAsGroup: 10100
+        fsGroup: 10100
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: certs
+        secret:
+          secretName: service-tls-certs
+      - name: metadata-volume
+        persistentVolumeClaim:
+          claimName: metadata-pv-claim
+      tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "amd64"
+        effect: "NoSchedule"
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "amd64"
+        effect: "NoExecute"
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: "NoSchedule"
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: "NoExecute"

@@ -1,0 +1,135 @@
+// Module included in the following assemblies:
+//
+// configuring/assembly-external-config.adoc
+
+[id='proc-loading-config-from-config-map-{context}']
+= Loading configuration values from secrets or config maps
+
+[role="_abstract"]
+Use the `KubernetesSecretConfigProvider` to provide configuration properties from a secret or the `KubernetesConfigMapConfigProvider` to provide configuration properties from a config map.
+
+In this procedure, a config map provides configuration properties for a connector.
+The properties are specified as key values of the config map.
+The config map is mounted into the Kafka Connect pod as a volume. 
+
+.Prerequisites
+
+* A Kafka cluster is running.
+* The Cluster Operator is running.
+* You have a config map containing the connector configuration.
+
+.Example config map with connector properties
+[source,yaml,subs=attributes+]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-connector-configuration
+data:
+  option1: value1
+  option2: value2
+----
+
+.Procedure
+
+. Configure the `KafkaConnect` resource.
++
+--
+* Enable the `KubernetesConfigMapConfigProvider`
+--
++
+The specification shown here can support loading values from config maps and secrets.
++
+.Example Kafka Connect configuration to use config maps and secrets
+[source,yaml,subs="attributes+"]
+----
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: my-connect
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  # ...
+  config:
+    # ...
+    config.providers: secrets,configmaps # <1>
+    config.providers.configmaps.class: io.strimzi.kafka.KubernetesConfigMapConfigProvider # <2>
+    config.providers.secrets.class: io.strimzi.kafka.KubernetesSecretConfigProvider # <3>
+  # ...
+----
+<1> The alias for the configuration provider is used to define other configuration parameters.
+The provider parameters use the alias from `config.providers`, taking the form `config.providers.${alias}.class`.
+<2> `KubernetesConfigMapConfigProvider` provides values from config maps.
+<3> `KubernetesSecretConfigProvider` provides values from secrets.
+
+. Create or update the resource to enable the provider.
++
+[source,shell,subs=+quotes]
+kubectl apply -f <kafka_connect_configuration_file>
+
+. Create a role that permits access to the values in the external config map.
++
+.Example role to access values from a config map
+[source,yaml,subs="attributes+"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: connector-configuration-role
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["my-connector-configuration"]
+  verbs: ["get"]
+# ...
+----
++
+The rule gives the role permission to access the `my-connector-configuration` config map.
+
+. Create a role binding to permit access to the namespace that contains the config map.
++
+.Example role binding to access the namespace that contains the config map
+[source,yaml,subs="attributes+"]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: connector-configuration-role-binding
+subjects:
+- kind: ServiceAccount
+  name: my-connect-connect
+  namespace: my-project
+roleRef:
+  kind: Role
+  name: connector-configuration-role
+  apiGroup: rbac.authorization.k8s.io
+# ...
+----
++
+The role binding gives the role permission to access the `my-project` namespace.
++
+The service account must be the same one used by the Kafka Connect deployment.
+The service account name format is `<cluster_name>-connect`, where `<cluster_name>` is the name of the `KafkaConnect` custom resource.
+
+. Reference the config map in the connector configuration.
++
+.Example connector configuration referencing the config map
+[source,yaml,subs="attributes+"]
+----
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: my-connector
+  labels:
+    strimzi.io/cluster: my-connect
+spec:
+  # ...
+  config:
+    option: ${configmaps:my-project/my-connector-configuration:option1}
+    # ...
+# ...
+----
++
+The placeholder structure is `configmaps:<path_and_file_name>:<property>`.
+`KubernetesConfigMapConfigProvider` reads and extracts the `option1` property value from the external config map.

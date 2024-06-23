@@ -1,0 +1,51 @@
+images:
+# Use locally built e2e images
+- name: quay.io/metal3-io/baremetal-operator:e2e
+  loadBehavior: tryLoad
+# Save some time and network by using cached images if available
+- name: quay.io/metal3-io/baremetal-operator:release-0.4
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-cainjector:v1.13.1
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-webhook:v1.13.1
+  loadBehavior: tryLoad
+- name: quay.io/jetstack/cert-manager-controller:v1.13.1
+  loadBehavior: tryLoad
+
+variables:
+  # These settings are for the "default" cluster, which is used for all tests except upgrade ones
+  DEPLOY_IRONIC: "false"
+  DEPLOY_BMO: "true"
+  DEPLOY_CERT_MANAGER: "true"
+  BMO_KUSTOMIZATION: "../../config/overlays/fixture"
+
+  # These settings are for the separate cluster that are used for upgrade tests
+  UPGRADE_DEPLOY_IRONIC: "false"
+  UPGRADE_DEPLOY_BMO: "true"
+  UPGRADE_DEPLOY_CERT_MANAGER: "true"
+  UPGRADE_BMO_KUSTOMIZATION_FROM: "../../config/overlays/fixture-release-0.5"
+
+  IMAGE_URL: "http://192.168.222.1/cirros-0.6.2-x86_64-disk.img"
+  IMAGE_CHECKSUM: "c8fc807773e5354afe61636071771906"
+  CERT_MANAGER_VERSION: "v1.13.1"
+  SSH_CHECK_PROVISIONED: "false"
+
+intervals:
+  inspection/wait-unmanaged: ["1m", "10ms"]
+  inspection/wait-registering: ["5s", "10ms"]
+  inspection/wait-registration-error: ["5s", "10ms"]
+  inspection/wait-inspecting: ["5s", "10ms"]
+  inspection/wait-available: ["5s", "1ms"]
+  external-inspection/wait-available: ["5s", "1ms"]
+  default/wait-deployment: ["5m", "1s"]
+  default/wait-namespace-deleted: ["1m", "1s"]
+  ironic/wait-deployment: ["10m", "2s"]
+  default/wait-registration: ["5s", "5ms"]
+  default/wait-provisioning: ["1m", "10ms"]
+  default/wait-provisioned: ["5m", "1s"]
+  default/wait-deprovisioning: ["5s", "10ms"]
+  default/wait-available: ["5m", "1s"]
+  default/wait-deleting: ["5s", "10ms"]
+  default/wait-deleted: ["5s", "10ms"]
+  default/wait-secret-deletion: ["5s", "10ms"]
+  default/wait-power-state: ["5s", "10ms"]

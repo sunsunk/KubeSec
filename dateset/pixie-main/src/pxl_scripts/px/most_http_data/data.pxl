@@ -1,0 +1,59 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+import px
+
+###############################################################
+# Script returns the (pod, request_path) pair that has the most data
+# flowing from it.
+###############################################################
+# Pods/services are formatted as <namespace>/<name>.
+# If you want to match a namespace, only keep the namespace portion
+match_name = ''
+k8s_object = 'pod'
+
+# Visualization Variables - Dont change unless you know what you are doing
+filter_dash = True
+filter_health = True
+filter_readyz = True
+filter_empty_k8s = True
+resp_size = 'resp_size_bytes'
+ip = 'remote_addr'
+###############################################################
+
+
+def get_max_elm(df, column):
+    ''' Returns a df where only the row with the max element in `column`'''
+    max_value_df = df.agg(__max_size=(column, px.max))
+    return df.merge(max_value_df, how='inner', left_on=[column], right_on=['__max_size'],
+                    suffixes=['', '_x']).drop('__max_size')
+
+
+df = px.DataFrame(table='http_events', start_time='-2m')
+
+df[resp_size] = px.Bytes(df.resp_body_size)
+df[k8s_object] = df.ctx[k8s_object]
+filter_pods = px.contains(df[k8s_object], match_name)
+filter_out_conds = ((df.req_path != '/healthz' or not filter_health) and (
+    df.req_path != '/readyz' or not filter_readyz)) and (
+    df[ip] != '-' or not filter_dash)
+filt_df = df[(filter_pods and filter_out_conds)]
+k8s_and_req_path_bytes = filt_df.groupby([k8s_object, 'req_path']).agg(
+    resp_bytes_sum=(resp_size, px.sum)
+)
+# Enable the following line if you want to see the bytes for every (k8s_object, 'req_path') pair
+# px.display(k8s_and_req_path_bytes, 'bytes per path')
+px.display(get_max_elm(k8s_and_req_path_bytes, 'resp_bytes_sum'), 'max_path_pod')

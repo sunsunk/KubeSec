@@ -1,0 +1,20 @@
+apiVersion: core.openfunction.io/v1beta2
+kind: Function
+metadata:
+  name: function-sample-build-only
+spec:
+  build:
+    builder: openfunction/builder-go:latest
+    env:
+      FUNC_CLEAR_SOURCE: "true"
+      FUNC_NAME: HelloWorld
+    failedBuildsHistoryLimit: 3
+    srcRepo:
+      sourceSubPath: functions/knative/hello-world-go
+      url: https://github.com/OpenFunction/samples.git
+    successfulBuildsHistoryLimit: 2
+  image: openfunctiondev/v1beta1-sample:latest
+  imageCredentials:
+    name: push-secret
+  version: v1.0.0
+  workloadRuntime: OCIContainer

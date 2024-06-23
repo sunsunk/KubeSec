@@ -1,0 +1,11 @@
+status: 0
+name: Output of tremor's system::metrics pipeline
+asserts:
+  - source: events.log
+    contains:
+      - |
+        {"connector":"metronome","id":10,"ingest_ns":null}
+  - source: fg.out.log
+    contains:
+      - |
+        {"EXIT":"NOW"}

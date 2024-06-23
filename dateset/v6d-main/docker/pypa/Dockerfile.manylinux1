@@ -1,0 +1,114 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+ARG PLATFORM=x86_64
+FROM quay.io/pypa/manylinux2014_$PLATFORM:2024-02-16-b3cad8f
+
+# re-declare after FROM, reusing the default value
+ARG PLATFORM
+ENV PLATFORM $PLATFORM
+
+# target: ghcr.io/v6d-io/v6d/vineyard-manylinux2014:20240218_$PLATFORM
+
+# Not sure why bundled cmake(3.28.0) in pipx doesn't work
+#
+# error message: Could NOT find Python (missing: Python_LIBRARIES Development Development.Embed) (found suitable version "3.12.2", minimum required is "3.6")
+RUN echo "Installing cmake ..." && \
+    pipx install cmake==3.25.0 --force
+
+RUN echo "Installing glog ..." && \
+    mkdir -p /deps && \
+    cd /deps && \
+    curl -L https://github.com/google/glog/archive/v0.5.0.tar.gz --output glog-v0.5.0.tar.gz && \
+    tar zxvf glog-v0.5.0.tar.gz && \
+    cd glog-0.5.0 && \
+    mkdir build-dir && \
+    cd build-dir && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF \
+             -DBUILD_TESTING=OFF \
+             -DWITH_GFLAGS=OFF \
+             -DCMAKE_POSITION_INDEPENDENT_CODE=ON && \
+    make install -j`nproc` && \
+    rm -rf /deps
+
+RUN echo "Installing gflags ..." && \
+    mkdir -p /deps && \
+    cd /deps && \
+    curl -L https://github.com/gflags/gflags/archive/v2.2.2.tar.gz --output gflags-v2.2.2.tar.gz && \
+    tar zxf gflags-v2.2.2.tar.gz && \
+    cd gflags-2.2.2 && \
+    mkdir -p build-dir && \
+    cd build-dir && \
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel \
+             -DBUILD_SHARED_LIBS=OFF \
+             -DBUILD_TESTING=OFF && \
+    make install -j`nproc` && \
+    rm -rf /deps
+
+RUN echo "Installing apache-arrow ..." && \
+    mkdir -p /deps && \
+    cd /deps && \
+    curl -L https://github.com/apache/arrow/archive/apache-arrow-11.0.0.tar.gz --output apache-arrow-11.0.0.tar.gz && \
+    tar zxvf apache-arrow-11.0.0.tar.gz && \
+    cd arrow-apache-arrow-11.0.0 && \
+    mkdir build-dir && \
+    cd build-dir && \
+    cmake ../cpp \
+        -DCMAKE_BUILD_TYPE=MinSizeRel \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+        -DARROW_COMPUTE=ON \
+        -DARROW_SIMD_LEVEL=NONE \
+        -DARROW_RUNTIME_SIMD_LEVEL=NONE \
+        -DARROW_WITH_UTF8PROC=OFF \
+        -DARROW_CSV=ON \
+        -DARROW_CUDA=OFF \
+        -DARROW_DATASET=OFF \
+        -DARROW_FILESYSTEM=ON \
+        -DARROW_FLIGHT=OFF \
+        -DARROW_GANDIVA=OFF \
+        -DARROW_GANDIVA_JAVA=OFF \
+        -DARROW_HDFS=OFF \
+        -DARROW_HIVESERVER2=OFF \
+        -DARROW_JSON=OFF \
+        -DARROW_ORC=OFF \
+        -DARROW_PARQUET=OFF \
+        -DARROW_PLASMA=OFF \
+        -DARROW_PLASMA_JAVA_CLIENT=OFF \
+        -DARROW_PYTHON=OFF \
+        -DARROW_S3=OFF \
+        -DARROW_WITH_BROTLI=OFF \
+        -DARROW_WITH_BZ2=OFF \
+        -DARROW_WITH_GRPC=OFF \
+        -DARROW_WITH_LZ4=OFF \
+        -DARROW_WITH_RE2=OFF \
+        -DARROW_WITH_SNAPPY=OFF \
+        -DARROW_WITH_ZLIB=OFF \
+        -DARROW_WITH_ZSTD=OFF \
+        -DARROW_IPC=ON \
+        -DARROW_BUILD_BENCHMARKS=OFF \
+        -DARROW_BUILD_EXAMPLES=OFF \
+        -DARROW_BUILD_INTEGRATION=OFF \
+        -DARROW_BUILD_UTILITIES=OFF \
+        -DARROW_BUILD_TESTS=OFF \
+        -DARROW_ENABLE_TIMING_TESTS=OFF \
+        -DARROW_FUZZING=OFF \
+        -DARROW_USE_ASAN=OFF \
+        -DARROW_USE_TSAN=OFF \
+        -DARROW_USE_UBSAN=OFF \
+        -DARROW_JEMALLOC=OFF \
+        -DARROW_BUILD_SHARED=OFF \
+        -DARROW_BUILD_STATIC=ON && \
+    make install -j`nproc` && \
+    rm -rf /deps

@@ -1,0 +1,8 @@
+metadata:
+  creationTimestamp: null
+spec:
+  networking:
+    address: 192.168.0.1
+    advertisedAddress: 34.72.129.131
+    advertisedPort: 12345
+    port: 10001

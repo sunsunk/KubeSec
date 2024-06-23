@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8gb
+  namespace: dynamic_parameters
+  labels:
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: k8gb
+  template:
+    metadata:
+      labels:
+        name: k8gb
+      annotations:
+        kubectl.kubernetes.io/default-container: k8gb
+    spec:
+      serviceAccountName: k8gb
+      containers:
+        - name: k8gb
+          ports:
+          - containerPort: dynamic_parameters
+            name: metrics
+          image: dynamic_parameters:dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          securityContext:
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: OPERATOR_NAME
+              value: "k8gb"
+            - name: CLUSTER_GEO_TAG
+              value: dynamic_parameters
+            - name: EXT_GSLB_CLUSTERS_GEO_TAGS
+              value: dynamic_parameters
+            - name: EDGE_DNS_ZONE
+              value: dynamic_parameters
+            - name: EDGE_DNS_SERVERS
+              value: dynamic_parameters
+            - name: DNS_ZONE
+              value: dynamic_parameters
+            - name: RECONCILE_REQUEUE_SECONDS
+              value: dynamic_parameters
+            - name: INFOBLOX_GRID_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_GRID_HOST
+            - name: INFOBLOX_WAPI_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_WAPI_VERSION
+            - name: INFOBLOX_WAPI_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_WAPI_PORT
+            - name: INFOBLOX_HTTP_REQUEST_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_HTTP_REQUEST_TIMEOUT
+            - name: INFOBLOX_HTTP_POOL_CONNECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_HTTP_POOL_CONNECTIONS
+            - name: INFOBLOX_WAPI_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_WAPI_USERNAME
+            - name: INFOBLOX_WAPI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: infoblox
+                  key: INFOBLOX_WAPI_PASSWORD
+            - name: EXTDNS_ENABLED
+              value: "true"
+            - name: COREDNS_EXPOSED
+              value: "true"
+            - name: TRACING_ENABLED
+              value: dynamic_parameters
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: dynamic_parameters
+            - name: TRACING_SAMPLING_RATIO
+              value: dynamic_parameters
+            - name: LOG_FORMAT
+              value: dynamic_parameters
+            - name: LOG_LEVEL
+              value: dynamic_parameters
+            - name: NO_COLOR
+              value: "true"
+            - name: SPLIT_BRAIN_CHECK
+              value: dynamic_parameters
+            - name: METRICS_ADDRESS
+              value: dynamic_parameters
+        - image: dynamic_parameters:dynamic_parameters
+          name: otel-collector
+          imagePullPolicy: dynamic_parameters
+          args:
+          - --config=/conf/agent.yaml
+          volumeMounts:
+          - mountPath: /conf
+            name: agent-config
+      volumes:
+      - configMap:
+          items:
+          - key: agent.yaml
+            path: agent.yaml
+          name: agent-config
+        name: agent-config
+
+---
+
+---

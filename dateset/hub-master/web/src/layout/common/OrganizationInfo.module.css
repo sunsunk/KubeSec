@@ -1,0 +1,50 @@
+.link {
+  top: -1px;
+}
+
+.dropdown {
+  width: 350px;
+  font-size: 0.85rem;
+  margin-top: 22px;
+}
+
+.content {
+  padding: 0.75rem 1.25rem;
+}
+
+.imageWrapper {
+  min-width: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.description {
+  font-size: 0.75rem;
+}
+
+.externalLink {
+  color: var(--gray-dark);
+  font-size: 0.85rem;
+}
+
+.icon {
+  top: 2px;
+}
+
+@media only screen and (max-width: 575.98px) {
+  .dropdown {
+    display: none !important;
+  }
+}
+
+@media (hover: hover) {
+  .link:hover,
+  .externalLink:hover {
+    text-decoration: underline;
+  }
+}

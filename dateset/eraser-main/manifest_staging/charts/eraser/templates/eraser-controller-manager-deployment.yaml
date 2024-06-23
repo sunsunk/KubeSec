@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: '{{ .Release.Name }}'
+    app.kubernetes.io/managed-by: '{{ .Release.Service }}'
+    app.kubernetes.io/name: '{{ template "eraser.name" . }}'
+    control-plane: controller-manager
+    helm.sh/chart: '{{ template "eraser.name" . }}'
+  name: eraser-controller-manager
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: '{{ .Release.Name }}'
+      app.kubernetes.io/managed-by: '{{ .Release.Service }}'
+      app.kubernetes.io/name: '{{ template "eraser.name" . }}'
+      control-plane: controller-manager
+      helm.sh/chart: '{{ template "eraser.name" . }}'
+  template:
+    metadata:
+      labels:
+        {{- if .Values.deploy.additionalPodLabels }}{{- toYaml .Values.deploy.additionalPodLabels | nindent 8 }}{{end}}
+        app.kubernetes.io/instance: '{{ .Release.Name }}'
+        app.kubernetes.io/managed-by: '{{ .Release.Service }}'
+        app.kubernetes.io/name: '{{ template "eraser.name" . }}'
+        control-plane: controller-manager
+        helm.sh/chart: '{{ template "eraser.name" . }}'
+    spec:
+      {{- if .Values.runtimeConfig.manager.pullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.runtimeConfig.manager.pullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      affinity:
+        {{- toYaml .Values.deploy.affinity | nindent 8 }}
+      containers:
+      - args:
+        - --config=/config/controller_manager_config.yaml
+        {{- if .Values.deploy.additionalArgs }}{{- range .Values.deploy.additionalArgs }}{{ nindent 8 "- " }}{{ . }}{{- end -}}{{ end }}
+        command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: OTEL_SERVICE_NAME
+          value: eraser-manager
+        image: '{{ .Values.deploy.image.repo }}:{{ .Values.deploy.image.tag | default .Chart.AppVersion }}'
+        imagePullPolicy: '{{ .Values.deploy.image.pullPolicy }}'
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          {{- toYaml .Values.deploy.resources | nindent 10 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /config
+          name: eraser-manager-config
+      nodeSelector:
+        {{- toYaml .Values.deploy.nodeSelector | nindent 8 }}
+      priorityClassName: '{{ .Values.deploy.priorityClassName }}'
+      serviceAccountName: eraser-controller-manager
+      terminationGracePeriodSeconds: 10
+      tolerations:
+        {{- toYaml .Values.deploy.tolerations | nindent 8 }}
+      volumes:
+      - configMap:
+          name: eraser-manager-config
+        name: eraser-manager-config

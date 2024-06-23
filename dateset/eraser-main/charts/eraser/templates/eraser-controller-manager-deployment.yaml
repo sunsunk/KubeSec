@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: 'dynamic_parameters'
+    app.kubernetes.io/managed-by: 'dynamic_parameters'
+    app.kubernetes.io/name: 'dynamic_parameters'
+    control-plane: controller-manager
+    helm.sh/chart: 'dynamic_parameters'
+  name: eraser-controller-manager
+  namespace: 'dynamic_parameters'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: 'dynamic_parameters'
+      app.kubernetes.io/managed-by: 'dynamic_parameters'
+      app.kubernetes.io/name: 'dynamic_parameters'
+      control-plane: controller-manager
+      helm.sh/chart: 'dynamic_parameters'
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: 'dynamic_parameters'
+        app.kubernetes.io/managed-by: 'dynamic_parameters'
+        app.kubernetes.io/name: 'dynamic_parameters'
+        control-plane: controller-manager
+        helm.sh/chart: 'dynamic_parameters'
+    spec:
+      imagePullSecrets:
+        - name: dynamic_parameters
+      affinity:
+      containers:
+      - args:
+        - --config=/config/controller_manager_config.yaml
+        command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: OTEL_SERVICE_NAME
+          value: eraser-manager
+        image: 'dynamic_parameters:dynamic_parameters'
+        imagePullPolicy: 'dynamic_parameters'
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /config
+          name: eraser-manager-config
+      nodeSelector:
+      priorityClassName: 'dynamic_parameters'
+      serviceAccountName: eraser-controller-manager
+      terminationGracePeriodSeconds: 10
+      tolerations:
+      volumes:
+      - configMap:
+          name: eraser-manager-config
+        name: eraser-manager-config
+
+---
+
+---

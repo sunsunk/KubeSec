@@ -1,0 +1,82 @@
+# Source: akri/templates/agent.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: akri-agent-daemonset
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: akri-agent
+    app.kubernetes.io/component: agent
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: akri
+      app.kubernetes.io/instance: my-release
+      app.kubernetes.io/name: akri-agent
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-agent
+        app.kubernetes.io/component: agent
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      serviceAccountName: 'akri-agent-sa'
+      containers:
+      - name: akri-agent
+        image: "ghcr.io/project-akri/akri/agent:v0.12.20-dev"
+        resources:
+          requests:
+            memory: 11Mi
+            cpu: 10m
+          limits:
+            memory: 79Mi
+            cpu: 26m
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+          - name: HOST_CRICTL_PATH
+            value: /usr/local/bin/crictl
+          - name: HOST_RUNTIME_ENDPOINT
+            value: unix:///host/run/containerd/containerd.sock
+          - name: HOST_IMAGE_ENDPOINT
+            value: unix:///host/run/containerd/containerd.sock
+          - name: AGENT_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: DISCOVERY_HANDLERS_DIRECTORY
+            value: /var/lib/akri
+        volumeMounts:
+          - name: discovery-handlers
+            mountPath: /var/lib/akri
+          - name: device-plugin
+            mountPath: /var/lib/kubelet/device-plugins
+          - name: var-run-dockershim
+            mountPath: /host/run/containerd/containerd.sock
+      volumes:
+      - name: discovery-handlers
+        hostPath:
+          path: /var/lib/akri
+      - name: device-plugin
+        hostPath:
+          path: "/var/lib/kubelet/device-plugins"
+      - name: var-run-dockershim
+        hostPath:
+          # Please set container runtime socket by either selecting the appropriate K8s distro `kubernetesDistro=<k8s|k3s|microk8s>` 
+          # or setting `agent.host.containerRuntimeSocket=/container/runtime.sock`. 
+          # See https://docs.akri.sh/user-guide/cluster-setup for more information.
+          # Using K8s default "/run/containerd/containerd.sock" for now.
+          path: "/run/containerd/containerd.sock"

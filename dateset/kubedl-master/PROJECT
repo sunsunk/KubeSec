@@ -1,0 +1,47 @@
+domain: kubedl.io
+multigroup: true
+repo: github.com/alibaba/kubedl
+resources:
+- group: training
+  kind: MarsJob
+  version: v1alpha1
+- group: training
+  kind: MPIJob
+  version: v1alpha1
+- group: training
+  kind: PyTorchJob
+  version: v1alpha1
+- group: training
+  kind: TFJob
+  version: v1alpha1
+- group: training
+  kind: XDLJob
+  version: v1alpha1
+- group: training
+  kind: XGBoostJob
+  version: v1alpha1
+- group: training
+  kind: ElasticDLJob
+  version: ""
+- group: model
+  kind: Model
+  version: v1alpha1
+- group: model
+  kind: ModelVersion
+  version: v1alpha1
+- group: serving
+  kind: Inference
+  version: v1alpha1
+- group: apps
+  kind: Cron
+  version: v1alpha1
+- group: cache
+  kind: CacheBackend
+  version: ""
+- group: notebook
+  kind: Notebook
+  version: v1alpha1
+- group: inference
+  kind: ElasticBatchJob
+  version: v1alpha1
+version: "2"

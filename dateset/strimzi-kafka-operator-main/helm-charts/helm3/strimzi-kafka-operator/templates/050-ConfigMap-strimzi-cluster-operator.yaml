@@ -1,0 +1,73 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    component: logging-config-map
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+data:
+  log4j2.properties: |
+    name = COConfig
+    monitorInterval = 30
+
+    appender.console.type = Console
+    appender.console.name = STDOUT
+    appender.console.layout.type = PatternLayout
+
+    rootLogger.level = dynamic_parameters
+    rootLogger.appenderRefs = stdout
+    rootLogger.appenderRef.console.ref = STDOUT
+
+    # Kafka AdminClient logging is a bit noisy at INFO level
+    logger.kafka.name = org.apache.kafka
+    logger.kafka.level = WARN
+
+    # Zookeeper is very verbose even on INFO level -> We set it to WARN by default
+    logger.zookeepertrustmanager.name = org.apache.zookeeper
+    logger.zookeepertrustmanager.level = WARN
+
+    # Keeps separate level for Netty logging -> to not be changed by the root logger
+    logger.netty.name = io.netty
+    logger.netty.level = INFO
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

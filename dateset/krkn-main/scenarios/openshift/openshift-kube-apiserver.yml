@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../plugin.schema.json
+- id: kill-pods
+  config:
+    namespace_pattern: ^openshift-kube-apiserver$
+    label_selector: app=openshift-kube-apiserver
+- id: wait-for-pods
+  config:
+    namespace_pattern: ^openshift-kube-apiserver$
+    label_selector: app=openshift-kube-apiserver
+    count: 3

@@ -1,0 +1,42 @@
+*~
+\#*\#
+.\#*
+
+# Vim-related files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# git merge files
+*.orig
+*.patch
+*.rej
+
+# compiled binary
+/_output
+/exporter
+/kind
+
+# test-bin
+test-bin
+
+# bin
+bin
+
+# vscode
+.vscode
+
+.DS_Store
+*/.DS_Store
+.idea
+
+kepler-action
+local-dev-cluster
+
+*.prof
+*.test
+*.cache
+/tmp
+.env

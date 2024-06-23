@@ -1,0 +1,36 @@
+# Source: carina-csi-driver/templates/rbac-csi-controller.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: carina-external-resizer-role
+  labels:
+    class: carina
+    app: csi-carina-controller
+    release:  "my-release"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "carina-csi-driver"
+    app.kubernetes.io/version: "0.11.0"
+    helm.sh/chart: "carina-csi-driver-v0.11.0"
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["carina.storage.io"]
+    resources: ["logicvolumes", "logicvolumes/status"]
+    verbs: ["get", "list", "watch", "update", "patch", "create", "delete"]

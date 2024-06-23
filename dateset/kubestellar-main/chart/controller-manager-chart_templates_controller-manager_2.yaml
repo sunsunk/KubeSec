@@ -1,0 +1,6 @@
+# Source: controller-manager-chart/templates/controller-manager.yaml
+apiVersion: v1
+data: {}
+kind: ConfigMap
+metadata:
+  name: kubestellar-config

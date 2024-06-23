@@ -1,0 +1,77 @@
+name: build-kanister-image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag in the format vx.x.x'
+        required: true
+        type: string
+      latest_tag:
+        description: 'Tag image as latest or dev_latest'
+        required: true
+        default: dev_latest
+        type: choice
+        options:
+        - latest
+        - dev_latest
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: kanisterio/build
+
+jobs:
+  # TODO: Enable following when we want to automate this workflow on push to master branch
+  # check-files:
+  # runs-on: ubuntu-latest
+  #   outputs:
+  #     changed: ${{ steps.changed-files.outputs.any_changed }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: tj-actions/changed-files@v35
+  #       name: Get changed files
+  #       id: changed-files
+  #       with:
+  #         files: docker/build/Dockerfile
+
+  build:
+    permissions:
+      contents: read
+      packages: write
+
+    runs-on: ubuntu-latest
+    # TODO: Uncomment following when we enable check-file job
+    # needs: check-files
+    # if: needs.check-files.outputs.changed == 'true'
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@2b51285047da1547ffb1b2203d8be4c0af6b1f20 # v3.2.0
+    - name: Image metadata
+      id: meta
+      uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=sha
+          {{date 'YYYY.MM.DD-HHmm'}}
+          ${{ inputs.tag }}
+          ${{ inputs.latest_tag }}
+    - name: Login to GHCR
+      uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push
+      uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
+      with:
+        context: "{{defaultContext}}:docker/build"
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}

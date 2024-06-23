@@ -1,0 +1,21 @@
+# Source: memcached/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: my-release-memcached
+  namespace: default
+  annotations:
+    helm.sh/hook: "post-upgrade, post-install"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+  labels:
+    app.kubernetes.io/name: memcached
+    helm.sh/chart: memcached-0.0.2
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.5.20"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/instance: my-release
+  minAvailable: 2

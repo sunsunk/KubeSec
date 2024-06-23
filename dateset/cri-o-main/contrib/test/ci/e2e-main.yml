@@ -1,0 +1,38 @@
+---
+- hosts: localhost, all
+  become: yes
+  environment:
+    GOPATH: /usr/go
+  vars_files:
+    - "{{ playbook_dir }}/vars.yml"
+  tags:
+    - e2e
+  tasks:
+    - name: run k8s e2e tests
+      include_tasks: "e2e.yml"
+      args:
+        apply:
+          environment: '{{ e2e_test_env }}'
+
+    - name: changing permission of temp file
+      become: yes
+      file: dest=/tmp/artifacts owner=deadbeef group=deadbeef mode=0777 recurse=yes
+
+- hosts: localhost, all
+  become: yes
+  environment:
+    GOPATH: /usr/go
+  vars_files:
+    - "{{ playbook_dir }}/vars.yml"
+  tags:
+    - e2e-features
+  tasks:
+    - name: run k8s e2e features tests
+      include_tasks: "e2e-features.yml"
+      args:
+        apply:
+          environment: '{{ e2e_test_env }}'
+
+    - name: changing permission of temp file
+      become: yes
+      file: dest=/tmp/artifacts owner=deadbeef group=deadbeef mode=0777 recurse=yes

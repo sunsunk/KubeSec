@@ -1,0 +1,16 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://docs.github.com"
+    },
+    {
+      "pattern": "^https://github.com/\\S+/\\S+/(issues|pull)/[0-9]+"
+    },
+    {
+      "pattern": "^https://github.com/submariner-io/submariner/workflows/(.*)/badge.svg"
+    },
+    {
+      "pattern": "^http://localhost:"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: dev-env-l2
+  namespace: metallb-system
+spec:
+  addresses:
+  - SERVICE_V4_RANGE
+  - SERVICE_V6_RANGE
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: empty
+  namespace: metallb-system

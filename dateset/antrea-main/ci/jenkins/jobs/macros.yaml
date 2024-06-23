@@ -1,0 +1,311 @@
+- builder:
+    name: builder-job-updater
+    builders:
+      - shell: |-
+          cp /var/lib/jenkins/utils/defaults.yaml ci/jenkins/jobs
+          find ci/jenkins/jobs/ | grep ci/jenkins/jobs/projects | grep -v projects-{jenkins_location}.yaml | xargs rm
+          jenkins-jobs update -r ci/jenkins/jobs
+          rm ci/jenkins/jobs/defaults.yaml
+
+- builder:
+    name: builder-jenkins-backup
+    builders:
+      - shell: |-
+          rdiff-backup ${{RDIFF_USERNAME}}@${{RDIFF_IP}}::${{RDIFF_PATH}} backup
+          rdiff-backup --remove-older-than 6M backup
+
+- builder:
+    name: builder-eks-cluster-cleanup
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          sudo ./ci/test-conformance-eks.sh --cluster-name "${CLUSTERNAME}" --cleanup-only
+
+- builder:
+    name: builder-gke-cluster-cleanup
+    builders:
+      - shell: |-
+         #!/bin/bash
+         set -ex
+         ./ci/test-conformance-gke.sh --gcloud-sdk-path "${GCLOUD_SDK_PATH}" --cluster-name "${CLUSTERNAME}" --cleanup-only
+
+- builder:
+    name: builder-aks-cluster-cleanup
+    builders:
+      - shell: |-
+         #!/bin/bash
+         set -ex
+         ./ci/test-conformance-aks.sh --cluster-name "${CLUSTERNAME}" --cleanup-only
+
+- builder:
+    name: builder-workload-cluster-garbage-collection
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          ./ci/jenkins/test-vmc.sh --garbage-collection
+
+- builder:
+    name: builder-list-tests
+    builders:
+      - shell: |-
+          set +x
+
+          rm -f COMMENT_EXIST
+          rm -f body.json
+          echo "{{\"body\": \"Thanks for your PR.\\\nUnit tests and code linters are run automatically every time the PR is updated.\\\nE2e, conformance and network policy tests can only be triggered by a member of the vmware-tanzu organization. Regular contributors to the project should join the org.\\\n\\\nThe following commands are available:\\\n* \`/test-e2e\`: to trigger e2e tests.\\\n* \`/skip-e2e\`: to skip e2e tests.\\\n* \`/test-conformance\`: to trigger conformance tests.\\\n* \`/skip-conformance\`: to skip conformance tests.\\\n* \`/test-networkpolicy\`: to trigger networkpolicy tests.\\\n* \`/skip-networkpolicy\`: to skip networkpolicy tests.\\\n* \`/test-ipv6-e2e\`: to trigger e2e tests in a dual-stack setup.\\\n* \`/skip-ipv6-e2e\`: to skip e2e tests a dual-stack setup.\\\n* \`/test-ipv6-conformance\`: to trigger conformance tests a dual-stack setup.\\\n* \`/skip-ipv6-conformance\`: to skip conformance tests a dual-stack setup.\\\n* \`/test-ipv6-networkpolicy\`: to trigger networkpolicy tests in a dual-stack setup.\\\n* \`/skip-ipv6-networkpolicy\`: to skip networkpolicy tests in a dual-stack setup.\\\n* \`/test-ipv6-only-e2e\`: to trigger e2e tests in an IPv6 only setup.\\\n* \`/skip-ipv6-only-e2e\`: to skip e2e tests an IPv6 only setup.\\\n* \`/test-ipv6-only-conformance\`: to trigger conformance tests an IPv6 only setup.\\\n* \`/skip-ipv6-only-conformance\`: to skip conformance tests an IPv6 only setup.\\\n* \`/test-ipv6-only-networkpolicy\`: to trigger networkpolicy tests in an IPv6 only setup.\\\n* \`/skip-ipv6-only-networkpolicy\`: to skip networkpolicy tests in an IPv6 only setup.\\\n* \`/test-all-features-conformance\`: to trigger conformance tests with all alpha features enabled.\\\n* \`/skip-all-features-conformance\`: to skip conformance tests with all alpha features enabled.\\\n* \`/test-whole-conformance\`: to trigger all conformance tests on linux.\\\n* \`/skip-whole-conformance\`: to skip all conformance tests on linux.\\\n* \`/test-windows-conformance\`: to trigger windows conformance tests.\\\n* \`/skip-windows-conformance\`: to skip windows conformance tests.\\\n* \`/test-windows-networkpolicy\`: to trigger windows networkpolicy tests.\\\n* \`/skip-windows-networkpolicy\`: to skip windows networkpolicy tests.\\\n* \`/test-hw-offload\`: to trigger ovs hardware offload test.\\\n* \`/skip-hw-offload\`: to skip ovs hardware offload test.\\\n* \`/test-all\`: to trigger all IPv4 tests (except whole conformance).\\\n* \`/skip-all\`: to skip all IPv4 tests (except whole conformance).\\n* \`/test-ipv6-all\`: to trigger all dual-stack tests.\\\n* \`/skip-ipv6-all\`: to skip all dual-stack tests.\\n* \`/test-ipv6-only-all\`: to trigger all IPv6 only tests.\\\n* \`/skip-ipv6-only-all\`: to skip all IPv6 only tests.\"}}" > body.json
+
+          B="$(cat body.json | jq .body)"
+
+          # read -r: preserve \n from the input line.
+          curl "https://api.github.com/repos/{org_repo}/issues/${{ghprbPullId}}/comments" | jq '.[].body' | while read -r LINE
+          do
+            if [ "$LINE" = "$B" ]
+            then
+              echo Found existing comment!
+              # pipeline runs in subshell, setting variable won't have effect on the parent process
+              # so use a file as a flag
+              touch COMMENT_EXIST
+              break
+            fi
+          done
+
+          if !(test -f COMMENT_EXIST)
+          then
+            echo Ask the question!
+            curl -u "${{GH_CREDENTIAL}}" -X POST -H 'Content-type: application/json' -d @body.json "https://api.github.com/repos/{org_repo}/issues/${{ghprbPullId}}/comments"
+          else
+            echo Question already asked!
+          fi
+
+- builder:
+    name: builder-job-validator
+    builders:
+      - shell: |-
+          cp /var/lib/jenkins/utils/defaults.yaml ci/jenkins/jobs
+          mv ci/jenkins/jobs/projects-lab.yaml ci/jenkins/projects-lab.yaml
+          jenkins-jobs test -r ci/jenkins/jobs
+          mv ci/jenkins/projects-lab.yaml ci/jenkins/jobs/projects-lab.yaml
+          rm ci/jenkins/jobs/projects-cloud.yaml
+          jenkins-jobs test -r ci/jenkins/jobs/
+          rm ci/jenkins/jobs/defaults.yaml
+
+- builder:
+    name: builder-pending-label
+    builders:
+      - shell: 'exit 1 # fail on purpose'
+
+- builder:
+    name: builder-e2e
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test-vmc.sh --cluster-name "$BUILD_TAG" --testcase e2e --coverage --codecov-token "${CODECOV_TOKEN}" --registry ${DOCKER_REGISTRY} --username "${CAPVC_USERNAME}" --password "${CAPVC_PASSWORD}"
+
+- builder:
+    name: builder-conformance
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test-vmc.sh --cluster-name "$BUILD_TAG" --testcase '{conformance_type}' --coverage --codecov-token "${{CODECOV_TOKEN}}" --registry ${{DOCKER_REGISTRY}} --username "${{CAPVC_USERNAME}}" --password "${{CAPVC_PASSWORD}}"
+
+- builder:
+    name: builder-install-ovs
+    builders:
+      - shell: |-
+          #!/bin/bash
+          ./ci/jenkins/test.sh --testcase windows-install-ovs
+
+- builder:
+    name: builder-e2e-proxyall-win
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test.sh --testcase windows-e2e --registry ${DOCKER_REGISTRY} --proxyall
+
+- builder:
+      name: builder-e2e-win
+      builders:
+          - shell: |-
+                #!/bin/bash
+                set -ex
+                DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+                ./ci/jenkins/test.sh --testcase windows-containerd-e2e --registry ${{DOCKER_REGISTRY}} --win-image-node '{win_image_node}'
+
+- builder:
+      name: builder-conformance-win
+      builders:
+          - shell: |-
+                #!/bin/bash
+                set -ex
+                DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+                ./ci/jenkins/test.sh --testcase '{conformance_type}' --registry ${{DOCKER_REGISTRY}} --win-image-node '{win_image_node}'
+
+- builder:
+    name: builder-flexible-ipam-e2e
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test.sh --testcase e2e --registry ${DOCKER_REGISTRY} --workdir "/home/ubuntu" --kubeconfig "/home/ubuntu/kube.conf" --testbed-type "flexible-ipam"
+
+- builder:
+    name: builder-flow-visibility
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --setup-only
+          ./ci/test-flow-visibility.sh --kubeconfig jenkins/out/kubeconfig
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --cleanup-only
+
+          if !(test -f TEST_FAILURE); then
+            echo "=== SUCCESS !!! ==="
+            exit 0
+          fi
+          echo "=== FAILURE !!! ==="
+          exit 1
+
+- builder:
+    name: builder-matrix
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e
+          TEST_FAIL_E2E=0
+          TEST_FAIL_NP=0
+          TEST_FAIL_CONFORMANCE=0
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          export JOB_NAME="matrix-${TEST_OS}-k8s-${K8S_VERSION//./-}-build-num"
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --setup-only
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --testcase 'whole-conformance' --test-only --registry ${DOCKER_REGISTRY} || TEST_FAIL_CONFORMANCE=1
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --testcase 'networkpolicy' --test-only --registry ${DOCKER_REGISTRY} || TEST_FAIL_NP=1
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --testcase e2e --test-only --registry ${DOCKER_REGISTRY} || TEST_FAIL_E2E=1 
+          ./ci/jenkins/test-vmc.sh --cluster-name "${JOB_NAME}-${BUILD_NUMBER}" --cleanup-only
+          if [ "${TEST_FAIL_E2E}" -eq 1 ]; then
+            echo "E2E Test failed!"
+          fi
+          if [ "${TEST_FAIL_NP}" -eq 1 ]; then
+            echo "Network Policy Test failed!"
+          fi
+          if [ "${TEST_FAIL_CONFORMANCE}" -eq 1 ]; then
+            echo "Whole Conformance Test failed!"
+          fi
+          exit $((TEST_FAIL_E2E + TEST_FAIL_NP + TEST_FAIL_CONFORMANCE))
+
+- builder:
+    name: builder-vm-e2e
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test-vm.sh  --registry ${DOCKER_REGISTRY} --kubeconfig /var/lib/jenkins/.kube/config
+
+- builder:
+    name: builder-conformance-kind
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          KIND_TIMEOUT=135
+          FULL_CLUSTER_NAME='{kind_cluster_name}'-"${{BUILD_NUMBER}}"
+          #  Delete all Kind clusters created more than 135 mins ago. 135 minutes is the timeout 
+          #  we have configured for running conformance and NetworkPolicy tests on Kind, 
+          #  so clusters older than that can de deleted safely.
+          ./ci/kind/kind-setup.sh destroy --all --until ${{KIND_TIMEOUT}}
+          ./ci/kind/kind-install.sh
+          ./ci/kind/kind-setup.sh --antrea-cni create "${{FULL_CLUSTER_NAME}}" --ip-family '{ip_version}'
+          kind export kubeconfig -n "${{FULL_CLUSTER_NAME}}" --kubeconfig ${{PWD}}/.kube/config
+          set +e
+          ./ci/jenkins/test.sh --testcase '{conformance_type}' --registry ${{DOCKER_REGISTRY}} --kubeconfig ${{PWD}}/.kube/config --testbed-type "kind" --kind-cluster-name "${{FULL_CLUSTER_NAME}}"
+          return_code=$?
+          set -ex
+          ./ci/kind/kind-setup.sh destroy "${{FULL_CLUSTER_NAME}}"
+          exit $return_code
+
+- builder:
+    name: builder-e2e-kind
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          KIND_TIMEOUT=135
+          FULL_CLUSTER_NAME='{kind_cluster_name}'-"${{BUILD_NUMBER}}"
+          #  Delete all Kind clusters created more than 135 mins ago. 135 minutes is the timeout 
+          #  we have configured for running conformance, NetworkPolicy and e2e tests on Kind, 
+          #  so clusters older than that can de deleted safely.
+          ./ci/kind/kind-setup.sh destroy --all --until ${{KIND_TIMEOUT}}
+          ./ci/kind/kind-install.sh 
+          ./ci/kind/kind-setup.sh --antrea-cni create "${{FULL_CLUSTER_NAME}}" --ip-family '{ip_version}'
+          kind export kubeconfig -n "${{FULL_CLUSTER_NAME}}" --kubeconfig ${{PWD}}/.kube/config
+          set +e
+          ./ci/jenkins/test.sh --testcase e2e --registry ${{DOCKER_REGISTRY}} --kubeconfig ${{PWD}}/.kube/config --testbed-type "kind" --kind-cluster-name "${{FULL_CLUSTER_NAME}}"
+          return_code=$?
+          set -ex
+          ./ci/kind/kind-setup.sh destroy "${{FULL_CLUSTER_NAME}}"
+          exit $return_code 
+
+- builder:
+    name: builder-rancher-e2e
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          chmod +x ./ci/jenkins/test-rancher.sh
+          ./ci/jenkins/test-rancher.sh --registry ${DOCKER_REGISTRY} --testcase e2e --cluster-name rancher-test
+
+- builder:
+    name: builder-rancher-conformance
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          chmod +x ./ci/jenkins/test-rancher.sh
+          ./ci/jenkins/test-rancher.sh --cluster-name rancher-test --testcase '{conformance_type}' --registry ${{DOCKER_REGISTRY}}
+- builder:
+    name: builder-multicluster-e2e
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e 
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test-mc.sh --testcase e2e --registry ${DOCKER_REGISTRY} --mc-gateway --codecov-token "${CODECOV_TOKEN}" --coverage --kind
+            
+- builder:
+    name: builder-e2e-jumper
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test.sh --testcase e2e --registry ${DOCKER_REGISTRY} --testbed-type jumper
+
+- builder:
+    name: builder-conformance-jumper
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -e
+          DOCKER_REGISTRY="$(head -n1 ci/docker-registry)"
+          ./ci/jenkins/test.sh --testcase '{conformance_type}' --registry ${{DOCKER_REGISTRY}} --testbed-type jumper
+
+- builder:
+     name: builder-stop-all
+     builders:
+       - shell: |-
+           #!/bin/bash
+           set -e
+           ./ci/jenkins/stop-stale-jobs.sh --pull-request "${ghprbPullId}" --jenkins "${JENKINS_URL}"

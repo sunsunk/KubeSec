@@ -1,0 +1,54 @@
+name: Generate and push docs
+run-name: Generate and push docs - ${{ github.ref_name }}
+
+on:
+  # So we can trigger manually if needed
+  workflow_dispatch:
+  # To confirm any changes to docs build successfully, without deploying them
+  pull_request_target:
+    branches:
+      - main
+      - "release-*"
+    paths:
+      - "docs/**"
+      - "*.md"
+      - ".github/workflows/docs-gen-and-push.yaml"
+  push:
+    branches:
+      - main
+      - "release-*"
+    paths:
+      - "docs/**"
+      - "*.md"
+      - ".github/workflows/docs-gen-and-push.yaml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  generate-and-push:
+    if: github.repository_owner == 'kubestellar'
+    name: Generate and push docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          token: ${{ secrets.GH_ALL_PROJECT_TOKEN }}
+          persist-credentials: 'true'
+  
+      - run: git fetch origin gh-pages
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: v1.19
+          cache: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - run: make deploy-docs

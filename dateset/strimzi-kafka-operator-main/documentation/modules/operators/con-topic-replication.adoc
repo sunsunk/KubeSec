@@ -1,0 +1,38 @@
+// Module included in the following assemblies:
+//
+// assembly-using-the-topic-operator.adoc
+
+[id='ref-topic-replication-{context}']
+= Configuring topics for replication and number of partitions
+
+The recommended configuration for topics managed by the Topic Operator is a topic replication factor of 3, and a minimum of 2 in-sync replicas.
+
+[source,shell,subs="+attributes"]
+----
+apiVersion: {KafkaTopicApiVersion}
+kind: KafkaTopic
+metadata:
+  name: my-topic
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 10 # <1>
+  replicas: 3 # <2>
+  config:
+    min.insync.replicas: 2 # <3>
+  #...
+----
+<1> The number of partitions for the topic.
+<2> The number of replica topic partitions. Changing the number of replicas in the topic configuration requires a deployment of Cruise Control. 
+For more information, see xref:proc-cruise-control-topic-replication-{context}[].
+<3> The minimum number of replica partitions that a message must be successfully written to, or an exception is raised.
+
+NOTE: In-sync replicas are used in conjunction with the `acks` configuration for producer applications.
+The `acks` configuration determines the number of follower partitions a message must be replicated to before the message is acknowledged as successfully received.
+Replicas need to be reassigned when adding or removing brokers (see xref:con-scaling-kafka-clusters-str[]).
+
+[role="_additional-resources"]
+.Additional resources
+* xref:assembly-downgrade-{context}[Downgrading Strimzi]
+* xref:con-partition-reassignment-str[]
+* xref:cruise-control-concepts-str[]

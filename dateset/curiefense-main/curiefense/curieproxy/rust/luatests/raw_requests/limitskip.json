@@ -1,0 +1,41 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/limits/always-skip",
+      "user-agent": "dummy",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "limit 0 challenge",
+    "response": {
+      "action": "pass",
+      "rl_triggers": [
+        {
+          "trigger_id": "alwaysskip",
+          "action": "skip",
+          "trigger_name": "rate limit always skip",
+          "threshold": 0
+        }
+      ],
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:2-3-4-5",
+        "limit-id:alwaysskip",
+        "limit-name:rate-limit-always-skip",
+        "securitypolicy-entry:alwaysskip",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "bot"
+      ]
+    }
+  }
+]

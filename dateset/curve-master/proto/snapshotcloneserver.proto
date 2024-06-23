@@ -1,0 +1,79 @@
+/*
+ *  Copyright (c) 2020 NetEase Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+/*
+ * Project: curve
+ * Created Date: Fri Dec 14 2018
+ * Author: xuchaojie
+ */
+
+syntax="proto2";
+
+package curve.snapshotcloneserver;
+
+option cc_generic_services = true;
+option go_package = "proto/snapshotcloneserver";
+
+/*
+message ChunkName {
+    required string filename = 1;
+    required uint64 seqnum = 2;
+    required int32 index = 3;
+};
+*/
+message ChunkMap {
+    map<uint32, string> indexmap = 1;
+};
+
+message SnapshotInfoData {
+    required string uuid = 1;
+    required string user = 2;
+    required string fileName = 3;
+    required string snapshotName = 4;
+    required uint64 seqNum = 5;
+    required uint32 chunkSize = 6;
+    required uint64 segmentSize = 7;
+    required uint64 fileLength = 8;
+    required uint64 time = 9;
+    required int32 status = 10;
+    optional uint64 stripeUnit = 11;
+    optional uint64 stripeCount = 12;
+    optional string poolset = 13;
+};
+
+message CloneInfoData {
+    required string uuid = 1;
+    required string user = 2;
+    required int32 taskType = 3;
+    required string source = 4;
+    required string destination = 5;
+    required uint64 originId = 6;
+    required uint64 destinationId = 7;
+    required uint64 time = 8;
+    required int32 fileType = 9;
+    required bool isLazy = 10;
+    required int32 nextStep = 11;
+    required int32 status = 12;
+    optional string poolset = 13;
+};
+
+message HttpRequest {};
+
+message HttpResponse {};
+
+service SnapshotCloneService{
+    rpc default_method(HttpRequest) returns (HttpResponse);
+};

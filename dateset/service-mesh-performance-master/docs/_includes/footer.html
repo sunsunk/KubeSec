@@ -1,0 +1,73 @@
+  <!-- Footer -->
+<footer class="footer" id="footer" style="background-color:#222">
+    <div class="container p-4">
+      <div class="foot-up">
+        <div class="row">
+          <div class="col-lg-4 col-md-10 mb-4"> <img class="foot-logo" src="/assets/img/logo/smp-light-text-side.png" height="100" width="230" alt="SMP" > </div>
+          <div class="col-lg-3 col-md-6 mb-4">
+            <h6 class="rspnsv" style="color: #fff; font-weight: 600; text-align: center; font-size: larger;">Service Mesh Performance</h6>
+                  <p class="smp-about rspnsv">Created by Layer5 in collaboration with service mesh maintainers, Service Mesh Performance is hosted within the CNCF. 
+                  </p><p>
+                  Using SMP, MeshMark provides a universal performance index to gauge your mesh’s efficiency. </p>
+          </div>
+          <div class="col-lg-5 col-md-6 mb-4">
+            <a class="twitter-timeline" data-theme="dark" href="https://twitter.com/smp_spec?ref_src=twsrc%5Etfw" data-width="1000" data-height="250">
+                  Tweets by smp_spec
+            </a> 
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8" ></script>
+          </div>
+                  <!-- <li class="col-sm-4">
+                  <p class="ntlfy">
+			<a href="https://www.netlify.com">
+			<img class="netlify-icon" src="https://www.netlify.com/img/global/badges/netlify-dark.svg">
+			</a>
+		        </p> 
+               	</li> -->
+          </div>
+        </div>
+      </div>
+    <div class="foot-down">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 text-left">
+            <p class="l5-text">Copyright © The Service Mesh Performance Authors <script>document.write(new Date().getFullYear());</script>.
+            <br/>
+              The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, 
+              please see our <a class="trademarks" href="https://www.linuxfoundation.org/legal/trademark-usage">Trademark Usage page</a>.</p>
+          </div>
+          <!--Social media icons -->
+          <div class="col-sm-6"> <ul class="list-inline social-buttons ico">
+		      {% for link in site.data.sitetext.footer.social  %}
+          <li class="list-inline-item">
+			    {% if link.url %}
+              <a href="{{ link.url }}">
+                {% if link.icon %}<i class="{{ link.icon }}"></i>{% endif %}
+              </a>
+			    {% endif %}
+          </li>
+			    {% endfor %}
+          </ul> </div> 
+          <!--Social media icons end -->
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  {% if page.layout == "post" %}
+<script>
+fixPageShort();
+function fixPageShort() {
+  if(window.innerHeight > document.body.offsetHeight) {
+    document.getElementById("footer").style.position="fixed";
+    document.getElementById("footer").style.bottom=0;
+    document.getElementById("footer").style.right=0;
+    document.getElementById("footer").style.left=0;
+    document.getElementById("footer").style.width="100%";
+  }
+}
+</script>
+{% endif %}
+<link rel="stylesheet" href={{ '/assets/css/responsive.css' | absolute_url }}>
+<script src={{ '/assets/js/back-to-top-smp.js' | absolute_url }}></script>
+<script>smpBackToTop()</script>
+  <!-- End Footer -->

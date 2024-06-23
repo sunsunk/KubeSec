@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-controller-manager
+  namespace: dynamic_parameters
+  labels:
+  
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  strategy:
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+        
+    spec:
+      
+      automountServiceAccountToken: false
+      nodeSelector:
+      affinity:
+      tolerations:
+      volumes:
+      
+      containers:
+        - name: dynamic_parameters-controller-manager
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command:
+            - /bin/karmada-controller-manager
+            - --kubeconfig=/etc/kubeconfig
+            - --bind-address=0.0.0.0
+            - --cluster-status-update-frequency=10s
+            - --secure-port=10357
+            - --leader-elect-resource-namespace=dynamic_parameters
+            - --v=2
+            - --controllers=dynamic_parameters
+            - dynamic_parameters
+            
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10357
+              scheme: HTTP
+            failureThreshold: 3
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+          volumeMounts:
+          
+          resources:
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: dynamic_parameters-controller-manager
+  namespace: dynamic_parameters
+  labels:
+    
+spec:
+  selector:
+    matchLabels:
+      
+
+
+---

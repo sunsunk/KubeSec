@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    app.kubernetes.io/name: dynamic_parameters
+    app.kubernetes.io/instance: dynamic_parameters
+    app.kubernetes.io/component: "cainjector"
+    
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: dynamic_parameters
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dynamic_parameters
+      app.kubernetes.io/instance: dynamic_parameters
+      app.kubernetes.io/component: "cainjector"
+  strategy:
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        app.kubernetes.io/name: dynamic_parameters
+        app.kubernetes.io/instance: dynamic_parameters
+        app.kubernetes.io/component: "cainjector"
+        
+      annotations:
+    spec:
+      serviceAccountName: dynamic_parameters
+      automountServiceAccountToken: dynamic_parameters
+      enableServiceLinks: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters-cainjector
+          image: "dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          args:
+          - --v=dynamic_parameters
+          - --leader-election-namespace=dynamic_parameters
+          - --leader-election-lease-duration=dynamic_parameters
+          - --leader-election-renew-deadline=dynamic_parameters
+          - --leader-election-retry-period=dynamic_parameters
+          - --feature-gates=dynamic_parameters
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          securityContext:
+          resources:
+          volumeMounts:
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      volumes:
+
+---

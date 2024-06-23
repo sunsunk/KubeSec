@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovn
+  namespace: dynamic_parameters
+imagePullSecrets:
+- name: dynamic_parameters
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovn-ovs
+  namespace: dynamic_parameters
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-ovn-cni
+  namespace: dynamic_parameters
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-ovn-app
+  namespace: dynamic_parameters
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

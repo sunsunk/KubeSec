@@ -1,0 +1,129 @@
+diff --git a/Kptfile b/Kptfile
+index 0bcb810..dcafc38 100644
+--- a/Kptfile
++++ b/Kptfile
+@@ -2,6 +2,8 @@ apiVersion: kpt.dev/v1
+ kind: Kptfile
+ metadata:
+   name: wordpress
++  annotations:
++    abc: def
+ pipeline:
+   mutators:
+     - image: gcr.io/kpt-fn/set-annotations:v0.1.3
+diff --git a/mysql/Kptfile b/mysql/Kptfile
+index 78ee518..cda1359 100644
+--- a/mysql/Kptfile
++++ b/mysql/Kptfile
+@@ -2,6 +2,9 @@ apiVersion: kpt.dev/v1
+ kind: Kptfile
+ metadata:
+   name: mysql
++  annotations:
++    foo: bar
++    abc: def
+ pipeline:
+   mutators:
+     - image: gcr.io/kpt-fn/set-annotations:v0.1.3
+diff --git a/mysql/mysql-deployment.yaml b/mysql/mysql-deployment.yaml
+index 519cfd3..4e39a5c 100644
+--- a/mysql/mysql-deployment.yaml
++++ b/mysql/mysql-deployment.yaml
+@@ -18,8 +18,10 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    foo: bar
++    abc: def
+ spec:
+   selector:
+     app: wordpress
+@@ -35,8 +37,10 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    foo: bar
++    abc: def
+ spec:
+   resources:
+     requests:
+@@ -51,8 +55,10 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    foo: bar
++    abc: def
+ spec:
+   selector:
+     matchLabels:
+@@ -63,6 +69,9 @@ spec:
+       labels:
+         app: wordpress
+         tier: mysql
++      annotations:
++        foo: bar
++        abc: def
+     spec:
+       containers:
+         - name: mysql
+diff --git a/wordpress-deployment.yaml b/wordpress-deployment.yaml
+index fed2c74..c8a9784 100644
+--- a/wordpress-deployment.yaml
++++ b/wordpress-deployment.yaml
+@@ -16,8 +16,9 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    abc: def
+ spec:
+   type: LoadBalancer
+   selector:
+@@ -33,8 +34,9 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    abc: def
+ spec:
+   resources:
+     requests:
+@@ -49,8 +51,9 @@ metadata:
+   labels:
+     app: wordpress
+   annotations:
+-    projectId: 'PROJECT_ID' # kpt-set: ${gcloud.core.project}
+-    teamname: 'YOURTEAM' # kpt-set: ${teamname}
++    projectId: PROJECT_ID # kpt-set: ${gcloud.core.project}
++    teamname: YOURTEAM # kpt-set: ${teamname}
++    abc: def
+ spec:
+   selector:
+     matchLabels:
+@@ -61,6 +64,8 @@ spec:
+       labels:
+         app: wordpress
+         tier: frontend
++      annotations:
++        abc: def
+     spec:
+       containers:
+         - name: wordpress

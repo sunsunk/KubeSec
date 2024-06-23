@@ -1,0 +1,65 @@
+.arrowBtn:not(.disabled) {
+  color: #fcfcfc !important;
+}
+
+.imgErrorIcon {
+  font-size: 4rem;
+}
+
+.minHeight {
+  height: 1%;
+}
+
+.image {
+  border-color: var(--color-black-90) !important;
+  background-image: url(../../../static/media/pattern-transparent.png);
+  background-repeat: repeat;
+}
+
+.externalLink {
+  top: -1px;
+}
+
+.disabledDotBtn {
+  color: #fcfcfc !important;
+}
+
+.dotBtn {
+  color: #6c757d !important;
+}
+
+.disabled {
+  color: #6c757d;
+}
+
+.imgTitle {
+  color: #fcfcfc;
+  max-width: 600px;
+}
+
+.bigImg {
+  cursor: zoom-in;
+}
+
+.bigImageView {
+  z-index: -1;
+}
+
+.bigImageView.isVisible {
+  z-index: 10;
+  cursor: zoom-out;
+}
+
+.zoomedImgWrapper {
+  overscroll-behavior: contain;
+  border-color: var(--color-black-90) !important;
+  background-image: url(../../../static/media/pattern-transparent.png);
+  background-repeat: repeat;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .arrowBtn {
+    font-size: 1.25rem;
+    padding: 0.375rem;
+  }
+}

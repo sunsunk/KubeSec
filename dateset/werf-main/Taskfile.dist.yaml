@@ -1,0 +1,595 @@
+version: "3"
+
+silent: true
+
+env:
+  WERF_TEST_K8S_DOCKER_REGISTRY: "localhost:5000"
+  WERF_TEST_K8S_DOCKER_REGISTRY_USERNAME: "nobody"
+  WERF_TEST_K8S_DOCKER_REGISTRY_PASSWORD: ""
+  WERF_TEST_K8S_DOCKER_REGISTRY_INSECURE: "true"
+  GO111MODULE: "on"
+  HELM_PLUGINS: ""
+
+vars:
+  version: "0.0.0"
+  os: "{{OS}}"
+  arch: '{{ternary "arm64" ARCH (eq ARCH "arm")}}'
+  mode: '{{ternary "cgo" "go" (eq .os "linux")}}'
+  devBinary: './bin/werf{{if (eq .targetOS "windows")}}.exe{{end}}'
+  withCoverageBinary: './bin/werf-with-coverage{{if (eq .targetOS "windows")}}.exe{{end}}'
+  package: "github.com/werf/werf/cmd/werf"
+
+  cgoTags: "dfrunsecurity dfrunnetwork dfrunmount dfssh containers_image_openpgp osusergo exclude_graphdriver_devicemapper netgo no_devmapper static_build cni"
+  cgoDevLDFlags: "-linkmode external -extldflags=-static"
+  cgoReleaseLDFlags: "-linkmode external -extldflags=-static -s -w -X github.com/werf/werf/pkg/werf.Version={{.version}}"
+
+  goTags: "dfrunsecurity dfrunnetwork dfrunmount dfssh containers_image_openpgp"
+  goDevLDFlags: ""
+  goReleaseLDFlags: "-s -w -X github.com/werf/werf/pkg/werf.Version={{.version}}"
+
+tasks:
+  _build-and-lint:
+    deps:
+      - build
+      - lint
+
+  default:
+    cmds:
+      - task: format
+      - task: _build-and-lint
+
+  _build:cgo:dev: &build_cgo_dev
+    cmds:
+      - go build -o "{{.outputDir | default (printf "./build/%s-%s" .targetOS .targetArch)}}/werf{{if (eq .targetOS "windows")}}.exe{{end}}"
+        -compiler gc -ldflags="{{.cgoDevLDFlags}}" -tags="{{.cgoTags}}" {{.CLI_ARGS}} {{.pkg | default .package}}
+    env:
+      CGO_ENABLED: "1"
+      GOOS: "{{.targetOS}}"
+      GOARCH: "{{.targetArch}}"
+      CC: "{{.cc}}"
+
+  _build:cgo:dist:
+    <<: *build_cgo_dev
+    cmds:
+      - go build -o "{{.outputDir | default (printf "./dist/%s/%s-%s/bin" .version .targetOS .targetArch)}}/werf{{if (eq .targetOS "windows")}}.exe{{end}}"
+        -compiler gc -ldflags="{{.cgoReleaseLDFlags}}" -tags="{{.cgoTags}}" {{.CLI_ARGS}} {{.pkg | default .package}}
+
+  _build:go:dev: &build_go_dev
+    cmds:
+      - go build -o "{{.outputDir | default (printf "./build/%s-%s" .targetOS .targetArch)}}/werf{{if (eq .targetOS "windows")}}.exe{{end}}"
+        -ldflags="{{.goDevLDFlags}}" -tags="{{.goTags}}" {{.CLI_ARGS}} {{.pkg | default .package}}
+    env:
+      CGO_ENABLED: "0"
+      GOOS: "{{.targetOS}}"
+      GOARCH: "{{.targetArch}}"
+
+  _build:go:dist:
+    <<: *build_go_dev
+    cmds:
+      - go build -o "{{.outputDir | default (printf "./dist/%s/%s-%s/bin" .version .targetOS .targetArch)}}/werf{{if (eq .targetOS "windows")}}.exe{{end}}"
+        -ldflags="{{.goReleaseLDFlags}}" -tags="{{.goTags}}" {{.CLI_ARGS}} {{.pkg | default .package}}
+
+  build:
+    desc: "Build werf dev binary."
+    run: once
+    cmds:
+      - task: build:dev:{{.os}}:{{.arch}}
+        vars:
+          outputDir: '{{.outputDir | default "./bin"}}'
+
+  build:dev:all:
+    desc: "Build all werf dev binaries in parallel."
+    deps:
+      - build:dev:linux:amd64:cgo
+      - build:dev:linux:amd64:go
+      - build:dev:linux:arm64
+      - build:dev:darwin:amd64
+      - build:dev:darwin:arm64
+      - build:dev:windows:amd64
+
+  build:dist:all:
+    desc: "Build all werf release binaries in parallel."
+    deps:
+      - build:dist:linux:amd64
+      - build:dist:linux:arm64
+      - build:dist:darwin:amd64
+      - build:dist:darwin:arm64
+      - build:dist:windows:amd64
+
+  build:dev:linux:amd64:
+    desc: "Build werf dev binary for linux/amd64."
+    cmds:
+      - task: build:dev:linux:amd64:cgo
+        vars:
+          outputDir: "{{.outputDir}}"
+
+  build:dev:linux:amd64:cgo:
+    desc: "Build werf dev binary for linux/amd64 with cgo."
+    cmds:
+      - task: _build:cgo:dev
+        vars:
+          targetOS: "linux"
+          targetArch: "amd64"
+          outputDir: "{{.outputDir}}"
+
+  build:dev:linux:amd64:go:
+    desc: "Build werf dev binary for linux/amd64 without cgo."
+    cmds:
+      - task: _build:go:dev
+        vars:
+          targetOS: "linux"
+          targetArch: "amd64"
+          outputDir: "{{.outputDir}}"
+
+  build:dist:linux:amd64:
+    desc: 'Build werf release binary for linux/amd64. Important vars: "version".'
+    cmds:
+      - task: _build:cgo:dist
+        vars:
+          targetOS: "linux"
+          targetArch: "amd64"
+
+  build:dev:linux:arm64:
+    desc: "Build werf dev binary for linux/arm64."
+    cmds:
+      - task: _build:cgo:dev
+        vars:
+          targetOS: "linux"
+          targetArch: "arm64"
+          cc: "aarch64-linux-gnu-gcc"
+          outputDir: "{{.outputDir}}"
+
+  build:dist:linux:arm64:
+    desc: 'Build werf release binary for linux/arm64. Important vars: "version".'
+    cmds:
+      - task: _build:cgo:dist
+        vars:
+          targetOS: "linux"
+          targetArch: "arm64"
+          cc: "aarch64-linux-gnu-gcc"
+
+  build:dev:darwin:amd64:
+    desc: "Build werf dev binary for darwin/amd64."
+    cmds:
+      - task: _build:go:dev
+        vars:
+          targetOS: "darwin"
+          targetArch: "amd64"
+          outputDir: "{{.outputDir}}"
+
+  build:dist:darwin:amd64:
+    desc: 'Build werf release binary for darwin/amd64. Important vars: "version".'
+    cmds:
+      - task: _build:go:dist
+        vars:
+          targetOS: "darwin"
+          targetArch: "amd64"
+
+  build:dev:darwin:arm64:
+    desc: "Build werf dev binary for darwin/arm64."
+    cmds:
+      - task: _build:go:dev
+        vars:
+          targetOS: "darwin"
+          targetArch: "arm64"
+          outputDir: "{{.outputDir}}"
+
+  build:dist:darwin:arm64:
+    desc: 'Build werf release binary for darwin/arm64. Important vars: "version".'
+    cmds:
+      - task: _build:go:dist
+        vars:
+          targetOS: "darwin"
+          targetArch: "arm64"
+
+  build:dev:windows:amd64:
+    desc: "Build werf dev binary for windows/amd64."
+    cmds:
+      - task: _build:go:dev
+        vars:
+          targetOS: "windows"
+          targetArch: "amd64"
+          outputDir: "{{.outputDir}}"
+
+  build:dist:windows:amd64:
+    desc: 'Build werf release binary for windows/amd64. Important vars: "version".'
+    cmds:
+      - task: _build:go:dist
+        vars:
+          targetOS: "windows"
+          targetArch: "amd64"
+
+  build-with-coverage:
+    desc: "Build werf binary to run E2E tests with coverage."
+    cmds:
+      - task: test:go-test
+        vars:
+          paths: "cmd/werf/main.go cmd/werf/main_test.go"
+          extraTestGoTestArgs: '-coverpkg=./... -c -o "{{.withCoverageBinary}}"'
+
+  _test:go-test:cgo:
+    cmds:
+      - go test -compiler gc -ldflags="{{.cgoDevLDFlags}}" -tags="{{.cgoTags}}" {{.extraTestGoTestArgs}} {{.CLI_ARGS}} {{.paths}}
+    env:
+      CGO_ENABLED: "1"
+    requires:
+      vars:
+        - paths
+
+  _test:go-test:go:
+    cmds:
+      - go test -ldflags="{{.goDevLDFlags}}" -tags="{{.goTags}}" {{.extraTestGoTestArgs}} {{.CLI_ARGS}} {{.paths}}
+    env:
+      CGO_ENABLED: "0"
+    requires:
+      vars:
+        - paths
+
+  test:go-test: &test_go_test
+    desc: 'Run raw "go test". Important vars: "paths".'
+    cmds:
+      - task: _test:go-test:{{.mode}}
+        vars:
+          paths: "{{.paths}}"
+          extraTestGoTestArgs: "{{.extraTestGoTestArgs}}"
+
+  _test:ginkgo:cgo:
+    cmds:
+      - |
+        ginkgo {{if eq .parallel "true" }}-p{{end}} -r -compiler gc -ldflags="{{.cgoDevLDFlags}}" -tags="{{.cgoTags}}" \
+          {{if .labelFilter}}--label-filter="{{.labelFilter}}"{{end}} {{.CLI_ARGS}} {{.paths}}
+    env:
+      CGO_ENABLED: "1"
+    vars:
+      parallel: '{{.parallel | default "true"}}'
+    requires:
+      vars:
+        - paths
+
+  _test:ginkgo:go:
+    cmds:
+      - |
+        ginkgo {{if eq .parallel "true" }}-p{{end}} -r -ldflags="{{.goDevLDFlags}}" -tags="{{.goTags}}" \
+          {{if .labelFilter}}--label-filter="{{.labelFilter}}"{{end}} {{.CLI_ARGS}} {{.paths}}
+    env:
+      CGO_ENABLED: "0"
+    vars:
+      parallel: '{{.parallel | default "true"}}'
+    requires:
+      vars:
+        - paths
+
+  test:ginkgo: &test_ginkgo
+    desc: 'Run raw "ginkgo". Important vars: "paths".'
+    cmds:
+      - task: _test:ginkgo:{{.mode}}
+        vars:
+          paths: "{{.paths}}"
+          labelFilter: "{{.labelFilter}}"
+          parallel: "{{.parallel}}"
+
+  test:unit:
+    desc: 'Run unit tests. Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./pkg ./cmd"}}'
+          parallel: "{{.parallel}}"
+
+  test:integration:
+    desc: 'Run integration tests. Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./integration/suites"}}'
+          labelFilter: "{{.labelFilter}}"
+          parallel: "{{.parallel}}"
+
+  test:e2e:
+    desc: 'Run all e2e tests. Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./test/e2e"}}'
+          labelFilter: "{{.labelFilter}}"
+          parallel: "{{.parallel}}"
+
+  test:e2e:simple:
+    desc: 'Run e2e tests tagged "simple". Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./test/e2e"}}'
+          labelFilter: '{{.labelFilter | default "simple"}}'
+          parallel: "{{.parallel}}"
+
+  test:e2e:complex:
+    desc: 'Run e2e tests tagged "complex". Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./test/e2e"}}'
+          labelFilter: '{{.labelFilter | default "complex"}}'
+          parallel: "{{.parallel}}"
+
+  test:e2e:extra:
+    desc: 'Run e2e tests not tagged "simple" or "complex". Important vars: "paths".'
+    cmds:
+      - task: test:ginkgo
+        vars:
+          paths: '{{.paths | default "./test/e2e"}}'
+          labelFilter: '{{.labelFilter | default "!complex && !simple"}}'
+          parallel: "{{.parallel}}"
+
+  verify:binaries:dist:all:
+    desc: 'Verify that the distributable binaries are built and have correct platform/arch. Important vars: "version".'
+    cmds:
+      - ./scripts/verify-dist-binaries.sh {{.version}}
+
+  format:
+    desc: 'Run all code formatters. Important vars: "paths".'
+    run: once
+    cmds:
+      - task: format:gci
+      - task: format:gofumpt
+      - task: format:prettier
+
+  format:gci:
+    desc: 'Format code with gci. Important vars: "paths".'
+    cmds:
+      - gci write -s Standard -s Default -s 'Prefix({{slice (splitList "/" .package) 0 2 | join "/"}})' {{.CLI_ARGS}} {{.paths | default "pkg/ cmd/ test/ integration/"}}
+
+  format:gofumpt:
+    desc: 'Format code with gofumpt. Important vars: "paths".'
+    cmds:
+      - gofumpt -extra -w {{.CLI_ARGS}} {{.paths | default "cmd/ pkg/ test/ integration/"}}
+
+  format:prettier:
+    desc: "Format with prettier."
+    deps:
+      - format:prettier:yaml
+
+  format:prettier:yaml:
+    desc: "Format yaml files with prettier."
+    cmds:
+      - prettier -w "**/*.yaml" "**/*.yml"
+
+  lint:
+    desc: 'Run all linters in parallel. Important vars: "paths".'
+    deps:
+      - lint:golangci-lint
+      - lint:prettier
+
+  lint:golangci-lint:cgo:
+    desc: 'Lint with golangci-lint for cgo. Important vars: "paths".'
+    cmds:
+      - golangci-lint run --build-tags="{{.cgoTags}}" {{.CLI_ARGS}} {{.paths | default "./..."}}
+    env:
+      CGO_ENABLED: "1"
+
+  lint:golangci-lint:go:
+    desc: 'Lint with golangci-lint without cgo. Important vars: "paths".'
+    cmds:
+      - golangci-lint run --build-tags="{{.goTags}}" {{.CLI_ARGS}} {{.paths | default "./..."}}
+    env:
+      CGO_ENABLED: "0"
+
+  _lint:golangci-lint:cgo-and-go:
+    cmds:
+      - task: lint:golangci-lint:cgo
+        vars:
+          paths: "{{.paths}}"
+      - task: lint:golangci-lint:go
+        vars:
+          paths: "{{.paths}}"
+
+  _lint:golangci-lint:go:
+    deps:
+      - task: lint:golangci-lint:go
+        vars:
+          paths: "{{.paths}}"
+
+  lint:golangci-lint:
+    desc: 'Lint with golangci-lint (with and without cgo). Important vars: "paths".'
+    deps:
+      - task: _lint:golangci-lint:{{ternary "cgo-and-go" "go" (eq .mode "cgo")}}
+        vars:
+          paths: "{{.paths}}"
+
+  lint:prettier:
+    desc: "Check if prettier-formatted."
+    deps:
+      - lint:prettier:yaml
+
+  lint:prettier:yaml:
+    desc: "Check if yaml files are prettier-formatted."
+    cmds:
+      - prettier -c "**/*.yaml" "**/*.yml"
+
+  doc:
+    desc: "Run all docs generators, formatters and linters."
+    cmds:
+      - task: doc:gen
+      - task: doc:check-broken-links
+
+  doc:gen:
+    desc: "Regenerate docs."
+    deps:
+      - build
+    cmds:
+      - ./scripts/docs/regen.sh "{{.devBinary}}"
+
+  doc:check-broken-links:
+    desc: "Check docs for broken links."
+    deps:
+      - doc:check-broken-links:ru
+      - doc:check-broken-links:en
+
+  doc:check-broken-links:ru:
+    desc: "Check ru docs for broken links."
+    deps:
+      - build
+    cmds:
+      - ./scripts/docs/check_broken_links.sh ru "{{.devBinary}}"
+
+  doc:check-broken-links:en:
+    desc: "Check en docs for broken links."
+    deps:
+      - build
+    cmds:
+      - ./scripts/docs/check_broken_links.sh main "{{.devBinary}}"
+
+  github:dispatch:werf:
+    desc: 'Manually dispatch specified GitHub workflow. Important vars: "eventType", "githubToken".'
+    cmds:
+      - |
+        curl -sSL 'https://api.github.com/repos/werf/werf/dispatches' \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -H "Authorization: token {{.githubToken}}" \
+          --data-raw '{
+            "event_type": "{{.eventType}}",
+            "client_payload": {{.clientPayload | default "{}"}}
+          }' {{.CLI_ARGS}}
+    requires:
+      vars:
+        - githubToken
+
+  _image:build:
+    cmds:
+      - docker build {{.CLI_ARGS}} -f "{{.dfilePath}}" -t "{{.imageName}}" "{{.context | default "."}}"
+
+  image:build:builder:
+    desc: 'Build werf builder image. Important vars: "imageName".'
+    cmds:
+      - task: _image:build
+        vars:
+          dfilePath: scripts/werf-builder/Dockerfile
+          imageName:
+            sh: "echo registry-write.werf.io/werf/builder:$(git rev-parse HEAD)"
+
+  _image:push:
+    cmds:
+      - docker push {{.CLI_ARGS}} "{{.imageName}}"
+
+  image:publish:builder:
+    desc: 'Build and publish werf builder image. Important vars: "imageName".'
+    deps:
+      - image:build:builder
+    cmds:
+      - task: _image:push
+        vars:
+          imageName:
+            sh: "echo registry-write.werf.io/werf/builder:$(git rev-parse HEAD)"
+
+  compose:up:local-telemetry:
+    desc: "Up local telemetry dev server."
+    dir: ./scripts/local-telemetry
+    cmds:
+      - docker-compose {{.CLI_ARGS}} up -d
+
+  compose:down:local-telemetry:
+    desc: "Down local telemetry dev server."
+    dir: ./scripts/local-telemetry
+    cmds:
+      - docker-compose {{.CLI_ARGS}} down
+
+  clean:
+    desc: "Clean all temporary files and build artifacts."
+    deps:
+      - clean:binaries
+
+  clean:binaries:
+    desc: "Clean all built binaries."
+    deps:
+      - clean:binaries:dev
+      - clean:binaries:dist
+
+  clean:binaries:dev:
+    desc: "Clean built dev binaries."
+    cmds:
+      - rm -rf ./bin ./build
+
+  clean:binaries:dist:
+    desc: "Clean built release binaries."
+    cmds:
+      - rm -rf ./dist
+
+  deps:install:ginkgo:
+    desc: "Install ginkgo binary."
+    cmds:
+      - |
+        version="$(go list -m -f '{{ printf `{{ .Version }}` }}' github.com/onsi/ginkgo/v2)"
+        go install {{.CLI_ARGS}} github.com/onsi/ginkgo/v2/ginkgo@${version}
+
+  deps:install:golangci-lint:
+    desc: "Install golangci-lint binary."
+    cmds:
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin {{.golangcilintVersion | default "v1.57.1"}}
+
+  deps:install:prettier:
+    desc: "Install prettier."
+    cmds:
+      - npm install -g prettier
+
+  sign:
+    desc: 'Sign last version tag + origin/main and push signatures. Important vars: "refs".'
+    cmds:
+      - git fetch --tags -f
+      - git signatures pull {{.CLI_ARGS}}
+      - |
+        for ref in {{.refs | default "$(git tag --sort=v:refname | tail -n1) origin/main"}}; do
+          echo Signing $ref...
+          git signatures add {{.CLI_ARGS}} $ref
+          git signatures show {{.CLI_ARGS}} $ref
+        done
+      - git signatures push {{.CLI_ARGS}}
+
+  docker:network:create:
+    desc: "Create shared docker network werfio-dev to use with werf/website"
+    vars:
+      NETWORK_NAME: werfio-dev
+    cmds:
+      - docker network create -d=bridge {{.NETWORK_NAME}}
+    status:
+      - docker network inspect {{.NETWORK_NAME}}
+
+  _compose:up:
+    deps:
+      - docker:network:create
+    cmds:
+      - |
+        services="{{ .lang }}"
+        services=${services:-"en ru"}
+        if [[ "yes" == "{{.standalone}}" ]] ; then
+          services="${services} front"
+        fi
+
+        # Run compose up in docs directory.
+        cd docs
+        which werf >/dev/null || source $(trdl use werf 1.2 beta)
+        werf compose up jekyll_base --dev --docker-compose-command-options="$services" --platform=linux/amd64 || true
+
+  compose:up:standalone:
+    desc: "Run jekyll in werf compose for content editing without werf/website (scripts/styles/images are proxied from werf.io). Use lang=en or lang=ru to run only specified lang."
+    cmds:
+      - task: _compose:up
+        vars:
+          standalone: "yes"
+
+  compose:up:
+    desc: "Run jekyll in werf compose for local development. Use lang=en or lang=ru to run only specified lang. Run task compose:up in werf/website repository to access documentation."
+    cmds:
+      - task: _compose:up
+        vars:
+          standalone: "no"
+
+  compose:down:
+    desc: "Stop and clean after werf compose"
+    cmds:
+      - |
+        cd docs
+        which werf >/dev/null || source $(trdl use werf 1.2 beta)
+        # Workaround: set image variable to stub image.
+        WERF_JEKYLL_BASE_DOCKER_IMAGE_NAME=nginx:latest \
+        werf compose down

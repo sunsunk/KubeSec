@@ -1,0 +1,6 @@
+#@assert/validate ("", lambda v: fail("fails"))
+foo: null
+
++++
+
+foo: null

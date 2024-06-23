@@ -1,0 +1,77 @@
+---
+title: Development with DevSpace
+sidebar_label: 3. Development
+---
+
+import KubeContextFragment from '../_partials/kube-context.mdx';
+import StartAppFragment from '../_partials/start-app.mdx';
+
+DevSpace allows you to develop applications directly inside a Kubernetes cluster with a very fast hot reloading workflow.
+
+
+## Choose Cluster & Namespace
+Before you can start the development mode in DevSpace, you need to make sure DevSpace uses the right cluster and namespace:
+```bash
+devspace use context                  # to select the right Kubernetes cluster
+devspace use namespace my-namespace   # will be automatically created during deployment
+```
+
+:::tip Switch Back & Forth
+You can use the `devspace use context` and `devspace use namespace` commands whenever needed. One of the design goals of DevSpace is to allow you to seamlessly switch between clusters (even between localhost and remote clusters) and namespaces as needed.
+:::
+
+
+## Start Dev Container
+Run the following command to deploy the project and start your dev container:
+```bash
+devspace dev
+```
+
+Running `devspace dev` will execute the pipeline named `dev` that is defined in your `devspace.yaml`:
+```bash title=devspace.yaml
+# This is a list of `pipelines` that DevSpace can execute (you can define your own)
+pipelines:
+  # This is the pipeline for the main command: `devspace dev` (or `devspace run-pipeline dev`)
+  dev:
+    run: |-
+      run_dependencies --all       # 1. Deploy any projects this project needs (see "dependencies")
+      create_deployments --all     # 2. Deploy Helm charts and manifests specfied as "deployments"
+      start_dev app                # 3. Start dev mode "app" (see "dev" section)
+```
+
+The pipeline is written in bash syntax but it is an emulated bash, i.e. it runs the same way on any machine, no matter if Linux, Mac, or Windows. You can edit the pipeline script in `devspace.yaml` as needed.
+
+The pipeline you see above, runs 3 commands:
+1. `run_dependencies --all` deploys all `dependencies` defined in `devspace.yaml` (i.e. other microservices that may be needed and potentially live in other git repositories with separate `devspace.yaml` files).
+2. `create_deployments --all` deploys everything defined in the `deployments` section of `devspace.yaml` (instead of `--all`, you could also pass the names of some deployments to this command instead, e.g. `create_deployments app database`)
+3. `start_dev app` starts the development mode named `app` which is defined in the `dev` section of `devspace.yaml`
+
+
+
+## Start Application
+Once the terminal to your dev container opens, run the command to start your application:
+
+<StartAppFragment/>
+
+
+
+<br/>
+
+## Start Development
+
+### 1. File Sync
+While `devspace dev` is running, your source code files will be synchronized between your local project folder and your containers running inside Kubernetes. This allows you to code with your favorite IDE locally but still be able to run and debug your application directly inside the dev container that is running inside Kubernetes.
+
+**Try it and just edit a file!**
+
+To change which files should be synchronized, you can edit the `sync` configuration within the `dev` section of your `devspace.yaml` file.
+
+
+### 2. Port Forwarding
+DevSpace forwards ports from localhost to your dev container and can also reverse-forward ports from the dev container to your local machine. This is useful to access your application on localhost, e.g. access a UI or API in the browser, or to attach your IDE to a remote debugger running inside your dev container.
+
+To change which ports should be forwarded, you can edit the `ports` configuration within the `dev` section of your `devspace.yaml` file.
+
+
+### 3. DevSpace UI
+When running `devspace dev`, DevSpace starts a client-only, localhost UI. By default, DevSpace starts the development UI on port `8090` but if the port is already in use, it will use a different port. If `devspace dev` is running, you can open the link shown in the `devspace dev` output, e.g. [http://localhost:8090](http://localhost:8090)

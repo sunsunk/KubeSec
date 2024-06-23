@@ -1,0 +1,47 @@
+.tmp.*
+*.tmp
+
+# prelude.mk
+/bin/
+
+# teleproxy.mk
+/teleproxy.log
+
+# kubernaut.mk
+*.knaut
+*.knaut.claim
+
+# docker-cluster.mk
+/docker-port-forward.lock
+/docker-port-forward.log
+/docker-registry.yaml.o
+/docker-registry.deploy
+
+# generate.mk
+/go1*.src.tar.gz
+/go-version.txt
+/py-version.txt
+/pip-show.txt
+
+# var.mk
+/.var.*
+
+# builder.mk
+/pytest-kat.txt
+
+# --- Files ignored by older versions ---
+# Remove the tail of this list when the commit making the change gets
+# far enough in to the past.
+
+# whenever-we-stop-working-on-2.x
+/pytest-kat-envoy2.txt
+/pytest-kat-envoy3.txt
+
+# 2019-07-01
+/teleproxy
+/kubeapply
+/golangci-lint
+
+# 2019-02-06
+/patter.go
+/patter.go.tmp

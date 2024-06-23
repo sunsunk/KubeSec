@@ -1,0 +1,12 @@
+{
+    "status_code": 200,
+    "data": {
+        "repositories": [
+            {
+                "repositoryName": "demo-policies",
+                "repositoryId": "3a297b68-8c6d-4170-a5b5-7bd220840980"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

@@ -1,0 +1,56 @@
+# Copyright 2022 Antrea Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+ARG WIN_BUILD_TAG
+ARG NANOSERVER_VERSION
+ARG WIN_BUILD_OVS_TAG
+
+FROM antrea/base-windows:${WIN_BUILD_TAG} as antrea-build-windows
+
+WORKDIR /antrea
+
+COPY go.mod /antrea/go.mod
+
+RUN go mod download
+
+COPY . /antrea
+
+RUN sh -c 'make windows-bin'
+
+FROM antrea/windows-ovs:${WIN_BUILD_OVS_TAG} as windows-ovs
+
+FROM mcr.microsoft.com/powershell:lts-nanoserver-${NANOSERVER_VERSION}
+SHELL ["pwsh", "-NoLogo", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+LABEL maintainer="Antrea <projectantrea-dev@googlegroups.com>"
+LABEL description="A Docker image to deploy the Antrea CNI."
+
+USER ContainerAdministrator
+
+RUN mkdir -Force C:\k\antrea\bin
+COPY --from=antrea-build-windows  /opt/cni/bin /k/antrea/cni
+COPY --from=antrea-build-windows  /antrea/build/images/scripts/Install-WindowsCNI.ps1 /k/antrea/
+COPY --from=antrea-build-windows  /antrea/bin/antrea-agent.exe /k/antrea/bin/
+COPY --from=antrea-build-windows  /antrea/bin/antctl.exe /k/antrea/bin/antctl.exe
+COPY --from=antrea-build-windows  /antrea/bin/antrea-cni.exe /k/antrea/cni/antrea.exe
+
+RUN mkdir C:\k\antrea\utils
+COPY --from=antrea-build-windows /wins/wins.exe /k/antrea/utils/wins.exe
+
+COPY --from=windows-ovs /Windows/System32/vcruntime140.dll /Windows/System32/
+COPY --from=windows-ovs /Windows/System32/libeay32.dll /Windows/System32/
+COPY --from=windows-ovs /Windows/System32/ssleay32.dll /Windows/System32/
+
+RUN mkdir C:\openvswitch
+COPY --from=windows-ovs /openvswitch /openvswitch/

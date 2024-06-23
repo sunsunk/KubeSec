@@ -1,0 +1,7 @@
+# Example of extending Makefile with Makefile.local.
+
+BUILD_IMAGE ?= quay.io/cortexproject/build-image
+IMAGE_PREFIX ?= custom-prefix/
+
+cortex-push: cmd/cortex/.uptodate
+	docker push $(IMAGE_PREFIX)cortex:$(IMAGE_TAG)

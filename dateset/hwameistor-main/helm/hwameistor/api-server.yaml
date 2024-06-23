@@ -1,0 +1,61 @@
+# Source: hwameistor/templates/api-server.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwameistor-apiserver
+  namespace: default
+  labels:
+    app: hwameistor-apiserver
+spec:
+  selector:
+    app: hwameistor-apiserver
+  ports:
+    - port: 80
+      targetPort: http
+
+---
+# Source: hwameistor/templates/api-server.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-apiserver
+  namespace: default
+  labels:
+    app: hwameistor-apiserver
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-apiserver
+  template:
+    metadata:
+      labels:
+        app: hwameistor-apiserver
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: server
+          image: ghcr.io/hwameistor/apiserver:v0.14.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            {}
+          env:
+            - name: EnableAuth
+              value: "false"
+            - name: AuthAccessId
+              value: admin
+            - name: AuthSecretKey
+              value: admin
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName

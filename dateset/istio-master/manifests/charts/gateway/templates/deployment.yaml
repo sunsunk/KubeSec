@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: dynamic_parameters
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        sidecar.istio.io/inject: "true"
+        istio.io/rev: dynamic_parameters
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+        # Safe since 1.22: https://github.com/kubernetes/kubernetes/pull/103326
+        sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: "0"
+      volumes:
+      containers:
+        - name: istio-proxy
+          # "auto" will be populated at runtime by the mutating webhook. See https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/#customizing-injection
+          image: auto
+          imagePullPolicy: dynamic_parameters
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1337
+            runAsGroup: 1337
+            runAsNonRoot: true
+          env:
+          - name: ISTIO_META_REQUESTED_NETWORK_VIEW
+            value: "dynamic_parameters"
+          - name: dynamic_parameters
+            value: dynamic_parameters
+          ports:
+          - containerPort: 15090
+            protocol: TCP
+            name: http-envoy-prom
+          resources:
+          volumeMounts:
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      terminationGracePeriodSeconds: dynamic_parameters
+      priorityClassName: dynamic_parameters
+
+---

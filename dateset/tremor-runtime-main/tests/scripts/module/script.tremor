@@ -1,0 +1,10 @@
+mod snot with
+  mod badger with
+    const COLOR = "green";
+  end;
+  fn combadger(i,c) with
+    [i, c, badger::COLOR]
+  end;
+end;
+
+snot::combadger(event, snot::badger::COLOR)

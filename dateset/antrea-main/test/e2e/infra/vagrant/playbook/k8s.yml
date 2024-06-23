@@ -1,0 +1,9 @@
+---
+- hosts: controlplane
+  become: true
+  roles:
+    - control-plane
+- hosts: workers
+  become: true
+  roles:
+    - worker

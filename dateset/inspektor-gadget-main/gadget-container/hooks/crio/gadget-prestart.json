@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "hook": {
+    "path": "/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "test ! -x /opt/hooks/oci/prestart.sh || /opt/hooks/oci/prestart.sh"
+    ]
+  },
+  "when": {
+    "always": true
+  },
+  "stages": [
+    "prestart"
+  ]
+}

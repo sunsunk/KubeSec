@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ca.istio.io/override: "true"
+    istio-injection: enabled
+    katib-metricscollector-injection: enabled
+    kudo.dev/instance-name: dynamic_parameters
+    kudo.dev/app-version: dynamic_parameters
+    kudo.dev/param-foo: dynamic_parameters
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

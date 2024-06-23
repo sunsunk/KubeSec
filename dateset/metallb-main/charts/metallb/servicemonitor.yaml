@@ -1,0 +1,155 @@
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters-prometheus
+  namespace: dynamic_parameters
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters-prometheus
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    name: dynamic_parameters-speaker-monitor-service
+  name: dynamic_parameters-speaker-monitor-service
+  namespace: dynamic_parameters
+spec:
+  selector:
+    
+    app.kubernetes.io/component: speaker
+  clusterIP: None
+  ports:
+    - name: dynamic_parameters
+      port: dynamic_parameters
+      targetPort: dynamic_parameters
+    - name: dynamic_parameters
+      port: dynamic_parameters
+      targetPort: dynamic_parameters
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    name: dynamic_parameters-controller-monitor-service
+  name: dynamic_parameters-controller-monitor-service
+spec:
+  selector:
+    
+    app.kubernetes.io/component: controller
+  clusterIP: None
+  ports:
+    - name: dynamic_parameters
+      port: dynamic_parameters
+      targetPort: dynamic_parameters
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+---
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+---
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dynamic_parameters-speaker-monitor
+  namespace: dynamic_parameters
+  labels:
+    
+    app.kubernetes.io/component: speaker
+  annotations:
+spec:
+  endpoints:
+    - port: dynamic_parameters
+      honorLabels: true
+      metricRelabelings:
+      relabelings:
+      interval: dynamic_parameters
+      bearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+      scheme: "https"
+      tlsConfig:
+    - port: dynamic_parameters
+      honorLabels: true
+      interval: dynamic_parameters
+      bearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+      scheme: "https"
+      tlsConfig:
+  jobLabel: dynamic_parameters
+  namespaceSelector:
+    matchNames:
+      - dynamic_parameters
+  selector:
+    matchLabels:
+      name: dynamic_parameters-speaker-monitor-service
+
+---
+# Source: metallb/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dynamic_parameters-controller-monitor
+  namespace: dynamic_parameters
+  labels:
+    
+    app.kubernetes.io/component: speaker
+  annotations:
+spec:
+  endpoints:
+    - port: dynamic_parameters
+      metricRelabelings:
+      relabelings:
+      interval: dynamic_parameters
+      honorLabels: true
+      bearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+      scheme: "https"
+      tlsConfig:
+  jobLabel: dynamic_parameters
+  namespaceSelector:
+    matchNames:
+      - dynamic_parameters
+  selector:
+    matchLabels:
+      name: dynamic_parameters-controller-monitor-service
+
+---

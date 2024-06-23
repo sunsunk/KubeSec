@@ -1,0 +1,73 @@
+# Source: external-secrets/templates/cert-controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-cert-controller
+  namespace: dynamic_parameters
+  labels:
+    
+  annotations:
+spec:
+  replicas: dynamic_parameters
+  revisionHistoryLimit: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      automountServiceAccountToken: dynamic_parameters
+      securityContext:
+      hostNetwork: dynamic_parameters
+      containers:
+        - name: cert-controller
+          securityContext:
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          args:
+          - certcontroller
+          - --crd-requeue-interval=dynamic_parameters
+          - --service-name=dynamic_parameters-webhook
+          - --service-namespace=dynamic_parameters
+          - --secret-name=dynamic_parameters-webhook
+          - --secret-namespace=dynamic_parameters
+          - --metrics-addr=:dynamic_parameters
+          - --healthz-addr=dynamic_parameters:dynamic_parameters
+          - --crd-names=externalsecrets.external-secrets.io
+          - --crd-names=secretstores.external-secrets.io
+          - --dynamic_parameters=dynamic_parameters
+          - --dynamic_parameters
+          ports:
+            - containerPort: dynamic_parameters
+              protocol: TCP
+              name: metrics
+          readinessProbe:
+            httpGet:
+              port: dynamic_parameters
+              path: /readyz
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          env:
+          resources:
+          volumeMounts:
+      volumes:
+      nodeSelector:
+      affinity:
+      tolerations:
+      topologySpreadConstraints:
+      priorityClassName: dynamic_parameters
+
+---
+# Source: external-secrets/templates/cert-controller-deployment.yaml
+---
+
+---
+# Source: external-secrets/templates/cert-controller-deployment.yaml
+---
+
+---

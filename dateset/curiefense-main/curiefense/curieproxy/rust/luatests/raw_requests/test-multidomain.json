@@ -1,0 +1,83 @@
+[
+  {
+    "response": {
+      "tags": [
+        "host:dummydomain-com",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:dummy-domain-policy",
+        "securitypolicy-entry:default",
+        "aclid:--default--",
+        "bot",
+        "cf-rule-category:libinjection",
+        "cf-rule-subcategory:libinjection-xss",
+        "cf-rule-risk:libinjection",
+        "cf-rule-id:libinjection-xss",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "md libinjection xss",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/test\/?a=1&b=%3Cscript%3Edocument.body.innerHTML=",
+      ":method": "GET",
+      ":authority": "dummydomain.com"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:specific-dummydomain-com",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "securitypolicy:more-specific-dummy-domain-policy",
+        "securitypolicy-entry:default",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "sante",
+        "all",
+        "container:1e219d8ed6b4",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "aclid:--default--",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100016",
+        "aclname:default-acl",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "status:403",
+        "status-class:4xx",
+        "cf-rule-subcategory:built-in-function-invocation"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "md sqli (header)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/test\/",
+      ":method": "GET",
+      ":authority": "specific.dummydomain.com",
+      "malicious": "xp_cmdshell"
+    }
+  }
+]

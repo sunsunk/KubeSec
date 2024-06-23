@@ -1,0 +1,103 @@
+.DS_Store
+.vscode
+.idea
+.kube
+.test
+.build
+NuGet.Config
+armadactl.yaml
+loadtest.yaml
+test_reports
+code_reports
+/jobservice
+jobservice.db
+jobservice.db-shm
+jobservice.db-wal
+/armadactl
+junit.xml
+docker-compose.dev.yaml
+delve
+
+# Build artifacts
+dist
+.goreleaser-minimal.yml
+
+# Proto compiler and dependencies
+proto
+protoc
+protoc.zip
+
+# Helm
+charts/armada-server-bundle/charts/postgresql-*.tgz
+charts/armada-server-bundle/charts/pulsar-*.tgz
+charts/armada-server-bundle/charts/redis-ha-*.tgz
+charts/armada-server-bundle/charts/stan-*.tgz
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+test-reports
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# .net core
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+packages
+client/DotNet.gRPC/Armada.Client.Grpc/generated
+
+# python
+# Pycache, dist, poetry versions
+# and ignore protoc generated files
+*.egg-info/
+*.pyc
+client/python/dist
+.python-version
+*_pb2.py
+*_pb2.pyi
+*_pb2_grpc.py
+client/python/armada_client/armada/
+.tox
+proto-airflow
+client/python/build/
+client/python/docs/build/
+typings.py
+third_party/airflow/docs/build/
+third_party/airflow/build/
+build/ssl/certs/ca-certificates.crt
+developer/volumes/go/pkg/
+.coverage
+coverage.xml
+
+# Yarn
+developer/yarn.lock
+developer/node_modules/
+
+# Vim
+.*.sw*

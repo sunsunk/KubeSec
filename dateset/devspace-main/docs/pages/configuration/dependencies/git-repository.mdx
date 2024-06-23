@@ -1,0 +1,37 @@
+---
+title: Deploy Git-based Dependencies
+sidebar_label: "from git://..."
+---
+
+import ConfigPartialDependencyGit from '../_partials/v2beta1/dependencies/group_git.mdx'
+import ConfigPartialDependencyExecution from '../_partials/v2beta1/dependencies/group_execution.mdx'
+
+
+```yaml
+dependencies:
+  api-server:
+    git: https://github.com/my-api-server
+    branch: stable
+  auth-server:
+    git: https://github.com/my-auth-server
+    revision: c967392
+    pipeline: dev
+  database-server:
+    git: https://github.com/my-database-server
+    tag: v3.0.1
+    subPath: /configuration
+dev:
+  my-dev:
+    imageSelector: ghcr.io/org/project/image
+    terminal: {}
+```
+
+:::info Authentication
+DevSpace is using the git credential store. So, if you are able to clone or pull from the specified repository, DevSpace will also be able clone or pull this repository.
+:::
+
+
+## Configuration
+
+<ConfigPartialDependencyGit/>
+<ConfigPartialDependencyExecution/>

@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-metrics-apiserver
+    app.kubernetes.io/name: keda-metrics-apiserver
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/part-of: keda-operator
+  name: keda-metrics-apiserver
+  namespace: keda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-metrics-apiserver
+  template:
+    metadata:
+      labels:
+        app: keda-metrics-apiserver
+      name: keda-metrics-apiserver
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: keda-operator
+      containers:
+        - name: keda-metrics-apiserver
+          image: ghcr.io/kedacore/keda-metrics-apiserver:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 1000Mi
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /healthz
+              port: 6443
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /readyz
+              port: 6443
+            initialDelaySeconds: 5
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KEDA_HTTP_DEFAULT_TIMEOUT
+              value: ""
+          args:
+          - /usr/local/bin/keda-adapter
+          - --secure-port=6443
+          - --logtostderr=true
+          - --stderrthreshold=ERROR
+          - --v=0
+          - --client-ca-file=/certs/ca.crt
+          - --tls-cert-file=/certs/tls.crt
+          - --tls-private-key-file=/certs/tls.key
+          - --cert-dir=/certs
+          ports:
+          - containerPort: 6443
+            name: https
+          - containerPort: 8080
+            name: http
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp-vol
+          - mountPath: /certs
+            name: certificates
+            readOnly: true
+          securityContext:
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+      - name: temp-vol
+        emptyDir: {}
+      - name: certificates
+        secret:
+          defaultMode: 420
+          secretName: kedaorg-certs

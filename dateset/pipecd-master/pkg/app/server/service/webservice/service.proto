@@ -1,0 +1,721 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package grpc.service.webservice;
+option go_package = "github.com/pipe-cd/pipecd/pkg/app/server/service/webservice";
+
+import "validate/validate.proto";
+import "pkg/model/common.proto";
+import "pkg/model/insight.proto";
+import "pkg/model/application.proto";
+import "pkg/model/application_live_state.proto";
+import "pkg/model/command.proto";
+import "pkg/model/deployment.proto";
+import "pkg/model/deployment_chain.proto";
+import "pkg/model/logblock.proto";
+import "pkg/model/piped.proto";
+import "pkg/model/rbac.proto";
+import "pkg/model/project.proto";
+import "pkg/model/apikey.proto";
+import "pkg/model/event.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/descriptor.proto";
+
+// WebService contains all RPC definitions for web client.
+// All of these RPCs are only called by web client and authenticated by using ID_TOKEN.
+service WebService {
+    // Piped
+    rpc RegisterPiped(RegisterPipedRequest) returns (RegisterPipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = CREATE;
+    }
+    rpc UpdatePiped(UpdatePipedRequest) returns (UpdatePipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc RecreatePipedKey(RecreatePipedKeyRequest) returns (RecreatePipedKeyResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DeleteOldPipedKeys(DeleteOldPipedKeysRequest) returns (DeleteOldPipedKeysResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc EnablePiped(EnablePipedRequest) returns (EnablePipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DisablePiped(DisablePipedRequest) returns (DisablePipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc ListPipeds(ListPipedsRequest) returns (ListPipedsResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = LIST;
+    }
+    rpc GetPiped(GetPipedRequest) returns (GetPipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = GET;
+    }
+    rpc UpdatePipedDesiredVersion(UpdatePipedDesiredVersionRequest) returns (UpdatePipedDesiredVersionResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc RestartPiped(RestartPipedRequest) returns (RestartPipedResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc ListReleasedVersions(ListReleasedVersionsRequest) returns (ListReleasedVersionsResponse) {
+        option (model.rbac).resource = PIPED;
+        option (model.rbac).action = LIST;
+    }
+
+    // Application
+    rpc AddApplication(AddApplicationRequest) returns (AddApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = CREATE;
+    }
+    rpc UpdateApplication(UpdateApplicationRequest) returns (UpdateApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc EnableApplication(EnableApplicationRequest) returns (EnableApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DisableApplication(DisableApplicationRequest) returns (DisableApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DeleteApplication(DeleteApplicationRequest) returns (DeleteApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = DELETE;
+    }
+    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = LIST;
+    }
+    rpc SyncApplication(SyncApplicationRequest) returns (SyncApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = GET;
+    }
+    rpc GenerateApplicationSealedSecret(GenerateApplicationSealedSecretRequest) returns (GenerateApplicationSealedSecretResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc ListUnregisteredApplications(ListUnregisteredApplicationsRequest) returns (ListUnregisteredApplicationsResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = LIST;
+    }
+
+    // Deployment
+    rpc ListDeployments(ListDeploymentsRequest) returns (ListDeploymentsResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = LIST;
+    }
+    rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = GET;
+    }
+    rpc GetStageLog(GetStageLogRequest) returns (GetStageLogResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = GET;
+    }
+    rpc CancelDeployment(CancelDeploymentRequest) returns (CancelDeploymentResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc SkipStage(SkipStageRequest) returns (SkipStageResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc ApproveStage(ApproveStageRequest) returns (ApproveStageResponse) {
+        option (model.rbac).resource = DEPLOYMENT;
+        option (model.rbac).action = UPDATE;
+    }
+
+    // ApplicationLiveState
+    rpc GetApplicationLiveState(GetApplicationLiveStateRequest) returns (GetApplicationLiveStateResponse) {
+        option (model.rbac).resource = APPLICATION;
+        option (model.rbac).action = GET;
+    }
+
+    // Account
+    rpc GetProject(GetProjectRequest) returns (GetProjectResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = GET;
+    }
+    rpc UpdateProjectStaticAdmin(UpdateProjectStaticAdminRequest) returns (UpdateProjectStaticAdminResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc EnableStaticAdmin(EnableStaticAdminRequest) returns (EnableStaticAdminResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DisableStaticAdmin(DisableStaticAdminRequest) returns (DisableStaticAdminResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc UpdateProjectSSOConfig(UpdateProjectSSOConfigRequest) returns (UpdateProjectSSOConfigResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc UpdateProjectRBACConfig(UpdateProjectRBACConfigRequest) returns (UpdateProjectRBACConfigResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc GetMe(GetMeRequest) returns (GetMeResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = GET;
+    }
+    rpc AddProjectRBACRole(AddProjectRBACRoleRequest) returns (AddProjectRBACRoleResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc UpdateProjectRBACRole(UpdateProjectRBACRoleRequest) returns (UpdateProjectRBACRoleResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DeleteProjectRBACRole(DeleteProjectRBACRoleRequest) returns (DeleteProjectRBACRoleResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc AddProjectUserGroup(AddProjectUserGroupRequest) returns (AddProjectUserGroupResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc DeleteProjectUserGroup(DeleteProjectUserGroupRequest) returns (DeleteProjectUserGroupResponse) {
+        option (model.rbac).resource = PROJECT;
+        option (model.rbac).action = UPDATE;
+    }
+
+    // Command
+    rpc GetCommand(GetCommandRequest) returns (GetCommandResponse) {
+        option (model.rbac).ignored = true;
+    }
+
+    // API Key
+    rpc GenerateAPIKey(GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {
+        option (model.rbac).resource = API_KEY;
+        option (model.rbac).action = CREATE;
+    }
+    rpc DisableAPIKey(DisableAPIKeyRequest) returns (DisableAPIKeyResponse) {
+        option (model.rbac).resource = API_KEY;
+        option (model.rbac).action = UPDATE;
+    }
+    rpc ListAPIKeys(ListAPIKeysRequest) returns (ListAPIKeysResponse) {
+        option (model.rbac).resource = API_KEY;
+        option (model.rbac).action = LIST;
+    }
+
+    // Insights
+    rpc GetInsightData(GetInsightDataRequest) returns (GetInsightDataResponse) {
+        option (model.rbac).resource = INSIGHT;
+        option (model.rbac).action = GET;
+    }
+    rpc GetInsightApplicationCount(GetInsightApplicationCountRequest) returns (GetInsightApplicationCountResponse) {
+        option (model.rbac).resource = INSIGHT;
+        option (model.rbac).action = GET;
+    }
+
+    // DeploymentChain
+    rpc ListDeploymentChains(ListDeploymentChainsRequest) returns (ListDeploymentChainsResponse) {}
+    rpc GetDeploymentChain(GetDeploymentChainRequest) returns (GetDeploymentChainResponse) {}
+
+    // Events
+    rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {
+        option (model.rbac).resource = EVENT;
+        option (model.rbac).action = LIST;
+    }
+}
+
+message RegisterPipedRequest {
+    reserved 3;
+
+    string name = 1;
+    string desc = 2;
+}
+
+message RegisterPipedResponse {
+    string id = 1;
+    string key = 2;
+}
+
+message UpdatePipedRequest {
+    reserved 4;
+
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string desc = 3;
+}
+
+message UpdatePipedResponse {
+}
+
+message RecreatePipedKeyRequest {
+    string id = 1;
+}
+
+message RecreatePipedKeyResponse {
+    string key = 1;
+}
+
+message DeleteOldPipedKeysRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteOldPipedKeysResponse {
+}
+
+message EnablePipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message EnablePipedResponse {
+}
+
+message DisablePipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisablePipedResponse {
+}
+
+message ListPipedsRequest {
+    message Options {
+        google.protobuf.BoolValue enabled = 1;
+    }
+    // Whether to include the status value in the response message.
+    bool with_status = 1;
+    Options options = 2;
+}
+
+message ListPipedsResponse {
+    repeated model.Piped pipeds = 1;
+}
+
+message GetPipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetPipedResponse {
+    model.Piped piped = 1;
+}
+
+message UpdatePipedDesiredVersionRequest {
+    string version = 1 [(validate.rules).string.prefix = "v"];
+    repeated string piped_ids = 2 [(validate.rules).repeated.min_items = 1];
+}
+
+message UpdatePipedDesiredVersionResponse {
+}
+
+message RestartPipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message RestartPipedResponse {
+    string command_id = 1;
+}
+
+message ListReleasedVersionsRequest {
+}
+
+message ListReleasedVersionsResponse {
+    repeated string versions = 1;
+}
+
+message AddApplicationRequest {
+    reserved 2,6;
+
+    string name = 1 [(validate.rules).string.min_len = 1];
+    string piped_id = 3 [(validate.rules).string.min_len = 1];
+    model.ApplicationGitPath git_path = 4 [(validate.rules).message.required = true];
+    model.ApplicationKind kind = 5 [(validate.rules).enum.defined_only = true];
+    string platform_provider = 9 [(validate.rules).string.min_len = 1];
+    string description = 7;
+    map<string, string> labels = 8;
+}
+
+message AddApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateApplicationRequest {
+    reserved 3,7;
+
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string piped_id = 4 [(validate.rules).string.min_len = 1];
+    model.ApplicationKind kind = 6 [(validate.rules).enum.defined_only = true];
+    string platform_provider = 9 [(validate.rules).string.min_len = 1];
+    string config_filename = 8;
+}
+
+message UpdateApplicationResponse {
+}
+
+message EnableApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message EnableApplicationResponse {
+}
+
+message DisableApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisableApplicationResponse {
+}
+
+message DeleteApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteApplicationResponse {
+}
+
+message ListApplicationsRequest {
+    message Options {
+        reserved 4;
+
+        google.protobuf.BoolValue enabled = 1;
+        repeated model.ApplicationKind kinds = 2;
+        repeated model.ApplicationSyncStatus sync_statuses = 3;
+        string name = 5;
+        map<string, string> labels = 6;
+        string piped_id = 7;
+    }
+    Options options = 1;
+}
+
+message ListApplicationsResponse {
+    repeated model.Application applications = 1;
+}
+
+message SyncApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+    model.SyncStrategy sync_strategy = 2;
+}
+
+message SyncApplicationResponse {
+    string command_id = 1;
+}
+
+message GetApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetApplicationResponse {
+    model.Application application = 1;
+}
+
+message GenerateApplicationSealedSecretRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+    string data = 2 [(validate.rules).string.min_len = 1];
+    // Whether the data should be base64 encoded before encrypting or not.
+    bool base64_encoding = 3;
+}
+
+message GenerateApplicationSealedSecretResponse {
+    string data = 1 [(validate.rules).string.min_len = 1];
+}
+
+message ListUnregisteredApplicationsRequest {
+}
+
+message ListUnregisteredApplicationsResponse {
+    repeated model.ApplicationInfo applications = 1;
+}
+
+message ListDeploymentsRequest {
+    message Options {
+        reserved 4;
+
+        repeated model.DeploymentStatus statuses = 1;
+        repeated model.ApplicationKind kinds = 2;
+        repeated string application_ids = 3;
+        string application_name = 5;
+        map<string, string> labels = 6;
+    }
+    Options options = 1;
+    int32 page_size = 2;
+    string cursor = 3;
+    // It will not return any data older than this timestamp, even if it does not meet the page size.
+    // This aims to prevent the server from scanning the entire database to look for deployments that have the specified fields in spite of nothing.
+    int64 page_min_updated_at = 4;
+}
+
+message ListDeploymentsResponse {
+    repeated model.Deployment deployments = 1;
+    string cursor = 2;
+}
+
+message GetDeploymentRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetDeploymentResponse {
+    model.Deployment deployment = 1;
+}
+
+message GetStageLogRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+    string stage_id = 2 [(validate.rules).string.min_len = 1];
+    int32 retried_count = 3;
+    int64 offset_index = 4;
+}
+
+message GetStageLogResponse {
+    repeated model.LogBlock blocks = 1;
+    bool completed = 2;
+}
+
+message CancelDeploymentRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+    bool force_rollback = 2;
+    bool force_no_rollback = 3;
+}
+
+message CancelDeploymentResponse {
+    string command_id = 1;
+}
+
+message SkipStageRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+    string stage_id = 2 [(validate.rules).string.min_len = 1];
+}
+
+message SkipStageResponse {
+    string command_id = 1;
+}
+
+message ApproveStageRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+    string stage_id = 2 [(validate.rules).string.min_len = 1];
+}
+
+message ApproveStageResponse {
+    string command_id = 1;
+}
+
+message GetApplicationLiveStateRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetApplicationLiveStateResponse {
+    model.ApplicationLiveStateSnapshot snapshot= 1;
+}
+
+message GetProjectRequest {
+}
+
+message GetProjectResponse {
+    model.Project project = 1;
+}
+
+message UpdateProjectStaticAdminRequest {
+    string username = 1 [(validate.rules).string.min_len = 1];
+    string password = 2 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateProjectStaticAdminResponse {
+}
+
+message UpdateProjectSSOConfigRequest {
+    model.ProjectSSOConfig sso = 1 [(validate.rules).message.required = true];
+}
+
+message UpdateProjectSSOConfigResponse {
+}
+
+message UpdateProjectRBACConfigRequest {
+    model.ProjectRBACConfig rbac = 1 [(validate.rules).message.required = true];
+}
+
+message UpdateProjectRBACConfigResponse {
+}
+
+
+message EnableStaticAdminRequest {
+}
+
+message EnableStaticAdminResponse {
+}
+
+message DisableStaticAdminRequest {
+}
+
+message DisableStaticAdminResponse {
+}
+
+message GetMeRequest {
+}
+
+message GetMeResponse {
+    reserved 4;
+
+    string subject = 1;
+    string avatar_url = 2;
+    string project_id = 3;
+}
+
+message AddProjectRBACRoleRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    repeated model.ProjectRBACPolicy policies = 2 [(validate.rules).repeated.min_items = 1];
+}
+
+message AddProjectRBACRoleResponse {
+}
+
+message UpdateProjectRBACRoleRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    repeated model.ProjectRBACPolicy policies = 2 [(validate.rules).repeated.min_items = 1];
+}
+
+message UpdateProjectRBACRoleResponse {
+}
+
+message DeleteProjectRBACRoleRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteProjectRBACRoleResponse {
+}
+
+message AddProjectUserGroupRequest {
+    string sso_group = 1 [(validate.rules).string.min_len = 1];
+    string role = 2 [(validate.rules).string.min_len = 1];
+}
+
+message AddProjectUserGroupResponse {
+}
+
+message DeleteProjectUserGroupRequest {
+    string sso_group = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteProjectUserGroupResponse {
+}
+
+message GetCommandRequest {
+    string command_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetCommandResponse {
+    model.Command command = 1;
+}
+
+message GenerateAPIKeyRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    model.APIKey.Role role = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message GenerateAPIKeyResponse {
+    string key = 1;
+}
+
+message DisableAPIKeyRequest {
+    string id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisableAPIKeyResponse {
+}
+
+message ListAPIKeysRequest {
+    message Options {
+        google.protobuf.BoolValue enabled = 1;
+    }
+    Options options = 2;
+}
+
+message ListAPIKeysResponse {
+    repeated model.APIKey keys = 1;
+}
+
+message GetInsightDataRequest {
+    model.InsightMetricsKind metrics_kind = 1 [(validate.rules).enum.defined_only = true];
+    int64 range_from = 2 [(validate.rules).int64.gt = 0];
+    int64 range_to = 3 [(validate.rules).int64.gt = 0];
+    model.InsightResolution resolution = 4 [(validate.rules).enum.defined_only = true];
+
+    string application_id = 10;
+    map<string,string> labels = 11;
+}
+
+message GetInsightDataResponse {
+    int64 updated_at = 1;
+    model.InsightResultType type = 2;
+    repeated model.InsightSample vector = 3;
+    repeated model.InsightSampleStream matrix = 4;
+}
+
+message GetInsightApplicationCountRequest {
+}
+
+message GetInsightApplicationCountResponse {
+    int64 updated_at = 1;
+    repeated model.InsightApplicationCount counts = 2;
+}
+
+message ListDeploymentChainsRequest {
+    message Options {
+    }
+    Options options = 1;
+    int32 page_size = 2;
+    string cursor = 3;
+    // It will not return any data older than this timestamp, even if it does not meet the page size.
+    // This aims to prevent the server from scanning the entire database to look for deployments that have the specified fields in spite of nothing.
+    int64 page_min_updated_at = 4;
+}
+
+message ListDeploymentChainsResponse {
+    repeated model.DeploymentChain deployment_chains = 1;
+    string cursor = 2;
+}
+
+message GetDeploymentChainRequest {
+    string deployment_chain_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetDeploymentChainResponse {
+    model.DeploymentChain deployment_chain = 1;
+}
+
+message ListEventsRequest {
+    message Options {
+        string name = 1;
+        repeated model.EventStatus statuses = 2;
+        map<string, string> labels = 3;
+    }
+    Options options = 1;
+    int32 page_size = 2;
+    string cursor = 3;
+    // It will not return any data older than this timestamp, even if it does not meet the page size.
+    // This aims to prevent the server from scanning the entire database to look for deployments that have the specified fields in spite of nothing.
+    int64 page_min_updated_at = 4;
+}
+
+message ListEventsResponse {
+   repeated model.Event events = 1;
+   string cursor = 2;
+}

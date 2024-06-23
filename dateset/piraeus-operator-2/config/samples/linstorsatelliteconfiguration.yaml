@@ -1,0 +1,21 @@
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: all-satellites
+spec: {}
+#  nodeSelector:
+#    node-role.kubernetes.io/control-plane: ""
+#  internalTLS:
+#    secretName: linstor-controller-internal-tls
+#    certManager:
+#      kind: Issuer
+#      name: piraeus-root
+#  properties:
+#    - name: PrefNic
+#      value: default-ipv6
+#  storagePools:
+#    - name: thinpool
+#      lvmThinPool: {}
+#      source:
+#        hostDevices:
+#          - /dev/vdb

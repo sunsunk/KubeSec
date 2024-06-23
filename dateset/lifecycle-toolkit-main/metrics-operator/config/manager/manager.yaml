@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: metrics-operator
+  name: system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-operator
+  namespace: system
+  labels:
+    app.kubernetes.io/part-of: keptn
+    control-plane: metrics-operator
+    app.kubernetes.io/component: metrics-operator
+    keptn.sh/inject-cert: "true"
+spec:
+  selector:
+    matchLabels:
+      control-plane: metrics-operator
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: metrics-operator
+      labels:
+        control-plane: metrics-operator
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        # TODO(user): For common cases that do not require escalating privileges
+        # it is recommended to ensure that all your Pods/Containers are restrictive.
+        # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
+        # Please uncomment the following code if your project does NOT have to work on old Kubernetes
+        # versions < 1.19 or on vendors versions which do NOT support this field by default (i.e. Openshift < 4.11 ).
+        # seccompProfile:
+        #   type: RuntimeDefault
+      volumes:
+        - emptyDir: {}
+          name: adapter-certs-dir
+        - name: keptn-certs
+          secret:
+            secretName: keptn-certs
+      containers:
+        - command:
+            - /manager
+          args:
+            - webhook-server
+            - --leader-elect
+            # Secure port for the metrics adapter
+            - --adapter-port=6443
+            - --adapter-certs-dir=/tmp/metrics-adapter/serving-certs
+            # Log level for the metrics adapter
+            - --v=10
+          image: controller:latest
+          name: metrics-operator
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: EXPOSE_KEPTN_METRICS
+              value: "true"
+            - name: ENABLE_CUSTOM_METRICS_API_SERVICE
+              value: "true"
+            - name: ENABLE_ANALYSIS
+              value: "true"
+            - name: METRICS_CONTROLLER_LOG_LEVEL
+              value: "0"
+            - name: ANALYSIS_CONTROLLER_LOG_LEVEL
+              value: "0"
+            - name: CERT_MANAGER_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 9443
+              name: webhook-server
+              protocol: TCP
+            - name: metrics
+              containerPort: 9999
+              protocol: TCP
+            - name: custom-metrics
+              containerPort: 6443
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "ALL"
+            privileged: false
+            runAsGroup: 65532
+            runAsNonRoot: true
+            runAsUser: 65532
+            seccompProfile:
+              type: RuntimeDefault
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+          volumeMounts:
+            - name: adapter-certs-dir
+              mountPath: /tmp/metrics-adapter/serving-certs
+            - name: keptn-certs
+              mountPath: /tmp/webhook/certs/
+      serviceAccountName: metrics-operator
+      terminationGracePeriodSeconds: 10

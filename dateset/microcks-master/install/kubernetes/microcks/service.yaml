@@ -1,0 +1,157 @@
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks"
+  labels:
+    app: "microcks"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    name: spring
+  type: "ClusterIP"
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: spring
+    group: microcks
+
+---
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-grpc"
+  labels:
+    app: "microcks"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: spring-grpc
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: spring
+    group: microcks
+
+---
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-postman-runtime"
+  labels:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 3000
+    name: postman-runtime
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks
+
+---
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-mongodb"
+  labels:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - name: mongodb
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+    nodePort: 0
+  selector:
+    app: "microcks"
+    container: mongodb
+    group: microcks
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-keycloak"
+  labels:
+    app: "microcks"
+    container: keycloak
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    name: keycloak
+  type: "ClusterIP"
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: keycloak
+    group: microcks
+
+---
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-keycloak-postgresql"
+  labels:
+    app: "microcks"
+    container: keycloak-postgresql
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - name: postgresql
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
+    nodePort: 0
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: keycloak-postgresql
+    group: microcks

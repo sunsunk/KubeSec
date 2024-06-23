@@ -1,0 +1,43 @@
+### Mimetypes mappings to codecs
+###
+### Usage:
+###
+### ```tremor
+### use tremor::mime;
+### let codec = mime_to_codec["application/json"];
+### ```
+
+## Mapping of mimetypes to codecs
+const MIME_TO_CODEC = {
+    "application/json": "json",
+    "application/yaml": "yaml",
+    "text/csv": "csv",
+    "text/plain": "string",
+    "text/html": "string",
+    "text/syslog": "syslog",
+    "application/msgpack": "msgpack",
+    "application/x-msgpack": "msgpack",
+    "application/vnd.msgpack": "msgpack",
+    "application/octet-stream": "binary",
+};
+
+## Mapping of codecs to mimetypes
+const CODEC_TO_MIME = {
+    "json": "application/json",
+    "csv": "text/csv",
+    "string": "text/plain",
+    "msgpack": "application/msgpack",
+    "yaml": "application/yaml",
+    "binary": "application/octet-stream",
+    "syslog": "text/plain",
+    "influx": "text/plain",
+    "binflux": "application/octet-stream",
+    "statsd": "text/plain",
+    "dogstatsd": "text/plain",
+};
+
+## constant used for matching any mime type agains a codec
+const ANY = "*/*";
+
+## Same as `ANY`, for backwards compatibility due to a typo in earlier versions
+const AMY = "*/*";

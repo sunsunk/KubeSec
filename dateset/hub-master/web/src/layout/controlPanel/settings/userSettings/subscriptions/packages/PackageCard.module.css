@@ -1,0 +1,84 @@
+@media (hover: hover) {
+  .card:hover {
+    border-color: var(--color-black-50);
+    box-shadow: 0 0.125rem 0.25rem var(--color-black-25);
+  }
+}
+
+.body {
+  padding: 1.75rem !important;
+}
+
+.icon {
+  height: auto;
+  width: 18px;
+}
+
+.imageWrapper {
+  min-width: 60px;
+  width: 60px;
+  height: 60px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.link {
+  color: var(--gray-dark);
+}
+
+.link:hover {
+  color: inherit;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.subtitle span {
+  font-size: 0.65rem;
+}
+
+.kind {
+  font-size: 0.75rem;
+  color: var(--color-1-500);
+}
+
+.truncateWrapper {
+  min-width: 0;
+}
+
+.checkbox,
+.checkbox + label {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .imageWrapper {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .image {
+    max-width: calc(100% - 4px);
+    max-height: calc(100% - 4px);
+  }
+
+  .body {
+    padding: 1rem !important;
+  }
+
+  .subtitle {
+    flex-direction: column !important;
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .subtitle {
+    font-size: 0.95rem;
+  }
+}

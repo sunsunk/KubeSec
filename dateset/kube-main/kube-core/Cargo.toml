@@ -1,0 +1,43 @@
+[package]
+name = "kube-core"
+description = "Kube shared types, traits and client-less behavior"
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+keywords = ["kubernetes", "apimachinery"]
+categories = ["api-bindings", "encoding", "parser-implementations"]
+
+[package.metadata.docs.rs]
+features = ["ws", "admission", "jsonpatch", "k8s-openapi/latest"]
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[features]
+ws = []
+admission = ["json-patch"]
+jsonpatch = ["json-patch"]
+schema = ["schemars"]
+kubelet-debug = ["ws"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror.workspace = true
+form_urlencoded.workspace = true
+http.workspace = true
+json-patch = { workspace = true, optional = true }
+chrono = { workspace = true, features = ["now"] }
+schemars = { workspace = true, optional = true }
+k8s-openapi.workspace = true
+
+[dev-dependencies]
+k8s-openapi = { workspace = true, features = ["latest"] }
+assert-json-diff.workspace = true
+kube = { path = "../kube", version = "<1.0.0, >=0.53.0" }
+serde_yaml.workspace = true

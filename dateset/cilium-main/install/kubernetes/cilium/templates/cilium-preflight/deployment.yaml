@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cilium-pre-flight-check
+  namespace: dynamic_parameters
+  annotations:
+  labels:
+    app.kubernetes.io/part-of: cilium
+    app.kubernetes.io/name: cilium-pre-flight-check
+spec:
+  selector:
+    matchLabels:
+      k8s-app: cilium-pre-flight-check-deployment
+      kubernetes.io/cluster-service: "true"
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/part-of: cilium
+        k8s-app: cilium-pre-flight-check-deployment
+        kubernetes.io/cluster-service: "true"
+        app.kubernetes.io/name: cilium-pre-flight-check
+    spec:
+      imagePullSecrets:
+      containers:
+        - name: cnp-validator
+          image: dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command: ["/bin/sh"]
+          args:
+          - -ec
+          - |
+            cilium-dbg preflight validate-cnp;
+            touch /tmp/ready-validate-cnp;
+            sleep 1h;
+          readinessProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/ready-validate-cnp
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+          volumeMounts:
+          env:
+          - name: KUBERNETES_SERVICE_HOST
+            value: dynamic_parameters
+          - name: KUBERNETES_SERVICE_PORT
+            value: dynamic_parameters
+          resources:
+          terminationMessagePolicy: FallbackToLogsOnError
+      volumes:
+      hostNetwork: true
+      restartPolicy: Always
+      priorityClassName: dynamic_parameters
+      serviceAccount: dynamic_parameters
+      serviceAccountName: dynamic_parameters
+      automountServiceAccountToken: dynamic_parameters
+      terminationGracePeriodSeconds: dynamic_parameters
+      affinity:
+      nodeSelector:
+      tolerations:
+
+---

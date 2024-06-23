@@ -1,0 +1,19 @@
+# Source: k8up/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-k8up-metrics
+  labels:
+    helm.sh/chart: k8up-4.5.1
+    app.kubernetes.io/name: k8up
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: k8up
+    app.kubernetes.io/instance: my-release

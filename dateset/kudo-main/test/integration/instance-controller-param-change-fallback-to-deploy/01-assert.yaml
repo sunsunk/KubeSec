@@ -1,0 +1,8 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: icto-fallback-to-deploy
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE

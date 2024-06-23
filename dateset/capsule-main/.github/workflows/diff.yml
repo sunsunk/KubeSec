@@ -1,0 +1,34 @@
+name: Diff checks
+permissions: {}
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diff:
+    name: diff
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: '1.21'
+      - run: make installer
+      - name: Checking if YAML installer file is not aligned
+        run: if [[ $(git diff | wc -l) -gt 0 ]]; then echo ">>> Untracked generated files have not been committed" && git --no-pager diff && exit 1; fi
+      - run: make apidoc
+      - name: Checking if the CRDs documentation is not aligned
+        run: if [[ $(git diff | wc -l) -gt 0 ]]; then echo ">>> CRDs generated documentation have not been committed" && git --no-pager diff && exit 1; fi
+      - name: Checking if YAML installer generated untracked files
+        run: test -z "$(git ls-files --others --exclude-standard 2> /dev/null)"
+      - name: Checking if source code is not formatted
+        run: test -z "$(git diff 2> /dev/null)"

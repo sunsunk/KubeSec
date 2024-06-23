@@ -1,0 +1,9 @@
+{
+  "name": "kubectl.cluster.read",
+  "description": "View kube cluster information",
+  "base_url": "",
+  "resource_urls": [],
+  "resource_action_urls": [],
+  "authenticated": true,
+  "scope": "PROJECT"
+}

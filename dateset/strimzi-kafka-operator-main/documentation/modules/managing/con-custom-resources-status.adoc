@@ -1,0 +1,157 @@
+// Module included in the following assemblies:
+//
+// assembly-resource-status-access.adoc
+
+[id='con-custom-resources-status-{context}']
+= Strimzi custom resource status information
+
+[role="_abstract"]
+Status properties provide status information for certain custom resources.
+
+The following table lists the custom resources that provide status information (when deployed) and the schemas that define the status properties.
+
+For more information on the schemas, see the link:{BookURLConfiguring}[Strimzi Custom Resource API Reference^].
+
+.Custom resources that provide status information
+[cols="3*",options="header",stripes="none",separator=¦]
+|===
+
+m¦Strimzi resource
+¦Schema reference
+¦Publishes status information on...
+
+m¦Kafka
+¦`KafkaStatus` schema reference
+¦The Kafka cluster, its listeners, and node pools
+
+m¦KafkaNodePool
+¦`KafkaNodePoolStatus` schema reference
+¦The nodes in the node pool, their roles, and the associated Kafka cluster
+
+m¦KafkaTopic
+¦`KafkaTopicStatus` schema reference
+¦Kafka topics in the Kafka cluster
+
+m¦KafkaUser
+¦`KafkaUserStatus` schema reference
+¦Kafka users in the Kafka cluster
+
+m¦KafkaConnect
+¦`KafkaConnectStatus` schema reference
+¦The Kafka Connect cluster and connector plugins
+
+m¦KafkaConnector
+¦`KafkaConnectorStatus` schema reference
+¦`KafkaConnector` resources
+
+m¦KafkaMirrorMaker2
+¦`KafkaMirrorMaker2Status` schema reference
+¦The Kafka MirrorMaker 2 cluster and internal connectors
+
+m¦KafkaMirrorMaker
+¦`KafkaMirrorMakerStatus` schema reference
+¦The Kafka MirrorMaker cluster
+
+m¦KafkaBridge
+¦`KafkaBridgeStatus` schema reference
+¦The Strimzi Kafka Bridge
+
+m¦KafkaRebalance
+¦`KafkaRebalance` schema reference
+¦The status and results of a rebalance
+
+m¦StrimziPodSet
+¦`StrimziPodSetStatus` schema reference
+¦The number of pods: being managed, using the current version, and in a ready state 
+
+|===
+
+The `status` property of a resource provides information on the state of the resource.
+The `status.conditions` and `status.observedGeneration` properties are common to all resources.
+
+`status.conditions`:: Status conditions describe the _current state_ of a resource. Status condition properties are useful for tracking progress related to the resource achieving its _desired state_, as defined by the configuration specified in its `spec`. Status condition properties provide the time and reason the state of the resource changed, and details of events preventing or delaying the operator from realizing the desired state.
+
+`status.observedGeneration`:: Last observed generation denotes the latest reconciliation of the resource by the Cluster Operator. If the value of `observedGeneration` is different from the value of `metadata.generation` (the current version of the deployment), the operator has not yet processed the latest update to the resource. If these values are the same, the status information reflects the most recent changes to the resource.
+
+The `status` properties also provide resource-specific information.
+For example, `KafkaStatus` provides information on listener addresses, and the ID of the Kafka cluster.
+
+`KafkaStatus` also provides information on the Kafka and Strimzi versions being used.
+You can check the values of `operatorLastSuccessfulVersion` and `kafkaVersion` to determine whether an upgrade of Strimzi or Kafka has completed  
+
+Strimzi creates and maintains the status of custom resources, periodically evaluating the current state of the custom resource and updating its status accordingly.
+When performing an update on a custom resource using `kubectl edit`, for example, its `status` is not editable. Moreover, changing the `status` would not affect the configuration of the Kafka cluster.
+
+Here we see the `status` properties for a `Kafka` custom resource.
+
+.Kafka custom resource status
+[source,shell,subs="+quotes,attributes"]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+metadata:
+spec:
+  # ...
+status:
+  clusterId: XP9FP2P-RByvEy0W4cOEUA # <1>
+  conditions: # <2>
+    - lastTransitionTime: '2023-01-20T17:56:29.396588Z'
+      status: 'True'
+      type: Ready # <3>
+  kafkaMetadataState: KRaft # <4>
+  kafkaVersion: {DefaultKafkaVersion} # <5>
+  kafkaNodePools: # <6>
+    - name: broker
+    - name: controller
+  listeners: # <7>
+    - addresses:
+        - host: my-cluster-kafka-bootstrap.prm-project.svc
+          port: 9092
+      bootstrapServers: 'my-cluster-kafka-bootstrap.prm-project.svc:9092'
+      name: plain
+    - addresses:
+        - host: my-cluster-kafka-bootstrap.prm-project.svc
+          port: 9093
+      bootstrapServers: 'my-cluster-kafka-bootstrap.prm-project.svc:9093'
+      certificates:
+        - |
+          -----BEGIN CERTIFICATE-----
+          
+          -----END CERTIFICATE-----
+      name: tls
+    - addresses:
+        - host: >-
+            2054284155.us-east-2.elb.amazonaws.com
+          port: 9095
+      bootstrapServers: >-
+        2054284155.us-east-2.elb.amazonaws.com:9095
+      certificates:
+        - |
+          -----BEGIN CERTIFICATE-----
+          
+          -----END CERTIFICATE-----
+      name: external3
+    - addresses:
+        - host: ip-10-0-172-202.us-east-2.compute.internal
+          port: 31644
+      bootstrapServers: 'ip-10-0-172-202.us-east-2.compute.internal:31644'
+      certificates:
+        - |
+          -----BEGIN CERTIFICATE-----
+          
+          -----END CERTIFICATE-----
+      name: external4
+  observedGeneration: 3 # <8>
+  operatorLastSuccessfulVersion: {ProductVersion} # <9>
+----
+<1> The Kafka cluster ID.
+<2> Status `conditions` describe the current state of the Kafka cluster.
+<3> The `Ready` condition indicates that the Cluster Operator considers the Kafka cluster able to handle traffic.
+<4> Kafka metadata state that shows the mechanism used (KRaft or ZooKeeper) to manage Kafka metadata and coordinate operations. 
+<5> The version of Kafka being used by the Kafka cluster.
+<6> The node pools belonging to the Kafka cluster.
+<7> The `listeners` describe Kafka bootstrap addresses by type.
+<8> The `observedGeneration` value indicates the last reconciliation of the `Kafka` custom resource by the Cluster Operator.
+<9> The version of the operator that successfully completed the last reconciliation. 
+
+NOTE: The Kafka bootstrap addresses listed in the status do not signify that those endpoints or the Kafka cluster is in a `Ready` state.

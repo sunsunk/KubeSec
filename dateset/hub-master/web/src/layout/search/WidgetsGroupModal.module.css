@@ -1,0 +1,52 @@
+.label {
+  font-size: 0.875rem;
+}
+
+.colorInputWrapper {
+  border-color: var(--border-md) !important;
+}
+
+.colorInput {
+  width: 36px;
+  height: 14px;
+}
+
+.colorPickerWrapper {
+  width: 220px;
+}
+
+.inputWrapper {
+  width: 9rem;
+  margin-top: 1.75rem;
+}
+
+.input {
+  height: 28px;
+}
+
+.copyBtnTooltip {
+  top: -0.4rem;
+  left: 14.5rem;
+  right: auto;
+}
+
+.copyBtnArrow {
+  top: 13px !important;
+  left: -6px !important;
+}
+
+.copyBtnArrow::before {
+  border-right-color: var(--color-1-900) !important;
+  border-bottom-color: transparent !important;
+  border-width: 0.4rem 0.4rem 0.4rem 0 !important;
+}
+
+:global(.sketch-picker) {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px !important;
+  border-radius: 0 !important;
+}
+
+:global(.sketch-picker) div {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}

@@ -1,0 +1,33 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: pl-monitoring
+  component: vizier
+kind: Kustomization
+namespace: pl
+patches:
+- path: patch_sentry.yaml
+  target:
+    kind: Deployment
+    labelSelector: vizier-bootstrap!=true
+- path: arch_tolerations/deployment.yaml
+  target:
+    kind: Deployment
+- path: arch_tolerations/job.yaml
+  target:
+    kind: Job
+- path: arch_tolerations/statefulset.yaml
+  target:
+    kind: StatefulSet
+resources:
+- ../bootstrap
+- default_role.yaml
+- kelvin_deployment.yaml
+- kelvin_service.yaml
+- metadata_role.yaml
+- metadata_service.yaml
+- node_view_cluster_role.yaml
+- query_broker_deployment.yaml
+- query_broker_service.yaml
+- query_broker_role.yaml
+- tls_config.yaml

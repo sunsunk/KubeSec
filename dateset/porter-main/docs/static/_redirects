@@ -1,0 +1,72 @@
+/board                  https://github.com/orgs/getporter/projects/1
+# All pull requests in the getporter organization
+/board/pull-requests    https://github.com/pulls?q=is:open+is:pr+user:getporter
+/board/*                https://github.com/orgs/getporter/projects/1?card_filter_query=label:":splat"
+/roadmap                https://github.com/getporter/porter/projects/4
+/find-issue             https://github.com/search?q=org%3Agetporter+label%3A%22good+first+issue%22%2C%22help+wanted%22+no%3Aassignee&state=open&type=Issues
+
+# Redirect source code links
+/:repo/src/*        https://github.com/getporter/:repo/blob/main/:splat
+/src/*              https://github.com/getporter/porter/blob/main/:splat
+
+# Redirect 
+/twitter            https://twitter.com/get_porter
+/slack              https://app.slack.com/client/T08PSQ7BQ/CN8NA4F8V
+/mailing-list       https://groups.io/g/porter
+/zoom/dev           https://zoom.us/j/99101191096
+/dev-meeting        https://hackmd.io/@porter/dev-meeting
+/forum              https://github.com/getporter/porter/discussions
+/devstats           https://porter.devstats.cncf.io/
+/calendar           https://groups.io/g/porter/calendar
+/videos             https://www.youtube.com/channel/UCbpSU5xLikfXQ-5meXLrsfA
+/user-survey        https://forms.gle/gTrvwUe2zMh4j82K6
+
+# Moved Links
+/configuration/#porter-allow-docker-host-access /configuration/#allow-docker-host-access
+
+/administration/* /docs/administration/:splat
+/best-practices/* /docs/best-practices/:splat
+/bundle/* /docs/bundle/:splat
+/configuration/* /docs/configuration/:splat
+/contribute/* /docs/contribute/:splat
+/development/* /docs/development/:splat
+/faq/* /docs/faq/:splat
+/getting-started/* /docs/getting-started/:splat
+/how-to-guides/* /docs/how-to-guides/:splat
+/integrations/* /docs/integrations/:splat
+/introduction/* /docs/introduction/:splat
+/learn/* /docs/learn/:splat
+/operations/* /docs/operations/:splat
+/operator/* /docs/operator/:splat
+/quickstart/* /docs/quickstart/:splat
+/references/* /docs/references/:splat
+/troubleshooting/* /docs/troubleshooting/:splat
+
+#
+# cdn.porter.sh proxy to GitHub downloads
+#
+
+# Redirect atom feeds, which are stored in their own repository
+/mixins/atom.xml    https://raw.githubusercontent.com/getporter/packages/main/mixins/atom.xml 302
+/mixins/index.json  https://raw.githubusercontent.com/getporter/packages/main/mixins/index.json 302
+/plugins/atom.xml   https://raw.githubusercontent.com/getporter/packages/main/plugins/atom.xml 302
+/plugins/index.json   https://raw.githubusercontent.com/getporter/packages/main/plugins/index.json 302
+
+# Redirect exec mixin binaries which are attached to Porter releases. Exec doesn't have its own repository.
+/mixins/exec/:version/:file         https://github.com/getporter/porter/releases/download/:version/:file 302
+
+# Redirect downloads for any official package
+/mixins/:mixin/:version/:file       https://github.com/getporter/:mixin-mixin/releases/download/:version/:file 302
+/plugins/:plugin/:version/:file     https://github.com/getporter/:plugin-plugins/releases/download/:version/:file 302
+
+# Directly serve these files directly so that the curl commands run by the end-user don't need to worry about redirects
+# We can only serve content directly through Netlify's CDN for files under 2MB
+/:version/install-linux.sh      https://github.com/getporter/porter/releases/download/:version/install-linux.sh 200
+/:version/install-mac.sh        https://github.com/getporter/porter/releases/download/:version/install-mac.sh 200
+/:version/install-windows.ps1   https://github.com/getporter/porter/releases/download/:version/install-windows.ps1 200
+
+# Redirect the porter release artifacts
+/:version/*           https://github.com/getporter/porter/releases/download/:version/:splat 302
+
+# Redirect the schema json files
+/schema/:version/* https://raw.githubusercontent.com/getporter/porter/release/:version/pkg/schema/:splat

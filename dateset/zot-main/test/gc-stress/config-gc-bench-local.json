@@ -1,0 +1,17 @@
+{
+    "distSpecVersion": "1.1.0",
+    "storage": {
+        "rootDirectory": "/tmp/zot/local",
+        "gc": true,
+        "gcDelay": "20s",
+        "gcInterval": "1s"
+    },
+    "http": {
+        "address": "127.0.0.1",
+        "port": "8080"
+    },
+    "log": {
+        "level": "debug",
+        "output": "/tmp/gc-bench-local.log"
+    }
+}

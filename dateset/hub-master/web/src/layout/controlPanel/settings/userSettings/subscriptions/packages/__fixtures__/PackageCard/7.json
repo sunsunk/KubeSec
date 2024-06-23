@@ -1,0 +1,14 @@
+{
+  "packageId": "cfa55ea2-eb69-4703-8be7-73937c6efc4b",
+  "name": "ibm-redis",
+  "normalizedName": "ibm-redis",
+  "logoImageId": "ca0a9e33-3656-4536-ac1b-4cff40bc6b88",
+  "repository": {
+    "repositoryId": "0acb228c-17ab-4e50-85e9-ffc7102ea423",
+    "kind": 0,
+    "name": "ibm-charts",
+    "displayName": "IBM charts",
+    "userAlias": "jsmith"
+  },
+  "eventKinds": [0]
+}

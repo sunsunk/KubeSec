@@ -1,0 +1,191 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("//bazel:pl_build_system.bzl", "pl_cc_binary", "pl_cc_bpf_test", "pl_cc_library", "pl_cc_test")
+
+package(default_visibility = ["//src/stirling:__subpackages__"])
+
+pl_cc_library(
+    name = "cc_library",
+    srcs = glob(
+        ["*.cc"],
+        exclude = [
+            "**/*_test.cc",
+            "**/*_tool.cc",
+            "**/*_benchmark.cc",
+        ],
+    ),
+    hdrs = glob(
+        [
+            "*.h",
+        ],
+    ),
+    deps = [
+        "//:llvm",
+        "//src/common/fs:cc_library",
+        "//src/common/system:cc_library",
+        "//src/shared/types/typespb/wrapper:cc_library",
+        "//src/stirling/utils:cc_library",
+        "@com_github_serge1_elfio//:elfio",
+    ],
+)
+
+pl_cc_test(
+    name = "elf_reader_test",
+    srcs = ["elf_reader_test.cc"],
+    data = [
+        "//src/stirling/obj_tools/testdata/cc:lib_foo",
+        "//src/stirling/obj_tools/testdata/cc:prebuilt_exe",
+        "//src/stirling/obj_tools/testdata/cc:stripped_exe",
+        "//src/stirling/obj_tools/testdata/cc:test_exe_debug_target",
+        "//src/stirling/obj_tools/testdata/cc:test_exe_debuglink_target",
+        "//src/stirling/obj_tools/testdata/go:test_go_1_19_binary",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/common/exec:cc_library",
+        "//src/stirling/obj_tools/testdata/cc:test_exe_fixture",
+    ],
+)
+
+pl_cc_test(
+    name = "abi_model_test",
+    srcs = ["abi_model_test.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "address_converter_test",
+    srcs = ["address_converter_test.cc"],
+    tags = [
+        "requires_bpf",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/stirling/obj_tools/testdata/containers:vaddr_convert_self_func_container",
+        "//src/stirling/testing:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "dwarf_reader_test",
+    srcs = ["dwarf_reader_test.cc"],
+    data = [
+        "//src/stirling/obj_tools/testdata/cc:test_exe_fixture",
+        "//src/stirling/obj_tools/testdata/go:test_binaries",
+        "//src/stirling/testing/demo_apps/go_grpc_tls_pl/server:golang_1_19_grpc_tls_server_binary",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/common/exec:cc_library",
+        "//src/stirling/utils:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "utils_test",
+    srcs = ["utils_test.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "dwarf_utils_test",
+    srcs = ["dwarf_utils_test.cc"],
+    data = [
+        "//src/stirling/obj_tools/testdata/cc:test_exe_fixture",
+    ],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_bpf_test(
+    name = "elf_reader_symbolizer_bpf_test",
+    srcs = ["elf_reader_symbolizer_bpf_test.cc"],
+    tags = [
+        "cpu:16",
+        "requires_bpf",
+    ],
+    deps = [
+        ":cc_library",
+        "//src/stirling/bpf_tools:cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "go_syms_test",
+    srcs = ["go_syms_test.cc"],
+    data = [
+        "//src/stirling/obj_tools/testdata/go:test_binaries",
+        "//src/stirling/obj_tools/testdata/go:test_go_1_17_binary",
+        "//src/stirling/obj_tools/testdata/go:test_go_1_19_binary",
+    ],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_test(
+    name = "raw_fptr_manager_test",
+    srcs = ["raw_fptr_manager_test.cc"],
+    data = [
+        "//src/stirling/obj_tools/testdata/c:library.so",
+    ],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "elf_reader_tool",
+    srcs = ["elf_reader_tool.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "vaddr_to_baddr_tool",
+    srcs = ["vaddr_to_baddr_tool.cc"],
+    deps = [
+        ":cc_library",
+    ],
+)
+
+pl_cc_binary(
+    name = "dwarfdump_tool",
+    srcs = ["dwarfdump_tool.cc"],
+    deps = [
+        ":cc_library",
+        "//:llvm",
+    ],
+)
+
+pl_cc_binary(
+    name = "dwarf_reader_benchmark",
+    testonly = 1,
+    srcs = ["dwarf_reader_benchmark.cc"],
+    data = ["//src/stirling/testing/demo_apps/go_grpc_tls_pl/server:golang_1_19_grpc_tls_server_binary"],
+    deps = [
+        ":cc_library",
+        "//src/common/testing:cc_library",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)

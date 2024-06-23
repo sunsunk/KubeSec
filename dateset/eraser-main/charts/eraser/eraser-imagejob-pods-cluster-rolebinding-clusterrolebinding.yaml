@@ -1,0 +1,18 @@
+# Source: eraser/templates/eraser-imagejob-pods-cluster-rolebinding-clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: 'my-release'
+    app.kubernetes.io/managed-by: 'Helm'
+    app.kubernetes.io/name: 'eraser'
+    helm.sh/chart: 'eraser'
+  name: eraser-imagejob-pods-cluster-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eraser-imagejob-pods-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: eraser-imagejob-pods
+  namespace: 'default'

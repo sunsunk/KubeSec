@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+---
+# Grant the webhook permission to read the ConfigMap containing the Kubernetes
+# apiserver's requestheader-ca-certificate.
+# This ConfigMap is automatically created by the Kubernetes apiserver.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters:webhook-authentication-reader
+  namespace: kube-system
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters:webhook-authentication-reader
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+# Once we no longer have to support Kubernetes versions lower than 1.17, we
+# can remove this custom defined Role in favour of the system-provisioned
+# extension-apiserver-authentication-reader Role resource in kube-system.
+# See https://github.com/kubernetes/kubernetes/issues/86359 for more details.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters:webhook-authentication-reader
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - extension-apiserver-authentication
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+---
+# apiserver gets the auth-delegator role to delegate auth decisions to
+# the core apiserver
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters:auth-delegator
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+# Grant cert-manager permission to validate using our apiserver
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters:domain-solver
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+rules:
+  - apiGroups:
+      - dynamic_parameters
+    resources:
+      - '*'
+    verbs:
+      - 'create'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters:domain-solver
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters:domain-solver
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+---

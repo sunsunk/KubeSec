@@ -1,0 +1,50 @@
+[
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/fc/by-query-step2",
+      ":authority": "www.byquery.com"
+    },
+    "delay": 0,
+    "tag": "flowquery",
+    "pass": false,
+    "last_step": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/fc/by-query-step2?x=1",
+      ":authority": "www.byquery.com"
+    },
+    "delay": 0,
+    "tag": "flowquery",
+    "pass": false,
+    "last_step": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/fc/by-query-step1?x=1",
+      ":authority": "www.byquery.com"
+    },
+    "delay": 0,
+    "tag": "flowquery",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/fc/by-query-step2?x=1",
+      ":authority": "www.byquery.com"
+    },
+    "delay": 0,
+    "tag": "flowquery",
+    "last_step": true,
+    "pass": true
+  }
+]

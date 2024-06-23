@@ -1,0 +1,148 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-proxy
+spec:
+  selector:
+    matchLabels:
+      name: cloud-proxy-server
+  template:
+    metadata:
+      labels:
+        name: cloud-proxy-server
+    spec:
+      containers:
+      - name: cloud-proxy-server
+        imagePullPolicy: IfNotPresent
+        image: cloud-proxy_server_image
+        ports:
+        - containerPort: 56000
+          name: http2
+        - containerPort: 56001
+          name: metrics-http
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 56000
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 56000
+        envFrom:
+        - configMapRef:
+            name: pl-oauth-config
+        - configMapRef:
+            name: pl-domain-config
+        - configMapRef:
+            name: pl-service-config
+        - configMapRef:
+            name: pl-ory-service-config
+        - configMapRef:
+            name: pl-ld-config
+        - configMapRef:
+            name: pl-analytics-config
+        - configMapRef:
+            name: pl-announcement-config
+        - configMapRef:
+            name: pl-contact-config
+        - configMapRef:
+            name: pl-script-bundles-config
+        env:
+        - name: PL_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloud-auth-secrets
+              key: jwt-signing-key
+        - name: PL_TLS_CERT
+          value: /certs/tls.crt
+        - name: PL_TLS_KEY
+          value: /certs/tls.key
+        - name: PL_API_SERVICE_HTTP
+          valueFrom:
+            configMapKeyRef:
+              name: pl-service-config
+              key: PL_API_SERVICE_HTTP
+        - name: PL_SEGMENT_UI_WRITE_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: segment-config
+              key: ui-write-key
+        - name: PL_SEGMENT_CLI_WRITE_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: segment-config
+              key: cli-write-key
+        volumeMounts:
+        - name: certs
+          mountPath: /certs
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - FSETID
+            - FOWNER
+            - MKNOD
+            - SETFCAP
+            - SETGID
+            - SETUID
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      - name: envoy
+        imagePullPolicy: IfNotPresent
+        image: envoyproxy/envoy:v1.12.2@sha256:b36ee021fc4d285de7861dbaee01e7437ce1d63814ead6ae3e4dfcad4a951b2e
+        command: ["envoy"]
+        args: ["-c", "/etc/envoy.yaml", "--service-cluster", "$(POD_NAME)"]
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 56004
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 56004
+        ports:
+        - containerPort: 56004
+        volumeMounts:
+        - name: certs
+          mountPath: /certs
+        - name: envoy-yaml
+          mountPath: /etc/envoy.yaml
+          subPath: envoy.yaml
+        - mountPath: /service-certs
+          name: service-certs
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: service-certs
+        secret:
+          secretName: service-tls-certs
+      - name: envoy-yaml
+        configMap:
+          name: proxy-envoy-config
+      - name: certs
+        secret:
+          secretName: cloud-proxy-tls-certs

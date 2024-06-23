@@ -1,0 +1,77 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+''' DNS Overview Map
+Shows summary DNS requests in the cluster, with some latency information.
+'''
+import px
+
+
+# kube-dns.kube-system.svc.cluster.local -> kube-dns.kube-system
+def format_nslookup_name(df):
+    df.idx1 = px.find(df.to_entity, '.svc.cluster')
+    leftovers = df[df.idx1 < 0]
+    df = df[df.idx1 >= 0]
+    df.to_entity = px.substring(df.to_entity, 0, df.idx1)
+    return df.append(leftovers)
+
+
+def dns_flow_graph(start_time: str, from_entity_filter: str, to_entity_filter: str):
+    df = px.DataFrame('dns_events', start_time=start_time)
+
+    # Client-side tracing only.
+    df = df[df.trace_role == 1]
+    df = df.drop(['trace_role'])
+
+    # Add context.
+    df.pod = df.ctx['pod']
+    df.service = df.ctx['service']
+    df.namespace = df.ctx['namespace']
+
+    # Create table in drawer.
+    px.debug(df, "dns_events")
+
+    # Filter nodes for graph.
+    df = df[not px.contains(df.pod, "pl")]
+    df = df[not df.pod == ""]
+    df = df[not df.remote_addr == "-"]
+
+    # Specify from and to entities.
+    df.from_entity = df.pod
+
+    localhost_ip_regexp = r'127\.0\.0\.[0-9]+'
+    df.is_remote_addr_localhost = px.regex_match(localhost_ip_regexp, df.remote_addr)
+    df.to_entity = px.select(df.is_remote_addr_localhost,
+                             px.upid_to_pod_name(df.upid),
+                             px.Service(px.nslookup(df.remote_addr)))
+
+    df = df.drop(['upid', 'is_remote_addr_localhost'])
+
+    # Reformat to_entity and from_entity for consistency between pods and services.
+    df = format_nslookup_name(df)
+
+    # Aggregate the connections.
+    df = df.groupby(['from_entity', 'to_entity']).agg(
+        latency_avg=('latency', px.mean),
+        latency_max=('latency', px.max),
+        count=('latency', px.count)
+    )
+
+    # Filter out entities as specified by the user.
+    df = df[px.contains(df.from_entity, from_entity_filter)]
+    df = df[px.contains(df.to_entity, to_entity_filter)]
+
+    return df

@@ -1,0 +1,16 @@
+#@ load("@ytt:template", "template")
+
+#@ def tpl():
+test3: first
+test4: second
+#@ end
+
+test3: first
+_: #@ template.replace(tpl())
+
++++
+
+ERR: 
+- template.replace: expected key 'test3' to not be specified again (unless 'yaml/map-key-override' annotation is added)
+    in <toplevel>
+      stdin:9 | _: #@ template.replace(tpl())

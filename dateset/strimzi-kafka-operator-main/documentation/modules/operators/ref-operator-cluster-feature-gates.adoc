@@ -1,0 +1,136 @@
+// Module included in the following assemblies:
+//
+// deploying/deploying.adoc
+
+[id='ref-operator-cluster-feature-gates-{context}']
+= Feature gates
+
+[role="_abstract"]
+Strimzi operators use feature gates to enable or disable specific features and functions.
+Enabling a feature gate alters the behavior of the associated operator, introducing the corresponding feature to your Strimzi deployment.
+
+The purpose of feature gates is to facilitate the trial and testing of a feature before it is fully adopted. 
+The state (enabled or disabled) of a feature gate may vary by default, depending on its maturity level.
+
+As a feature gate graduates and reaches General Availability (GA), it transitions to an enabled state by default and becomes a permanent part of the Strimzi deployment.
+A feature gate at the GA stage cannot be disabled. 
+
+== Graduated feature gates (GA)
+
+Graduated feature gates have reached General Availability (GA) and are permanently enabled features.
+
+=== ControlPlaneListener feature gate
+
+The `ControlPlaneListener` feature gate separates listeners for data replication and coordination:
+
+* Connections between the Kafka controller and brokers use an internal _control plane listener_ on port 9090.
+* Replication of data between brokers, as well as internal connections from Strimzi operators, Cruise Control, or the Kafka Exporter use a _replication listener_ on port 9091.
+
+IMPORTANT: With the `ControlPlaneListener` feature gate permanently enabled, direct upgrades or downgrades between Strimzi 0.22 and earlier and Strimzi 0.32 and newer are not possible.
+You must first upgrade or downgrade through one of the Strimzi versions in-between, disable the `ControlPlaneListener` feature gate, and then downgrade or upgrade (with the feature gate enabled) to the target version.
+
+=== ServiceAccountPatching feature gate
+
+The `ServiceAccountPatching` feature gate ensures that the Cluster Operator always reconciles service accounts and updates them when needed.
+For example, when you change service account labels or annotations using the `template` property of a custom resource, the operator automatically updates them on the existing service account resources.
+
+[id='ref-operator-use-strimzi-pod-sets-feature-gate-{context}']
+=== UseStrimziPodSets feature gate
+
+The `UseStrimziPodSets` feature gate introduced the `StrimziPodSet` custom resource for managing Kafka and ZooKeeper pods, replacing the use of Kubernetes `StatefulSet` resources.
+
+IMPORTANT: With the `UseStrimziPodSets` feature gate permanently enabled, direct downgrades from Strimzi 0.35 and newer to Strimzi 0.27 or earlier are not possible. You must first downgrade through one of the Strimzi versions in-between, disable the `UseStrimziPodSets` feature gate, and then downgrade to Strimzi 0.27 or earlier.
+
+[id='ref-operator-stable-connect-identities-feature-gate-{context}']
+=== StableConnectIdentities feature gate
+
+The `StableConnectIdentities` feature gate introduced the `StrimziPodSet` custom resource for managing Kafka Connect and Kafka MirrorMaker 2 pods, replacing the use of Kubernetes `Deployment` resources.
+
+`StrimziPodSet` resources give the pods stable names and stable addresses, which do not change during rolling upgrades, replacing the use of Kubernetes `Deployment` resources.
+
+IMPORTANT: With the `StableConnectIdentities` feature gate permanently enabled, direct downgrades from Strimzi 0.39 and newer to Strimzi 0.33 or earlier are not possible.
+You must first downgrade through one of the Strimzi versions in-between, disable the `StableConnectIdentities` feature gate, and then downgrade to Strimzi 0.33 or earlier.
+
+[id='ref-operator-kafka-node-pools-feature-gate-{context}']
+=== KafkaNodePools feature gate
+
+The `KafkaNodePools` feature gate introduced a new `KafkaNodePool` custom resource that enables the configuration of different _pools_ of Apache Kafka nodes.
+
+A node pool refers to a distinct group of Kafka nodes within a Kafka cluster.
+Each pool has its own unique configuration, which includes mandatory settings such as the number of replicas, storage configuration, and a list of assigned roles.
+You can assign the _controller_ role, _broker_ role, or both roles to all nodes in the pool using the `.spec.roles` property.
+When used with a ZooKeeper-based Apache Kafka cluster, it must be set to the `broker` role.
+When used with the `UseKRaft` feature gate, it can be set to `broker`, `controller`, or both.
+
+In addition, a node pool can have its own configuration of resource requests and limits, Java JVM options, and resource templates.
+Configuration options not set in the `KafkaNodePool` resource are inherited from the `Kafka` custom resource.
+
+The `KafkaNodePool` resources use a `strimzi.io/cluster` label to indicate to which Kafka cluster they belong.
+The label must be set to the name of the `Kafka` custom resource.
+
+Examples of the `KafkaNodePool` resources can be found in the xref:config-examples-{context}[example configuration files] provided by Strimzi.
+
+.Downgrading from KafkaNodePools
+
+If your cluster already uses `KafkaNodePool` custom resources, and you wish to downgrade to an older version of Strimzi that does not support them or with the `KafkaNodePools` feature gate disabled, you must first migrate from `KafkaNodePool` custom resources to managing Kafka nodes using only `Kafka` custom resources.
+
+[id='ref-operator-unidirectional-topic-operator-feature-gate-{context}']
+=== UnidirectionalTopicOperator feature gate
+
+The `UnidirectionalTopicOperator` feature gate introduced a unidirectional topic management mode for creating Kafka topics using the `KafkaTopic` resource.
+Unidirectional mode is compatible with using KRaft for cluster management.
+With unidirectional mode, you create Kafka topics using the `KafkaTopic` resource, which are then managed by the Topic Operator.
+Any configuration changes to a topic outside the `KafkaTopic` resource are reverted.
+For more information on topic management, see xref:ref-operator-topic-str[].
+
+== Stable feature gates (Beta)
+
+Stable feature gates have reached a beta level of maturity, and are generally enabled by default for all users.
+Stable feature gates are production-ready, but they can still be disabled.
+
+[id='ref-operator-use-kraft-feature-gate-{context}']
+=== UseKRaft feature gate
+
+The `UseKRaft` feature gate has a default state of _enabled_.
+
+The `UseKRaft` feature gate deploys a Kafka cluster in KRaft (Kafka Raft metadata) mode without ZooKeeper.
+ZooKeeper and KRaft are mechanisms used to manage metadata and coordinate operations in Kafka clusters. 
+KRaft mode eliminates the need for an external coordination service like ZooKeeper. 
+In KRaft mode, Kafka nodes take on the roles of brokers, controllers, or both. 
+They collectively manage the metadata, which is replicated across partitions. 
+Controllers are responsible for coordinating operations and maintaining the cluster's state.
+
+To deploy a Kafka cluster in KRaft mode, you must use the `KafkaNodePool` resources.
+For more details and examples, see xref:deploying-kafka-node-pools-{context}[].
+The `Kafka` custom resource using KRaft mode must also have the annotation `strimzi.io/kraft="enabled"`.
+
+Currently, the KRaft mode in Strimzi has the following major limitations:
+
+* JBOD storage is not supported. 
+  The `type: jbod` storage can be used, but the JBOD array can contain only one disk.
+* Scaling of KRaft controller-only nodes up or down is not supported.
+
+.Disabling the UseKRaft feature gate
+To disable the `UseKRaft` feature gate, specify `-UseKRaft` in the `STRIMZI_FEATURE_GATES` environment variable in the Cluster Operator configuration.
+
+== Early access feature gates (Alpha)
+
+Early access feature gates have not yet reached the beta stage, and are disabled by default. 
+An early access feature gate provides an opportunity for assessment before its functionality is permanently incorporated into Strimzi.
+
+Currently, there are no feature gates in alpha stage.
+
+== Enabling feature gates
+
+To modify a feature gate's default state, use the `STRIMZI_FEATURE_GATES` environment variable in the operator's configuration.
+You can modify multiple feature gates using this single environment variable.
+Specify a comma-separated list of feature gate names and prefixes.
+A `+` prefix enables the feature gate and a `-` prefix  disables it.
+
+.Example feature gate configuration that enables `FeatureGate1` and disables `FeatureGate2`
+[source,yaml,options="nowrap"]
+----
+env:
+  - name: STRIMZI_FEATURE_GATES
+    value: +FeatureGate1,-FeatureGate2
+----

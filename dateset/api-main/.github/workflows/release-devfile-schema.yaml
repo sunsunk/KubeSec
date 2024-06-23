@@ -1,0 +1,86 @@
+#
+#
+# Copyright Red Hat
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Release Devfile Schema
+
+# Triggers the workflow when a release is published on GitHub.
+on:
+  release:
+    types: [published]
+
+# Only allow one job of this action to be ran at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-json-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        with:
+          python-version: '3.9'
+
+      - name: Checkout devfile/devfile-web
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          repository: devfile/devfile-web
+          persist-credentials: false
+          path: devfile-web-repo
+
+      - name: Checkout devfile/api
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          path: api-repo
+
+      - name: Get the version being released
+        id: get_version
+        run: echo ::set-output name=version::$(cat api-repo/schemas/latest/jsonSchemaVersion.txt)
+
+      - name: Release new version on devfile-web
+        working-directory: devfile-web-repo/
+        run: |
+          python ./python/src/api_workflow/api_workflow.py --version ${{ steps.get_version.outputs.version }} --devfile-schema ../api-repo/schemas/latest/devfile.json --release
+
+      - name: Push to the devfile/devfile-web repo
+        working-directory: devfile-web-repo/
+        run: |
+          yarn install
+
+          # Format the commit
+          yarn nx format:write
+
+          # Lint the commit
+          yarn nx affected --target=lint
+          yarn nx format:check
+
+          # Don't commit if there are no changes
+          if [ "$(git status -s)" == "" ]; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+
+          lastCommit="$(cd ../api-repo; git log -1 --format=%H)"
+          lastCommitterName="$(cd ../api-repo; git log -1 --format=%an)"
+          lastCommitterEmail="$(cd ../api-repo; git log -1 --format=%ae)"
+
+          git config --global user.email "${lastCommitterEmail}"
+          git config --global user.name "${lastCommitterName}"
+
+          git add .
+          git commit -asm "Update devfile schema based on devfile/api@${lastCommit}"
+          git push "https://devfile-robot:${{secrets.DOCS_UPDATE_SECRET}}@github.com/devfile/devfile-web"

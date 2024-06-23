@@ -1,0 +1,2 @@
+► suspending helmrelease thrfg in {{ .ns }} namespace
+✔ helmrelease suspended

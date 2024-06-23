@@ -1,0 +1,58 @@
+version: v2beta1
+name: php-mysql-example
+
+vars:
+  IMAGE: mydockeruser/devspace
+
+images:
+  php:
+    image: ${IMAGE}
+    rebuildStrategy: ignoreContextChanges
+
+deployments:
+  mysql:
+    helm:
+      values:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: mypassword
+          - name: MYSQL_DATABASE
+            value: mydatabase
+          image: mariadb:10.5.8
+          volumeMounts:
+          - containerPath: /var/lib/mysql
+            volume:
+              name: mysql-data
+              subPath: /mysql
+        service:
+          name: mysql
+          ports:
+          - port: 3306
+        volumes:
+        - name: mysql-data
+          size: 5Gi
+
+  php:
+    helm:
+      values:
+        containers:
+        - image: ${IMAGE}
+        service:
+          ports:
+          - port: 80
+
+dev:
+  mysql:
+    imageSelector: mariadb
+    logs: {}
+
+  php:
+    imageSelector: ${IMAGE}
+    logs: {}
+    open:
+      - url: http://localhost:8080
+    ports:
+    - port: 8080:80
+    sync:
+    - path: ./

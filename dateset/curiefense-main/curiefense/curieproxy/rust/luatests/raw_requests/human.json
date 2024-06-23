@@ -1,0 +1,315 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253",
+      "include": "true"
+    },
+    "name": "deny (bot)",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny_bot",
+          "value": "denybot",
+          "tags": [
+            "denybot"
+          ],
+          "action": "challenge",
+          "name": "denybot",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "bot",
+        "sante",
+        "deny",
+        "denybot",
+        "status:403",
+        "status-class:4xx",
+        "incl000000001"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253",
+      "include": "true"
+    },
+    "name": "deny (bot) 2",
+    "human": "invalid",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny_bot",
+          "value": "denybot",
+          "tags": [
+            "denybot"
+          ],
+          "action": "challenge",
+          "name": "denybot",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "bot",
+        "sante",
+        "deny",
+        "denybot",
+        "status:403",
+        "status-class:4xx",
+        "incl000000001"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253"
+    },
+    "name": "deny (human) passive",
+    "human": "passive",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "human",
+        "precision-l1",
+        "sante",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "denybot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253"
+    },
+    "name": "deny (human) active",
+    "human": "active",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "human",
+        "precision-l1",
+        "sante",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "denybot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253"
+    },
+    "name": "deny (human) interactive",
+    "human": "interactive",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "human",
+        "precision-l3",
+        "sante",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "denybot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/direct?deny=deny&denybot=denybot",
+      "user-agent": "dummy",
+      "x-forwarded-for": "23.129.64.253"
+    },
+    "name": "deny (human) mobileSdk",
+    "human": "mobileSdk",
+    "response": {
+      "action": "custom_response",
+      "status": 403,
+      "block_mode": true,
+      "acl_triggers": [
+        {
+          "trigger_name": "from tags",
+          "trigger_id": "FROMTAGS",
+          "acl_action": "deny",
+          "value": "deny",
+          "tags": [
+            "deny"
+          ],
+          "action": "custom",
+          "name": "deny",
+          "section": "uri"
+        }
+      ],
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:2",
+        "all",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclname:from-tags",
+        "aclid:fromtags",
+        "contentfiltername:default-contentfilter",
+        "contentfilterid:--default--",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:direct-association",
+        "human",
+        "precision-l4",
+        "sante",
+        "deny",
+        "status:403",
+        "status-class:4xx",
+        "denybot"
+      ]
+    }
+  }
+]

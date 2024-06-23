@@ -1,0 +1,43 @@
+name: Create Docs PR
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.0' # run this workflow when a new minor version is published
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-docs-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.3.1
+        with:
+          egress-policy: audit
+
+      - name: Get version from tag
+        shell: bash
+        run: |
+          TAG="$(echo "${{ github.ref }}" | tr -d 'refs/tags/v')"
+          MAJOR_VERSION="$(echo "${TAG}" | cut -d '.' -f1)"
+          MINOR_VERSION="$(echo "${TAG}" | cut -d '.' -f2)"
+          echo "NEWVERSION=v${MAJOR_VERSION}.${MINOR_VERSION}.x" >> ${GITHUB_ENV}
+
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          fetch-depth: 0
+
+      - name: Generate versioned docs
+        shell: bash
+        run: make version-docs
+
+      - name: Create release pull request
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+        with:
+          commit-message: "chore: Generate ${{ env.NEWVERSION }} docs"
+          title: "chore: Generate ${{ env.NEWVERSION }} docs"
+          branch: "release-${{ env.NEWVERSION }}"
+          base: "main"
+          signoff: true

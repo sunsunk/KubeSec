@@ -1,0 +1,787 @@
+[
+    {
+        "match": "www.collision.com",
+        "id": "flowcollisiontests",
+        "name": "flow control collision tests",
+        "tags": [],
+        "map": [
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "flowcontrol",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    },
+    {
+        "match": "jwt-test.com",
+        "id": "jwt-test",
+        "name": "test for the jwt plugin",
+        "tags": [],
+        "map": [
+            {
+                "match": "/jwt/cf",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "cf_jwt",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/jwt/acl",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "jwt-acl",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            },
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    },
+    {
+        "match": "limitt1.com",
+        "id": "limitt1",
+        "name": "limit test1",
+        "tags": [],
+        "map": [
+            {
+                "match": "/h2",
+                "name": "h2",
+                "id": "h2",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname",
+                    "inactive_limit"
+                ]
+            },
+            {
+                "match": "/h1",
+                "name": "h1",
+                "id": "h1",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname",
+                    "inactive_limit"
+                ]
+            },
+            {
+                "match": "/u2",
+                "name": "u2",
+                "id": "u2",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limiturl",
+                    "inactive_limit"
+                ]
+            },
+            {
+                "match": "/u1",
+                "name": "u1",
+                "id": "u1",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limiturl",
+                    "inactive_limit"
+                ]
+            },
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname",
+                    "limiturl",
+                    "inactive_limit"
+                ]
+            }
+        ]
+    },
+    {
+        "match": "limitt2.com",
+        "id": "limitt2",
+        "name": "limit test2",
+        "tags": [],
+        "map": [
+            {
+                "match": "/h2",
+                "name": "h2b",
+                "id": "h2b",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname",
+                    "inactive_limit"
+                ]
+            },
+            {
+                "match": "/h1",
+                "name": "h1b",
+                "id": "h1b",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname"
+                ]
+            },
+            {
+                "match": "/u2",
+                "name": "u2b",
+                "id": "u2b",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limiturl"
+                ]
+            },
+            {
+                "match": "/u1",
+                "name": "u1b",
+                "id": "u1b",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limiturl"
+                ]
+            },
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limithostname",
+                    "limiturl"
+                ]
+            }
+        ]
+    },
+    {
+        "match": "dummydomain.com",
+        "id": "dummydomain",
+        "name": "dummy domain policy",
+        "tags": [],
+        "map": [
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    },
+    {
+        "match": "specific.dummydomain.com",
+        "id": "specdummydomain",
+        "name": "more specific dummy domain policy",
+        "tags": [],
+        "map": [
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    },
+    {
+        "match": "secpoltags.com",
+        "id": "secpoltags",
+        "name": "test tagging for security policy",
+        "tags": [
+            "secpoltag1",
+            "secpoltag2"
+        ],
+        "map": [
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    },
+    {
+        "match": "__default__",
+        "id": "__default__",
+        "name": "default entry",
+        "tags": [],
+        "map": [
+            {
+                "match": "/limits/always-skip",
+                "name": "alwaysskip",
+                "id": "alwaysskip",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "alwaysskip"
+                ]
+            },
+            {
+                "match": "/limits/always-ichallenge",
+                "name": "alwaysichallenge",
+                "id": "alwaysichallenge",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "alwaysichallenge"
+                ]
+            },
+            {
+                "match": "/limits/always-challenge",
+                "name": "alwayschallenge",
+                "id": "alwayschallenge",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "alwayschallenge"
+                ]
+            },
+            {
+                "match": "/limits/always-blocking/xx",
+                "name": "ablock",
+                "id": "ablock",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "ablock"
+                ]
+            },
+            {
+                "match": "/acl/deny-all-inactive",
+                "name": "denyallinactive",
+                "id": "denyallinactive",
+                "acl_profile": "ba-acl",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            },
+            {
+                "match": "/flow-test",
+                "name": "flowtest",
+                "id": "flowtest",
+                "acl_profile": "flowcontrol",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/rl45report3",
+                "name": "rl45report3",
+                "id": "rl45report3",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "rl45report3",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/rl45ignorebody",
+                "name": "rl45ignorebody",
+                "id": "rl45ignorebody",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "rl45ignorebody",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/reportpriority",
+                "name": "reportpriority",
+                "id": "reportpriority",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "reportpriority",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/individualvscategory",
+                "name": "individualvscategory",
+                "id": "individualvscategory",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "individualvscategory",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/direct",
+                "name": "direct association",
+                "id": "direct association",
+                "acl_profile": "FROMTAGS",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": false,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/noinjection",
+                "name": "content filter noinjection tests",
+                "id": "content filter noinjection tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "noinject",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/lvl2",
+                "name": "content-filter level2",
+                "id": "content-filter level2",
+                "acl_profile": "__default__",
+                "content_filter_profile": "lvl2",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/lvl3",
+                "name": "content filter level3",
+                "id": "content filter level3",
+                "acl_profile": "__default__",
+                "content_filter_profile": "lvl3",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/lvl4",
+                "name": "content filter level4",
+                "id": "content filter level4",
+                "acl_profile": "__default__",
+                "content_filter_profile": "lvl4",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/lvl5",
+                "name": "content filter level5",
+                "id": "content filter level5",
+                "acl_profile": "__default__",
+                "content_filter_profile": "lvl5",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/lvlX135",
+                "name": "content filter level 1.3.5",
+                "id": "content filter level 1.3.5",
+                "acl_profile": "__default__",
+                "content_filter_profile": "lvl135",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/omitted",
+                "name": "content filter omit tests",
+                "id": "content filter omit tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "omitted",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/args",
+                "name": "content filter args tests",
+                "id": "content filter args tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "argschecks",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/waf/maskall",
+                "name": "mask all tests",
+                "id": "mask all tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "maskall",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/limits/simple",
+                "name": "limits simple",
+                "id": "limits simple",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "limitsimple"
+                ]
+            },
+            {
+                "match": "^/limits/country",
+                "name": "limits country",
+                "id": "limits country",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "limitcountry"
+                ]
+            },
+            {
+                "match": "^/limits/network",
+                "name": "limits network",
+                "id": "limits network",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "limitnetwork"
+                ]
+            },
+            {
+                "match": "^/limits/include",
+                "name": "limits include",
+                "id": "limits include",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "limitinclude"
+                ]
+            },
+            {
+                "match": "^/limits/header",
+                "name": "limits header",
+                "id": "limits header",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "4d1d9d405hdr"
+                ]
+            },
+            {
+                "match": "^/limits/method",
+                "name": "limits method",
+                "id": "limits method",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "4d1d9d405fc9"
+                ]
+            },
+            {
+                "match": "^/limits/exclude",
+                "name": "limits exclude",
+                "id": "limits exclude",
+                "acl_profile": "__default__",
+                "content_filter_profile": "__default__",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": [
+                    "limitexclude"
+                ]
+            },
+            {
+                "match": "^/limits/multithreshold",
+                "name": "limits multiple thresholds",
+                "id": "limits multiple thresholds",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "limitmultithreshold"
+                ]
+            },
+            {
+                "match": "^/limits/thresholdskip",
+                "name": "skipping threshold",
+                "id": "skipping threshold",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "skipthreshold"
+                ]
+            },
+            {
+                "match": "^/limits/thresholdnoskip",
+                "name": "no skipping threshold",
+                "id": "no skipping threshold",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "noskipthreshold"
+                ]
+            },
+            {
+                "match": "^/limits/multilimits",
+                "name": "multiple limits same location",
+                "id": "multiple limits same location",
+                "acl_profile": "__default__",
+                "waf_profile": "__default__",
+                "acl_active": true,
+                "waf_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": [
+                    "samelocationA",
+                    "samelocationB"
+                ]
+            },
+            {
+                "match": "^/rr/",
+                "name": "content filter restrict tests",
+                "id": "content filter restrict tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "rr",
+                "acl_active": false,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/rre/",
+                "name": "content filter restrict exclude tests",
+                "id": "content filter restrict exclude tests",
+                "acl_profile": "__default__",
+                "content_filter_profile": "rre",
+                "acl_active": false,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "name": "content-filter-short-headers",
+                "id": "content-filter-short-headers",
+                "match": "^/content-filter-short-headers/",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "e2e000000002",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "name": "scope-country-include",
+                "id": "scope-country-include",
+                "match": "/scope-country-include/",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": true,
+                "limit_ids": [
+                    "e2e1000000007"
+                ]
+            },
+            {
+                "name": "ban-test",
+                "id": "ban-test",
+                "match": "/limits/ban-test",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": true,
+                "limit_ids": [
+                    "f971e92459e2"
+                ]
+            },
+            {
+                "name": "multilimit",
+                "id": "multilimit",
+                "match": "/limits/multi",
+                "acl_profile": "__default__",
+                "acl_active": true,
+                "content_filter_profile": "__default__",
+                "content_filter_active": true,
+                "limit_ids": [
+                    "mlimitA",
+                    "mlimitB"
+                ]
+            },
+            {
+                "match": "/content-filter/mixedmatch",
+                "name": "mixed matcher",
+                "id": "mixed matcher",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "mixedmatch",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/masking",
+                "name": "masking",
+                "id": "masking",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "masking",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/ignoresqli",
+                "name": "content filter ignore sqli",
+                "id": "content filter ignore sqli",
+                "acl_profile": "__default__",
+                "content_filter_profile": "ignoresqli",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "^/content-filter/ignorerl5",
+                "name": "content filter ignore risk level 5",
+                "id": "content filter ignore risk level 5",
+                "acl_profile": "__default__",
+                "content_filter_profile": "ignorerl5",
+                "acl_active": true,
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/content-filter/expect/json",
+                "name": "expectjson",
+                "id": "expectjson",
+                "acl_profile": "FROMTAGS",
+                "acl_active": true,
+                "content_filter_profile": "expectjson",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/content-filter/expect/xml",
+                "name": "expectxml",
+                "id": "expectxml",
+                "acl_profile": "FROMTAGS",
+                "acl_active": true,
+                "content_filter_profile": "expectxml",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/content-filter/expect/xmljson",
+                "name": "expectxmljson",
+                "id": "expectxmljson",
+                "acl_profile": "FROMTAGS",
+                "acl_active": true,
+                "content_filter_profile": "expectxmljson",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/content-filter/expect/all",
+                "name": "expectall",
+                "id": "expectall",
+                "acl_profile": "FROMTAGS",
+                "acl_active": true,
+                "content_filter_profile": "expectall",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/invertedre",
+                "name": "invertedre",
+                "id": "invertedre",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "invertedre",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/allsections",
+                "name": "allsections",
+                "id": "allsections",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "allsections",
+                "content_filter_active": true,
+                "limit_ids": []
+            },
+            {
+                "match": "/",
+                "name": "default",
+                "id": "default",
+                "acl_profile": "__default__",
+                "acl_active": false,
+                "content_filter_profile": "__default__",
+                "content_filter_active": false,
+                "limit_ids": []
+            }
+        ]
+    }
+]

@@ -1,0 +1,103 @@
+name: Markdown checks
+
+on:
+  push:
+    branches:
+      - 'main'
+      - '[0-9]+.[1-9][0-9]*.x'
+    paths:
+      - '**.md'
+      - 'lifecycle-operator/apis/**'
+      - 'metrics-operator/api/**'
+  pull_request:
+    branches:
+      - 'main'
+      - '[0-9]+.[1-9][0-9]*.x'
+    paths:
+      - '**.md'
+      - 'lifecycle-operator/apis/**'
+      - 'metrics-operator/api/**'
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  GO_VERSION: "~1.21"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: gaurav-nelson/github-action-markdown-link-check@5c5dfc0ac2e225883c0e5f03a85311ec2830d368 # v1
+        with:
+          config-file: '.github/mlc_config.json'
+          use-verbose-mode: true
+          use-quiet-mode: true
+          folder-path: 'examples,docs'
+          file-path: 'README.md'
+
+  markdown-lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Run TOC generation
+        run: |
+          FILES=`find . -type f -name '*.md' -not -path './.github/*' -not -path './node_modules/*' | sort`
+          for f in $FILES; do
+            if grep -q '<!-- tocstop -->' $$f; then
+              echo "Checking TOC for ${f}";
+              npx markdown-toc --no-first-h1 --no-stripHeadingTags -i ${f} || exit 1;
+            else
+              echo Skipping ${f};
+            fi;
+          done
+
+      - name: Check TOC
+        run: |
+          git diff --exit-code '*.md' || \
+            (echo "Table of Contents is out of date. Please update the following files: $(git diff --name-status --exit-code)" && exit 1)
+
+      - name: Lint Markdown files
+        run: make markdownlint
+
+  check-crd-docs:
+    name: Check CRD auto-generated docs
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Set up Go 1.x
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+          cache: false
+
+      - name: Copy old docs
+        run: |
+          cp -R ./docs/docs/reference/api-reference ./docs/docs/reference/api-reference-old
+
+      - name: Run docs generator
+        run: ./.github/scripts/generate-crd-docs/generate-crd-docs.sh
+
+      - name: Check if docs are up to date
+        run: |
+          if ! diff -rq ./docs/docs/reference/api-reference ./docs/docs/reference/api-reference-old &>/dev/null; then
+            echo "The CRD docs have changes that are not reflected in the docs pages."
+            echo "Please use ./.github/scripts/generate-crd-docs/generate-crd-docs.sh to re-generate the docs."
+            echo ""
+            echo "=========== Diff ==========="
+            diff -ru ./docs/docs/reference/api-reference ./docs/docs/reference/api-reference-old
+            exit 1
+          else
+            echo ""
+            echo "CRD docs are up to date!"
+          fi

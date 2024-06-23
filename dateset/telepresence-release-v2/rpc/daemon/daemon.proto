@@ -1,0 +1,164 @@
+syntax = "proto3";
+package telepresence.daemon;
+
+import "common/version.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "manager/manager.proto";
+
+option go_package = "github.com/telepresenceio/telepresence/rpc/v2/daemon";
+
+// The Daemon service is responsible for managing network overrides and also
+// acts as the central point for logging.
+service Daemon {
+  // Version returns version information from the Daemon
+  rpc Version(google.protobuf.Empty) returns (telepresence.common.VersionInfo);
+
+  // Status returns the current connectivity status
+  rpc Status(google.protobuf.Empty) returns (DaemonStatus);
+
+  // Quit quits (terminates) the service.
+  rpc Quit(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // Connect creates a new session that provides outbound connectivity to the cluster
+  rpc Connect(OutboundInfo) returns (DaemonStatus);
+
+  // Disconnect disconnects the current session.
+  rpc Disconnect(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // GetNetworkConfig returns the current network configuration
+  rpc GetNetworkConfig(google.protobuf.Empty) returns (NetworkConfig);
+
+  // SetDnsSearchPath sets a new search path.
+  rpc SetDnsSearchPath(Paths) returns (google.protobuf.Empty);
+
+  // SetDNSExcludes sets the excludes field of DNSConfig.
+  rpc SetDNSExcludes(SetDNSExcludesRequest) returns (google.protobuf.Empty);
+
+  // SetDNSMappings sets the Mappings field of DNSConfig.
+  rpc SetDNSMappings(SetDNSMappingsRequest) returns (google.protobuf.Empty);
+
+  // SetLogLevel will temporarily set the log-level for the daemon for a duration that is determined b the request.
+  rpc SetLogLevel(manager.LogLevelRequest) returns (google.protobuf.Empty);
+
+  // WaitForNetwork waits for the network of the currently connected session to become ready.
+  rpc WaitForNetwork(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // WaitForAgentIP waits for the network of an intercepted agent to become ready.
+  rpc WaitForAgentIP(WaitForAgentIPRequest) returns (google.protobuf.Empty);
+}
+
+message DaemonStatus {
+  repeated manager.IPNet subnets = 1;
+  OutboundInfo outbound_config = 4;
+  telepresence.common.VersionInfo version = 5;
+  reserved 2, 3;
+}
+
+message Paths {
+  repeated string paths = 1;
+
+  repeated string namespaces = 2;
+}
+
+message DNSMapping {
+  string name = 1;
+  string alias_for = 2;
+}
+
+// DNS configuration for the local DNS resolver
+message DNSConfig {
+  // local_ip is the address of the local DNS server. Only used by Linux systems that have no
+  // systemd-resolved configured. Defaults to the first line of /etc/resolv.conf
+  bytes local_ip = 1;
+
+  // remote_ip is the address of the kube-dns.kube-system, dns-default.openshift-dns, or similar service,
+  bytes remote_ip = 2;
+
+  // Suffixes to exclude
+  repeated string exclude_suffixes = 3;
+
+  // Suffixes to include. Has higher prio than the excludes
+  repeated string include_suffixes = 4;
+
+  // Exclude are a list of hostname that the DNS resolver will not resolve even if they exist.
+  repeated string excludes = 8;
+
+  // DNSMapping contains a hostname and its associated alias. When requesting the name, the intended behavior is
+  // to resolve the alias instead.
+  repeated DNSMapping mappings = 9;
+
+  // The maximum time wait for a cluster side host lookup.
+  google.protobuf.Duration lookup_timeout = 6;
+
+  // If set, this error indicates why DNS is not working.
+  string error = 7;
+
+  reserved 5;
+}
+
+message SubnetViaWorkload {
+  // The remote IP that the DNS resolver translates into a Virtual IP to use locally.
+  string subnet = 1;
+
+  // The workload that the virtual IP will be routed to.
+  string workload = 2;
+}
+
+// OutboundInfo contains all information that the root daemon needs in order to
+// establish outbound traffic to the cluster.
+message OutboundInfo {
+  reserved 1;
+
+  // session makes it possible for the root daemon to identify itself as the
+  // same client as the user daemon.
+  manager.SessionInfo session = 2;
+
+  // DNS configuration
+  DNSConfig dns = 3;
+
+  // Route subnets via given workload using virtual IPs
+  repeated SubnetViaWorkload subnet_via_workloads = 4;
+
+  // also_proxy are user-added subnets.
+  repeated manager.IPNet also_proxy_subnets = 5;
+
+  // never_proxy_subnets are subnets that the daemon should not proxy but resolve
+  // via the underlying network interface.
+  repeated manager.IPNet never_proxy_subnets = 6;
+
+  repeated manager.IPNet allow_conflicting_subnets = 10;
+
+  // Users home directory
+  string home_dir = 7;
+
+  // Connection namespace
+  string namespace = 11;
+
+  // Traffic manager namespace
+  string manager_namespace = 8;
+
+  // Kubernetes flags
+  map<string, string> kube_flags = 9;
+
+  // Kubeconfig YAML, if not to be loaded from file.
+  optional bytes kubeconfig_data = 12;
+}
+
+message NetworkConfig {
+  repeated manager.IPNet subnets = 1;
+  OutboundInfo outbound_info = 2;
+}
+
+message SetDNSExcludesRequest {
+  repeated string excludes = 1;
+}
+
+message SetDNSMappingsRequest {
+  repeated DNSMapping mappings = 1;
+}
+
+message WaitForAgentIPRequest {
+  bytes ip = 1;
+  google.protobuf.Duration timeout = 2;
+}

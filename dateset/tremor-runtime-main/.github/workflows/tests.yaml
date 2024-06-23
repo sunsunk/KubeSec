@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  tests-linux:
+    runs-on: ubuntu-latest-16-cores
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: sudo apt-get -qy update && sudo apt-get install -y libssl-dev libssl1.1; sudo apt-get clean
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     # this might remove tools that are actually needed,
+      #     # if set to "true" but frees about 6 GB
+      #     tool-cache: false
+      - name: Install Docker Image
+        run: ./.github/scripts/install-docker-images.sh
+      - name: Install llvm-tools-preview
+        run: rustup component add llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Generate code coverage
+        env:
+          PROPTEST_CASES: 2500
+          RUSTFLAGS: -D warnings -C target-feature=+avx,+avx2,+sse4.2
+          RUST_BACKTRACE: full
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.txt --features integration
+      - name: Upload coverage to Codecov
+        uses: Wandalen/wretry.action@v1.0.42
+        with:
+          action: codecov/codecov-action@v3
+          attempt_limit: 6
+          attempt_delay: 10000
+          with: |
+            files: ./lcov.txt
+            flags: unittests
+            fail_ci_if_error: ${{ github.event_name == 'pull_request' }}
+            verbose: true

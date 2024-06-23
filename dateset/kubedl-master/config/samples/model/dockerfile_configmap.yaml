@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dockerfile
+  namespace: default
+data:
+  dockerfile: |
+    FROM busybox
+    COPY build/ /kubedl-model

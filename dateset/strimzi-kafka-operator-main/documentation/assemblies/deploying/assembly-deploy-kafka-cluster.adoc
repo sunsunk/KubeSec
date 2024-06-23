@@ -1,0 +1,40 @@
+// This assembly is included in the following assemblies:
+//
+// deploying/assembly-deploy-create-cluster.adoc
+
+[id='kafka-cluster-{context}']
+= Deploying Kafka
+
+[role="_abstract"]
+To be able to manage a Kafka cluster with the Cluster Operator, you must deploy it as a `Kafka` resource.
+Strimzi provides example deployment files to do this.
+You can use these files to deploy the Topic Operator and User Operator at the same time.
+
+After you have deployed the Cluster Operator, use a `Kafka` resource to deploy the following components:
+
+* A Kafka cluster that uses KRaft or ZooKeeper:
+** xref:deploying-kafka-node-pools-{context}[KRaft-based or ZooKeeper-based Kafka cluster with node pools]
+** xref:deploying-kafka-cluster-{context}[ZooKeeper-based Kafka cluster without node pools]
+* xref:deploying-the-topic-operator-using-the-cluster-operator-{context}[Topic Operator]
+* xref:deploying-the-user-operator-using-the-cluster-operator-{context}[User Operator]
+
+Node pools provide configuration for a set of Kafka nodes.
+By using node pools, nodes can have different configuration within the same Kafka cluster. 
+
+If you haven't deployed a Kafka cluster as a `Kafka` resource, you can't use the Cluster Operator to manage it.
+This applies, for example, to a Kafka cluster running outside of Kubernetes.
+However, you can use the Topic Operator and User Operator with a Kafka cluster that is *not managed* by Strimzi, by xref:deploy-standalone-operators_{context}[deploying them as standalone components].
+You can also deploy and use other Kafka components with a Kafka cluster not managed by Strimzi. 
+
+//Deploy Kafka w/ node pools
+include::../../modules/deploying/proc-deploy-kafka-node-pools.adoc[leveloffset=+1]
+//Deploy ZooKeeper-based Kafka cluster
+include::../../modules/deploying/proc-deploy-kafka-cluster.adoc[leveloffset=+1]
+//Include Topic Operator in deployment
+include::../../modules/deploying/proc-deploy-topic-operator-with-cluster-operator.adoc[leveloffset=+1]
+//Include User Operator in deployment
+include::../../modules/deploying/proc-deploy-user-operator-with-cluster-operator.adoc[leveloffset=+1]
+//Connecting to ZooKeeper from terminal
+include::../../modules/configuring/proc-connecting-to-zookeeper.adoc[leveloffset=+1]
+//Kafka cluster resources created
+include::../../modules/configuring/ref-list-of-kafka-cluster-resources.adoc[leveloffset=+1]

@@ -1,0 +1,17 @@
+---
+apiVersion: skaffold/v4beta1
+kind: Config
+build:
+  artifacts:
+  - image: profiler_loadtest_golang
+    context: .
+    bazel:
+      target: //src/e2e_test/profiler_loadtest/go:profiler_loadtest_golang_image.tar
+  tagPolicy:
+    dateTime: {}
+  local:
+    push: true
+manifests:
+  kustomize:
+    paths:
+    - src/e2e_test/profiler_loadtest/k8s/

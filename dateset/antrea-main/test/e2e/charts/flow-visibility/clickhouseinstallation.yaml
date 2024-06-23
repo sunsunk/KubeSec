@@ -1,0 +1,57 @@
+# Source: flow-visibility/templates/clickhouseinstallation.yaml
+apiVersion: "clickhouse.altinity.com/v1"
+kind: "ClickHouseInstallation"
+metadata:
+  name: clickhouse
+  labels:
+    app: clickhouse
+  namespace: flow-visibility
+spec:
+  configuration:
+    users:
+      clickhouse_operator/k8s_secret_password: flow-visibility/clickhouse-secret/password
+      clickhouse_operator/networks/ip: "::/0"
+    profiles:
+      readonly/readonly: 1
+    clusters:
+      - name: "clickhouse"
+        settings:
+          tcp_port: 9000
+          http_port: 8123
+        layout:
+          shardsCount: 1
+          replicasCount: 1
+  defaults:
+    templates:
+      podTemplate: pod-template
+      serviceTemplate: service-template
+  templates:
+    serviceTemplates:
+      - name: service-template
+        spec:
+          type: ClusterIP
+          ports:
+            - name: http
+              port: 8123
+            - name: tcp
+              port: 9000
+    podTemplates:
+      - name: pod-template
+        spec:
+          containers:
+            - name: clickhouse
+              image: projects.registry.vmware.com/antrea/clickhouse-server:23.4
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: clickhouse-configmap-volume
+                  mountPath: /docker-entrypoint-initdb.d
+                - name: clickhouse-storage-volume
+                  mountPath: /var/lib/clickhouse
+          volumes:
+            - name: clickhouse-configmap-volume
+              configMap:
+                name: clickhouse-mounted-configmap
+            - name: clickhouse-storage-volume
+              emptyDir:
+                medium: Memory
+                sizeLimit: 8Gi

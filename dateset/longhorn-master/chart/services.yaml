@@ -1,0 +1,105 @@
+# Source: longhorn/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+    app: longhorn-conversion-webhook
+  name: longhorn-conversion-webhook
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: longhorn-manager
+  ports:
+  - name: conversion-webhook
+    port: 9501
+    targetPort: conversion-wh
+
+---
+# Source: longhorn/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+    app: longhorn-admission-webhook
+  name: longhorn-admission-webhook
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: longhorn-manager
+  ports:
+  - name: admission-webhook
+    port: 9502
+    targetPort: admission-wh
+
+---
+# Source: longhorn/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+    app: longhorn-recovery-backend
+  name: longhorn-recovery-backend
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: longhorn-manager
+  ports:
+  - name: recovery-backend
+    port: 9503
+    targetPort: recov-backend
+
+---
+# Source: longhorn/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+  name: longhorn-engine-manager
+  namespace: default
+spec:
+  clusterIP: None
+  selector:
+    longhorn.io/component: instance-manager
+    longhorn.io/instance-manager-type: engine
+
+---
+# Source: longhorn/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: longhorn
+    helm.sh/chart: longhorn-1.6.0-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: v1.6.0-dev
+  name: longhorn-replica-manager
+  namespace: default
+spec:
+  clusterIP: None
+  selector:
+    longhorn.io/component: instance-manager
+    longhorn.io/instance-manager-type: replica

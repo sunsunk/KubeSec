@@ -1,0 +1,80 @@
+name: golang
+# for golang basic checks with go command line tool
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  gofmt_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: run gofmt test
+        run: ./automation/presubmit-tests/gofmt.sh
+
+  escapes_detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: run escapes detect
+        run: make escapes_detect
+
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.52.2
+          skip-pkg-cache: true
+
+  govet_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Run go vet
+        run: go vet ./...
+
+  vulnerability_detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: run vulnerability detect
+        run: make govulncheck
+
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: run go mod check
+        run: go mod tidy && go mod vendor
+      - name: Compare the expected and actual vendor directories
+        run: |
+          if [ "$(git diff --ignore-space-at-eol vendor/ | wc -l)" -gt "0" ]; then
+            echo "Detected different on vendor folder.  See status below:"
+            git diff
+            exit 1
+          fi
+        id: diff

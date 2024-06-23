@@ -1,0 +1,19 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-psp
+  labels:
+    app: dynamic_parameters
+    app.kubernetes.io/name: dynamic_parameters
+    app.kubernetes.io/instance: dynamic_parameters
+    app.kubernetes.io/component: "startupapicheck"
+    
+  annotations:
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - dynamic_parameters
+
+---

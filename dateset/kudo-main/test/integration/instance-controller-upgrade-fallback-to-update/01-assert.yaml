@@ -1,0 +1,8 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: icto-upgrade-fallback-to-update
+status:
+  planStatus:
+    update:
+      status: COMPLETE

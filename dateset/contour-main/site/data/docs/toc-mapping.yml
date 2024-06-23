@@ -1,0 +1,53 @@
+# This file can be used to explicitly map a release to a specific table-of-contents
+# (TOC). You'll want to use this after any revamps to information architecture, to ensure
+# that the navigation for older versions still work.
+
+main: main-toc
+v1.2.1: v1-2-1-toc
+v1.2.0: v1-2-0-toc
+v1.1.0: v1-1-0-toc
+v1.0.1: v1-0-1-toc
+v1.0.0: v1-0-0-toc
+v1.3.0: v1-3-0-toc
+v1.4.0: v1-4-0-toc
+v1.5.0: v1-5-0-toc
+v1.5.1: v1-5-1-toc
+v1.6.0: v1-6-0-toc
+v1.6.1: v1-6-1-toc
+v1.7.0: v1-7-0-toc
+v1.8.0: v1-8-0-toc
+v1.8.1: v1-8-1-toc
+v1.8.2: v1-8-2-toc
+v1.9.0: v1-9-0-toc
+v1.10.0: v1-10-0-toc
+v1.10.1: v1-10-1-toc
+v1.11.0: v1-11-0-toc
+v1.12.0: v1-12-0-toc
+v1.13.0: v1-13-0-toc
+v1.13.1: v1-13-1-toc
+v1.14.0: v1-14-0-toc
+v1.14.1: v1-14-1-toc
+v1.14.2: v1-14-2-toc
+v1.15.0: v1-15-0-toc
+v1.15.1: v1-15-1-toc
+v1.15.2: v1-15-2-toc
+v1.16.0: v1-16-0-toc
+v1.16.1: v1-16-1-toc
+v1.17.0: v1-17-0-toc
+v1.17.1: v1-17-1-toc
+v1.17.2: v1-17-2-toc
+v1.18.0: v1-18-0-toc
+v1.18.1: v1-18-1-toc
+v1.18.2: v1-18-2-toc
+v1.18.3: v1-18-3-toc
+v1.19.0: v1-19-0-toc
+v1.19.1: v1-19-1-toc
+"1.20": 1-20-toc
+"1.21": 1-21-toc
+"1.22": 1-22-toc
+"1.23": 1-23-toc
+"1.24": 1-24-toc
+"1.25": 1-25-toc
+"1.26": 1-26-toc
+"1.27": 1-27-toc
+"1.28": 1-28-toc

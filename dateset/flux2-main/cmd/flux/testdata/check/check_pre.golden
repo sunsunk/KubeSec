@@ -1,0 +1,3 @@
+► checking prerequisites
+✔ Kubernetes {{ .serverVersion }} >=1.26.0-0
+✔ prerequisites checks passed

@@ -1,0 +1,10 @@
+/.container-*
+/.deploy-*
+/.dockerfile-*
+/.go
+/.push-*
+/.vendor
+/bin
+/dist
+**/*.swp
+/.idea

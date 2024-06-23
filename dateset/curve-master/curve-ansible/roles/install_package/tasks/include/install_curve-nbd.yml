@@ -1,0 +1,77 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+- name: install package via deb
+  include_tasks: "install_deb_package.yml"
+  when: install_with_deb | bool
+
+- name: install package via tar
+  block:
+    - name: install libunwind
+      vars:
+        apt_lib_name: libunwind8
+        yum_lib_name: libunwind
+      include_tasks: common_tasks/install_with_yum_apt.yml
+    - name: install libunwind-dev
+      vars:
+        apt_lib_name: libunwind8-dev
+        yum_lib_name: libunwind-devel
+      include_tasks: common_tasks/install_with_yum_apt.yml
+    - name: install libnl
+      vars:
+        apt_lib_name: libnl-3-dev
+        yum_lib_name: libnl3
+      include_tasks: common_tasks/install_with_yum_apt.yml
+    - name: install libnl-dev
+      vars:
+        apt_lib_name: libnl-genl-3-dev
+        yum_lib_name: libnl3-devel
+      include_tasks: common_tasks/install_with_yum_apt.yml
+    - name: install nbd bin
+      vars:
+        remote_dir_name: "{{ curve_bin_dir }}"
+        local_file_path: "{{ local_nbd_package_path }}/bin/"
+        file_mode: 0755
+      include_tasks: copy_file_to_remote.yml
+    - name: check curvetab exist
+      stat:
+        path: "{{ curvetab_path }}/curvetab"
+      register: file_status
+    - name: install curvetab if not exist
+      vars:
+        remote_dir_name: "{{ curvetab_path }}"
+        local_file_path: "{{ local_nbd_package_path }}/etc/curvetab"
+        file_mode: 0755
+      include_tasks: copy_file_to_remote.yml
+      when: not file_status.stat.exists
+    - name: install map_curve_disk.sh
+      vars:
+        remote_dir_name: "{{ curve_bin_dir }}"
+        local_file_path: "{{ local_nbd_package_path }}/bin/map_curve_disk.sh"
+        file_mode: 0755
+      include_tasks: copy_file_to_remote.yml
+    - name: add nbd auto start at boot
+      block:
+        - name: install map_curve_disk.service
+          vars:
+            remote_dir_name: "{{ curve_service_path }}"
+            local_file_path: "{{ local_nbd_package_path }}/etc/map_curve_disk.service"
+            file_mode: 0755
+          include_tasks: copy_file_to_remote.yml
+        - name: enable service
+          shell: sudo systemctl daemon-reload && sudo systemctl enable map_curve_disk.service
+  when: not install_with_deb | bool

@@ -1,0 +1,279 @@
+syntax = "proto3";
+package paralus.dev.types.user.v3;
+
+import "proto/types/commonpb/v3/common.proto";
+import "proto/types/userpb/v3/group.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+message UserInfo {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "UserInfo"
+      description : "User info"
+      required : [ "apiVersion", "kind", "metadata", "spec" ]
+    }
+  };
+
+  string apiVersion = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "API Version",
+        description : "API Version of the user resource"
+        default : "system.k8smgmt.io/v3"
+      } ];
+  string kind = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Kind",
+        description : "Kind of the user resource"
+        default : "User"
+      } ];
+  paralus.dev.types.common.v3.Metadata metadata = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Metadata",
+        description : "Metadata of the user resource"
+      } ];
+  UserInfoSpec spec = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Spec",
+        description : "Spec of the user resource"
+      } ];
+
+  paralus.dev.types.common.v3.Status status = 5
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Status",
+        description : "Status of the resource"
+        read_only : true
+      } ];
+}
+
+message UserInfoSpec {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "UserInfo Specification"
+      description : "User info specification"
+    }
+  };
+  string firstName = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "FirstName"
+        description : "First name of the user"
+      } ];
+  string lastName = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "LastName"
+        description : "Last name of the user"
+      } ];
+  string phone = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Phone"
+        description : "Phone number of the user"
+      } ];
+  repeated string groups = 6
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Group"
+        description : "Groups the user belongs to"
+        read_only : true,
+      } ];
+  repeated string idpGroups = 7
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Idp Group"
+        description : "Idp Groups the user belongs to"
+        read_only : true,
+      } ];
+  repeated paralus.dev.types.user.v3.Permission permissions = 8
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Permissions"
+        description : "Permissions for the user"
+      } ];
+  bool emailVerified = 9
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "EmailVerified"
+        description : "Flag to show if the email of the user was verified"
+        read_only : true
+      } ];
+  bool phoneVerified = 10
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "PhoneVerified"
+        description : "Flag to show if phone number of the user was verified"
+        read_only : true
+      } ];
+  bool forceReset = 11
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          title : "ForceReset"
+          description : "This indicate user has auto generated password. Client should reset the user password."
+      } ];
+}
+
+message User {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "User"
+      description : "User"
+      required : [ "apiVersion", "kind", "metadata", "spec" ]
+    }
+  };
+
+  string apiVersion = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "API Version",
+        description : "API Version of the user resource"
+        default : "system.k8smgmt.io/v3"
+      } ];
+  string kind = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Kind",
+        description : "Kind of the user resource"
+        default : "User"
+      } ];
+  paralus.dev.types.common.v3.Metadata metadata = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Metadata",
+        description : "Metadata of the user resource"
+      } ];
+  UserSpec spec = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Spec",
+        description : "Spec of the user resource"
+      } ];
+
+  paralus.dev.types.common.v3.Status status = 5
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Status",
+        description : "Status of the resource"
+        read_only : true
+      } ];
+}
+
+message UserSpec {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "User Specification"
+      description : "User specification"
+    }
+  };
+  string firstName = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "FirstName"
+        description : "First name of the user"
+      } ];
+  string lastName = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "LastName"
+        description : "Last name of the user"
+      } ];
+  string phone = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Phone"
+        description : "Phone number of the user"
+      } ];
+  string password = 5
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Password"
+        description : "Password of the user"
+      } ];
+  repeated string groups = 6
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Group"
+        description : "Groups the user belongs to"
+        read_only : true,
+      } ];
+  repeated string idpGroups = 7
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Idp Group"
+        description : "Idp Groups the user belongs to"
+        read_only : true,
+      } ];
+  repeated paralus.dev.types.user.v3.ProjectNamespaceRole projectNamespaceRoles = 8
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "ProjectNamespaceRoles"
+        description : "Project, namespace, role associations for user"
+      } ];
+  bool emailVerified = 9
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "EmailVerified"
+        description : "Flag to show if the email of the user was verified"
+        read_only : true
+      } ];
+  bool phoneVerified = 10
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "PhoneVerified"
+        description : "Flag to show if phone number of the user was verified"
+        read_only : true
+      } ];
+  optional string recoveryUrl = 11
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Recovery Url",
+        description : "Initial signup URL returned after user creation"
+        read_only : true
+      } ];
+  string lastLogin = 12
+    [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "LastLogin"
+        description : "Last access date time in RFC3339 format."
+        read_only : true
+    } ];
+  bool forceReset = 13
+    [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "ForceReset"
+        description : "This indicate user has auto generated password. Client should reset the user password."
+    } ];
+}
+
+message UserList {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "UserList"
+      description : "User list"
+      read_only : true
+    }
+  };
+  string apiVersion = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "API Version",
+        description : "API Version of the user list resource"
+        default : "usermgmt.k8smgmt.io/v3"
+        read_only : true
+      } ];
+  string kind = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Kind",
+        description : "Kind of the user list resource"
+        default : "UserList"
+        read_only : true
+      } ];
+  paralus.dev.types.common.v3.ListMetadata metadata = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Metadata",
+        description : "Metadata of the user list resource"
+        read_only : true
+      } ];
+  repeated User items = 4
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Items",
+        description : "List of the user resources"
+        read_only : true
+      } ];
+}
+
+message UserRole {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema : {
+      title : "UserRole"
+      description : "User, role, namespace pairing for permission"
+    }
+  };
+  string user = 1
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "User"
+        description : "User"
+      } ];
+  string role = 2
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Role"
+        description : "Role"
+      } ];
+  string namespace = 3
+      [ (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        title : "Namespace"
+        description : "Namespace"
+      } ];
+}

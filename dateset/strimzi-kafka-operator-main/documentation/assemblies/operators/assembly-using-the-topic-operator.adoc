@@ -1,0 +1,32 @@
+// This assembly is included in the following assemblies:
+//
+// assembly-operators.adoc
+
+[id='using-the-topic-operator-{context}']
+= Using the Topic Operator to manage Kafka topics
+
+[role="_abstract"]
+The `KafkaTopic` resource configures topics, including partition and replication factor settings. 
+When you create, modify, or delete a topic using `KafkaTopic`, the Topic Operator ensures that these changes are reflected in the Kafka cluster.
+
+For more information on the `KafkaTopic` resource, see the link:{BookURLConfiguring}#type-KafkaTopic-reference[`KafkaTopic` schema reference^].
+
+//modes of topic creation
+include::../../modules/operators/ref-operator-topic.adoc[leveloffset=+1]
+//topic naming conventions
+include::../../modules/operators/con-operator-topic-names.adoc[leveloffset=+1]
+include::../../modules/operators/con-application-topic-handling.adoc[leveloffset=+1]
+include::../../modules/operators/proc-configuring-kafka-topic.adoc[leveloffset=+1]
+include::../../modules/operators/con-topic-replication.adoc[leveloffset=+1]
+//converting managed topics to make changes to KafkaTopic resources
+include::../../modules/operators/proc-converting-managed-topics.adoc[leveloffset=+1]
+//converting non-managed topics so they are managed by KafkaTopic resources
+include::../../modules/operators/proc-converting-non-managed-topics.adoc[leveloffset=+1]
+//deleting managed topics
+include::../../modules/operators/con-deleting-managed-topics.adoc[leveloffset=+1]
+//removing finalizers from topics
+include::../../modules/operators/con-removing-topic-finalizers.adoc[leveloffset=+1]
+//disabling topic deletion considerations
+include::../../modules/operators/con-disabling-topic-deletion.adoc[leveloffset=+1]
+//tuning request batches
+include::../../modules/operators/con-tuning-topic-request-batches.adoc[leveloffset=+1]

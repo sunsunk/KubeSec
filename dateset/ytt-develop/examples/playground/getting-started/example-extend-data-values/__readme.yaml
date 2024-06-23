@@ -1,0 +1,82 @@
+readme: |
+
+  =====================
+  Extending Data Values
+  =====================
+
+  In our last example, we learned how to modify the value
+  of an existing data value. Sometimes, you need a new data
+  value in order to add more configuration.
+
+  `ytt` will report an error when a schema overlay includes
+  a Data Value that was not previously defined in schema.
+  You can override this behavior by telling `ytt` that 
+  you expect the data value to be new.
+
+  In our example, we...
+  - add a new data value, `ingress_path`, of type string;
+  - annotate that data value, indicating that it is "ok"
+    if the data value is not already present (aka 
+    "missing");
+  - further annotate it, indicating that it should be 
+    `null` by default;
+  - reference this new data value our new template —
+    `prod/ingress.yml`; adding the new ingress only if a
+    path was actually specified (i.e. not null).
+
+  Let's see this at play...
+  1. What happens when you remove the `#@overlay/match`
+     annotation?
+  2. What happens when you specify an `ingress_path`?
+
+  -----------
+  Annotations
+  -----------
+
+  In ytt, `#@` denotes an annotation on the YAML node to its
+  left or below it (when there is none to its left).
+
+  A YAML parser interprets `#` as a comment, ignoring the
+  rest. The annotation comes alive when ytt "executes" the
+  file.
+
+  In most cases, we deliberately place an annotation on a
+  specific YAML node:
+
+  - `#@overlay/match missing_ok=True` is annotating
+    `ingress_path: ""`, informing the overlay mechanism that
+     this map item node's key is possibly not present in the
+     target map (i.e. the map in `config/schema.yml`).
+
+  - back in `config/schema.yml`, we annotated the Document
+    node starting on line 2 as a "data values schema"
+    document.
+
+  - `#@ if/end data.values.ingress_path:` is annotating the
+    Document node starting on line 4.
+
+  Let's explore:
+
+  1. in `prod/schema.yml` ensure `ingress_path` is annotated
+     as "nullable". Note that `prod/ingress.yml` is absent 
+     from the output column.
+
+  2. in `prod/ingress.yml` move `#@ if/end ...` from line 3
+     to just below `kind: Ingress` and above `metadata:`.
+     What changes in the output?
+
+  3. in `prod/schema.yml` remove the `#@data/values-schema`
+     annotation. What happened to the data values declared in
+     that Document?
+
+     - reinforce this by removing the `#@ if/end` entirely
+       from `prod/ingress.yml` and replace the reference to
+       `data.values.ingress_path` with an empty string.
+       (see the new "template" appear in the output?)
+
+  ................
+  Thinking in ytt:
+
+      "Adding a data value...
+
+                       ...is extending the contract."

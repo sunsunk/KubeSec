@@ -1,0 +1,13 @@
+# Source: Konveyor/templates/rbac/ui_cluster_role_binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tackle-ui-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tackle-ui-role
+subjects:
+- kind: ServiceAccount
+  name: tackle-ui
+  namespace: default

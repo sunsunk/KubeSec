@@ -1,0 +1,178 @@
+# Source: akri/templates/webhook-configuration.yaml
+apiVersion: v1
+kind: List
+metadata:
+  name: akri-webhook-configuration
+  labels:
+    helm.sh/chart: akri-0.12.20
+    app.kubernetes.io/part-of: akri
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.12.20"
+    app.kubernetes.io/managed-by: Helm
+items:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: akri-webhook-configuration
+      namespace: default
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: akri-webhook-configuration
+      namespace: default
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+    rules:
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get"]
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: akri-webhook-configuration
+      namespace: default
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: akri-webhook-configuration
+    subjects:
+    - kind: ServiceAccount
+      name: akri-webhook-configuration
+      namespace: default
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: akri-webhook-configuration
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/part-of: akri
+          app.kubernetes.io/instance: my-release
+          app.kubernetes.io/name: akri-webhook-configuration
+      template:
+        metadata:
+          labels:
+            helm.sh/chart: akri-0.12.20
+            app.kubernetes.io/part-of: akri
+            app.kubernetes.io/instance: my-release
+            app.kubernetes.io/version: "0.12.20"
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: akri-webhook-configuration
+            app.kubernetes.io/component: admission-webhook
+        spec:
+          serviceAccountName: akri-webhook-configuration
+          containers:
+          - name: webhook
+            image: "ghcr.io/project-akri/akri/webhook-configuration:v0.12.20-dev"
+            imagePullPolicy: Always
+            resources:
+              requests:
+                memory: 100Mi
+                cpu: 15m
+              limits:
+                memory: 100Mi
+                cpu: 26m
+            args:
+            - --tls-crt-file=/secrets/tls.crt
+            - --tls-key-file=/secrets/tls.key
+            - --port=8443
+            volumeMounts:
+            - name: secrets
+              mountPath: /secrets
+              readOnly: true
+          volumes:
+            - name: secrets
+              secret:
+                secretName: akri-webhook-configuration
+          tolerations:
+            - key: node-role.kubernetes.io/master
+              effect: NoSchedule
+          nodeSelector:
+            "kubernetes.io/os": linux
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: akri-webhook-configuration
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+    spec:
+      selector:
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/name: akri-webhook-configuration
+      ports:
+        - name: http
+          port: 443
+          targetPort: 8443
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    metadata:
+      name: akri-webhook-configuration
+      labels:
+        helm.sh/chart: akri-0.12.20
+        app.kubernetes.io/part-of: akri
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.12.20"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: akri-webhook-configuration
+        app.kubernetes.io/component: admission-webhook
+    webhooks:
+      - name: akri-webhook-configuration.default.svc
+        clientConfig:
+          service:
+            name: akri-webhook-configuration
+            namespace: default
+            port: 443
+            path: "/validate"
+        rules:
+          - operations:
+              - "CREATE"
+              - "UPDATE"
+            apiGroups:
+              - akri.sh
+            apiVersions:
+              - v0
+            resources:
+              - "configurations"
+            scope: "*"
+        admissionReviewVersions:
+          - v1
+          - v1beta1
+        sideEffects: None

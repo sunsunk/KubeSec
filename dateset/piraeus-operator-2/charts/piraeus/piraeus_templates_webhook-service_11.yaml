@@ -1,0 +1,22 @@
+# Source: piraeus/templates/webhook-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-piraeus-webhook-service
+  labels:
+    helm.sh/chart: piraeus-2.4.1
+    app.kubernetes.io/component: piraeus-operator
+    app.kubernetes.io/name: piraeus-datastore
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "v2.4.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/component: piraeus-operator
+    app.kubernetes.io/name: piraeus-datastore
+    app.kubernetes.io/instance: my-release
+  ports:
+    - name: https
+      port: 443
+      targetPort: 9443

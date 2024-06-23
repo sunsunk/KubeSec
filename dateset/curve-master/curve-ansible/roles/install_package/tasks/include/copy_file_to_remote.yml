@@ -1,0 +1,47 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+- name: create remote dir
+  vars:
+    dir_name: "{{ remote_dir_name }}"
+  include_tasks: common_tasks/create_dir.yml
+
+- name: copy file directly
+  ignore_errors: true
+  become: false
+  copy: src={{ local_file_path }} dest={{ remote_dir_name }} mode={{ file_mode }}
+  register: copy_file_res
+
+- name: copy file with sudo
+  block:
+    - name: clear tmp dir
+      shell: sudo rm -rf {{ tmp_dir }}
+    - name: create tmp dir
+      become: false
+      shell: mkdir -p {{ tmp_dir }}
+    - name: copy files to tempory directory
+      become: false
+      copy: src={{ local_file_path }} dest={{ tmp_dir }} mode={{ file_mode }}
+    - name: list all file under local file path
+      shell: ls {{ tmp_dir }}
+      register: ls_res
+    - name: rename duplicate file under target dir
+      shell: sudo rm -rf {{ remote_dir_name }}/{{ item }}
+      with_items: "{{ ls_res.stdout_lines }}"
+    - name: mv file
+      shell: sudo mv -b {{ tmp_dir }}/* {{ remote_dir_name }}
+  when: copy_file_res.failed

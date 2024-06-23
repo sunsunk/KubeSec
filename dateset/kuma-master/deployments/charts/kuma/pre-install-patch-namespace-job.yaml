@@ -1,0 +1,114 @@
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+---
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+---
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+---
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+imagePullSecrets:
+  - name: dynamic_parameters
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters-patch-ns-job
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    resourceNames:
+      - dynamic_parameters
+    verbs:
+      - get
+      - patch
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters-patch-ns-job
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters-patch-ns-job
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+---
+# Source: kuma/templates/pre-install-patch-namespace-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamic_parameters-patch-ns
+  namespace: dynamic_parameters
+  labels:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+spec:
+  template:
+    metadata:
+      name: dynamic_parameters-patch-ns-script
+      labels:
+    spec:
+      serviceAccountName: dynamic_parameters
+      nodeSelector:
+      tolerations:
+      restartPolicy: OnFailure
+      securityContext:
+      containers:
+        - name: pre-install-job
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          securityContext:
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          command:
+            - 'kubectl'
+            - 'patch'
+            - 'namespace'
+            - dynamic_parameters
+            - '--type'
+            - 'merge'
+            - '--patch'
+
+---

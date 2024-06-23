@@ -1,0 +1,14 @@
+#! shared functionality can be extracted into separate files,
+#! then loaded in by their function name
+
+#! YAML library files must be named *.lib.yml
+#@ load("funcs.lib.yml", "func1", "func2")
+
+#! to load a function with a conflicting name
+#! rename it like so:
+
+#@ load("funcs.star", func3="func1")
+
+func1_key: #@ func1()
+func2_key: #@ func2()
+func3_key: #@ func3()

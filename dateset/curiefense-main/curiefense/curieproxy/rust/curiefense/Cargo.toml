@@ -1,0 +1,78 @@
+[package]
+name = "curiefense"
+version = "0.1.0"
+authors = ["simon <simon@banquise.net>"]
+edition = "2018"
+links = "grasshopper"
+
+[lib]
+crate-type = ["lib"]
+bench = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+lazy_static = "*"
+itertools = "0.10"
+maxminddb = "0.23"
+http = "0.2"
+regex = "1"
+ipnet = "2.4"
+iprange = "0.6"
+anyhow = "1.0"
+md5 = "0.7"
+libinjection = "0.2"
+xmlparser = "0.13"
+nom = "7.1"
+rand = "0.8"
+sha2 = "0.10"
+async-std = "1.11"
+futures = "0.3"
+futures-util = "0.3"
+async-graphql-parser = "5.0.8"
+chrono = { version = "0.4", features = ["serde", "clock"] }
+arbitrary = { version = "1", features = ["derive"] }
+pdatastructs = "0.7"
+jsonpath-rust = "0.3.0"
+
+[dependencies.multipart]
+version = "0.18"
+default-features = false
+features = ["server"]
+
+[dependencies.hyperscan]
+version = "0.2"
+default-features = false
+features = ["full"]
+
+[dependencies.redis]
+version = "0.21"
+features = ["async-std-comp", "connection-manager"]
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "body_parse"
+path = "benches/body_parse.rs"
+harness = false
+
+[[bench]]
+name = "security_policies"
+path = "benches/security_policies.rs"
+harness = false
+
+[[bench]]
+name = "check_acl"
+path = "benches/check_acl.rs"
+harness = false
+
+[[bench]]
+name = "requestfields"
+path = "benches/requestfields.rs"
+harness = false
+
+[[bench]]
+name = "logging"
+path = "benches/logging.rs"
+harness = false

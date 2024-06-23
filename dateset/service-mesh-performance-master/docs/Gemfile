@@ -1,0 +1,19 @@
+#after any changes to the Gemfile, execute bundle update!
+source "https://rubygems.org"
+
+group :jekyll_plugins do
+    gem "jekyll-feed", ">= 0.15.0"
+    gem "jekyll-paginate"
+    gem "jekyll-sitemap", ">= 1.4.0"
+    # gem "jekyll-seo-tag"
+    gem 'jemoji', '~> 0.12.0'
+    gem "nokogiri", ">= 1.12.5"
+    gem 'jekyll-coffeescript', '~> 2.0'
+    gem 'jekyll-manager' if ENV['ADMIN'] == 'on'
+  end
+
+# Delete the following lines if not on Windows:
+# Performance-booster for watching directories on Windows
+gem "wdm", ">= 0.1.0" if Gem.win_platform?
+
+gem "webrick", "~> 1.7"

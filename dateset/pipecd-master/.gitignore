@@ -1,0 +1,63 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+.DS_Store
+
+# Bazel
+/bazel-bin
+/bazel-genfiles
+/bazel-pipe
+/bazel-pipecd
+/bazel-out
+/bazel-testlogs
+/BUILD.bazel.generated
+
+# Binaries
+.artifacts
+
+# Go
+/vendor
+
+# nodejs
+node_modules
+
+# web
+web/dist
+web/.env
+web/.cache
+web/coverage
+pkg/app/web/.env
+
+# IDE config files
+.ijwb
+.idea
+
+.dev
+
+# Terraform workspace
+.terraform
+.terraform-credentials
+
+.rendered-manifests
+
+# manfiests
+manifests/pipecd/charts
+manifests/piped/charts
+manifests/site/charts
+manifests/helloworld/charts
+
+# gomock generated reflect files
+gomock_reflect_*/
+
+# Cache
+.cache

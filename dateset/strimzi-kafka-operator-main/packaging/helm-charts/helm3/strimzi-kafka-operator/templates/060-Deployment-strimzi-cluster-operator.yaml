@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strimzi-cluster-operator
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    component: deployment
+    release: dynamic_parameters
+    heritage: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      name: strimzi-cluster-operator
+      strimzi.io/kind: cluster-operator
+  template:
+    metadata:
+      labels:
+        name: strimzi-cluster-operator
+        strimzi.io/kind: cluster-operator
+      annotations:
+    spec:
+      serviceAccountName: dynamic_parameters
+      imagePullSecrets:
+        - name: dynamic_parameters
+      imagePullSecrets:
+      securityContext: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      volumes:
+        - name: strimzi-tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: dynamic_parameters
+        - name: dynamic_parameters
+          configMap:
+            name: dynamic_parameters
+      containers:
+        - name: strimzi-cluster-operator
+          image: dynamic_parameters
+          ports:
+            - containerPort: 8080
+              name: http
+          imagePullPolicy: dynamic_parameters
+          args:
+            - /opt/strimzi/bin/cluster_operator_run.sh
+          volumeMounts:
+            - name: strimzi-tmp
+              mountPath: /tmp
+            - name: dynamic_parameters
+              mountPath: /opt/strimzi/custom-config/
+          env:
+            - name: STRIMZI_NAMESPACE
+              value: "*"
+              value: "dynamic_parameters"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STRIMZI_FULL_RECONCILIATION_INTERVAL_MS
+              value: dynamic_parameters
+            - name: STRIMZI_OPERATION_TIMEOUT_MS
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_TOPIC_OPERATOR_IMAGE
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_USER_OPERATOR_IMAGE
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_KAFKA_INIT_IMAGE
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_KAFKA_BRIDGE_IMAGE
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_KANIKO_EXECUTOR_IMAGE
+              value: dynamic_parameters
+            - name: STRIMZI_DEFAULT_MAVEN_BUILDER
+              value: dynamic_parameters
+            - name: STRIMZI_OPERATOR_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STRIMZI_IMAGE_PULL_SECRETS
+              value: dynamic_parameters
+            - name: STRIMZI_IMAGE_PULL_SECRETS
+              value: dynamic_parameters
+            - name: STRIMZI_OPERATOR_NAMESPACE_LABELS
+              value: dynamic_parameters
+            - name: STRIMZI_IMAGE_PULL_POLICY
+              value: dynamic_parameters
+            dynamic_parameters- name: KUBERNETES_SERVICE_DNS_DOMAIN
+              value: dynamic_parametersdynamic_parameters
+            - name: STRIMZI_FEATURE_GATES
+              value: dynamic_parameters
+            - name: STRIMZI_LABELS_EXCLUSION_PATTERN
+              value: dynamic_parameters
+            - name: STRIMZI_NETWORK_POLICY_GENERATION
+              value: dynamic_parameters
+            - name: STRIMZI_CONNECT_BUILD_TIMEOUT_MS
+              value: dynamic_parameters
+            - name: STRIMZI_LEADER_ELECTION_ENABLED
+              value: "true"
+              value: "false"
+            - name: STRIMZI_LEADER_ELECTION_LEASE_NAME
+              value: "strimzi-cluster-operator"
+            - name: STRIMZI_LEADER_ELECTION_LEASE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STRIMZI_LEADER_ELECTION_IDENTITY
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: http
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+          securityContext: dynamic_parameters
+          resources:
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---

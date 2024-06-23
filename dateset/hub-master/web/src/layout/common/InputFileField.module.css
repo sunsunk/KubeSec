@@ -1,0 +1,40 @@
+.btn {
+  min-width: 60px;
+  width: 60px;
+  height: 60px;
+}
+
+.circularBtn {
+  border-color: #ced4da !important;
+}
+
+[data-theme='dark'] .circularBtn {
+  border-color: #8c96a1 !important;
+}
+
+.imageAsBg {
+  object-fit: cover;
+}
+
+.spinner {
+  top: 5px;
+  left: 5px;
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.label {
+  font-size: 0.875rem;
+}
+
+.cropWrapper {
+  background-color: var(--light-gray);
+  height: calc(100% - 80px);
+}
+
+.imageWrapper {
+  min-width: 60px;
+  width: 60px;
+  height: 60px;
+  border-color: var(--bs-white) !important;
+}

@@ -1,0 +1,30 @@
+linters:
+  enable:
+    - contextcheck
+    - errcheck
+    - errorlint
+    - gci
+    - ginkgolinter
+    - gocritic
+    - gofumpt
+    - govet
+    - ineffassign
+    - misspell
+    - nolintlint
+    - nonamedreturns
+    - predeclared
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unused
+    - whitespace
+
+linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/containernetworking)
+
+run:
+  timeout: 5m

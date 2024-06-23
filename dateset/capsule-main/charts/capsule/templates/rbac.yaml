@@ -1,0 +1,52 @@
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-manager-rolebinding
+  labels:
+    
+  annotations:
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-dynamic_parameters
+  labels:
+    
+  annotations:
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters
+subjects:
+- kind: ServiceAccount
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dynamic_parameters-dynamic_parameters
+  labels:
+    
+  annotations:
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters
+subjects:
+- kind: ServiceAccount
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+
+---
+
+---

@@ -1,0 +1,57 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+  namespace: dynamic_parameters
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - create
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - delete
+      - get
+      - list
+      - update
+      - watch
+    resourceNames:
+      - dynamic_parameters.dynamic_parameters.svc.kyverno-tls-ca
+      - dynamic_parameters.dynamic_parameters.svc.kyverno-tls-pair
+  - apiGroups:
+      - ''
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+    resourceNames:
+      - dynamic_parameters
+      - dynamic_parameters
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - create
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - delete
+      - get
+      - patch
+      - update
+    resourceNames:
+      - kyverno-cleanup-controller
+
+---

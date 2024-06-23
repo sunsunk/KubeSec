@@ -1,0 +1,67 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pixie-operator-cluster-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pixie-operator-role
+subjects:
+- kind: ServiceAccount
+  name: pixie-operator-service-account
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pixie-operator-role
+rules:
+# Allow actions on Kubernetes objects
+- apiGroups:
+  - ""
+  - apps
+  - rbac.authorization.k8s.io
+  - extensions
+  - etcd.database.coreos.com
+  - batch
+  - nats.io
+  - policy
+  - apiextensions.k8s.io
+  - px.dev
+  resources:
+  - clusterroles
+  - clusterrolebindings
+  - configmaps
+  - customresourcedefinitions
+  - secrets
+  - pods
+  - events
+  - services
+  - deployments
+  - daemonsets
+  - nodes
+  - persistentvolumes
+  - persistentvolumeclaims
+  - roles
+  - rolebindings
+  - serviceaccounts
+  - etcdclusters
+  - statefulsets
+  - cronjobs
+  - jobs
+  - natsclusters
+  - poddisruptionbudgets
+  - viziers
+  - viziers/status
+  - podsecuritypolicies
+  verbs: ["*"]
+# Allow read-only access to storage class / csi drivers.
+- apiGroups:
+  - storage.k8s.io
+  - ""
+  resources:
+  - storageclasses
+  - namespaces
+  - csidrivers
+  verbs: ["get", "list"]

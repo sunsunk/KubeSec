@@ -1,0 +1,126 @@
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-keycloak"
+  labels:
+    app: "microcks"
+    container: keycloak
+    group: microcks
+    
+  annotations:
+    
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: keycloak
+      container: keycloak
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: keycloak
+        container: keycloak
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: keycloak-server
+        image: quay.io/keycloak/keycloak:22.0.3
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 400m
+            memory: 512Mi
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: jolokia
+          containerPort: 8778
+          protocol: TCP
+        args:
+        - 'start'
+        - '--features=token-exchange'
+        - '--db=$(KC_DB)'
+        - '--db-url-host=$(KC_DB_URL_HOST)'
+        - '--db-username=$(KC_DB_USER)'
+        - '--db-password=$(KC_DB_PASSWORD)'
+        - '--hostname=keycloak-microcks.192.168.99.100.nip.io'
+        - '--health-enabled=true'
+        - '--import-realm'
+        env:
+        - name: INTERNAL_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: "microcks-keycloak-admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "microcks-keycloak-admin"
+        - name: OPERATING_MODE
+          value: clustered
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgresUsername
+              name: "microcks-keycloak-admin"
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgresPassword
+              name: "microcks-keycloak-admin"
+        - name: KC_DB_URL_DATABASE
+          value: root
+        - name: KC_DB_URL_HOST
+          value: "microcks-keycloak-postgresql"
+        - name: KC_PROXY
+          value: "edge"
+        livenessProbe:
+          httpGet:
+            path: "/health/live"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 2
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: "/health/ready"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
+        volumeMounts:
+        - name: microcks-keycloak-config
+          mountPath: "/opt/keycloak/data/import"
+        securityContext:
+          privileged: false
+      volumes:
+      - name: "microcks-keycloak-config"
+        configMap:
+          name: "microcks-keycloak-config"
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst

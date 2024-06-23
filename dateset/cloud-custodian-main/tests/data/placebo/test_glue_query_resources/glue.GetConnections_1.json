@@ -1,0 +1,47 @@
+{
+    "status_code": 200,
+    "data": {
+        "ConnectionList": [
+            {
+                "Name": "test",
+                "Description": "",
+                "ConnectionType": "JDBC",
+                "ConnectionProperties": {
+                    "JDBC_ENFORCE_SSL": "false",
+                    "JDBC_CONNECTION_URL": "jdbc:mysql://database-3-instance-1.cz6wy8cci3uf.us-east-1.rds.amazonaws.com:3306/test",
+                    "SECRET_ID": "c7n",
+                    "KAFKA_SSL_ENABLED": "false"
+                },
+                "PhysicalConnectionRequirements": {
+                    "SubnetId": "subnet-00872ab56d5fa4cdc",
+                    "SecurityGroupIdList": [
+                        "sg-045f7d0c2467c3bfb"
+                    ],
+                    "AvailabilityZone": "us-east-1a"
+                },
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2020,
+                    "month": 5,
+                    "day": 4,
+                    "hour": 20,
+                    "minute": 1,
+                    "second": 0,
+                    "microsecond": 856000
+                },
+                "LastUpdatedTime": {
+                    "__class__": "datetime",
+                    "year": 2023,
+                    "month": 11,
+                    "day": 20,
+                    "hour": 17,
+                    "minute": 4,
+                    "second": 49,
+                    "microsecond": 864000
+                },
+                "LastUpdatedBy": "user/timmy"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

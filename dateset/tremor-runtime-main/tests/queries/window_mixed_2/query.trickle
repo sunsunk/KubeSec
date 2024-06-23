@@ -1,0 +1,21 @@
+use tremor::system;
+
+define window size_two from tumbling
+with
+  size = 2
+end;
+
+define window time_two from tumbling
+with
+  interval = 5
+end;
+
+select {
+  "count": aggr::stats::count(),
+  "group": group[0],
+  "sum":   aggr::stats::sum(event.num),
+  "ingest": aggr::win::collect_flattened(system::ingest_ns())
+}
+from in[size_two, time_two] 
+group by set(event.g)
+into out;

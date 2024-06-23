@@ -1,0 +1,49 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+# 集群拓扑信息
+cluster_map:
+  servers:
+    - name: server1
+      internalip: 127.0.0.1
+      internalport: 8200
+      externalip: 127.0.0.1
+      externalport: 8200
+      zone: zone1
+      physicalpool: pool1
+    - name: server2
+      internalip: 127.0.0.1
+      internalport: 8201
+      externalip: 127.0.0.1
+      externalport: 8201
+      zone: zone2
+      physicalpool: pool1
+    - name: server3
+      internalip: 127.0.0.1
+      internalport: 8202
+      externalip: 127.0.0.1
+      externalport: 8202
+      zone: zone3
+      physicalpool: pool1
+  logicalpools:
+    - name: logicalPool1
+      physicalpool: pool1
+      type: 0
+      replicasnum: 3
+      copysetnum: 100
+      zonenum: 3
+      scatterwidth: 0

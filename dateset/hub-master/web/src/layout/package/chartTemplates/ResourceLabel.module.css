@@ -1,0 +1,7 @@
+.label {
+  font-size: 0.72rem;
+  background-color: var(--badge-bg);
+  line-height: 18px;
+  padding: 0 5px;
+  border-color: var(--gray) !important;
+}

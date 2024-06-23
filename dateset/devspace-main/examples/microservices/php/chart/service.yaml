@@ -1,0 +1,13 @@
+# Source: my-app/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: php
+  labels:
+    release: "my-release"
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    release: "my-release"

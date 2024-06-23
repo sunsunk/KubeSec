@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package stats;
+
+option go_package = "stats";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/any.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+message Stats {
+  // The sum of all wall time spent in the querier to execute the query.
+  google.protobuf.Duration wall_time = 1 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
+  // The number of series fetched for the query
+  uint64 fetched_series_count = 2;
+  // The number of bytes of the chunks fetched for the query
+  uint64 fetched_chunk_bytes = 3;
+  // The number of bytes of data fetched for the query
+  uint64 fetched_data_bytes = 4;
+  // Extra fields to be reported on the stats log
+  map<string, string> extra_fields = 5;
+  // The number of chunks fetched for the query
+  uint64 fetched_chunks_count = 6;
+  // The number of samples fetched for the query
+  uint64 fetched_samples_count = 7;
+  // The limit hit when executing the query
+  string limit_hit = 8 [(gogoproto.nullable) = true];
+  // The total number of split queries sent after going through all the middlewares.
+  // It includes the number of requests that might be discarded by the queue.
+  uint64 split_queries = 9;
+  // The sum of wall time spent in the querier to fetch and merge data from storage.
+  google.protobuf.Duration query_storage_wall_time = 10 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
+}

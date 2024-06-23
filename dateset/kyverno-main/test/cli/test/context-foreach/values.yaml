@@ -1,0 +1,10 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+policies:
+- name: block-images
+  rules:
+  - foreachValues:
+      imageData:
+      - foo
+      - foo1
+    name: block-images

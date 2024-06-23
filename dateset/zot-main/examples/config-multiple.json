@@ -1,0 +1,29 @@
+{
+    "distSpecVersion": "1.1.0",
+    "storage": {
+        "rootDirectory": "/tmp/zot",
+        "dedupe": true,
+        "gc": true,
+        "subPaths": {
+            "/a": {
+                "rootDirectory": "/tmp/zot1",
+                "dedupe": true
+            },
+            "/b": {
+                "rootDirectory": "/tmp/zot2",
+                "dedupe": true
+            },
+            "/c": {
+                "rootDirectory": "/tmp/zot3",
+                "dedupe": false
+            }
+        }
+    },
+    "http": {
+        "address": "127.0.0.1",
+        "port": "5000"
+    },
+    "log": {
+        "level": "debug"
+    }
+}

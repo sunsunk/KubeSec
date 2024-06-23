@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    app: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+  strategy:
+    rollingUpdate:
+      maxSurge: dynamic_parameters
+      maxUnavailable: dynamic_parameters
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: dynamic_parameters
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: kuberhealthy
+      serviceAccountName: kuberhealthy
+      automountServiceAccountToken: true
+      priorityClassName: dynamic_parameters
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - dynamic_parameters
+            topologyKey: "kubernetes.io/hostname"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dynamic_parameters
+              topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+      containers:
+      - image: "dynamic_parameters"
+      - image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+      - image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+        command: dynamic_parameters
+        args:
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+          runAsNonRoot: dynamic_parameters
+          runAsUser: dynamic_parameters
+          allowPrivilegeEscalation: dynamic_parameters
+          readOnlyRootFilesystem: dynamic_parameters
+          seccompProfile:
+        imagePullPolicy: dynamic_parameters
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 2
+          periodSeconds: 4
+          successThreshold: 1
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 1
+        name: dynamic_parameters
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/config/
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: dynamic_parameters
+            value: dynamic_parameters
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 2
+          periodSeconds: 4
+          successThreshold: 1
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: dynamic_parameters
+            memory: dynamic_parameters
+          limits:
+            cpu: dynamic_parameters
+            memory: dynamic_parameters
+      nodeSelector:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+
+---
+
+---

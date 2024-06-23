@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    
+  name: dynamic_parameters-role
+  namespace: dynamic_parameters
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    # get secrets is needed for retrieving pull secret.
+    verbs: [ "get" ]
+
+---
+
+---

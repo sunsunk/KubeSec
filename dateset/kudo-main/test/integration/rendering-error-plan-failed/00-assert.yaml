@@ -1,0 +1,11 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: invalid1
+status:
+  planStatus:
+    deploy:
+      status: FATAL_ERROR
+      phases:
+        - name: invalid-phase
+          status: FATAL_ERROR

@@ -1,0 +1,478 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Build Packages for MacOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  MACOSX_DEPLOYMENT_TARGET: "10.15"
+
+jobs:
+  build-vineyardd:
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.repository == 'v6d-io/v6d' || github.event_name == 'workflow_dispatch' }}
+    strategy:
+      matrix:
+        os: [macos-11]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Generate Summary for Submodules
+        run: |
+          git submodule > git-modules.txt
+          cat git-modules.txt
+
+      - name: Cache for cccahe
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ${{ matrix.os }}-vineyardd-ccache-${{ hashFiles('**/git-modules.txt') }}
+          restore-keys: |
+            ${{ matrix.os }}-vineyardd-ccache-
+
+      - name: Install dependencies for MacOS
+        run: |
+          brew install ccache boost coreutils grpc protobuf openssl || true
+
+          export CC=clang
+          export CXX=clang++
+
+          export PATH=/usr/local/opt/ccache/bin:/usr/local/opt/ccache/libexec:$PATH:$HOME/.local/bin
+
+          echo "Installing gflags ..."
+          cd /tmp
+          curl -L https://github.com/gflags/gflags/archive/v2.2.2.tar.gz --output gflags-v2.2.2.tar.gz
+          tar zxf gflags-v2.2.2.tar.gz
+          cd gflags-2.2.2
+          mkdir -p build-dir
+          cd build-dir
+          cmake .. -DBUILD_SHARED_LIBS=OFF
+          make install -j`nproc`
+
+          echo "Installing glog ..."
+          cd /tmp
+          curl -L https://github.com/google/glog/archive/v0.5.0.tar.gz --output glog-v0.5.0.tar.gz
+          tar zxf glog-v0.5.0.tar.gz
+          cd glog-0.5.0
+          mkdir -p build-dir
+          cd build-dir
+          cmake .. -DBUILD_SHARED_LIBS=OFF \
+                   -DWITH_GFLAGS=OFF \
+                   -DBUILD_TESTING=OFF
+          make install -j`nproc`
+
+          echo "Installing apache-arrow ..."
+          cd /tmp
+          curl -L https://github.com/apache/arrow/archive/refs/tags/apache-arrow-12.0.1.tar.gz --output apache-arrow-12.0.1.tar.gz
+          tar zxf apache-arrow-12.0.1.tar.gz
+          cd arrow-apache-arrow-12.0.1
+          mkdir -p build-dir
+          cd build-dir
+          cmake ../cpp \
+              -DARROW_COMPUTE=OFF \
+              -DARROW_WITH_UTF8PROC=OFF \
+              -DARROW_CSV=OFF \
+              -DARROW_CUDA=OFF \
+              -DARROW_DATASET=OFF \
+              -DARROW_FILESYSTEM=ON \
+              -DARROW_FLIGHT=OFF \
+              -DARROW_GANDIVA=OFF \
+              -DARROW_GANDIVA_JAVA=OFF \
+              -DARROW_HDFS=OFF \
+              -DARROW_HIVESERVER2=OFF \
+              -DARROW_JSON=OFF \
+              -DARROW_ORC=OFF \
+              -DARROW_PARQUET=OFF \
+              -DARROW_PLASMA=OFF \
+              -DARROW_PLASMA_JAVA_CLIENT=OFF \
+              -DARROW_PYTHON=OFF \
+              -DARROW_S3=OFF \
+              -DARROW_WITH_BZ2=OFF \
+              -DARROW_WITH_ZLIB=OFF \
+              -DARROW_WITH_LZ4=OFF \
+              -DARROW_WITH_SNAPPY=OFF \
+              -DARROW_WITH_ZSTD=OFF \
+              -DARROW_WITH_BROTLI=OFF \
+              -DARROW_IPC=ON \
+              -DARROW_BUILD_BENCHMARKS=OFF \
+              -DARROW_BUILD_EXAMPLES=OFF \
+              -DARROW_BUILD_INTEGRATION=OFF \
+              -DARROW_BUILD_UTILITIES=OFF \
+              -DARROW_BUILD_TESTS=OFF \
+              -DARROW_ENABLE_TIMING_TESTS=OFF \
+              -DARROW_FUZZING=OFF \
+              -DARROW_USE_ASAN=OFF \
+              -DARROW_USE_TSAN=OFF \
+              -DARROW_USE_UBSAN=OFF \
+              -DARROW_JEMALLOC=OFF \
+              -DARROW_BUILD_SHARED=OFF \
+              -DARROW_BUILD_STATIC=ON
+          make install -j`nproc`
+
+      - name: Build vineyardd on MacOS
+        run: |
+          export CC=clang
+          export CXX=clang++
+
+          export PATH=/usr/local/opt/ccache/bin:/usr/local/opt/ccache/libexec:$PATH:$HOME/.local/bin
+
+          # patch cpprestsdk, that is not used, and the cases cannot be handled by delocate well,
+          #
+          # see also: https://github.com/matthew-brett/delocate/issues/89
+          sed -i "" 's/Boost::regex//g' thirdparty/cpprestsdk/Release/cmake/cpprest_find_boost.cmake
+          sed -i "" 's/regex//g' thirdparty/cpprestsdk/Release/cmake/cpprest_find_boost.cmake
+
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_VINEYARD_SERVER=ON \
+            -DBUILD_VINEYARD_CLIENT=OFF \
+            -DBUILD_VINEYARD_PYTHON_BINDINGS=OFF \
+            -DBUILD_VINEYARD_PYPI_PACKAGES=OFF \
+            -DBUILD_VINEYARD_BASIC=OFF \
+            -DBUILD_VINEYARD_GRAPH=OFF \
+            -DBUILD_VINEYARD_IO=OFF \
+            -DBUILD_VINEYARD_HOSSEINMOEIN_DATAFRAME=OFF \
+            -DBUILD_VINEYARD_TESTS=OFF \
+            -DBUILD_VINEYARD_TESTS_ALL=OFF \
+            -DBUILD_VINEYARD_PROFILING=OFF
+
+          make vineyardd -j`nproc`
+          cp ./bin/vineyardd ../vineyardd
+
+      - name: Package vineyardd artifact on MacOS
+        run: |
+          sha512sum ./vineyardd > vineyardd.${{ github.sha }}.sha512sum
+          echo "Checksum is: "
+          cat ./*.sha512sum
+          tar zcvfh vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz ./vineyardd vineyardd.${{ github.sha }}.sha512sum
+
+      - name: Extract tag name
+        id: tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Upload vineyardd to tagged release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'v6d-io/v6d' }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+          asset_name: vineyardd-${{ steps.tag.outputs.TAG }}-macos_x86-64.tar.gz
+          tag: ${{ steps.tag.outputs.TAG }}
+          prerelease: false
+          overwrite: true
+          body: "vineyard ${{ steps.tag.outputs.TAG }}"
+
+      - name: Upload CI artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+          path: vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+
+  build-vineyardctl:
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.repository == 'v6d-io/v6d' || github.event_name == 'workflow_dispatch' }}
+    strategy:
+      matrix:
+        os: [macos-11]
+        platform: [x86_64, aarch64]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: false
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: Install dependencies for MacOS
+        run: |
+          pushd $(brew --repo homebrew/core)
+          git checkout ${{ env.HOMEBREW_REV }} || true
+          popd
+
+          brew install coreutils || true
+
+      - name: Extract tag name
+        id: tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'v6d-io/v6d' }}
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build vineyardctl
+        run: |
+          export arch="${{ matrix.platform }}"
+          export arch="${arch/x86_64/amd64}"
+          export arch="${arch/aarch64/arm64}"
+          echo "arch = $arch"
+
+          env CGO_ENABLED=0 GOARCH=$arch go build -a -o vineyardctl k8s/cmd/main.go
+
+          go build -a -o vineyardctl k8s/cmd/main.go
+          strip ./vineyardctl || true
+
+      - name: Upload wheels to tagged release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'v6d-io/v6d' }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./vineyardctl
+          asset_name: vineyardctl-${{ steps.tag.outputs.TAG }}-darwin-${{ matrix.platform == 'x86_64' && 'amd64' || 'arm64' }}
+          file_glob: false
+          tag: ${{ steps.tag.outputs.TAG }}
+          prerelease: false
+          overwrite: true
+          body: "vineyard ${{ steps.tag.outputs.TAG }}"
+
+      - name: Package vineyardctl artifact on Linux
+        if: ${{ matrix.platform == 'x86_64' }}
+        run: |
+          sha512sum vineyardctl > vineyardctl.${{ github.sha }}.sha512sum
+          echo "Checksum is: "
+          cat ./*.sha512sum
+          tar zcvfh vineyardctl.${{ runner.os }}-generic.${{ github.sha }}.tar.gz ./vineyardctl vineyardctl.${{ github.sha }}.sha512sum
+
+      - name: Upload CI artifacts
+        if: ${{ matrix.platform == 'x86_64' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: vineyardctl.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+          path: vineyardctl.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+
+  build-wheels:
+    needs: [build-vineyardd, build-vineyardctl]
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.repository == 'v6d-io/v6d' || github.event_name == 'workflow_dispatch' }}
+    strategy:
+      matrix:
+        os: [macos-11]
+        python: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Generate Summary for Submodules
+        run: |
+          git submodule > git-modules.txt
+          cat git-modules.txt
+
+      - name: Cache for cccahe
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ${{ matrix.os }}-${{ matrix.python }}-ccache-${{ hashFiles('**/git-modules.txt') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.python }}-ccache-
+
+      - name: Download vineyardd artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+
+      - name: Download vineyardctl artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: vineyardctl.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+
+      - name: Prepare binary
+        run: |
+          tar zxvf vineyardd.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+          tar zxvf vineyardctl.${{ runner.os }}-generic.${{ github.sha }}.tar.gz
+
+          mv vineyardd python/vineyard/bdist/vineyardd
+          mv vineyardctl python/vineyard/bdist/vineyardctl
+
+      - name: Install python for MacOS
+        if: runner.os == 'macOS'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Validate installed python version
+        run: |
+          python -c "import sys; print(sys.version)"
+
+          # install dependencies
+          curl https://bootstrap.pypa.io/get-pip.py | python
+          pip3 install delocate
+
+      - name: Install dependencies for MacOS
+        if: runner.os == 'macOS'
+        run: |
+          pushd $(brew --repo homebrew/core)
+          git checkout ${{ env.HOMEBREW_REV }} || true
+          popd
+
+          brew install ccache boost coreutils grpc protobuf openssl || true
+
+          export CC=clang
+          export CXX=clang++
+
+          export PATH=/usr/local/opt/ccache/bin:/usr/local/opt/ccache/libexec:$PATH:$HOME/.local/bin
+
+          ccache --show-stats
+
+          echo "Installing gflags ..."
+          cd /tmp
+          curl -L https://github.com/gflags/gflags/archive/v2.2.2.tar.gz --output gflags-v2.2.2.tar.gz
+          tar zxf gflags-v2.2.2.tar.gz
+          cd gflags-2.2.2
+          mkdir -p build-dir
+          cd build-dir
+          cmake .. -DBUILD_SHARED_LIBS=OFF
+          make install -j`nproc`
+
+          echo "Installing glog ..."
+          cd /tmp
+          curl -L https://github.com/google/glog/archive/v0.5.0.tar.gz --output glog-v0.5.0.tar.gz
+          tar zxf glog-v0.5.0.tar.gz
+          cd glog-0.5.0
+          mkdir -p build-dir
+          cd build-dir
+          cmake .. -DBUILD_SHARED_LIBS=OFF \
+                   -DWITH_GFLAGS=OFF \
+                   -DBUILD_TESTING=OFF
+          make install -j`nproc`
+
+          echo "Installing apache-arrow ..."
+          cd /tmp
+          curl -L https://github.com/apache/arrow/archive/refs/tags/apache-arrow-12.0.1.tar.gz --output apache-arrow-12.0.1.tar.gz
+          tar zxf apache-arrow-12.0.1.tar.gz
+          cd arrow-apache-arrow-12.0.1
+          mkdir -p build-dir
+          cd build-dir
+          cmake ../cpp \
+              -DARROW_COMPUTE=ON \
+              -DARROW_WITH_UTF8PROC=OFF \
+              -DARROW_CSV=ON \
+              -DARROW_CUDA=OFF \
+              -DARROW_DATASET=OFF \
+              -DARROW_FILESYSTEM=ON \
+              -DARROW_FLIGHT=OFF \
+              -DARROW_GANDIVA=OFF \
+              -DARROW_GANDIVA_JAVA=OFF \
+              -DARROW_HDFS=OFF \
+              -DARROW_HIVESERVER2=OFF \
+              -DARROW_JSON=OFF \
+              -DARROW_ORC=OFF \
+              -DARROW_PARQUET=OFF \
+              -DARROW_PLASMA=OFF \
+              -DARROW_PLASMA_JAVA_CLIENT=OFF \
+              -DARROW_PYTHON=OFF \
+              -DARROW_S3=OFF \
+              -DARROW_WITH_BZ2=OFF \
+              -DARROW_WITH_ZLIB=OFF \
+              -DARROW_WITH_LZ4=OFF \
+              -DARROW_WITH_SNAPPY=OFF \
+              -DARROW_WITH_ZSTD=OFF \
+              -DARROW_WITH_BROTLI=OFF \
+              -DARROW_IPC=ON \
+              -DARROW_BUILD_BENCHMARKS=OFF \
+              -DARROW_BUILD_EXAMPLES=OFF \
+              -DARROW_BUILD_INTEGRATION=OFF \
+              -DARROW_BUILD_UTILITIES=OFF \
+              -DARROW_BUILD_TESTS=OFF \
+              -DARROW_ENABLE_TIMING_TESTS=OFF \
+              -DARROW_FUZZING=OFF \
+              -DARROW_USE_ASAN=OFF \
+              -DARROW_USE_TSAN=OFF \
+              -DARROW_USE_UBSAN=OFF \
+              -DARROW_JEMALLOC=OFF \
+              -DARROW_BUILD_SHARED=OFF \
+              -DARROW_BUILD_STATIC=ON
+          make install -j`nproc`
+
+          ccache --show-stats
+
+      - name: Build wheel package on MacOS
+        if: runner.os == 'macOS'
+        run: |
+          export CC=clang
+          export CXX=clang++
+
+          export PATH=/usr/local/opt/ccache/bin:/usr/local/opt/ccache/libexec:$PATH:$HOME/.local/bin
+
+          # run build
+          mkdir -p build
+          cd build
+          cmake .. -DBUILD_SHARED_LIBS=OFF \
+                   -DBUILD_VINEYARD_SERVER=OFF \
+                   -DBUILD_VINEYARD_CLIENT=ON \
+                   -DBUILD_VINEYARD_PYTHON_BINDINGS=ON \
+                   -DBUILD_VINEYARD_PYPI_PACKAGES=ON \
+                   -DBUILD_VINEYARD_BASIC=OFF \
+                   -DBUILD_VINEYARD_IO=OFF \
+                   -DBUILD_VINEYARD_GRAPH=OFF \
+                   -DBUILD_VINEYARD_HOSSEINMOEIN_DATAFRAME=OFF \
+                   -DBUILD_VINEYARD_TESTS=OFF \
+                   -DBUILD_VINEYARD_TESTS_ALL=OFF \
+                   -DBUILD_VINEYARD_COVERAGE=OFF \
+                   -DBUILD_VINEYARD_PROFILING=OFF \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DPYTHON_EXECUTABLE=`which python`
+          make vineyard_client_python -j`nproc`
+          cd ..
+
+          rm -rf build/lib* build/bdist.*
+          python setup.py bdist_wheel
+
+          if [[ "${{ matrix.python }}" == "3.11" ]]; then
+            rm -rf build/lib* build/bdist.*
+            python setup_bdist.py bdist_wheel
+          fi
+
+          export LD_LIBRARY_PATH=`pwd`/build/lib:$LD_LIBRARY_PATH
+          for wheel in `ls dist/*`; do delocate-wheel -w fixed_wheels -v $wheel; done
+          ls -la ./fixed_wheels
+
+          ccache --show-stats
+
+      - name: Extract tag name
+        id: tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Upload wheels to tagged release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'v6d-io/v6d' }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: fixed_wheels/*.whl
+          file_glob: true
+          tag: ${{ steps.tag.outputs.TAG }}
+          prerelease: false
+          overwrite: true
+          body: "vineyard ${{ steps.tag.outputs.TAG }}"
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          name: vineyard-macosx-wheels-${{ matrix.python }}
+          path: fixed_wheels/*.whl

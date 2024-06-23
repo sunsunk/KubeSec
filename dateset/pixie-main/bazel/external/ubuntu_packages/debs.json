@@ -1,0 +1,30 @@
+[
+   {
+      "path": "main/e/elfutils/libelf1_0.188-2.1_amd64.deb",
+      "checksum": "2322cad1fc9623303a57e7e4d10ee9af4ce976e1b46bbf770548baead810571e"
+   },
+   {
+      "path": "main/g/glibc/libc6_2.37-0ubuntu2_amd64.deb",
+      "checksum": "f5a98389a7e33881a9e4b95439377389ff95b40ae9aa7f951a07848c6394dc76"
+   },
+   {
+      "path": "main/libx/libxcrypt/libcrypt1_4.4.33-2_amd64.deb",
+      "checksum": "9a9aee10c7804ff678719fb2887fa4758d5d94c7cb03c1b50fbccb0c4ee43dcc"
+   },
+   {
+      "path": "main/n/ncurses/libtinfo6_6.4-2_amd64.deb",
+      "checksum": "9627a3d3d2b9fed9fc5828962a52a6f70de8bb73dca9a9a432cab4b0159e68cb"
+   },
+   {
+      "path": "main/libu/libunwind/libunwind8_1.6.2-3_amd64.deb",
+      "checksum": "571cb2968ba9eaa817ae3bad792e4dbb80950c72d28b92ea3ea67becd08e8711"
+   },
+   {
+      "path": "main/x/xz-utils/liblzma5_5.4.1-0.2_amd64.deb",
+      "checksum": "2c9c51f281997ce5963e3b22b928dec13adafb8e3079bc02f89e51db9891bfd2"
+   },
+   {
+      "path": "main/z/zlib/zlib1g_1.2.13.dfsg-1ubuntu4_amd64.deb",
+      "checksum": "6962be4748fb4a36837353fdacdfd4199057eb70b893896fbb8b85e4ce9c7d94"
+   }
+]

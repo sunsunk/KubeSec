@@ -1,0 +1,151 @@
+project_name: ah
+
+release:
+  name_template: "Artifact Hub {{ .Tag }}"
+  header: |
+    Please see the [changelog](https://artifacthub.io/packages/helm/artifact-hub/artifact-hub?modal=changelog) for more details.
+
+changelog:
+  skip: true
+
+snapshot:
+  name_template: "devel-{{ .ShortCommit }}"
+
+builds:
+  - id: ah
+    binary: ah
+    main: ./cmd/ah
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -X main.version={{ .Version }}
+      - -X main.gitCommit={{ .FullCommit }}
+
+archives:
+  - id: ah
+    files:
+      - LICENSE
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macos{{ else }}{{ .Os }}{{ end }}_{{ .Arch }}'
+
+dockers:
+  - dockerfile: cmd/ah/Dockerfile
+    image_templates:
+      - "artifacthub/ah:{{ .Tag }}"
+      - "artifacthub/ah:latest"
+      - "public.ecr.aws/artifacthub/ah:{{ .Tag }}"
+      - "public.ecr.aws/artifacthub/ah:latest"
+    build_flag_templates:
+      - "--build-arg=VERSION={{ .Version }}"
+      - "--build-arg=GIT_COMMIT={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.description=Artifact Hub command line tool"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .CommitDate }}"
+      - "--label=org.opencontainers.image.documentation=https://artifacthub.io/docs/topics/cli"
+      - "--label=org.opencontainers.image.source=https://github.com/artifacthub/hub/tree/{{ .FullCommit }}/cmd/ah"
+      - "--label=org.opencontainers.image.vendor=Artifact Hub"
+      - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/artifacthub/hub/{{ .FullCommit }}/docs/cli.md"
+      - '--label=io.artifacthub.package.maintainers=[{"name":"Artifact Hub maintainers","email":"cncf-artifacthub-maintainers@lists.cncf.io"}]'
+      - "--label=io.artifacthub.package.logo-url=https://raw.githubusercontent.com/artifacthub/hub/master/docs/logo/logo.svg"
+      - "--label=io.artifacthub.package.keywords=artifact hub,cli,lint"
+      - "--label=io.artifacthub.package.license=Apache-2.0"
+      - "--label=io.artifacthub.package.alternative-locations=public.ecr.aws/artifacthub/ah:{{ .Tag }}"
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/ah
+      - internal
+  - dockerfile: database/migrations/Dockerfile
+    image_templates:
+      - "artifacthub/db-migrator:{{ .Tag }}"
+      - "artifacthub/db-migrator:latest"
+      - "public.ecr.aws/artifacthub/db-migrator:{{ .Tag }}"
+      - "public.ecr.aws/artifacthub/db-migrator:latest"
+    extra_files:
+      - database/migrations
+  - dockerfile: cmd/hub/Dockerfile
+    image_templates:
+      - "artifacthub/hub:{{ .Tag }}"
+      - "artifacthub/hub:latest"
+      - "public.ecr.aws/artifacthub/hub:{{ .Tag }}"
+      - "public.ecr.aws/artifacthub/hub:latest"
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/hub
+      - docs
+      - internal
+      - scripts
+      - web
+      - widget
+  - dockerfile: cmd/scanner/Dockerfile
+    image_templates:
+      - "artifacthub/scanner:{{ .Tag }}"
+      - "artifacthub/scanner:latest"
+      - "public.ecr.aws/artifacthub/scanner:{{ .Tag }}"
+      - "public.ecr.aws/artifacthub/scanner:latest"
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/scanner
+      - internal
+  - dockerfile: cmd/tracker/Dockerfile
+    image_templates:
+      - "artifacthub/tracker:{{ .Tag }}"
+      - "artifacthub/tracker:latest"
+      - "public.ecr.aws/artifacthub/tracker:{{ .Tag }}"
+      - "public.ecr.aws/artifacthub/tracker:latest"
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/tracker
+      - internal
+      - ml
+
+brews:
+  - description: Artifact Hub command line tool
+    homepage: https://github.com/artifacthub/hub
+    license: Apache-2.0
+    tap:
+      owner: artifacthub
+      name: homebrew-cmd
+    commit_author:
+      name: artifacthubio
+      email: hub@artifacthub.io
+
+scoop:
+  description: Artifact Hub command line tool
+  homepage: https://github.com/artifacthub/hub
+  license: Apache-2.0
+  bucket:
+    owner: artifacthub
+    name: scoop-cmd
+  commit_author:
+    name: artifacthubio
+    email: hub@artifacthub.io
+
+signs:
+  - artifacts: checksum
+    args:
+      [
+        "--batch",
+        "-u",
+        "{{ .Env.GPG_FINGERPRINT }}",
+        "--output",
+        "${signature}",
+        "--detach-sign",
+        "${artifact}",
+      ]
+
+sboms:
+  - artifacts: archive

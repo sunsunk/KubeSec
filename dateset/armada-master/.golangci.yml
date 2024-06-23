@@ -1,0 +1,29 @@
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: internal/scheduler/schedulerobjects/podutils_test.go
+      linters:
+        - lll
+
+output:
+  print-issued-lines: true
+  format: github-actions
+  sort-results: true
+
+linters:
+  disable-all: true
+  enable:
+    - lll
+    - gofumpt
+    - unused
+    - goimports
+    - ineffassign
+    - misspell
+    - errcheck
+
+linters-settings:
+  lll:
+    line-length: 261
+  goimports:
+    local-prefixes: github.com/armadaproject/armada

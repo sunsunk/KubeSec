@@ -1,0 +1,12 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "IsTruncated": false,
+        "Marker": "",
+        "Name": "c7n-lifecycle-test-again3",
+        "Prefix": "",
+        "MaxKeys": 1000,
+        "EncodingType": "url"
+    }
+}

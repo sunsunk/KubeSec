@@ -1,0 +1,15 @@
+<!-- No need to manually update the following attribute for each title change, although it should be technically possible to do so -->
+<!-- As far as I know, the topmost Level 0 title in the `configuring.adoc` file resolves to this attribute -->
+<title>Configuring Strimzi</title>
+
+<productname>Strimzi</productname>
+<productnumber>{ProductVersion}</productnumber>
+
+        <!-- The subtitle can be changed manually, as it is only required by CCUTIL and only visible on the portal  -->
+<subtitle>For Use with Strimzi</subtitle>
+<release>{ProductVersion}</release>
+<abstract>
+<para>This guide describes the configuration properties available for Strimzi custom resources.
+Use the properties to fine-tune your Apache Kafka clusters and related resources.</para>
+</abstract>
+<xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

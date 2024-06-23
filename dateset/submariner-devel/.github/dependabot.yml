@@ -1,0 +1,73 @@
+---
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: release-0.14
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: release-0.15
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: release-0.16
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: release-0.17
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      gomod:
+        patterns:
+          - "*"
+    ignore:
+      # protobuf must be handled manually
+      - dependency-name: google.golang.org/protobuf
+      # Our own dependencies are handled during releases
+      - dependency-name: github.com/submariner-io/*
+      # Managed in admiral
+      - dependency-name: github.com/kelseyhightower/envconfig
+      - dependency-name: github.com/onsi/ginkgo/v2
+      - dependency-name: github.com/onsi/gomega
+      - dependency-name: github.com/pkg/errors
+      - dependency-name: github.com/prometheus/client_golang
+      - dependency-name: k8s.io/api
+      - dependency-name: k8s.io/apimachinery
+      - dependency-name: k8s.io/client-go
+      - dependency-name: sigs.k8s.io/controller-runtime
+      # Managed in shipyard
+      - dependency-name: k8s.io/utils
+      - dependency-name: sigs.k8s.io/mcs-api

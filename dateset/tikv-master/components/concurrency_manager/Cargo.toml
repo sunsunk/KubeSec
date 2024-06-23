@@ -1,0 +1,26 @@
+[package]
+edition = "2021"
+name = "concurrency_manager"
+publish = false
+version = "0.0.1"
+license = "Apache-2.0"
+
+[dependencies]
+crossbeam-skiplist = "0.1"
+fail = "0.5"
+kvproto = { workspace = true }
+parking_lot = "0.12"
+tikv_util = { workspace = true }
+tokio = { version = "1.5", features = ["macros", "sync", "time"] }
+txn_types = { workspace = true }
+
+[dev-dependencies]
+criterion = "0.3"
+futures = "0.3"
+rand = "0.8.3"
+tikv_alloc = { workspace = true, features = ["jemalloc"] }
+
+[[bench]]
+name = "lock_table"
+path = "benches/lock_table.rs"
+harness = false

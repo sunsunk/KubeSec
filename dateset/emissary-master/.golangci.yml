@@ -1,0 +1,137 @@
+# Start with a very conservative configuration, and slowly turn things
+# back on.
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - govet
+    - depguard
+    - unused
+    - errcheck
+linters-settings:
+  gofmt:
+    simplify: true
+  depguard:
+    rules:
+      main:
+        deny:
+          - pkg: "github.com/datawire/dlib/dutil"
+            desc: "Use either `github.com/datawire/dlib/derror` or `github.com/datawire/dlib/dhttp` instead of `github.com/datawire/dlib/dutil`"
+          - pkg: "github.com/gogo/protobuf"
+            desc: "Use `google.golang.org/protobuf` instead of `github.com/gogo/protobuf`"
+          - pkg: "github.com/golang/protobuf"
+            desc: "Use `google.golang.org/protobuf` instead of `github.com/golang/protobuf`"
+          - pkg: "github.com/google/shlex"
+            desc: "Use `github.com/kballard/go-shellquote` instead of `github.com/google/shlex`"
+          - pkg: "golang.org/x/net/http2/h2c"
+            desc: "Use `github.com/datawire/dlib/dhttp` instead of `golang.org/x/net/http2/h2c`"
+  unused:
+    # treat code as a program (not a library) and report unused
+    # exported identifiers
+    check-exported: true
+  errcheck:
+    exclude-functions:
+      - "(net/http.ResponseWriter).Write"
+issues:
+  exclude-rules:
+    - linters: [govet, errcheck, unused]
+      path: pkg/envoy-control-plane/
+    - linters: [depguard]
+      path: "pkg/envoy-control-plane/(test/|.*_test\\.go)"
+    - linters: [depguard]
+      path: "pkg/envoy-control-plane/"
+      source: '"github\.com/golang/protobuf'
+    - linters: [govet]
+      text: "^tests: .* should return nothing$"
+run:
+  timeout: 9m # CircleCI is slow?
+
+# I don't know of a linter that lets you blacklist specific functions
+# and variables within a package, but if one exists, I would like to
+# blacklist all of the following for the reason "Don't use globals!":
+#
+# - net/http.DefaultServeMux
+#   * net/http.Handle()
+#   * net/http.HandleFunc()
+# - flag.CommandLine
+#   * flag.VisitAll()
+#   * flag.Visit()
+#   * flag.Lookup()
+#   * flag.Set()
+#   * flag.PrintDefaults()
+#   * flag.Usage()
+#   * flag.NFlag()
+#   * flag.Arg()
+#   * flag.NArg()
+#   * flag.Args()
+#   * flag.BoolVar()
+#   * flag.Bool()
+#   * flag.IntVar()
+#   * flag.Int()
+#   * flag.Int64Var()
+#   * flag.Int64()
+#   * flag.UintVar()
+#   * flag.Uint()
+#   * flag.Uint64Var()
+#   * flag.Uint64()
+#   * flag.StringVar()
+#   * flag.String()
+#   * flag.Float64Var()
+#   * flag.Float64()
+#   * flag.DurationVar()
+#   * flag.Duration()
+#   * flag.Var()
+#   * flag.Parse()
+#   * flag.Parsed()
+#
+# I'd also like to blacklist parts of net/http to enforce using dhttp:
+#
+# - net/http.Server // use dhttp.ServerConfig instead!
+#   * net/http.Serve()
+#   * net/http.ServeTLS()
+#   * net/http.ListenAndServe()
+#   * net/http.ListenAndServeTLS()
+# - google.golang.org/grpc.Server.Serve // use dhttp.ServerConfig{Handler: grpcServer}.Serve instead!
+
+# The old configuration, that hasn't been used for many months:
+
+#linters:
+#  enable-all: true
+#  disable:
+#    - errcheck
+#    - gochecknoglobals
+#    - gochecknoinits
+#    - golint
+#    - interfacer # author says it's deprecated, gives very subjective advice
+#    - lll
+#    - maligned
+#    - prealloc
+#    - scopelint
+#    - stylecheck
+#    - unparam
+#linters-settings:
+#  goimports:
+#    # put imports beginning with prefix after 3rd-party packages;
+#    # it's a comma-separated list of prefixes
+#    local-prefixes: github.com/datawire/apro,github.com/lyft/ratelimit
+#  depguard:
+#    list-type: blacklist
+#    include-go-root: true
+#    packages:
+#      - errors                              # use "github.com/pkg/errors"
+#      - golang.org/x/net/context            # use "context"
+#      - github.com/datawire/teleproxy       # use "github.com/datawire/ambassador/pkg"
+#      - github.com/datawire/ambassador/go   # use "github.com/datawire/ambassador/pkg"
+#      - github.com/datawire/kat-backend/xds # use "github.com/datawire/ambassador/pkg/api/envoy"
+#      - github.com/lyft/ratelimit/proto     # use "github.com/datawire/ambassador/pkg/api/envoy"
+#      #- github.com/russross/blackfriday     # use "github.com/russross/blackfriday/v2" # can't turn off prefix-matching
+#      - gopkg.in/russross/blackfriday.v2    # use "github.com/russross/blackfriday/v2"
+#  goconst:
+#    min-len: 12
+#issues:
+#  new-from-rev: a72c53cbcd05c806b1838d95146d049b09a51ffb
+#run:
+#  build-tags:
+#    - test
+#    - integration
+#    - lint

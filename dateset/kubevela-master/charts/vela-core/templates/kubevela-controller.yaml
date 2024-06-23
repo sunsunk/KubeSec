@@ -1,0 +1,330 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+  annotations:
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters:manager
+rules:
+  - apiGroups: ["core.oam.dev", "terraform.core.oam.dev", "prism.oam.dev", "standard.oam.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: ["cluster.open-cluster-management.io"]
+    resources: ["managedclusters"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["users", "groups", "serviceaccounts"]
+    verbs: ["impersonate"]
+  - apiGroups: [""]
+    resources: ["namespaces", "secrets", "services"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps", "events"]
+    verbs: ["*"]
+  - apiGroups: ["apps"]
+    resources: ["controllerrevisions"]
+    verbs: ["*"]
+  - apiGroups: ["apiregistration.k8s.io"]
+    resources: ["apiservices"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["*"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["flowcontrol.apiserver.k8s.io"]
+    resources: ["prioritylevelconfigurations", "flowschemas"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["*"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["subjectaccessreviews"]
+    verbs: ["*"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters:manager-authentication-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters:manager
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters:manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: "cluster-admin"
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters:shard-scheduler
+  namespace: dynamic_parameters
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters:shard-scheduler
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters:shard-scheduler
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+
+---
+# permissions to do leader election.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters:leader-election-role
+  namespace: dynamic_parameters
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps/status
+    verbs:
+      - get
+      - update
+      - patch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters:leader-election-rolebinding
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters:leader-election-role
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+
+---
+# permissions to read the view of VelaQL, schemas, and templates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters:template-reader-role
+  namespace: dynamic_parameters
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters:template-reader-binding
+  namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters:template-reader-role
+subjects:
+  - kind: Group
+    name: template-reader
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    controller.oam.dev/name: vela-core
+  
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+  
+  template:
+    metadata:
+      labels:
+    
+        controller.core.oam.dev/shard-id: master
+      annotations:
+          prometheus.io/path: /metrics
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          args:
+            - "--metrics-addr=:8080"
+            - "--enable-leader-election"
+            - "--log-file-path=dynamic_parameters"
+            - "--log-file-max-size=dynamic_parameters"
+            - "--log-debug=true"
+            - "--use-webhook=true"
+            - "--webhook-port=dynamic_parameters"
+            - "--webhook-cert-dir=dynamic_parameters"
+            - "--optimize-cached-gvks=dynamic_parameters"
+            - "--optimize-mark-with-prob=dynamic_parameters"
+            - "--optimize-disable-component-revision"
+            - "--optimize-disable-application-revision"
+            - "--optimize-enable-in-memory-workflow-context"
+            - "--optimize-disable-resource-apply-double-check"
+            - "--optimize-enable-resource-tracker-delete-only-trigger=false"
+            - "--health-addr=:dynamic_parameters"
+            - "--system-definition-namespace=dynamic_parameters"
+            - "--application-revision-limit=dynamic_parameters"
+            - "--definition-revision-limit=dynamic_parameters"
+            - "--enable-cluster-gateway"
+            - "--cluster-gateway-url=dynamic_parameters-cluster-gateway-service:9443"
+            - "--cluster-gateway-ca-file=/cluster-gateway-tls-cert/ca"
+            - "--enable-cluster-metrics"
+            - "--application-re-sync-period=dynamic_parameters"
+            - "--concurrent-reconciles=dynamic_parameters"
+            - "--kube-api-qps=dynamic_parameters"
+            - "--kube-api-burst=dynamic_parameters"
+            - "--max-workflow-wait-backoff-time=dynamic_parameters"
+            - "--max-workflow-failed-backoff-time=dynamic_parameters"
+            - "--max-workflow-step-error-retry-times=dynamic_parameters"
+            - "--feature-gates=EnableSuspendOnFailure=dynamic_parameters"
+            - "--feature-gates=AuthenticateApplication=dynamic_parameters"
+            - "--feature-gates=GzipResourceTracker=dynamic_parameters"
+            - "--feature-gates=ZstdResourceTracker=dynamic_parameters"
+            - "--feature-gates=ApplyOnce=dynamic_parameters"
+            - "--feature-gates=MultiStageComponentApply= dynamic_parameters"
+            - "--feature-gates=GzipApplicationRevision=dynamic_parameters"
+            - "--feature-gates=ZstdApplicationRevision=dynamic_parameters"
+            - "--feature-gates=PreDispatchDryRun=dynamic_parameters"
+            - "--feature-gates=DisableBootstrapClusterInfo=dynamic_parameters"
+            - "--feature-gates=InformerCacheFilterUnnecessaryFields=dynamic_parameters"
+            - "--feature-gates=SharedDefinitionStorageForApplicationRevision=dynamic_parameters"
+            - "--feature-gates=DisableWorkflowContextConfigMapCache=dynamic_parameters"
+            - "--authentication-with-user"
+            - "--authentication-default-user=dynamic_parameters"
+            - "--authentication-group-pattern=dynamic_parameters"
+            - "--enable-sharding"
+            - "--schedulable-shards=dynamic_parameters"
+            - "--feature-gates=ValidateComponentWhenSharding=dynamic_parameters"
+            - "--feature-gates=DisableWebhookAutoSchedule=dynamic_parameters"
+          image: dynamic_parametersdynamic_parameters:dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          resources:
+          ports:
+            - containerPort: dynamic_parameters
+              name: webhook-server
+              protocol: TCP
+            - containerPort: dynamic_parameters
+              name: healthz
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: healthz
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            successThreshold: dynamic_parameters
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: dynamic_parameters
+            periodSeconds: dynamic_parameters
+            timeoutSeconds: dynamic_parameters
+            failureThreshold: dynamic_parameters
+            successThreshold: dynamic_parameters
+          volumeMounts:
+            - mountPath: dynamic_parameters
+              name: tls-cert-vol
+              readOnly: true
+            - mountPath: /cluster-gateway-tls-cert
+              name: tls-cert-vol-cg
+              readOnly: true
+      volumes:
+        - name: tls-cert-vol
+          secret:
+            defaultMode: 420
+            secretName: dynamic_parameters-admission
+        - name: tls-cert-vol-cg
+          secret:
+            defaultMode: 420
+            secretName: dynamic_parameters-cluster-gateway-tls-v2
+      nodeSelector:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      tolerations:
+
+---

@@ -1,0 +1,24 @@
+// Module included in the following assemblies:
+//
+// overview/assembly-overview-components.adoc
+// assembly-using-the-user-operator.adoc
+
+[id='overview-concepts-user-operator-{context}']
+= User Operator
+
+[role="_abstract"]
+The User Operator provides a way of managing users in a Kafka cluster through `KafkaUser` resources.
+
+The User Operator manages Kafka users for a Kafka cluster by watching for `KafkaUser` resources that describe Kafka users,
+and ensuring that they are configured properly in the Kafka cluster.
+
+When a `KafkaUser` is created, deleted, or changed, the User Operator performs the corresponding action on the Kafka user.
+
+You can declare a `KafkaUser` resource as part of your application's deployment and the User Operator manages the Kafka user for you.
+You can specify the authentication and authorization mechanism for the user.
+You can also configure _user quotas_ that control usage of Kafka resources to ensure, for example, that a user does not monopolize access to a broker.
+
+When the user is created, the user credentials are created in a `Secret`.
+Your application needs to use the user and its credentials for authentication and to produce or consume messages.
+
+In addition to managing credentials for authentication, the User Operator also manages authorization rules by including a description of the user's access rights in the `KafkaUser` declaration.

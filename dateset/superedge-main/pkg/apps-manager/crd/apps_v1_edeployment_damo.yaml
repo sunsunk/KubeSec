@@ -1,0 +1,25 @@
+apiVersion: apps.superedge.io/v1
+kind: EDeployment
+metadata:
+  labels:
+    k8s-app: nginx-edge
+  name: nginx-edge
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      run: nginx-demo
+  replicas: 6
+  template:
+    metadata:
+      labels:
+        run: nginx-demo
+    spec:
+      containers:
+        - name: nginx-demo
+          image: nginx
+          ports:
+            - containerPort: 80
+
+
+

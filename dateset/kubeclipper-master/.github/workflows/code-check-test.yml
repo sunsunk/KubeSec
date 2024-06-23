@@ -1,0 +1,36 @@
+# 1.setup go env
+# 2.make checkfmt
+# 3.make test
+
+name: code-check-test
+
+on: [pull_request]
+
+# This ensures that previous jobs for the PR are canceled when the PR is updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  fmtcheck:
+    name: Code fmtcheck
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+    steps:
+      - name: Set up Go 1.19
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: Check pr is properly formatted
+        run: diff -u <(echo -n) <(gofmt -d ./pkg ./cmd ./tools ./test)
+
+      - name: Checkfmt
+        shell: bash
+        # maybe timeout, use --timeout optional
+        run: make checkfmt

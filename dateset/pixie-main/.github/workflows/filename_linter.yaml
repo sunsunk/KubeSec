@@ -1,0 +1,27 @@
+---
+name: 'filename-linter'
+on:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  check-files-changed:
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+    - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50  # v2.11.1
+      id: changes
+      with:
+        filters: |
+          private:
+          - '**/*private*/**'
+          - '**/*private*'
+    - name: Fail on private
+      if: ${{ steps.changes.outputs.private == 'true' }}
+      run: echo "This repo disallows dirnames or filenames with 'private' in it." && exit 1

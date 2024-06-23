@@ -1,0 +1,44 @@
+name: Build Backend
+on:
+  pull_request:
+    paths:
+    - 'backend/**'
+    - Makefile
+    - '.github/**'
+  push:
+    branches:
+      - main
+    paths:
+    - 'backend/**'
+    - Makefile
+    - '.github/**'
+
+jobs:
+
+  build:
+    name: Lint & Build
+    runs-on: ubuntu-22.04
+
+    steps:
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22.*'
+      id: go
+
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: setup and run golangci-lint 
+      uses: golangci/golangci-lint-action@v4
+      with:
+        version: v1.54
+        working-directory: backend
+        skip-cache: true
+        args: --timeout 3m
+
+    - name: Lint, Build & Check
+      run: |
+        cd $GITHUB_WORKSPACE
+        make backend

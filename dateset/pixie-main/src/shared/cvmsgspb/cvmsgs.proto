@@ -1,0 +1,398 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+//
+// This file has the message based interface between cloud
+// and viziers.
+// All messages that should up on the message bus between them
+// should be in this file.
+//
+// IMPORTANT: Care should be taken in modifying this file or moving messages,
+// since it can change the type signature and break the API.
+//
+
+syntax = "proto3";
+
+package px.cvmsgspb;
+
+option go_package = "cvmsgspb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "src/api/proto/uuidpb/uuid.proto";
+import "src/api/proto/vizierpb/vizierapi.proto";
+import "src/shared/k8s/metadatapb/metadata.proto";
+
+// Message to register a new Vizier.
+message RegisterVizierRequest {
+  // The ID for this Vizier.
+  uuidpb.UUID vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  // The key that this cluster is using.
+  string jwt_key = 2;
+  VizierClusterInfo cluster_info = 4;
+  reserved 3;
+}
+
+// VizierClusterInfo contains information describing a user's Vizier and the cluster that it is
+// running on. This information is stored in Pixie Cloud, where it may be used for purposes such as
+// debugging.
+message VizierClusterInfo {
+  // A unique ID for the cluster. This is typically the kube-system namespace UID.
+  string cluster_uid = 1 [ (gogoproto.customname) = "ClusterUID" ];
+  // The name of the cluster. The return value of "kubectl config current-context".
+  // This could be empty if the user has not deployed through the CLI.
+  string cluster_name = 2;
+  reserved 3;  // DEPRECATED
+  // The version of the deployed Vizier.
+  string vizier_version = 4;
+}
+
+// Acknowledge the registration of a new Vizier.
+message RegisterVizierAck {
+  enum RegistrationStatus {
+    ST_UNKNOWN = 0;
+    ST_OK = 1;
+    // Failed because the cluster has not been registered into the cloud.
+    ST_FAILED_NOT_FOUND = 2;
+  }
+  RegistrationStatus status = 1;
+
+  // VizierName is the unique name according to cloud.
+  string vizier_name = 2;
+}
+
+enum VizierStatus {
+  VZ_ST_UNKNOWN = 0;
+  VZ_ST_HEALTHY = 1;
+  VZ_ST_UNHEALTHY = 2;
+  VZ_ST_DISCONNECTED = 3;
+  VZ_ST_UPDATING = 4;
+  VZ_ST_CONNECTED = 5;
+  VZ_ST_UPDATE_FAILED = 6;
+  VZ_ST_DEGRADED = 7;
+}
+
+message VizierHeartbeat {
+  // The ID for this Vizier.
+  uuidpb.UUID vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  // The current unix time in ns on the machine.
+  int64 time = 2;
+  // The sequence number of the HB.
+  int64 sequence_number = 3;
+  // Map of pod name to pod status. This only includes pods that are part of the
+  // vizier control plane.
+  // Ex: {
+  //   vizier-query-broker-z26d8: { name: vizier-query-broker-z26d8, status: RUNNING },
+  //   vizier-metadata-7b668797b9-bjsvd: { name: vizier-metadata-7b668797b9-bjsvd, status: FAILED }
+  // }
+  map<string, PodStatus> pod_statuses = 6;
+  // Map of pod name to pod status for unhealthy data plane pods.
+  // Contains at most 10 results.
+  // Kelvin will always be included if it is unhealthy, and the first N unhealthy
+  // PEMs will be sampled from there.
+  map<string, PodStatus> unhealthy_data_plane_pod_statuses = 15;
+  // The last time the pod statuses were updated.
+  int64 pod_statuses_last_updated = 7;
+  // The status of vizier at the time of the heartbeat. For backwards compatibility,
+  // if status is VZ_ST_UNKNOWN, then we assume the vizier is healthy.
+  VizierStatus status = 8;
+  // The total number of nodes (instrumented & non-instrumented) on the cluster this Vizier is on.
+  int32 num_nodes = 11;
+  // The total number of  nodes on the cluster that have pems.
+  int32 num_instrumented_nodes = 12;
+  // Whether autoupdate is disabled/enabled.
+  bool disable_auto_update = 13;
+  // The message explaining why the cluster is in its current state.
+  string status_message = 14;
+  // The current Kubernetes version that the cluster is running.
+  string k8s_cluster_version = 16 [ (gogoproto.customname) = "K8sClusterVersion" ];
+  // The version of the deployed Operator.
+  string operator_version = 17;
+
+  reserved 4, 5, 9, 10;
+}
+
+message PodStatus {
+  // The name of the pod. Ex: vizier-pem-z26d8
+  string name = 1;
+  // The status of the pod.
+  px.shared.k8s.metadatapb.PodPhase status = 2;
+  // The message for why the pod is in its current status.
+  string status_message = 3;
+  // A brief CamelCase message indicating details about why the pod is in this state.
+  string reason = 4;
+  // The containers running in the pod.
+  repeated ContainerStatus containers = 5;
+  // The start time of the pod.
+  google.protobuf.Timestamp created_at = 6 [ (gogoproto.customname) = "CreatedAt" ];
+  // The K8s events associated with the pod.
+  repeated K8sEvent events = 7;
+  // The number of restarts for this pod.
+  int64 restart_count = 8;
+}
+
+message K8sEvent {
+  // The string describing the event itself.
+  string message = 1;
+  // The first time at which the event occurred.
+  google.protobuf.Timestamp first_time = 2;
+  // The last time at which the event occurred. Using the first_time, we can
+  // determine how long this evenet has been occurring.
+  google.protobuf.Timestamp last_time = 3;
+}
+
+// TODO(nserrino), PP-2512: Deprecate this (used by PodStatus).
+// ContainerStatus represents pa container's status at a moment in time.
+message ContainerStatus {
+  // The name of the container.
+  string name = 1;
+  // The current state of the container.
+  px.shared.k8s.metadatapb.ContainerState state = 2;
+  // The message for why the container is in its current status.
+  string message = 3;
+  // A brief CamelCase message indicating details about why the container is in this state.
+  string reason = 4;
+  // The create time of the container.
+  google.protobuf.Timestamp created_at = 6 [ (gogoproto.customname) = "CreatedAt" ];
+  // The number of restarts for this container.
+  int64 restart_count = 7;
+}
+
+message VizierHeartbeatAck {
+  enum HeartbeatStatus {
+    HB_UNKNOWN = 0;
+    HB_OK = 1;
+    HB_ERROR = 2;
+  }
+  HeartbeatStatus status = 1;
+  // The current unix time in ns on the machine.
+  int64 time = 2;
+  // The sequence number of the incoming HB.
+  int64 sequence_number = 3;
+  // Error message only set if HeartbeatStatus is not OK.
+  string error_message = 4;
+}
+
+message VizierConfig {
+  reserved 1, 2;
+}
+
+message VizierConfigUpdate {
+  reserved 1, 2;
+}
+
+message VizierInfo {
+  // The ID for this Vizier.
+  uuidpb.UUID vizier_id = 1
+      [ (gogoproto.customname) = "VizierID", (gogoproto.moretags) = "db:vizier_id" ];
+  VizierStatus status = 2;
+  // Time in ns since the last heart beat. Negative number implies heartbeat never received.
+  int64 last_heartbeat_ns = 3 [ (gogoproto.moretags) = "db:last_heartbeat" ];
+  VizierConfig config = 4;
+  // A unique ID for the cluster. This is typically the kube-system namespace UID.
+  string cluster_uid = 5 [ (gogoproto.customname) = "ClusterUID" ];
+  // The name of the cluster. The return value of "kubectl config current-context".
+  // This could be empty if the user has not deployed through the CLI.
+  string cluster_name = 6;
+  // The version of the K8s cluster. For example: v1.14.10-gke.27. This could be empty if
+  // the user has not deployed through the CLI.
+  string cluster_version = 7;
+  // The version of the deployed Operator.
+  string operator_version = 17;
+  // The version of the deployed Vizier.
+  string vizier_version = 8;
+  // The status of the control plane pods.
+  map<string, PodStatus> control_plane_pod_statuses = 9;
+  // The status of the unhealthy data plane pods.
+  map<string, PodStatus> unhealthy_data_plane_pod_statuses = 14;
+  // The total number of nodes (instrumented & non-instrumented) on the cluster this Vizier is on.
+  int32 num_nodes = 11;
+  // The total number of  nodes on the cluster that have pems.
+  int32 num_instrumented_nodes = 12;
+  // A human-readable message of the reason that the cluster is in its current state.
+  string status_message = 13;
+  // The previous Vizier status (if known)
+  VizierStatus previous_status = 15;
+  // The most recent timestamp of the previous Vizier status (if known)
+  google.protobuf.Timestamp previous_status_time = 16;
+}
+
+message UpdateVizierConfigRequest {
+  uuidpb.UUID vizier_id = 1
+      [ (gogoproto.customname) = "VizierID", (gogoproto.moretags) = "db:vizier_id" ];
+  VizierConfigUpdate config_update = 2;
+}
+
+message UpdateVizierConfigResponse {}
+
+// UpdateOrInstallVizierRequest is a request to install/update a vizier.
+message UpdateOrInstallVizierRequest {
+  // The ID of the vizier to upgrade/install.
+  px.uuidpb.UUID vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  // The version to upgrade/install the cluster as. If no version is specified, we assume we should
+  // upgrade to the latest version.
+  string version = 2;
+  // The token the Vizier should use to make authenticated requests to the cloud.
+  string token = 3;
+  // Whether or not this upgrade should restart the etcd operator.
+  bool redeploy_etcd = 4;
+}
+
+// UpdateOrInstallVizierResponse is a response to an UpdateOrInstallVizierRequest.
+message UpdateOrInstallVizierResponse {
+  // Whether the vizier intall/update was started successfully.
+  bool update_started = 1;
+}
+
+// Information require to connect to a vizier cluster.
+message VizierConnectionInfo {
+  string token = 2;
+  reserved 1;
+}
+
+// LogMessage carries log messages from Vizier to the cloud.
+message VLogMessage {
+  // JSON data generated by fluent-bit.
+  bytes data = 1;
+}
+
+// C2VAPIStreamRequest calls a Vizier's public stream API remotely from the cloud. Only streaming
+// methods are permitted.
+message C2VAPIStreamRequest {
+  // The request ID is a GUID for the request. The reply will in the string .reply_<request_id>.
+  string request_id = 1 [ (gogoproto.customname) = "RequestID" ];
+  // The token to when making the request.
+  string token = 2;
+  // The request.
+  oneof msg {
+    px.api.vizierpb.ExecuteScriptRequest exec_req = 3;
+    px.api.vizierpb.HealthCheckRequest hc_req = 4;
+    C2VAPIStreamCancel cancel_req = 5;
+    px.api.vizierpb.DebugLogRequest debug_log_req = 8;
+    px.api.vizierpb.DebugPodsRequest debug_pods_req = 9;
+    px.api.vizierpb.GenerateOTelScriptRequest generate_otel_script_req = 10
+        [ (gogoproto.customname) = "GenerateOTelScriptReq" ];
+  }
+  reserved 6, 7;
+}
+
+// C2VAPIStreamCancel cancels the pending request and terminates.
+message C2VAPIStreamCancel {}
+
+message V2CAPIStreamResponse {
+  // The request ID is a GUID for the request.
+  string request_id = 1 [ (gogoproto.customname) = "RequestID" ];
+  oneof msg {
+    px.api.vizierpb.ExecuteScriptResponse exec_resp = 2;
+    px.api.vizierpb.HealthCheckResponse hc_resp = 3;
+    px.api.vizierpb.Status status = 4;
+    px.api.vizierpb.DebugLogResponse debug_log_resp = 7;
+    px.api.vizierpb.DebugPodsResponse debug_pods_resp = 8;
+    px.api.vizierpb.GenerateOTelScriptResponse generate_otel_script_resp = 9
+        [ (gogoproto.customname) = "GenerateOTelScriptResp" ];
+  }
+  reserved 5, 6;
+}
+
+// V2CMessage is an envelope message for the top-level v2c.* NATS channel on the cloud side.
+message V2CMessage {
+  // This is the ID of the vizier that we track.
+  string vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  // This is the ID of K8s cluster as known to K8s. If this changes, we know
+  // that the cluster has been updated.
+  string cluster_uid = 2 [ (gogoproto.customname) = "ClusterUID" ];
+  // This is an opaque monotonically increasing number that updates for each restart of cloud
+  // connector.
+  int64 session_id = 3;
+  google.protobuf.Any msg = 4;
+}
+
+// C2VMessage is the envelope message for the top-level c2v.* NATS channel on the cloud side.
+message C2VMessage {
+  string vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  google.protobuf.Any msg = 2;
+}
+
+// CronScript messages. These messages are used for syncing the cron scripts between cloud and
+// vizier.
+
+// CronScript represents a script that should be run on a schedule.
+message CronScript {
+  uuidpb.UUID id = 1 [ (gogoproto.customname) = "ID" ];
+  string script = 2;
+  string cron_expression = 3;
+  string configs = 4;
+  int64 frequency_s = 5;
+}
+
+// GetCronScriptsChecksumRequest is a request to get the hash of the set of cronScripts for a
+// particular Vizier. This is used to determine whether or not a Vizier should refetch all scripts
+// from the Cloud.
+message GetCronScriptsChecksumRequest {
+  // The topic that the response should be returned on.
+  string topic = 1;
+}
+
+// GetCronScriptsChecksumResponse is a response to a GetCronScriptsChecksumRequest. This contains a
+// hash of the set of cronScripts registered to a particular Vizier.
+message GetCronScriptsChecksumResponse {
+  string checksum = 1;
+}
+
+// GetCronScriptsRequest is a request to get all cronScripts that are registered for a particular
+// Vizier.
+message GetCronScriptsRequest {
+  // The topic that the response should be returned on.
+  string topic = 1;
+}
+
+// GetCronScriptsResponse is a response to a GetCronScriptsRequest. It contains the set of all
+// cronScripts that are registered to a Vizier.
+message GetCronScriptsResponse {
+  map<string, CronScript> scripts = 1;
+}
+
+// RegisterOrUpdateCronScriptRequest is a request to register or update a new cron script for a
+// Vizier.
+message RegisterOrUpdateCronScriptRequest {
+  CronScript script = 1;
+}
+
+// RegisterOrUpdateCronScriptResponse is a response to a RegisterOrUpdateCronScriptRequest.
+message RegisterOrUpdateCronScriptResponse {}
+
+// DeleteCronScriptRequest is a request to a Vizier to delete a cron script.
+message DeleteCronScriptRequest {
+  uuidpb.UUID script_id = 1 [ (gogoproto.customname) = "ScriptID" ];
+}
+
+// DeleteCronScriptResponse is a response to a DeleteCronScriptRequest.
+message DeleteCronScriptResponse {}
+
+// CronScriptUpdate is an update to the set of cronscripts, such as creations/deletions.
+message CronScriptUpdate {
+  oneof msg {
+    RegisterOrUpdateCronScriptRequest upsert_req = 1;
+    DeleteCronScriptRequest delete_req = 2;
+  }
+  string request_id = 3 [ (gogoproto.customname) = "RequestID" ];
+  // Timestamp indicates when this update event occurred, and can be used to filter out-of-order
+  // messages.
+  int64 timestamp = 4;
+}

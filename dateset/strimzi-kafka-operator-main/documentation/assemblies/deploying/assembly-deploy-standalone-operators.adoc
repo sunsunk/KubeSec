@@ -1,0 +1,20 @@
+// This assembly is included in:
+//
+// deploying/assembly-deploy-create-cluster.adoc
+
+[id="deploy-standalone-operators_{context}"]
+= Alternative standalone deployment options for Strimzi operators
+
+[role="_abstract"]
+You can perform a standalone deployment of the Topic Operator and User Operator.
+Consider a standalone deployment of these operators if you are using a Kafka cluster that is not managed by the Cluster Operator.
+
+You deploy the operators to Kubernetes.
+Kafka can be running outside of Kubernetes.
+For example, you might be using a Kafka as a managed service.
+You adjust the deployment configuration for the standalone operator to match the address of your Kafka cluster.
+
+//Procedure for standalone deployment of Topic Operator
+include::../../modules/deploying/proc-deploy-topic-operator-standalone.adoc[leveloffset=+1]
+//Procedure for standalone deployment of User Operator
+include::../../modules/deploying/proc-deploy-user-operator-standalone.adoc[leveloffset=+1]

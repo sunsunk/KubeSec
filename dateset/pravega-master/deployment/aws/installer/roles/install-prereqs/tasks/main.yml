@@ -1,0 +1,47 @@
+#
+# Copyright Pravega Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+---
+- name: add ppa
+  command: add-apt-repository ppa:openjdk-r/ppa -y
+  sudo: yes
+
+- name: apt update
+  command: apt-get -y update
+  sudo: yes
+
+- name: Install java
+  command: apt-get install -y openjdk-8-jdk
+  sudo: yes
+
+- name: Install unzip
+  command: apt-get install -y unzip
+  sudo: yes
+
+- name: Copy pravega to remote node
+  copy:
+      src: data/pravega-0.1.0-SNAPSHOT.tgz
+      dest: /
+
+- name: Untar controller
+  command: tar -xvf /pravega-0.1.0-SNAPSHOT.tgz
+
+- name: Create pravega workdir
+  shell: mkdir -p /opt/pravega
+  sudo: yes
+
+- name: Move pravega dist
+  shell: mv /root/pravega-*/* /opt/pravega/
+  sudo: yes

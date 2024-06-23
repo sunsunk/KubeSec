@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dynamic_parameters
+spec:
+  replicas: 1
+  revisionHistoryLimit: dynamic_parameters
+  selector:
+    matchLabels:
+      name: istio-operator
+  template:
+    metadata:
+      labels:
+        name: istio-operator
+        dynamic_parameters: "dynamic_parameters"
+      annotations:
+    spec:
+      containers:
+        - name: istio-operator
+          image: dynamic_parameters/operator:dynamic_parameters
+          command:
+          - operator
+          - server
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1337
+            runAsUser: 1337
+            runAsNonRoot: true
+            seccompProfile:
+          imagePullPolicy: IfNotPresent
+          resources:
+          env:
+            - name: WATCH_NAMESPACE
+              value: dynamic_parameters
+            - name: LEADER_ELECTION_NAMESPACE
+              value: dynamic_parameters
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: dynamic_parameters
+            - name: WAIT_FOR_RESOURCES_TIMEOUT
+              value: dynamic_parameters
+            - name: REVISION
+              value: dynamic_parameters
+      nodeSelector:
+      affinity:
+      tolerations:
+---
+
+---

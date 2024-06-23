@@ -1,0 +1,148 @@
+# Source: kube-ovn/templates/monitor-deploy.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: kube-ovn-monitor
+  namespace: dynamic_parameters
+  annotations:
+    kubernetes.io/description: |
+      Metrics for OVN components: northd, nb and sb.
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: kube-ovn-monitor
+  template:
+    metadata:
+      labels:
+        app: kube-ovn-monitor
+        component: network
+        type: infra
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: kube-ovn-monitor
+              topologyKey: kubernetes.io/hostname
+      priorityClassName: system-cluster-critical
+      serviceAccountName: kube-ovn-app
+      hostNetwork: true
+      containers:
+        - name: kube-ovn-monitor
+          image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          command: ["/kube-ovn/start-ovn-monitor.sh"]
+          args:
+          - --log_file=/var/log/kube-ovn/kube-ovn-monitor.log
+          - --logtostderr=false
+          - --alsologtostderr=true
+          - --log_file_max_size=0
+          securityContext:
+            runAsUser: 0
+            privileged: false
+          env:
+            - name: ENABLE_SSL
+              value: "dynamic_parameters"
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_IPS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIPs
+            - name: ENABLE_BIND_LOCAL_IP
+              value: "dynamic_parameters"
+          resources:
+            requests:
+              cpu: dynamic_parameters
+              memory: dynamic_parameters
+            limits:
+              cpu: dynamic_parameters
+              memory: dynamic_parameters
+          volumeMounts:
+            - mountPath: /var/run/openvswitch
+              name: host-run-ovs
+            - mountPath: /var/run/ovn
+              name: host-run-ovn
+            - mountPath: /etc/openvswitch
+              name: host-config-openvswitch
+            - mountPath: /etc/ovn
+              name: host-config-ovn
+            - mountPath: /var/log/ovn
+              name: host-log-ovn
+              readOnly: true
+            - mountPath: /etc/localtime
+              name: localtime
+              readOnly: true
+            - mountPath: /var/run/tls
+              name: kube-ovn-tls
+            - mountPath: /var/log/kube-ovn
+              name: kube-ovn-log
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 7
+            successThreshold: 1
+            tcpSocket:
+              port: 10661
+            timeoutSeconds: 3
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 7
+            successThreshold: 1
+            tcpSocket:
+              port: 10661
+            timeoutSeconds: 3
+      nodeSelector:
+        kubernetes.io/os: "linux"
+        dynamic_parameters: "dynamic_parametersdynamic_parametersdynamic_parameters"
+      volumes:
+        - name: host-run-ovs
+          hostPath:
+            path: /run/openvswitch
+        - name: host-run-ovn
+          hostPath:
+            path: /run/ovn
+        - name: host-config-openvswitch
+          hostPath:
+            path: dynamic_parameters
+        - name: host-config-ovn
+          hostPath:
+            path: dynamic_parameters
+        - name: host-log-ovn
+          hostPath:
+            path: dynamic_parameters/ovn
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: kube-ovn-tls
+          secret:
+            optional: true
+            secretName: kube-ovn-tls
+        - name: kube-ovn-log
+          hostPath:
+            path: dynamic_parameters/kube-ovn
+
+---
+# Source: kube-ovn/templates/monitor-deploy.yaml
+---
+
+---
+# Source: kube-ovn/templates/monitor-deploy.yaml
+---
+
+---

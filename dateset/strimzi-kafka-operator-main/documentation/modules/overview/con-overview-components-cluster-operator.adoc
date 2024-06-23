@@ -1,0 +1,42 @@
+// Module included in the following assemblies:
+//
+// overview/assembly-overview-components.adoc
+// assembly-using-the-cluster-operator.adoc
+
+[id='overview-components-cluster-operator-{context}']
+= Cluster Operator
+
+[role="_abstract"]
+Strimzi uses the Cluster Operator to deploy and manage clusters.
+By default, when you deploy Strimzi a single Cluster Operator replica is deployed. 
+You can add replicas with leader election so that additional Cluster Operators are on standby in case of disruption.  
+
+The Cluster Operator manages the clusters of the following Kafka components:
+
+* Kafka (including ZooKeeper, Entity Operator, Kafka Exporter, and Cruise Control)
+* Kafka Connect
+* Kafka MirrorMaker
+* Kafka Bridge
+
+The clusters are deployed using custom resources.
+
+For example, to deploy a Kafka cluster:
+
+* A `Kafka` resource with the cluster configuration is created within the Kubernetes cluster.
+* The Cluster Operator deploys a corresponding Kafka cluster, based on what is declared in the `Kafka` resource.
+
+The Cluster Operator can also deploy the following Strimzi operators through configuration of the `Kafka` resource:
+
+* Topic Operator to provide operator-style topic management through `KafkaTopic` custom resources
+* User Operator to provide operator-style user management through `KafkaUser` custom resources
+
+The Topic Operator and User Operator function within the Entity Operator on deployment.
+
+You can use the Cluster Operator with a deployment of Strimzi Drain Cleaner to help with pod evictions.
+By deploying the Strimzi Drain Cleaner, you can use the Cluster Operator to move Kafka pods instead of Kubernetes.
+Strimzi Drain Cleaner annotates pods being evicted with a rolling update annotation.
+The annotation informs the Cluster Operator to perform the rolling update.
+
+.Example architecture for the Cluster Operator
+
+image:cluster-operator.png[The Cluster Operator creates and deploys Kafka and ZooKeeper clusters]

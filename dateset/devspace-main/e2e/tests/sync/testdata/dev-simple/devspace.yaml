@@ -1,0 +1,31 @@
+version: v1beta11
+vars:
+  - name: IMAGE
+    value: node:13.14-alpine
+deployments:
+  - name: test
+    helm:
+      componentChart: true
+      values:
+        containers:
+          - image: ${IMAGE}
+            command: ["sleep"]
+            args: ["999999999999"]
+dev:
+  sync:
+    - name: test
+      imageSelector: ${IMAGE}
+      containerPath: "/app"
+      uploadExcludePaths:
+        - test.txt
+hooks:
+  - command: |
+      mkdir /app
+      echo -n Hello World > /app/file4.txt
+    container:
+      imageSelector: ${IMAGE}
+    events: ["before:initialSync:*"]
+  - command: "echo -n Hello World > /app/file5.txt"
+    container:
+      imageSelector: ${IMAGE}
+    events: ["after:initialSync:test", "after:initialSync:test2"]

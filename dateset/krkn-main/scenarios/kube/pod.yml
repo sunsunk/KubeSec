@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../plugin.schema.json
+- id: kill-pods
+  config:
+    name_pattern: ^nginx-.*$
+    namespace_pattern: ^default$
+    kill: 1

@@ -1,0 +1,40 @@
+# This manifest is a template for running the ig binary inside a pod. For simplicity, we use a
+# privileged pod, but you can use a more restrictive setup. Check
+# charts/gadget/templates/daemonset.yaml that is our source of true for the security configuration
+# needed by Inspektor Gadget.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ig
+  labels:
+    k8s-app: example-ig
+spec:
+  containers:
+    - name: ig
+      image: ghcr.io/inspektor-gadget/ig:latest
+      securityContext:
+        # CHANGEME: see comment at the top of this file
+        privileged: true
+      command:
+        # CHANGEME: run the gadget of your choice
+        - "ig"
+        - "trace"
+        - "exec"
+        - "--host"
+      env:
+        - name: HOST_ROOT
+          value: "/host"
+      volumeMounts:
+        - mountPath: /host
+          name: host
+        - mountPath: /run
+          name: run
+  # CHANGEME: where do you want to run this pod?
+  nodeName: minikube-containerd
+  volumes:
+    - name: host
+      hostPath:
+        path: /
+    - name: run
+      hostPath:
+        path: /run

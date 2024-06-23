@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  version: v1alpha1
+  title: Kuma API
+  description: Kuma API
+  x-ref-schema-name: "MeshProxyPatch"
+
+paths:
+  /meshes/{mesh}/meshproxypatches/{name}:
+    get:
+      summary: Returns MeshProxyPatch entity
+      tags: [ "MeshProxyPatch" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshProxyPatch
+      responses:
+        '200':
+          $ref: "#/components/responses/MeshProxyPatchItem"
+
+    put:
+      summary: Creates or Updates MeshProxyPatch entity
+      tags: [ "MeshProxyPatch" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshProxyPatch
+      requestBody:
+        description: Put request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeshProxyPatchItem'
+      responses:
+        '200':
+          description: Updated
+        '201':
+          description: Created
+
+    delete:
+      summary: Deletes MeshProxyPatch entity
+      tags: [ "MeshProxyPatch" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: name of the MeshProxyPatch
+      responses:
+        '200':
+          description: Successful response
+
+
+  /meshes/{mesh}/meshproxypatches:
+    get:
+      summary: Returns a list of MeshProxyPatch in the mesh.
+      tags: [ "MeshProxyPatch" ]
+      parameters:
+        - in: path
+          name: mesh
+          schema:
+            type: string
+          required: true
+          description: name of the mesh
+      responses:
+        '200':
+          $ref: "#/components/responses/MeshProxyPatchList"
+
+components:
+  schemas:
+    MeshProxyPatchItem:
+      $ref: 'schema.yaml'
+  responses:
+    MeshProxyPatchItem:
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeshProxyPatchItem'
+    MeshProxyPatchList:
+      description: List
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeshProxyPatchItem"
+              total:
+                type: number
+                description: The total number of entities
+              next:
+                type: string
+                description: URL to the next page

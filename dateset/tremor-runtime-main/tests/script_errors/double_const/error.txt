@@ -1,0 +1,3 @@
+Error: 
+    2 | const ONE = "two";
+      | ^^^^^^^^^^^^^^^^^ Can't define the const `ONE` twice

@@ -1,0 +1,7 @@
+# Source: k8sgpt/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:

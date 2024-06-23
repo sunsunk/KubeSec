@@ -1,0 +1,39 @@
+- apiVersion: "getambassador.io/v2"
+  kind: "RateLimitService"
+  metadata:
+      creationTimestamp: "2020-07-03T02:19:06Z"
+      name: "ratelimitsvc-no-timeout"
+      namespace: "default"
+  spec:
+      service: "ratelimitsvc"
+      protocol_version: "v3"
+- apiVersion: "getambassador.io/v2"
+  kind: "RateLimitService"
+  metadata:
+      creationTimestamp: "2020-07-03T02:19:06Z"
+      name: "ratelimitsvc-timeout"
+      namespace: "default"
+  spec:
+      service: "ratelimitsvc"
+      protocol_version: "v3"
+      timeout_ms: 500
+- apiVersion: "getambassador.io/v2"
+  kind: "RateLimitService"
+  metadata:
+      creationTimestamp: "2020-07-03T02:19:06Z"
+      name: "ratelimitsvc-zero-timeout"
+      namespace: "default"
+  spec:
+      service: "ratelimitsvc"
+      protocol_version: "v3"
+      timeout_ms: 0
+- apiVersion: "getambassador.io/v2"
+  kind: "RateLimitService"
+  metadata:
+      creationTimestamp: "2020-07-03T02:19:06Z"
+      name: "ratelimitsvc-failure-mode-deny"
+      namespace: "default"
+  spec:
+      service: "ratelimitsvc"
+      protocol_version: "v3"
+      failure_mode_deny: true

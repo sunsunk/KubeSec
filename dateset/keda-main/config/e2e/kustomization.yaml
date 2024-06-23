@@ -1,0 +1,17 @@
+
+resources:
+- ../general
+- ../rbac
+- ../manager
+- ../metrics-server
+- ../service_account
+- ../webhooks
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+patches:
+- path: patch_operator.yml
+  target:
+    group: apps
+    kind: Deployment
+    name: keda-operator
+    version: v1

@@ -1,0 +1,2 @@
+► deleting helmrelease thrfg in {{ .ns }} namespace
+✔ helmrelease deleted

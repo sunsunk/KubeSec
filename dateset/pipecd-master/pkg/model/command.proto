@@ -1,0 +1,114 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+import "pkg/model/common.proto";
+
+enum CommandStatus {
+    COMMAND_NOT_HANDLED_YET = 0;
+    COMMAND_SUCCEEDED = 1;
+    COMMAND_FAILED = 2;
+    COMMAND_TIMEOUT = 3;
+}
+
+message Command {
+    enum Type {
+        SYNC_APPLICATION = 0;
+        UPDATE_APPLICATION_CONFIG = 1;
+        CANCEL_DEPLOYMENT = 2;
+        APPROVE_STAGE = 3;
+        BUILD_PLAN_PREVIEW = 4;
+        CHAIN_SYNC_APPLICATION = 5;
+        SKIP_STAGE = 6;
+        RESTART_PIPED = 7;
+    }
+
+    message SyncApplication {
+        string application_id = 1 [(validate.rules).string.min_len = 1];
+        SyncStrategy sync_strategy = 2;
+    }
+
+    message UpdateApplicationConfig {
+        string application_id = 1 [(validate.rules).string.min_len = 1];
+        string config_path = 2 [(validate.rules).string.min_len = 1];
+        string config = 3 [(validate.rules).string.min_len = 1];
+    }
+
+    message CancelDeployment {
+        string deployment_id = 1 [(validate.rules).string.min_len = 1];
+        bool force_rollback = 2;
+        bool force_no_rollback = 3;
+    }
+
+    message ApproveStage {
+        string deployment_id = 1 [(validate.rules).string.min_len = 1];
+        string stage_id = 2 [(validate.rules).string.min_len = 1];
+    }
+
+    message BuildPlanPreview {
+        string repository_id = 1 [(validate.rules).string.min_len = 1];
+        string head_branch = 2 [(validate.rules).string.min_len = 1];
+        string head_commit = 3 [(validate.rules).string.min_len = 1];
+        string base_branch = 4 [(validate.rules).string.min_len = 1];
+        int64 timeout = 5 [(validate.rules).int64.gte = 0];
+    }
+
+    message ChainSyncApplication {
+        string deployment_chain_id = 1;
+        uint32 block_index = 2;
+        string application_id = 3 [(validate.rules).string.min_len = 1];
+        SyncStrategy sync_strategy = 4;
+    }
+
+    message SkipStage {
+        string deployment_id = 1 [(validate.rules).string.min_len = 1];
+        string stage_id = 2 [(validate.rules).string.min_len = 1];
+    }
+
+    message RestartPiped {
+        string piped_id = 1 [(validate.rules).string.min_len = 1];
+    }
+
+    // The generated unique identifier.
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string piped_id = 2 [(validate.rules).string.min_len = 1];
+    string application_id = 3;
+    string deployment_id = 4;
+    string stage_id = 5;
+    string commander = 6;
+    string project_id = 7;
+
+    CommandStatus status = 20;
+    map<string,string> metadata = 21;
+    int64 handled_at = 22 [(validate.rules).int64.gte = 0];
+    // TODO: Add a new field to show why command was failed.
+
+    Type type = 30 [(validate.rules).enum.defined_only = true];
+    SyncApplication sync_application = 31;
+    UpdateApplicationConfig update_application_config = 32;
+    CancelDeployment cancel_deployment = 33;
+    ApproveStage approve_stage = 34;
+    BuildPlanPreview build_plan_preview = 35;
+    ChainSyncApplication chain_sync_application = 36;
+    SkipStage skip_stage = 37;
+    RestartPiped restart_piped = 38;
+
+    int64 created_at = 100 [(validate.rules).int64.gt = 0];
+    int64 updated_at = 101 [(validate.rules).int64.gt = 0];
+}

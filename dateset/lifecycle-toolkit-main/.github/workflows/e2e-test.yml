@@ -1,0 +1,53 @@
+name: E2E-Test
+on:
+  workflow_call:
+    inputs:
+      runtime_tag:
+        description: "Tag for the runner image"
+        type: "string"
+        required: true
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  GO_VERSION: "~1.21"
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  run-e2e-test:
+    name: Run E2E Tests
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        config:
+          - name: "lifecycle-operator"
+            folder: "lifecycle-operator/"
+          - name: "scheduler"
+            folder: "scheduler/"
+    steps:
+      - name: Check out code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup cluster
+        uses: ./.github/actions/deploy-keptn-on-cluster
+        with:
+          runtime_tag: ${{ inputs.runtime_tag }}
+
+      - name: Run E2E Tests ${{ matrix.config.name }}
+        working-directory: ${{ matrix.config.folder }}
+        run: make e2e-test
+
+      - name: Create reports ${{ matrix.config.name }}
+        if: always()
+        working-directory: ./.github/scripts
+        run: ./create-reports-toolkit.sh
+
+      - name: Upload ${{ matrix.config.name }} cluster logs
+        if: always()
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        with:
+          name: logs-e2e-tests-${{ matrix.config.name }}
+          path: .github/scripts/logs

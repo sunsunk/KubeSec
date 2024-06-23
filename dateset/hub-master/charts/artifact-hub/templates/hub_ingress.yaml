@@ -1,0 +1,35 @@
+{{- if .Values.hub.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "chart.resourceNamePrefix" . }}hub
+  labels:
+  {{- with .Values.hub.ingress.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+    app.kubernetes.io/component: hub
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with .Values.hub.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.hub.ingress.ingressClassName }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- if .Values.hub.ingress.defaultBackendEnabled }}  
+  defaultBackend:
+    service:
+      name: {{ include "chart.resourceNamePrefix" . }}hub
+      port:
+        number: {{ .Values.hub.service.port }}
+  {{- end }}
+  {{- with .Values.hub.ingress.rules }}
+  rules:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.hub.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

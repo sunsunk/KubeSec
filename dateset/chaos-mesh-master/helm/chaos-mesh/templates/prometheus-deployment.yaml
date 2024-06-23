@@ -1,0 +1,103 @@
+# Copyright 2021 Chaos Mesh Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dynamic_parameters
+  name: chaos-prometheus
+  labels:
+    
+    app.kubernetes.io/component: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      
+      app.kubernetes.io/component: prometheus
+  template:
+    metadata:
+      labels:
+        
+        app.kubernetes.io/component: prometheus
+      annotations:
+    spec:
+      serviceAccount: dynamic_parameters
+      priorityClassName: dynamic_parameters
+      imagePullSecrets: dynamic_parameters
+      initContainers:
+        - name: data-permission-fix
+          image: busybox
+          command: ["/bin/chmod","-R","777", "/data"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+      - name: prometheus
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        resources:
+        args:
+          - --storage.tsdb.path=/data
+          - --storage.tsdb.retention.time=6h
+          - --config.file=/etc/prometheus/prometheus.yml
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9090
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
+        ports:
+          - containerPort: 9090
+            name: http
+        securityContext:
+          runAsUser: 1000
+        volumeMounts:
+          - mountPath: /data
+            name: data
+          - mountPath: /etc/prometheus
+            name: prometheus-config
+            readOnly: true
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - configMap:
+          name: prometheus-config
+        name: prometheus-config
+      nodeSelector:
+      affinity:
+      tolerations:
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: dynamic_parameters
+  name: prometheus-pvc
+  labels:
+    
+    app.kubernetes.io/component: prometheus
+spec:
+  storageClassName: dynamic_parameters
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: dynamic_parameters
+
+
+---

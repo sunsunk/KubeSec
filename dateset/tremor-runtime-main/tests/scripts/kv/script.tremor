@@ -1,0 +1,4 @@
+match event of
+   case foo  = %{ test ~= kv|| } => foo.test
+  case _ => "ko"
+end

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "merbridge.labels" . | nindent 4 }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      {{- include "merbridge.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "merbridge.labels" . | nindent 8 }}
+    spec:
+      hostNetwork: true
+      containers:
+      - image: "{{ .Values.image.hub }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Values.fullname }}
+        args:
+        {{- include "merbridge.cmd.args" . | nindent 8 }}
+        env:
+        - name: WATCH_LEVEL
+          value: '{{ .Values.watchLevel }}'
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              {{- include "merbridge.cmd.clean" . | nindent 14 }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.container.request.cpu }}
+            memory: {{ .Values.resources.container.request.memory }}
+          limits:
+            cpu: {{ .Values.resources.container.limit.cpu }}
+            memory: {{ .Values.resources.container.limit.memory }}
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /sys/fs/cgroup
+            name: sys-fs-cgroup
+          - mountPath: {{ .Values.mountPath.cniBin }}
+            name: cni-bin-dir
+          - mountPath: {{ .Values.mountPath.cniConfig }}
+            name: cni-config-dir
+          - mountPath: {{ .Values.mountPath.proc }}
+            name: host-proc
+          - mountPath: {{ .Values.mountPath.varRun }}
+            name: host-var-run
+            mountPropagation: Bidirectional
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      nodeSelector:
+        {{- include "merbridge.nodeSelector" . | nindent 8 }}
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      serviceAccount: {{ .Values.fullname }}
+      serviceAccountName: {{ .Values.fullname }}
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+        name: sys-fs-cgroup
+      - hostPath:
+          path: /proc
+        name: host-proc
+      - hostPath:
+          path: /opt/cni/bin
+        name: cni-bin-dir
+      - hostPath:
+          path: /etc/cni/net.d
+        name: cni-config-dir
+      - hostPath:
+          path: /var/run
+        name: host-var-run
+
+

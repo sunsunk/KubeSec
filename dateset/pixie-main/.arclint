@@ -1,0 +1,235 @@
+{
+  "exclude": [
+    "(Doxyfile$)",
+    "(LICENSE$)",
+    "(\\.gen\\.go$)",
+    "(\\.gitmodules$)",
+    "(\\.idea/)",
+    "(\\.patch$)",
+    "(\\.pb\\.go$)",
+    "(\\.tsx\\.snap$)",
+    "(\\.pbtxt$)",
+    "(\\.sublime-project$)",
+    "(^docs/customer/)",
+    "(^k8s/devinfra/prow/prow_setup_starter.yaml$)",
+    "(^k8s/devinfra/prow/prowjob_customresourcedefinition.yaml$)",
+    "(^k8s/operator/crd/base/px\\.dev_viziers\\.yaml$)",
+    "(^private/users/)",
+    "(^private\/credentials\/.*\\.sh)",
+    "(^private\/credentials\/.*\\.sh)",
+    "(^private\/credentials\/.*\\.yaml)",
+    "(^src/operator/client/versioned/)",
+    "(^src/operator/apis/px.dev/v1alpha1/zz_generated.deepcopy.go)",
+    "(^src/stirling/bpf_tools/bcc_bpf/system-headers)",
+    "(^src/stirling/mysql/testing/.*\\.json$)",
+    "(^src/stirling/obj_tools/testdata/go/test_go_binary.go)",
+    "(^src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_client/main.go$)",
+    "(^src/stirling/source_connectors/socket_tracer/protocols/http2/testing/go_grpc_server/main.go$)",
+    "(^src/stirling/utils/testdata/config$)",
+    "(^src/ui/\\.pnp.*)",
+    "(^src/ui/\\.yarn/)",
+    "(^src/ui/offline_package_cache)",
+    "(^src/ui/src/segment.js$)",
+    "(^src/ui/src/types/generated/)",
+    "(^src/ui/src/types/schema\\.ts$)",
+    "(^third_party/cpplint/cpplint.py$)",
+    "(^third_party/github.com/gogo/protobuf/gogoproto/gogo.proto$)",
+    "(c_cpp_properties.json$)",
+    "(go\\.mod$)",
+    "(go\\.sum$)"
+  ],
+  "linters": {
+    "build-linter": {
+      "type": "script-and-regex",
+      "include": [
+        "(^WORKSPACE$)",
+        "(^third_party/BUILD\\.bazel$)",
+        "(\\.BUILD$)",
+        "(BUILD\\.bazel$)",
+        "(\\.bzl$)",
+        "(\\.sky$)"
+      ],
+      "script-and-regex.script": "./tools/linters/buildifier.sh",
+      "script-and-regex.regex": "/^(?P<file>.*):(?P<line>\\d+): (?P<severity>)(?P<error>.*): (?P<message>.*)$/m"
+    },
+    "build-denylist": {
+      "type": "script-and-regex",
+      "include": [
+        "(^WORKSPACE$)",
+        "(^third_party/BUILD\\.bazel$)",
+        "(\\.BUILD$)",
+        "(BUILD\\.bazel$)",
+        "(\\.bzl$)",
+        "(\\.sky$)"
+      ],
+      "script-and-regex.script": "./tools/linters/build_denylist.sh",
+      "script-and-regex.regex": "/^(?P<file>.*):(?P<line>\\d+):(?P<severity>.*):(?P<message>.*)$/m"
+    },
+    "clang-format": {
+      "type": "clang-format",
+      "include": [
+        "(\\.(m|h|mm|c|cc)$)",
+        "(\\.proto$)"
+      ]
+    },
+    "cpplint": {
+      "type": "cpplint",
+      "include": [
+        "(\\.(c|cc|h)$)"
+      ],
+      "exclude": [
+        "(_objc\\.h$)"
+      ],
+      "bin": "./third_party/cpplint/cpplint.py",
+      "flags": [
+        "--filter=-build/c++11",
+        "--filter=-build/c++14",
+        "--filter=-legal/copyright",
+        "--filter=-whitespace/line_length"
+      ]
+    },
+    "eslint-ui": {
+      "type": "eslint",
+      "include": [
+        "(^src/ui/.*\\.(tsx|ts|js)$)"
+      ]
+    },
+    "filename": {
+      "type": "filename",
+      "exclude": [
+        "(^src/shared/metadata/testdata/sysfs.*$)"
+      ]
+    },
+    "flake8": {
+      "type": "flake8",
+      "flags": [
+        "--config=.flake8rc"
+      ],
+      "include": [
+        "(\\.py$)"
+      ]
+    },
+    "flake8-pxl": {
+      "type": "flake8",
+      "flags": [
+        "--config=.pxl.flake8rc"
+      ],
+      "include": [
+        "(\\.pxl$)"
+      ]
+    },
+    "gazelle": {
+      "type": "script-and-regex",
+      "include": [
+        "(BUILD\\.bazel$)",
+        "(\\.go$)"
+      ],
+      "script-and-regex.script": "./tools/linters/gazelle.sh",
+      "script-and-regex.regex": "/^(?P<severity>[[:alpha:]]+)\n(?P<file>[^\n]+)\n(?P<message>[^\n]+)\n((?P<line>\\d),(?P<char>\\d)\n<<<<<\n(?P<original>.*)=====\n(?P<replacement>.*)>>>>>\n)$/s"
+    },
+    "goimports": {
+      "type": "goimports",
+      "include": [
+        "(\\.go$)"
+      ]
+    },
+    "golangci-lint": {
+      "type": "golangci-lint",
+      "include": [
+        "(\\.go$)"
+      ],
+      "flags": [
+        "--timeout=5m0s",
+        "--out-format=checkstyle"
+      ]
+    },
+    "jshint-ui": {
+      "type": "jshint",
+      "jshint.jshintrc": "./src/ui/.jshintrc",
+      "include": [
+        "(src/ui/.*\\.js$)"
+      ]
+    },
+    "json": {
+      "type": "json",
+      "exclude": [
+        "(\\.vscode/.*)"
+      ],
+      "include": [
+        "(^\\.arcconfig$)",
+        "(^\\.arclint$)",
+        "(\\.json$)"
+      ]
+    },
+    "license": {
+      "type": "script-and-regex",
+      "script-and-regex.script": "./tools/licenses/checker.py -f",
+      "script-and-regex.regex": "/^(?P<file>[^\n]+)(?P<severity>)(?P<error>:)((?P<line>\\d),(?P<char>\\d)\n<<<<<\n(?P<original>.*)=====\n(?P<replacement>.*)>>>>>\n)$/s",
+      "exclude": [
+        "(__phutil_library_init__\\.php$)",
+        "(__phutil_library_map__\\.php$)"
+      ]
+    },
+    "merge-conflict": {
+      "type": "merge-conflict"
+    },
+    "php": {
+      "type": "php",
+      "include": [
+        "(\\.php$)"
+      ]
+    },
+    "phutil-library": {
+      "type": "phutil-library",
+      "include": [
+        "(^tools/arc_addons/.*\\.php$)"
+      ]
+    },
+    "proto-break-check": {
+      "type": "proto-break-check",
+      "include": [
+        "(.*\\.proto$)"
+      ],
+      "exclude": [
+        "(^src/stirling/source_connectors/dynamic_tracer/dynamic_tracing/ir/physicalpb/physical\\.proto$)"
+      ]
+    },
+    "shellcheck": {
+      "type": "shellcheck",
+      "include": [
+        "(.*\\.sh$)"
+      ]
+    },
+    "spelling": {
+      "type": "spelling",
+      "exclude": [
+        "(.*\\.crt$)",
+        "(.*\\.key$)"
+      ]
+    },
+    "text": {
+      "type": "pxtext",
+      "text.max-line-length": 120
+    },
+    "xhpast": {
+      "type": "xhpast",
+      "include": [
+        "(^tools/arc_addons/.*\\.php$)"
+      ]
+    },
+    "yaml": {
+      "type": "script-and-regex",
+      "script-and-regex.script": "sh -c 'yamllint -f parsable \"$0\" || true'",
+      "script-and-regex.regex": "/^(?P<file>.*):(?P<line>\\d+):(?P<char>\\d+): \\[(?P<severity>warning|error)\\] (?P<message>.*) \\((?P<name>.*)\\)$/m",
+      "include": [
+        "(\\.yml$)",
+        "(\\.yaml$)",
+        "(^.yamllint$)"
+      ],
+      "exclude": [
+        "(^demos/)",
+        "(^k8s/operator/helm/)"
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+/*
+ * Copyright 2018- The Pixie Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package px.cloud.shared.messages;
+
+option go_package = "messagespb";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "src/api/proto/uuidpb/uuid.proto";
+
+message VizierConnected {
+  uuidpb.UUID vizier_id = 1 [ (gogoproto.customname) = "VizierID" ];
+  uuidpb.UUID org_id = 2 [ (gogoproto.customname) = "OrgID" ];
+  string k8s_uid = 4 [ (gogoproto.customname) = "K8sUID" ];
+  reserved 3;  // DEPRECATED string resource_version
+}

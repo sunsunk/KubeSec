@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: paralus-connector
+spec:
+  template:
+    spec:
+      containers:
+      - name: connector
+        image: paralussystems/paralus-connector:latest-1
+        imagePullSecrets:
+        - name: paralus-registry-creds
+        command:
+        - test1
+        - ""

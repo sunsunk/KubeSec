@@ -1,0 +1,28 @@
+service_meshes:
+  - name: "Istio"
+    id: "istioDomId"
+    value: "Istio"
+
+  - name: "Consul"
+    id: "consulDomId"
+    value: "Consul"
+
+  - name: "Linkerd"
+    id: "linkerdDomId"
+    value: "Linkerd"
+
+  - name: "Open Service Mesh"
+    id: "osmDomId"
+    value: "OSM"
+
+  - name: "App Mesh"
+    id: "appmeshDomId"
+    value: "App Mesh"
+
+  - name: "Kuma"
+    id: "kumaDomId"
+    value: "Kuma"
+  
+  - name: "Cilium"
+    id: "ciliumDomId"
+    value: "Cilium"

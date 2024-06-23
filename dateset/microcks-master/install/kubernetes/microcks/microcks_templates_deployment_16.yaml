@@ -1,0 +1,121 @@
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks"
+  labels:
+    app: "microcks"
+    container: spring
+    group: microcks
+    
+  annotations:
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: "microcks"
+      container: spring
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: "microcks"
+        container: spring
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: spring
+        image: quay.io/microcks/microcks:1.9.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+          - name: JAVA_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=2"
+          - name: JAVA_MAJOR_VERSION
+            value: "11"
+          - name: SPRING_PROFILES_ACTIVE
+            value: prod
+          - name: SPRING_DATA_MONGODB_URI
+            value: mongodb://${SPRING_DATA_MONGODB_USER}:${SPRING_DATA_MONGODB_PASSWORD}@microcks-mongodb:27017/${SPRING_DATA_MONGODB_DATABASE}
+          - name: SPRING_DATA_MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: "microcks-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: "microcks-mongodb-connection"
+          - name: SPRING_DATA_MONGODB_DATABASE
+            value: microcks
+          - name: POSTMAN_RUNNER_URL
+            value: http://microcks-postman-runtime:8080
+          - name: TEST_CALLBACK_URL
+            value: http://microcks:8080
+          - name: KEYCLOAK_ENABLED
+            value: "true"
+          - name: KEYCLOAK_URL
+            value: https://keycloak-microcks.192.168.99.100.nip.io
+          - name: KAFKA_BOOTSTRAP_SERVER
+            value: "microcks-kafka-kafka-bootstrap:9092"
+          - name: SERVICES_UPDATE_INTERVAL
+            value: 0 0 0/2 * * *
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 25
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 35
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: "/api/health"
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        volumeMounts:
+          - name: "microcks-config"
+            mountPath: "/deployments/config"
+          - name: "microcks-grpc-certs"
+            mountPath: "/deployments/config/grpc"
+        terminationMessagePath: "/dev/termination-log"
+      volumes:
+        - name: "microcks-config"
+          configMap:
+            name: "microcks-config"
+        - name: "microcks-grpc-certs"
+          secret:
+            secretName: "microcks-microcks-grpc-secret"

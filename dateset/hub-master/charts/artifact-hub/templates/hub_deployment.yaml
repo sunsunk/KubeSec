@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parametershub
+  labels:
+    app.kubernetes.io/component: hub
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: hub
+      
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8001"
+      labels:
+        app.kubernetes.io/component: hub
+        
+    spec:
+      readinessGates:
+      imagePullSecrets:
+      securityContext:
+      nodeSelector:
+      serviceAccountName: dynamic_parameters
+      initContainers:
+        - 
+        - name: check-db-migrator-run
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          resources:
+          command: ['kubectl', 'wait', '--namespace=dynamic_parameters', '--for=condition=complete', 'job/dynamic_parametersdb-migrator-install', '--timeout=60s']
+      containers:
+        - name: hub
+          image: dynamic_parameters:dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: XDG_CACHE_HOME
+              value: dynamic_parameters
+          volumeMounts:
+            - name: hub-config
+              mountPath: dynamic_parameters
+              readOnly: true
+            - name: cache-dir
+              mountPath: dynamic_parameters
+              
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          resources:
+          livenessProbe:
+          readinessProbe:
+      volumes:
+        - name: hub-config
+          secret:
+            secretName: dynamic_parametershub-config
+        - name: cache-dir
+          
+
+---
+
+---

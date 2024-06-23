@@ -1,0 +1,47 @@
+name: E2E Kubernetes
+on:
+  # NOTE: If you change these you must update verify_kubernetes-noop.yml as well
+  pull_request:
+    paths:
+      - 'yarn.lock'
+      - '.github/workflows/verify_e2e-kubernetes.yml'
+      - 'packages/backend-common/src/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    env:
+      CI: true
+      KUBERNETES_TESTS: true
+
+    name: Kubernetes ${{ matrix.node-version }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: bootstrap kind
+        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced # v1.9.0
+
+      - name: kubernetes test
+        working-directory: packages/backend-common
+        run: yarn test:kubernetes

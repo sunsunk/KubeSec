@@ -1,0 +1,70 @@
+name: publish_site
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+env:
+  GHCR: ghcr.io
+  HELM_VERSION: 3.8.2
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Determine version
+        run: echo "PIPECD_VERSION=$(git describe --tags --always --abbrev=7)" >> $GITHUB_ENV
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@c03b5dbed22245418539b65eb9a3b1d5fdd9a0a6 #v2.5.0
+        with:
+          hugo-version: '0.92.1'
+          extended: true
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      # Build site.
+      - name: Build site
+        run: |
+          cd docs
+          npm install autoprefixer
+          npm install postcss-cli
+          env HUGO_ENV="production" RELEASE="$(head -n 1 ../RELEASE | cut -d ' ' -f 2)" hugo
+
+      # Building and pushing container images.
+      - name: Log in to the container registry
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b #v2.0.0
+        with:
+          registry: ${{ env.GHCR }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push site image
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 #v5.0.0
+        with:
+          push: true
+          context: docs
+          file: docs/Dockerfile
+          tags: ${{ env.GHCR }}/pipe-cd/site:${{ env.PIPECD_VERSION }}
+
+      # Building and pushing Helm charts.
+      - name: Install helm
+        uses: Azure/setup-helm@v1
+        with:
+          version: ${{ env.HELM_VERSION }}
+      - name: Login to OCI using Helm
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ${{ env.GHCR }} --username ${{ github.repository_owner }} --password-stdin
+      - name: Publish site chart
+        run: |
+          make build/chart MOD=site VERSION=${{ env.PIPECD_VERSION }}
+          helm push .artifacts/site-${{ env.PIPECD_VERSION }}.tgz oci://${{ env.GHCR }}/pipe-cd/chart

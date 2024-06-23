@@ -1,0 +1,76 @@
+---
+apiVersion: comcast.github.io/v1
+kind: KuberhealthyCheck
+metadata:
+  name: dns-status-internal
+  namespace: dynamic_parameters
+spec:
+  runInterval: dynamic_parameters
+  timeout: dynamic_parameters
+  podSpec:
+    securityContext:
+      runAsUser: dynamic_parameters
+      fsGroup: dynamic_parameters
+      seccompProfile:
+    imagePullSecrets:
+    containers:
+      - env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: dynamic_parameters
+            value: dynamic_parameters
+        image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+        image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+        imagePullPolicy: IfNotPresent
+        name: main
+        resources:
+          requests:
+            cpu: dynamic_parameters
+            memory: dynamic_parameters
+          limits:
+            cpu: dynamic_parameters
+            memory: dynamic_parameters
+        securityContext:
+          runAsNonRoot: dynamic_parameters
+          allowPrivilegeEscalation: dynamic_parameters
+          readOnlyRootFilesystem: dynamic_parameters
+    nodeSelector:
+    tolerations:
+    serviceAccountName: dns-internal-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dns-internal-service-cr
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dns-internal-service-crb
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: dns-internal-service-cr
+subjects:
+  - kind: ServiceAccount
+    name: dns-internal-sa
+    namespace: dynamic_parameters
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dns-internal-sa
+  namespace: dynamic_parameters
+
+---
+
+---

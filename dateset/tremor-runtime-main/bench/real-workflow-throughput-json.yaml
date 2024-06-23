@@ -1,0 +1,20 @@
+# Test a realistic workflow including json encoding and decoding
+# and connect both the pass and the overflow output to the
+# blackhole to acount for the data
+---
+connector:
+  - id: bench
+    type: bench
+    codec: json
+    config:
+      source: ./demo/data/data.json.xz
+      warmup_secs: 10
+      stop_after_secs: 100
+      significant_figures: 2
+      is_transactional: true
+
+binding:
+  - id: bench
+    links:
+      "/connector/bench/{instance}/out": ["/pipeline/main/{instance}/in"]
+      "/pipeline/main/{instance}/out": ["/connector/bench/{instance}/in"]

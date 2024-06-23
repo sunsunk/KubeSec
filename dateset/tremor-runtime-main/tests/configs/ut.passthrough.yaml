@@ -1,0 +1,18 @@
+---
+connector:
+  - id: bench
+    type: bench
+    config:
+      source: ./demo/data/data.json.xz
+      warmup_secs: 10
+      stop_after_secs: 40
+      significant_figures: 2
+
+binding:
+  - id: test
+    links:
+      /connector/bench/{instance}/out: ["/pipeline/system::passthrough/{instance}/in"]
+      /pipeline/system::passthrough/{instance}/out: ["/connector/bench/{instance}/in"]
+mapping:
+  /binding/test/snot:
+    instance: "snot"

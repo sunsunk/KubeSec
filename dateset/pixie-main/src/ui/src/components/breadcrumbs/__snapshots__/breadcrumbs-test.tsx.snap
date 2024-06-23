@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Breadcrumbs/> renders correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 Breadcrumbs-triggerWrapper-1 css-mvwo72-MuiPaper-root"
+  >
+    <div
+      class="Breadcrumbs-breadcrumbs-2"
+    >
+      <div
+        class="Breadcrumbs-breadcrumb-3"
+      >
+        <div
+          class="Breadcrumbs-body-8"
+        >
+          <div
+            class="Breadcrumbs-content-9"
+          >
+            <span
+              class="Breadcrumbs-title-5"
+            >
+              cluster: 
+            </span>
+            <span
+              class="Breadcrumbs-selectable-7"
+            >
+              <span
+                class="Breadcrumbs-value-6"
+              >
+                gke-prod
+              </span>
+              <div
+                class="Breadcrumbs-dropdownArrow-10"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="ArrowDropDownIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m7 10 5 5 5-5z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="Breadcrumbs-divider-12 Breadcrumbs-dividerHidden-13"
+      />
+      <div
+        class="Breadcrumbs-breadcrumb-3"
+      >
+        <div
+          class="Breadcrumbs-body-8"
+        >
+          <div
+            class="Breadcrumbs-content-9"
+          >
+            <span
+              class="Breadcrumbs-title-5"
+            >
+              pod: 
+            </span>
+            <span
+              class="Breadcrumbs-selectable-7"
+            >
+              <span
+                class="Breadcrumbs-value-6"
+              >
+                pod-123
+              </span>
+              <div
+                class="Breadcrumbs-dropdownArrow-10"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="ArrowDropDownIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m7 10 5 5 5-5z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="Breadcrumbs-divider-12 Breadcrumbs-dividerHidden-13"
+      />
+      <div
+        class="Breadcrumbs-breadcrumb-3"
+      >
+        <div
+          class="Breadcrumbs-body-8"
+        >
+          <div
+            class="Breadcrumbs-content-9"
+          >
+            <span
+              class="Breadcrumbs-title-5"
+            >
+              script: 
+            </span>
+            <span
+              class=""
+            >
+              <span
+                class="Breadcrumbs-value-6"
+              >
+                px/pod
+              </span>
+            </span>
+            <div
+              class="Breadcrumbs-spacer-11"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,7 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: minimal
+spec:
+  authentication:
+    type: tls

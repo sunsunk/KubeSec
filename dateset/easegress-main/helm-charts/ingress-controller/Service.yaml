@@ -1,0 +1,15 @@
+# Source: easegress-ingress-controller/templates/Service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-release
+  namespace: default
+spec:
+  selector:
+    app: my-release
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+      nodePort: 30080
+  type: NodePort

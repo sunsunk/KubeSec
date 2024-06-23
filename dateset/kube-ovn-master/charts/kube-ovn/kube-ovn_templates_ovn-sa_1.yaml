@@ -1,0 +1,6 @@
+# Source: kube-ovn/templates/ovn-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ovn
+  namespace: kube-system

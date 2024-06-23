@@ -1,0 +1,151 @@
+name: Test & Release CLI Version
+
+on:
+  release:
+    types: [created]
+  push:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - "**.go"
+      - "hack/coverage.bash"
+      - ".github/workflows/release.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - "**.go"
+      - "hack/coverage.bash"
+      - ".github/workflows/release.yaml"
+
+jobs:
+  release-ui:
+    if: startsWith(github.ref, 'refs/tags/v') == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - id: get_version
+        run: |
+          RELEASE_VERSION=$(echo $GITHUB_REF | sed -nE 's!refs/tags/!!p')
+          echo "::set-output name=release_version::$RELEASE_VERSION"
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ui/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/ui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Build UI
+        env:
+          VERSION: ${{ steps.get_version.outputs.release_version }}
+          NPM_CONFIG_GLOBALCONFIG: "dist/npm/config/npmrc"
+          NPM_REGISTRY_TOKEN: ${{ secrets.NPM_DEVSPACE_REGISTRY_TOKEN }}
+          CI: "false"
+        run: ./hack/build-ui.bash
+      - name: Upload ui tar
+        uses: actions/upload-artifact@v2
+        with:
+          name: ui-tar
+          path: release/ui.tar.gz
+  release:
+    if: startsWith(github.ref, 'refs/tags/v') == true
+    needs: [ release-ui ]
+    runs-on: macos-11
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.20"
+      - id: get_version
+        run: |
+          RELEASE_VERSION=$(echo $GITHUB_REF | sed -nE 's!refs/tags/!!p')
+          echo "::set-output name=release_version::$RELEASE_VERSION"
+      - name: install-go-bindata
+        run: go install github.com/go-bindata/go-bindata/go-bindata@latest
+        env:
+          GOPATH: /Users/runner/work/devspace/go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: Download ui tar
+        uses: actions/download-artifact@v2
+        with:
+          name: ui-tar
+      - name: install-upx
+        run: brew install upx
+      - name: Compile binaries
+        run: ./hack/build-all.bash
+        env:
+          VERSION: ${{ steps.get_version.outputs.release_version }}
+          GOPATH: /Users/runner/work/devspace/go
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          ANALYTICS_TOKEN: ${{ secrets.ANALYTICS_TOKEN }}
+          ANALYTICS_ENDPOINT_EVENT: ${{ secrets.ANALYTICS_ENDPOINT_EVENT }}
+          ANALYTICS_ENDPOINT_USER: ${{ secrets.ANALYTICS_ENDPOINT_USER }}
+      - name: Publish
+        uses: FabianKramm/release-asset-action@v1
+        with:
+          pattern: "release/*"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+  publish-npm:
+    if: startsWith(github.ref, 'refs/tags/v') == true
+    needs: [release, release-ui]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - id: get_version
+        run: |
+          RELEASE_VERSION=$(echo $GITHUB_REF | sed -nE 's!refs/tags/!!p')
+          echo "::set-output name=release_version::$RELEASE_VERSION"
+      - run: |
+          npm ci
+          export NPM_TAG=$(node index.js get-tag)
+          npm publish --tag $NPM_TAG
+        working-directory: ./dist/npm
+        env:
+          RELEASE_VERSION: ${{ steps.get_version.outputs.release_version }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+  publish-next-image:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: jerray/publish-docker-action@v1.0.3
+        with:
+          tags: next
+          repository: devspacesh/devspace
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  publish-release-images:
+    if: startsWith(github.ref, 'refs/tags/v') == true
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - id: get_version
+        run: |
+          RELEASE_VERSION=$(echo $GITHUB_REF | sed -nE 's!refs/tags/!!p')
+          echo "::set-output name=release_version::$RELEASE_VERSION"
+      - uses: jerray/publish-docker-action@v1.0.3
+        with:
+          auto_tag: true
+          repository: devspacesh/devspace
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          build_args: RELEASE_VERSION=${{ steps.get_version.outputs.release_version }}
+      - uses: jerray/publish-docker-action@v1.0.3
+        with:
+          tags: latest
+          repository: devspacesh/devspace
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          build_args: RELEASE_VERSION=${{ steps.get_version.outputs.release_version }}

@@ -1,0 +1,10 @@
+createTime: "0001-01-01T00:00:00Z"
+name: initmyapp
+services:
+  mysvc:
+    cpu: "0.5"
+    image: nginx:latest
+    imagePullPolicy: Always
+    memory: 200M
+    type: webservice
+updateTime: "0001-01-01T00:00:00Z"

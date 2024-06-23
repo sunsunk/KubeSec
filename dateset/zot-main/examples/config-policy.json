@@ -1,0 +1,76 @@
+{
+  "distSpecVersion": "1.1.0",
+  "storage": {
+    "rootDirectory": "/tmp/zot"
+  },
+  "http": {
+    "auth": {
+      "htpasswd": {
+        "path": "test/data/htpasswd"
+      }
+    },
+    "accessControl": {
+      "groups": {
+        "group1": {
+          "users": ["jack", "john", "jane", "ana"]
+        },
+        "group2": {
+          "users": ["alice", "mike", "jim"]
+        }
+      },
+      "repositories": {
+        "**": {
+          "policies": [{
+            "users": ["charlie"],
+            "groups": ["admins", "developers", "group1"],
+            "actions": ["read", "create", "update"]
+          },
+          {
+            "users": ["mary"],
+            "groups": ["group2"],
+            "actions": ["read", "create", "update", "delete"]
+          }],
+          "defaultPolicy": ["read", "create"]
+        },
+        "tmp/**": {
+          "defaultPolicy": ["read", "create", "update"]
+        },
+        "infra/*": {
+          "policies": [{
+              "users": ["alice", "bob"],
+              "groups": ["maintainers","platformteam"],
+              "actions": ["create", "read", "update", "delete"]
+            },
+            {
+              "users": ["mallory"],
+              "actions": ["create", "read"]
+            }
+          ],
+          "defaultPolicy": ["read"]
+        },
+        "repos2/repo": {
+          "policies": [{
+              "users": ["bob"],
+              "groups": ["sparkle_team","repo2_team"],
+              "actions": ["read", "create"]
+            },
+            {
+              "users": ["mallory"],
+              "actions": ["create", "read"]
+            }
+          ],
+          "defaultPolicy": ["read"]
+        }
+      },
+      "adminPolicy": {
+        "users": ["admin"],
+        "groups": ["admins","developers"],
+        "actions": ["read", "create", "update", "delete"]
+      }
+    }
+  },
+  "log": {
+    "level": "debug",
+    "output": "/tmp/zot.log"
+  }
+}

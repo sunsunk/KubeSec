@@ -1,0 +1,30 @@
+#! text templating can be performed
+#! within YAML nodes with "{}".format()
+
+#@ val1 = "value1"
+#@ val2 = "value2"
+
+key: #@ "before {} middle {} after".format(val1, val2)
+
+#! alternatively, inline string templating tags (@ ... @)
+#! can be used to execute code and (@= @) tags to yield a
+#! string value; note that for text templating to take effect,
+#! a node must be annotated with @yaml/text-templated-strings
+
+#@yaml/text-templated-strings
+key_alt: "before (@= val1 @) middle (@= val2 @) after"
+
+#! The @yaml/text-templated-strings annotation
+#! also applies to all child nodes
+
+#@yaml/text-templated-strings
+---
+key_alt2:
+  key_(@= val1 @): "middle (@= val2 @) after"
+
+#! more complex text templates could be split out into
+#! separate library files where text formatting is easier
+
+#@ load("data.lib.txt", "name_from_text")
+---
+key_str: #@ name_from_text()

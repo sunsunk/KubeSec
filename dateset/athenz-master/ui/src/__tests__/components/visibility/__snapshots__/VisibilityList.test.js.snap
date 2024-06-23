@@ -1,0 +1,250 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VisibilityList should render 1`] = `
+.emotion-0 {
+  margin: 20px;
+}
+
+.emotion-2 {
+  vertical-align: middle;
+}
+
+.emotion-4 {
+  -webkit-align-items: stretch;
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  background: rgba(53,112,244,0.05);
+  border-radius: 2px;
+  box-sizing: border-box;
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 28px;
+  position: relative;
+}
+
+.emotion-4::before {
+  background: #fff;
+  border: 2px solid #0072df;
+  border-radius: 2px;
+  box-sizing: border-box;
+  content: '';
+  height: calc(100% + 4px);
+  margin: -2px -2px -2px calc(0% - 2px);
+  position: absolute;
+  -webkit-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+  width: calc(50% + 4px);
+}
+
+.emotion-5 {
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: #303030;
+  cursor: initial;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 3px;
+  padding: 0 12px;
+  -webkit-transition: color 0.2s ease-in 0.1s;
+  transition: color 0.2s ease-in 0.1s;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.emotion-5:hover {
+  color: #303030;
+}
+
+.emotion-6 {
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: #3697f2;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 3px;
+  padding: 0 12px;
+  -webkit-transition: color 0.2s ease-in 0.1s;
+  transition: color 0.2s ease-in 0.1s;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.emotion-6:hover {
+  color: #3570f4;
+}
+
+.emotion-7 {
+  width: 100%;
+  border-spacing: 0;
+  display: table;
+  border-collapse: separate;
+  border-color: grey;
+  box-sizing: border-box;
+  margin-top: 5px;
+  box-shadow: 0 1px 4px #d9d9d9;
+  border: 1px solid #fff;
+  -webkit-border-image: none;
+  border-image: none;
+  -webkit-border-image: initial;
+  border-image: initial;
+  height: 50px;
+}
+
+.emotion-9 {
+  height: 25px;
+  margin-left: 10px;
+  margin-top: 10px;
+  text-align: left;
+  padding: 5px 0 5px 15px;
+  vertical-align: middle;
+  word-break: break-all;
+  font-weight: lighter;
+  display: block;
+}
+
+.emotion-11 {
+  margin-right: 10px;
+  verticalalign: bottom;
+}
+
+.emotion-13 {
+  fill: #d5d5d5;
+  cursor: pointer;
+  vertical-align: text-bottom;
+}
+
+.emotion-20 {
+  fill: #188fff;
+  cursor: pointer;
+  vertical-align: text-bottom;
+}
+
+<div
+  class="emotion-0 emotion-1"
+  data-testid="visibilitySection"
+>
+  <div
+    class="emotion-2 emotion-3"
+  >
+    <div
+      class="emotion-4 denali-button-group"
+      data-testid="buttongroup"
+    >
+      <div
+        class="emotion-5"
+        data-active="true"
+        id="button-dependencies"
+      >
+        Dependencies
+      </div>
+      <div
+        class="emotion-6"
+        data-active="false"
+        id="button-auth"
+      >
+        Access History
+      </div>
+    </div>
+  </div>
+  <table
+    class="emotion-7 emotion-8"
+    data-testid="dependency-sgroup-table"
+  >
+    <thead>
+      <tr>
+        <th
+          class="emotion-9 emotion-10"
+        >
+          <span
+            class="emotion-11 emotion-12"
+          >
+            <svg
+              class="emotion-13"
+              data-testid="icon"
+              height="1.25em"
+              id=""
+              viewBox="0 0 1024 1024"
+              width="1.25em"
+            >
+              <title>
+                arrowhead-down-circle
+              </title>
+              <path
+                d="M512 896c-212.077 0-384-171.923-384-384s171.923-384 384-384c212.077 0 384 171.923 384 384v0c-1.203 211.592-172.408 382.797-383.885 383.999l-0.115 0.001zM512 981.333c259.206 0 469.333-210.128 469.333-469.333s-210.128-469.333-469.333-469.333c-259.206 0-469.333 210.128-469.333 469.333v0c-0.003 0.635-0.005 1.387-0.005 2.138 0 258.027 209.173 467.2 467.2 467.2 0.752 0 1.504-0.002 2.255-0.005l-0.117 0z"
+              />
+              <path
+                d="M512 558.933l-140.8-140.8c-7.461-8.401-18.291-13.668-30.351-13.668-13.957 0-26.267 7.055-33.558 17.793l-0.091 0.142c-5.319 7.276-8.51 16.4-8.51 26.27 0 12.199 4.876 23.259 12.785 31.338l-0.008-0.008 170.667 168.533c7.434 8.083 18.061 13.13 29.867 13.13s22.432-5.047 29.84-13.101l0.026-0.029 170.667-168.533c7.901-8.071 12.777-19.131 12.777-31.33 0-9.87-3.192-18.994-8.599-26.397l0.088 0.127c-7.382-10.88-19.691-17.934-33.649-17.934-12.060 0-22.89 5.267-30.315 13.626l-0.036 0.042z"
+              />
+            </svg>
+          </span>
+          somedomain.other_provider_service
+        </th>
+      </tr>
+    </thead>
+  </table>
+  <table
+    class="emotion-7 emotion-8"
+    data-testid="dependency-sgroup-table"
+  >
+    <thead>
+      <tr>
+        <th
+          class="emotion-9 emotion-10"
+        >
+          <span
+            class="emotion-11 emotion-12"
+          >
+            <svg
+              class="emotion-20"
+              data-testid="icon"
+              height="1.25em"
+              id=""
+              viewBox="0 0 1024 1024"
+              width="1.25em"
+            >
+              <title>
+                arrowhead-down-circle
+              </title>
+              <path
+                d="M512 896c-212.077 0-384-171.923-384-384s171.923-384 384-384c212.077 0 384 171.923 384 384v0c-1.203 211.592-172.408 382.797-383.885 383.999l-0.115 0.001zM512 981.333c259.206 0 469.333-210.128 469.333-469.333s-210.128-469.333-469.333-469.333c-259.206 0-469.333 210.128-469.333 469.333v0c-0.003 0.635-0.005 1.387-0.005 2.138 0 258.027 209.173 467.2 467.2 467.2 0.752 0 1.504-0.002 2.255-0.005l-0.117 0z"
+              />
+              <path
+                d="M512 558.933l-140.8-140.8c-7.461-8.401-18.291-13.668-30.351-13.668-13.957 0-26.267 7.055-33.558 17.793l-0.091 0.142c-5.319 7.276-8.51 16.4-8.51 26.27 0 12.199 4.876 23.259 12.785 31.338l-0.008-0.008 170.667 168.533c7.434 8.083 18.061 13.13 29.867 13.13s22.432-5.047 29.84-13.101l0.026-0.029 170.667-168.533c7.901-8.071 12.777-19.131 12.777-31.33 0-9.87-3.192-18.994-8.599-26.397l0.088 0.127c-7.382-10.88-19.691-17.934-33.649-17.934-12.060 0-22.89 5.267-30.315 13.626l-0.036 0.042z"
+              />
+            </svg>
+          </span>
+          somedomain.some_provider_service (2)
+        </th>
+      </tr>
+    </thead>
+  </table>
+</div>
+`;

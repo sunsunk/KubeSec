@@ -1,0 +1,31 @@
+// Variables
+
+// SMP Colors
+$smp-dark-yellow: #EBC017;
+$smp-light-yellow: #FFF3C5;
+
+$background-color: #3C494F;
+$primary-brand-color: #00b39f;
+$secondary-brand-color: #00D3A9;
+
+$brand-brown-dark: #4f423c;
+$brand-brown-light: #4f4d3c;
+$brand-purple: #463c4f;
+
+$brand-gray-light: #9fbfcd;
+$brand-gray-dark: #647881;
+$brand-blue-light: #62accd;
+$brand-blue-dark: #477e96;
+
+$middle-gradient-color: mix($background-color, $secondary-brand-color, 100%);
+
+// Restated Bootstrap Variables
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #868e96 !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;

@@ -1,0 +1,6 @@
+# https://github.com/pipe-cd/pipecd/pkgs/container/piped-base-okd/103434940?tag=v0.44.0-alpha-53-g5d1d2a0
+FROM ghcr.io/pipe-cd/piped-base-okd@sha256:74d1d18c05923c8c4703ae79a05b7e3232bf6e8c1da4ae26d35a1248bb8a62f5
+
+ADD .artifacts/piped /usr/local/bin/piped
+
+ENTRYPOINT ["piped"]

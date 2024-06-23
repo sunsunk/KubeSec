@@ -1,0 +1,40 @@
+name: Terrascan
+
+on:
+  push:
+    paths:
+     - 'chart/k8gb/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+     - 'chart/k8gb/**'
+permissions:
+  contents: read
+  security-events: write # To upload sarif file
+
+jobs:
+  terrascan:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@6c3b1c91e8873ae0c705b0709f957c7a6a5eaf10
+      with:
+        egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+    - name: Checkout repository
+      uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+    - name: Run Terrascan
+      id: terrascan
+      uses: accurics/terrascan-action@a4b0f7ec5fb3c4c66b8e76d824d958002f6ce12c
+      with:
+        iac_type: helm
+        iac_version: v3
+        only_warn: false
+        verbose: true
+        sarif_upload: true
+        iac_dir: chart/k8gb
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@84ba7fb56d0ed1dee55d9ad6931750c9fb10117b
+      with:
+        sarif_file: terrascan.sarif

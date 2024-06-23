@@ -1,0 +1,17 @@
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'envoy_scrape'
+    scrape_interval: 5s
+    metrics_path: /stats/prometheus
+    static_configs:
+      - targets: ['curieproxy:8001']
+  - job_name: 'trafficmetricsexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['trafficmetricsexporter:8911']

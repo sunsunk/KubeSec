@@ -1,0 +1,12 @@
+version: v1beta10
+vars:
+  - name: IMAGE
+    value: nginx
+deployments:
+  - name: test
+    helm:
+      componentChart: true
+      values:
+        containers:
+          - image: ${IMAGE}
+            env: $(cat env.yaml)

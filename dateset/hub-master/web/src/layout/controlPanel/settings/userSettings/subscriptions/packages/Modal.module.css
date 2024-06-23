@@ -1,0 +1,49 @@
+.modal {
+  margin-top: 7rem;
+}
+
+.label {
+  font-size: 0.875rem;
+}
+
+.icon {
+  height: 17px;
+}
+
+.imageWrapper {
+  min-width: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.closeButton {
+  font-size: 0.75rem;
+  border-left-color: var(--color-1-700) !important;
+}
+
+.searchWrapper {
+  height: 50px;
+}
+
+.packageWrapper {
+  margin-bottom: 6px;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .modal {
+    margin-top: 3rem;
+  }
+
+  .packageWrapper {
+    font-size: 0.9rem;
+  }
+}

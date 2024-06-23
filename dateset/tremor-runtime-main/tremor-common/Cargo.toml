@@ -1,0 +1,25 @@
+[package]
+authors = ["The Tremor Team"]
+description = "Tremor common functions"
+documentation = "https://docs.rs/tremor-commons"
+edition = "2021"
+license = "Apache-2.0"
+name = "tremor-common"
+readme = "README.md"
+version = "0.13.0-rc.16"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+rand = { version = "0.8", features = ["small_rng"] }
+beef = { version = "0.5", features = ["impl_serde"] }
+serde = "1"
+url = { version = "2", features = ["serde"] }
+simd-json = { version = "0.13", features = ["known-key"] }
+simd-json-derive = "0.13"
+base64 = "0.21"
+regex = "*"
+lazy_static = "*"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+test-case = "3"

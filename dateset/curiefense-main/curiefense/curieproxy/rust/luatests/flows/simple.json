@@ -1,0 +1,86 @@
+[
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=2",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=3",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": true,
+    "pass": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=1",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.254",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=2",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=3",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": true,
+    "pass": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=2",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/action?step=3",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flow1",
+    "last_step": true,
+    "pass": true
+  }
+]

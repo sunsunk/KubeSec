@@ -1,0 +1,34 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-ubuntu-3-file-dir-readonly-allow
+  namespace: multiubuntu
+spec:
+  severity: 10
+  message: "a critical directory was accessed"
+  tags:
+  - WARNING
+  selector:
+    matchLabels:
+      container: ubuntu-3
+  process:
+    matchDirectories:
+    - dir: /bin/ # need some exectuables to test
+  file:
+    matchPaths:
+    - path: /root/.bashrc # used by root
+    - path: /root/.bash_history # used by root
+    - path: /dev/tty
+    matchDirectories:
+    - dir: /credentials/
+      readOnly: true
+  action:
+    Allow
+
+# test
+# $ cat /credentials/password
+# password file
+# $ cat /credentials/keys/priv.key
+# cat: /credentials/keys/priv.key: Permission denied
+# $ echo "new password" > /credentials/password
+# bash: /credentials/password: Permission denied

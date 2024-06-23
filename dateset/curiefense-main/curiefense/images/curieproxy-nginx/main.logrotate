@@ -1,0 +1,5 @@
+weekly
+rotate 4
+create
+#compress
+include /etc/logrotate.d

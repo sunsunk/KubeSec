@@ -1,0 +1,63 @@
+name: Coverage
+
+# Run weekly on Sunday at midnight (UTC).
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    container:
+      image: golang:1.22
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - run: go install gotest.tools/gotestsum@v0.4.2
+      - run: gotestsum -- -cover -coverprofile=coverage.out -v -mod=readonly ./...
+      - uses: codecov/codecov-action@c16abc29c95fcf9174b58eb7e1abf4c866893bc8
+        with:
+          files: ./coverage.out
+          flags: unittests,golang
+
+  js:
+    name: JS
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    container:
+      image: node:20-stretch
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - name: Yarn setup
+        shell: bash
+        run: bin/scurl -o- https://yarnpkg.com/install.sh | bash -s -- --version 1.21.1 --network-concurrency 1
+      - name: Unit tests
+        run: |
+          export PATH="$HOME/.yarn/bin:$PATH"
+          export NODE_ENV=test
+          bin/web --frozen-lockfile
+          bin/web test --reporters="jest-progress-bar-reporter" --reporters="./gh_ann_reporter.js" --coverage
+      - uses: codecov/codecov-action@c16abc29c95fcf9174b58eb7e1abf4c866893bc8
+        with:
+          directory: ./web/app/coverage
+          flags: unittests,javascript
+
+  rust:
+    name: Rust
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    container:
+      image: docker://rust:1.76.0
+      options: --security-opt seccomp=unconfined
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - shell: bash
+        run: mkdir -p target && cd target && bin/scurl -v https://github.com/xd009642/tarpaulin/releases/download/0.27.3/cargo-tarpaulin-x86_64-unknown-linux-musl.tar.gz | tar zxvf - && chmod 755 cargo-tarpaulin
+      - run: target/cargo-tarpaulin tarpaulin --workspace --out Xml
+      - uses: codecov/codecov-action@c16abc29c95fcf9174b58eb7e1abf4c866893bc8
+        with:
+          flags: unittests,rust

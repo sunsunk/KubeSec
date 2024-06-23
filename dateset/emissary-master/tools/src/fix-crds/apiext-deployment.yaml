@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+spec:
+  type: ClusterIP
+  ports:
+    - name: https
+      port: 443
+      targetPort: https
+  selector:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emissary-apiext
+  namespace: dynamic_parameters
+  labels:
+spec:
+  selector:
+    matchLabels:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+    spec:
+      serviceAccountName: dynamic_parameters
+      containers:
+        - name: emissary-apiext
+          image: dynamic_parameters
+          imagePullPolicy: IfNotPresent
+          command: [ "apiext", "dynamic_parameters" ]
+          args: ["--crd-label-selector", "app.kubernetes.io/part-of=emissary-apiext"]
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          startupProbe:
+            httpGet:
+              path: /probes/live
+              port: 8080
+            failureThreshold: 10
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /probes/live
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /probes/ready
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3
+
+---

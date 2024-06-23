@@ -1,0 +1,21 @@
+// Font Mixins
+@mixin courier-font {
+  font-family: 'Courier New', Courier, monospace;
+}
+@mixin serif-font {
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+}
+@mixin script-font {
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+}
+@mixin body-font {
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+}
+@mixin heading-font {
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+}
+
+@mixin heading-font-italic {
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+  font-style: italic;  
+}

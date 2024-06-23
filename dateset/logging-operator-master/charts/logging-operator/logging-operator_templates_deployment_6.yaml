@@ -1,0 +1,36 @@
+# Source: logging-operator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release-logging-operator
+  namespace: default
+  labels:
+    app.kubernetes.io/name: logging-operator
+    helm.sh/chart: logging-operator-0.0.0
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: logging-operator
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: logging-operator
+        app.kubernetes.io/instance: my-release
+    spec:
+      containers:
+        - name: logging-operator
+          image: "ghcr.io/kube-logging/logging-operator:latest"
+          args:
+            - -enable-leader-election=true
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}
+          ports:
+            - name: http
+              containerPort: 8080
+      serviceAccountName: my-release-logging-operator

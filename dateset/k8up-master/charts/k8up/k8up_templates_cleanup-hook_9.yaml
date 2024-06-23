@@ -1,0 +1,14 @@
+# Source: k8up/templates/cleanup-hook.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cleanup-service-account
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade,post-delete
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: k8up-4.5.1
+    app.kubernetes.io/name: k8up
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm

@@ -1,0 +1,15 @@
+test1: first
+
+#@yaml/map-key-override
+#@yaml/text-templated-strings
+test(@= str(1) @): second
+
+#@yaml/text-templated-strings
+test(@= str(1) @): third
+
++++
+
+ERR: 
+- __ytt_tplXXX_start_node: expected key 'test1' to not be specified again (unless 'yaml/map-key-override' annotation is added)
+    in <toplevel>
+      stdin:8 | test(@= str(1) @): third

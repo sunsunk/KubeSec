@@ -1,0 +1,43 @@
+// Module included in the following assemblies:
+//
+// deploying/assembly_deploy-cluster-operator.adoc
+
+[id='deploying-cluster-operator-{context}']
+= Deploying the Cluster Operator to watch a single namespace
+
+[role="_abstract"]
+This procedure shows how to deploy the Cluster Operator to watch Strimzi resources in a single namespace in your Kubernetes cluster.
+
+.Prerequisites
+
+* You need an account with permission to create and manage `CustomResourceDefinition` and RBAC (`ClusterRole`, and `RoleBinding`) resources.
+
+.Procedure
+
+. Edit the Strimzi installation files to use the namespace the Cluster Operator is going to be installed into.
++
+For example, in this procedure the Cluster Operator is installed into the namespace `my-cluster-operator-namespace`.
++
+include::../../shared/snip-cluster-operator-namespace-sed.adoc[]
+
+. Deploy the Cluster Operator:
++
+[source,shell,subs="+quotes,attributes+"]
+kubectl create -f install/cluster-operator -n my-cluster-operator-namespace
+
+. Check the status of the deployment:
++
+[source,shell,subs="+quotes"]
+----
+kubectl get deployments -n my-cluster-operator-namespace
+----
++
+.Output shows the deployment name and readiness
+[source,shell,subs="+quotes"]
+----
+NAME                      READY  UP-TO-DATE  AVAILABLE
+strimzi-cluster-operator  1/1    1           1
+----
++
+`READY` shows the number of replicas that are ready/expected.
+The deployment is successful when the `AVAILABLE` output shows `1`.

@@ -1,0 +1,125 @@
+/*
+ *  Copyright (c) 2022 NetEase Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+syntax="proto2";
+package curvefs.mds.space;
+import "curvefs/proto/common.proto";
+option cc_generic_services=true;
+option go_package = "curvefs/proto/space";
+
+enum SpaceErrCode {
+    SpaceOk = 0;
+    SpaceErrUnknown = 1;
+    SpaceErrNoSpace = 2;
+    SpaceErrNotFound = 3;
+    SpaceErrConflict = 4;
+    SpaceErrEncode = 5;
+    SpaceErrDecode = 6;
+    SpaceErrCreate = 7;
+    SpaceErrExist = 8;
+    SpaceErrStorage = 9;
+    SpaceErrParam = 10;
+    SpaceErrNotSupport = 11;
+    SpaceErrExtendVolumeError = 12;
+    SpaceErrRelease = 13;
+}
+
+message BlockGroup {
+    // start offset on volume
+    required uint64 offset = 1;
+    // total bytes of each block group
+    // this must be fixed when create fs or mkfs, so, this field maybe not needed
+    required uint64 size = 2;
+    // available bytes
+    required uint64 available = 3;
+    // bitmap location
+    required common.BitmapLocation bitmaplocation = 4;
+    // owner, who owns this block group
+    optional string owner = 5;
+    // deallocating, metaserver who is deallocate this block group
+    repeated uint32 deallocating = 6;
+    // deallocated, metaserver who finish deallocate this block group
+    repeated uint32 deallocated = 7;
+}
+
+message AllocateBlockGroupRequest {
+    required uint32 fsId = 1;
+    required uint64 count = 2;    // number of block groups
+    required string owner = 3;    // or just ip:port
+}
+
+message AllocateBlockGroupResponse {
+    required SpaceErrCode status = 1;
+    repeated BlockGroup blockGroups = 2;
+}
+
+message AcquireBlockGroupRequest {
+    required uint32 fsId = 1;
+    required string owner = 2;
+    required uint64 blockGroupOffset = 3;
+}
+
+message AcquireBlockGroupResponse {
+    required SpaceErrCode status = 1;
+    optional BlockGroup blockGroups = 2;
+}
+
+message ReleaseBlockGroupRequest {
+    required uint32 fsId = 1;
+    required string owner = 2;
+    repeated BlockGroup blockGroups = 3;
+}
+
+message ReleaseBlockGroupResponse {
+    required SpaceErrCode status = 1;
+}
+
+message StatSpaceRequest {
+    required uint32 fsId = 1;
+}
+
+message SpaceInfo {
+    required uint64 size = 1;
+    required uint64 available = 2;
+    required uint32 totalBlockGroups = 3;
+    required uint32 allocatedBlockGroups = 4;
+}
+
+message StatSpaceResponse {
+    required SpaceErrCode status = 1;
+    optional SpaceInfo spaceInfo = 2;
+}
+
+message UpdateUsageRequest {
+    required uint32 fsId = 1;
+
+    // TODO(wuhanqing): maybe only need some fields of BlockGroup
+    repeated BlockGroup blockGroups = 2;
+}
+
+message UpdateUsageResponse {
+    required SpaceErrCode status = 1;
+}
+
+service SpaceService {
+    rpc AllocateBlockGroup(AllocateBlockGroupRequest) returns(AllocateBlockGroupResponse);
+    rpc AcquireBlockGroup(AcquireBlockGroupRequest) returns(AcquireBlockGroupResponse);
+    rpc ReleaseBlockGroup(ReleaseBlockGroupRequest) returns(ReleaseBlockGroupResponse);
+    rpc StatSpace(StatSpaceRequest) returns(StatSpaceResponse);
+
+    // TODO(wuhanqing): client should update usage periodicly
+    rpc UpdateUsage(UpdateUsageRequest) returns(UpdateUsageResponse);
+}

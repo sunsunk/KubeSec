@@ -1,0 +1,333 @@
+################################################################################
+## Deployment Configuration
+################################################################################
+
+isCI: false
+
+# The Traffic Manager only support running with one replica at the moment.
+# Configuring the replicaCount will be added in future versions of Telepresence
+
+replicaCount: 1
+
+# The Telepresence client will try to ensure that the Traffic Manager image is
+# up to date and from the right registry. If you are changing the value below,
+# ensure that the tag is the same as the client version and that the
+# TELEPRESENCE_REGISTRY environment variable is equal to image.repository.
+#
+# The client will default to docker.io/datawire/tel2:{{CLIENT_VERSION}}
+
+image:
+  registry: docker.io/datawire
+  name: tel2
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+  imagePullSecrets: []
+
+apiPort: 8081
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+livenessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: api
+  # initialDelaySeconds: 10
+  # periodSeconds: 5
+readinessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: api
+  # initialDelaySeconds: 10
+  # periodSeconds: 5
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## @param priorityClassName Name of the existing priority class to be used
+## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+##
+priorityClassName: ""
+
+################################################################################
+## Traffic Manager Service Configuration
+################################################################################
+
+service:
+  type: ClusterIP
+
+################################################################################
+## Traffic Manager Configuration
+################################################################################
+
+# The log level of the Traffic Manager.
+logLevel: info
+
+# GRPC configuration for the Traffic Manager.
+# This is identical to the grpc configuration for local clients.
+# See https://www.telepresence.io/docs/latest/reference/config/#grpc for more info
+grpc:
+  # maxReceiveSize is a quantity that configures the maximum message size that the traffic
+  # manager will service.
+  maxReceiveSize: 4Mi
+
+# podCIDRs is the verbatim list of CIDRs used when the podCIDRStrategy is set to environment
+podCIDRs: []
+
+# Enable/disable metriton reporting to ambassador
+metritonEnabled: true
+
+# podCIDRStrategy controls what strategy the traffic-manager will use for finding out what
+# CIDRs the cluster is using for its pods. Valid values are:
+#
+#  nodePodCIDRs extract CIDRs from the podCIDR and podCIDRs field of the Node Spec.
+#  coverPodIPs  extract IPs from the podIP and podIPs field of the Pod Status and compute the CIDRs needed to cover those IPs.
+#  environment  use CIDRs listed in the space separated POD_CIDRS environment variable verbatim.
+#  auto         first try nodePodCIDRs and if that fails, tru coverPodIPs
+#
+# Default: auto
+podCIDRStrategy: auto
+
+managerRbac:
+  # Default: true
+  create: true
+
+  # Whether the manager rbac should limit itself to only certain namespaces
+  # Default: false
+  namespaced: false
+
+  # If namespaced is true, which namespaces the managerRbac should apply to
+  namespaces: []
+
+intercept:
+  environment:
+    excluded: []
+
+timeouts:
+  # The duration the traffic manager should wait for an agent to arrive (i.e., to be registered in the traffic manager's state)
+  # Default: 30s
+  agentArrival: 30s
+
+################################################################################
+## Agent Injector Configuration
+################################################################################
+agentInjector:
+  name: agent-injector
+  secret:
+    name: mutator-webhook-tls
+  certificate:
+    regenerate: false
+
+    # The method used to generate the TLS certificate for the agent-injector.
+    #
+    # Possible options: helm or certmanager
+    #
+    # Default: helm
+    method: helm
+
+    # The certmanager configuration block
+    #
+    certmanager:
+      commonName: agent-injector
+      duration: 2160h0m0s
+      issuerRef:
+        name: telepresence
+        kind: Issuer
+
+  injectPolicy: OnDemand
+  webhook:
+    name: agent-injector-webhook
+    admissionReviewVersions: ["v1"]
+    servicePath: /traffic-agent
+    port: 443
+    failurePolicy: Ignore
+    reinvocationPolicy: IfNeeded
+    sideEffects: None
+    timeoutSeconds: 5
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+            - kube-node-lease
+  agentImage: {}
+
+################################################################################
+## Telepresence traffic-agent configuration
+################################################################################
+agent:
+  logLevel:
+  resources: {}
+  initResources: {}
+  appProtocolStrategy: http2Probe
+  port: 9900
+  image:
+    registry:
+    name:
+    tag:
+    pullSecrets: []
+    pullPolicy: IfNotPresent
+
+################################################################################
+## Telepresence API Server Configuration
+################################################################################
+telepresenceAPI:
+  # The port on agent's localhost where the API service can be found
+  # Default: 0
+  port: 0
+
+
+################################################################################
+## Tracing configuration
+################################################################################
+tracing: {}
+  # The port on which a grpc server will be exposed for traces
+  # To enable, set tracing to
+  #
+  # tracing:
+  #   grpcPort: 15766
+
+################################################################################
+## Prometheus Server Configuration
+################################################################################
+prometheus:
+  # Create the extra RBAC for non-admin users.
+  #
+  # Set this port number to enable a prometheus metrics http server for the
+  # traffic manager
+  # Default: 0
+  port: 0
+
+################################################################################
+## User Configuration
+################################################################################
+
+# Telepresence requires admin permissions for installation. Creating intercepts
+# requires lower permissions. Use the following configurations to create roles
+# so non-admin users can create intercepts.
+#
+# You do not need to create any extra RBAC if your users are cluster admins.
+# For more on how telepresence uses rbac, check out:
+# https://www.getambassador.io/docs/telepresence/latest/reference/rbac/
+clientRbac:
+
+  # Create the extra RBAC for non-admin users.
+  #
+  # Default: false
+  create: false
+
+  # The user accounts to bind to the Roles created by this chart. This can be a
+  # ServiceAccount, user account, user group, etc. depending on how accounts are
+  # managed in your cluster.
+  # This MUST be set.
+  #
+  # Default: []
+  subjects: []
+    # - kind: User
+    #   name: jane
+    #   apiGroup: rbac.authorization.k8s.io
+
+  # Create namespaced RoleBindings so that users only have access to create
+  # intercepts in certain namespaces.
+  #
+  # Default: false
+  namespaced: false
+
+  # The namespaces to create the RoleBindings in. No effect if namespaced: false
+  # Ambassador must always be one of the namespaces users have access to.
+  #
+  # Default: ambassador
+  namespaces:
+  - ambassador
+
+  ruleExtras: false
+
+rbac:
+  # Configure this release to ONLY create the rbac-related objects. This allows for RBAC and the
+  # installation to be managed separately. This can be used in conjunction with clientRbac.create=true
+  # and managerRbac.create=true to select which sets of rbac objects you wish to create.
+  #
+  # Default: false
+  only: false
+
+# Values specific to the helm chart hooks for managing upgrade/deleting
+hooks:
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+
+  # Falls back to the root securityContext if not supplied
+  securityContext:
+    {}
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources:
+    {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  busybox:
+    registry: docker.io
+    image: busybox
+    tag: latest
+    imagePullSecrets: []
+
+  curl:
+    registry: docker.io
+    image: "curlimages/curl"
+    tag: 8.1.1
+    imagePullSecrets: []
+
+client:
+  # Max time that the traffic-manager will keep a client connection alive when it doesn't receive
+  # any calls to Remain.
+  connectionTTL: 24h
+
+  routing:
+    # add the following subnets to the client's virtual network interface
+    # array of strings, example ["8.8.8.8/32", "6.7.8.9/32"]
+    alsoProxySubnets:  []
+
+    # remove the following subnets from the client's virtual network interface
+    # array of strings, example ["8.8.8.8/32", "6.7.8.9/32"]
+    neverProxySubnets: []
+
+    ## Allow the following subnets to be routed even if they conflict with other routes on the local machine
+    ## array of strings, example ["10.0.0.0/8"]
+    allowConflictingSubnets: []
+
+  dns:
+    # Tell client's DNS resolver to never send names with these suffixes to the cluster side resolver
+    excludeSuffixes: [".com", ".io", ".net", ".org", ".ru"]
+
+    # Tell client's DNS resolver to always send names with these suffixes to the cluster side resolver
+    includeSuffixes: []

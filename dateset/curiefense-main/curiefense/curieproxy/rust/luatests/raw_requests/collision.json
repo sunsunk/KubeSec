@@ -1,0 +1,76 @@
+[
+  {
+    "headers": {
+      ":authority": "www.collision.com",
+      ":method": "GET",
+      ":path": "/flow-test/step1",
+      "user-agent": "dummy",
+      "host": "www.collision.com",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "test multi flow actions",
+    "response": {
+      "action": "pass",
+      "tags": [
+        "host:www-collision-com",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "all",
+        "ip:2-3-4-5",
+        "network:2-3-4-0-23",
+        "sante",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:flow-control-collision-tests",
+        "aclname:flowcontrol",
+        "aclid:flowcontrol",
+        "contentfilterid:--default--",
+        "bot"
+      ]
+    }
+  },
+  {
+    "headers": {
+      ":authority": "www.collision.com",
+      ":method": "GET",
+      ":path": "/flow-test/step2",
+      "user-agent": "dummy",
+      "host": "www.collision.com",
+      "x-forwarded-for": "2.3.4.5"
+    },
+    "name": "test multi flow actions",
+    "response": {
+      "action": "pass",
+      "tags": [
+        "host:www-collision-com",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "all",
+        "ip:2-3-4-5",
+        "network:2-3-4-0-23",
+        "sante",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:flow-control-collision-tests",
+        "aclname:flowcontrol",
+        "aclid:flowcontrol",
+        "contentfilterid:--default--",
+        "bot",
+        "flowc1",
+        "flowc2",
+        "flowc3",
+        "flowall",
+        "flowc",
+        "fc-name:flow-control--action-collision-3-",
+        "fc-name:flow-control--action-collision-1-",
+        "fc-name:flow-control--action-collision-2-",
+        "fc-id:col1",
+        "fc-id:col2",
+        "fc-id:col3",
+        "flow-last-step"
+      ]
+    }
+  }
+]

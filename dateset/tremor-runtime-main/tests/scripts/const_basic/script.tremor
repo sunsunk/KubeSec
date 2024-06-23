@@ -1,0 +1,6 @@
+const A = 1;
+const B = "two";
+const C = [3];
+const D = {"four": 4};
+const E = 5.0;
+[A,B,C,D,E]

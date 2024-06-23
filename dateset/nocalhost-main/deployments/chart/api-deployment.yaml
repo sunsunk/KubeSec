@@ -1,0 +1,49 @@
+# Source: nocalhost/templates/api-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-api
+  labels:
+    app: dynamic_parameters-api
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters-api
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: dynamic_parameters-api
+    spec:
+      imagePullSecrets:
+      securityContext:
+      containers:
+        - name: dynamic_parameters-api
+          securityContext:
+          image: "dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+          command: [ "/app/nocalhost-api", "-c", "/app/config/config.yaml"]
+          volumeMounts:
+          - name: config-volume
+            mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nocalhost-api-config
+      nodeSelector:
+      affinity:
+      tolerations:

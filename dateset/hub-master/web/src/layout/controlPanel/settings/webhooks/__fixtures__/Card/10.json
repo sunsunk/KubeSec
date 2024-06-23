@@ -1,0 +1,34 @@
+{
+  "webhookId": "d1e1299b-c3ce-4618-b67b-f5e63f4b891f",
+  "name": "Webhook name",
+  "description": "this is a test description",
+  "url": "http://jksdhfkjfds",
+  "contentType": "application/json",
+  "template": "{\n    \"event\": {\n        \"id\": \"{{ .Event.ID }}\",\n        \"kind\": {{ .Event.Kind }}\n    },\n    \"package\": {\n        \"kind\": {{ .Package.Kind }},\n        \"name\": \"{{ .Package.Name }}\",\n        \"version\": \"{{ .Package.Version }}\",\n        \"publisher\": \"{{ .Package.Publisher }}\",\n        \"url\": \"{{ .Package.URL }}\"\n    }\n}",
+  "active": true,
+  "eventKinds": [0],
+  "packages": [
+    {
+      "packageId": "701964f8-1730-45d2-bdfa-ae2b2d0ecac6",
+      "name": "envoy",
+      "logoImageId": "c5cfce82-9b0c-4a26-9a8d-c9d0fd5aa2cc",
+      "repository": {
+        "repositoryId": "d3945a69-2aae-4ff9-8fb3-ce3b070d0384",
+        "kind": 0,
+        "name": "stable",
+        "displayName": "Stable",
+        "organizationName": "helm",
+        "organizationDisplayName": "Helm"
+      }
+    }
+  ],
+  "lastNotifications": [
+    {
+      "notificationId": "0f1c1a3f-55f7-4d7c-91e6-8ed081a1f400",
+      "createdAt": 1590852609,
+      "processed": true,
+      "processedAt": 1590852610,
+      "error": "template: :2:20: executing \"\" at <.kjsk>: can't evaluate field kjsk in type *hub.NotificationTemplateData"
+    }
+  ]
+}

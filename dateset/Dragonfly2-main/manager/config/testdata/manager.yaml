@@ -1,0 +1,107 @@
+server:
+  name: foo
+  workHome: foo
+  cacheDir: foo
+  logDir: foo
+  logMaxSize: 512
+  logMaxAge: 5
+  logMaxBackups: 3
+  pluginDir: foo
+  grpc:
+    advertiseIP: 0.0.0.0
+    listenIP: 0.0.0.0
+    port:
+      start: 65003
+      end: 65003
+  rest:
+    addr: :8080
+    tls:
+      cert: foo
+      key: foo
+
+auth:
+  jwt:
+    realm: foo
+    key: bar
+    timeout: 30s
+    maxRefresh: 1m
+
+database:
+  type: mysql
+  mysql:
+    user: foo
+    password: foo
+    host: foo
+    port: 3306
+    dbname: foo
+    tlsConfig: preferred
+    tls:
+      cert: foo
+      key: foo
+      ca: foo
+      insecureSkipVerify: true
+    migrate: true
+  postgres:
+    user: foo
+    password: foo
+    host: foo
+    port: 5432
+    dbname: foo
+    sslMode: disable
+    timezone: UTC
+    migrate: true
+  redis:
+    addrs: [foo, bar]
+    masterName: baz
+    password: bar
+    db: 0
+    brokerDB: 1
+    backendDB: 2
+
+cache:
+  redis:
+    ttl: 1s
+  local:
+    size: 10000
+    ttl: 1s
+
+job:
+  preheat:
+    registryTimeout: 1m
+    tls:
+      caCert: testdata/ca.crt
+  syncPeers:
+    interval: 13h
+    timeout: 2m
+
+objectStorage:
+  enable: true
+  name: s3
+  endpoint: 127.0.0.1
+  accessKey: foo
+  secretKey: bar
+  region: baz
+  s3ForcePathStyle: false
+
+security:
+  autoIssueCert: true
+  caCert: testdata/ca.crt
+  caKey: testdata/ca.key
+  tlsPolicy: force
+  certSpec:
+    dnsNames:
+      - foo
+    ipAddresses:
+      - 0.0.0.0
+    validityPeriod: 1s
+
+metrics:
+  enable: true
+  addr: :8000
+
+network:
+  enableIPv6: true
+
+trainer:
+  enable: true
+  bucketName: models

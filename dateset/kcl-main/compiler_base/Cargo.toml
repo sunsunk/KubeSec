@@ -1,0 +1,26 @@
+[package]
+name = "compiler_base"
+version = "0.1.0"
+edition = "2021"
+authors = ["zongzhe1024@163.com"]
+license = "Apache-2.0 OR MIT"
+description = "A common domain programming language framework."
+readme = "README.md"
+homepage = "https://github.com/kcl-lang/kcl"
+repository = "https://github.com/kcl-lang/kcl"
+keywords = ["compiler"]
+categories = ["command-line-utilities"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[workspace]
+members = [
+    "session",
+    "macros",
+    "span",
+    "error",
+    "parallel",
+    "3rdparty/rustc_errors",
+]

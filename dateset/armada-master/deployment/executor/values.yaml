@@ -1,0 +1,45 @@
+image:
+  repository: gresearchdev/armada-executor
+  tag: 0.0.0-latest
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 300m
+  requests:
+    memory: 512Mi
+    cpu: 200m
+additionalLabels: {}
+additionalClusterRoleBindings: []
+additionalVolumeMounts: []
+additionalVolumes: []
+terminationGracePeriodSeconds: 5
+nodeSelector: {}
+# -- Tolerations
+tolerations: []
+customServiceAccount: null
+serviceAccount: null
+priorityClassName: ""
+
+healthcheck:
+  enabled: false
+
+priorityClasses:
+  - name: armada-default
+    description: "Default priority class for pods created by Armada."
+    globalDefault: false
+    value: 1000
+  - name: armada-preemptible
+    description: "Priority class to be used for preemptible jobs."
+    globalDefault: false
+    value: 900
+
+prometheus:
+  enabled: false
+  labels: {}
+  scrapeInterval: 10s
+  scrapeTimeout: 10s
+
+applicationConfig:
+  httpPort: 8080
+  apiConnection:
+    armadaUrl: ""

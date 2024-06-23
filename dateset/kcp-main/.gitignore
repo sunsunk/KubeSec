@@ -1,0 +1,30 @@
+.kcp*
+contrib/demo/clusters/kind/*.yaml
+contrib/demo/clusters/kind/*.kubeconfig
+*.log
+coverage.*
+tools
+build
+vendor
+goio.yaml
+
+# JetBrains IDE files
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Common editor / temporary files
+.DS_Store
+
+# Folder where each developer can store temporary files
+tmp
+
+.prometheus_data
+.prometheus-config.yaml
+.prometheus-pid
+
+go.work
+go.work.*

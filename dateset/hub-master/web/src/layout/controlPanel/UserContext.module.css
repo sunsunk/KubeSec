@@ -1,0 +1,67 @@
+.badgeIcon {
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  line-height: 1rem;
+  top: 0 !important;
+}
+
+.badgeContent {
+  line-height: 1rem;
+}
+
+.ctxBtn {
+  width: 210px;
+  border-color: var(--color-1-500);
+}
+
+.ctxBtn:not(.disabled):not(:disabled):hover,
+.ctxBtn:focus,
+.ctxBtn:active,
+.ctxBtn.active {
+  border-color: var(--color-1-500) !important;
+}
+
+.loading {
+  left: -22px;
+  top: 20px;
+}
+
+.dropdown {
+  top: 80%;
+  max-width: 350px;
+}
+
+.icon {
+  min-width: 16px;
+}
+
+.ctxWrapper {
+  padding-bottom: 1.25rem;
+}
+
+.legendCtx {
+  font-size: 70%;
+  margin-bottom: 0.15rem;
+}
+
+.caret {
+  bottom: 6px;
+  right: 7px;
+}
+
+@media only screen and (max-width: 767.98px) and (min-width: 576px) {
+  .ctxBtn {
+    width: 150px;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .ctxBtn {
+    line-height: 1.5rem !important;
+  }
+
+  .loading {
+    top: 22px;
+  }
+}

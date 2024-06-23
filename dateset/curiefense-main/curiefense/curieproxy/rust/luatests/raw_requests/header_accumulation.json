@@ -1,0 +1,147 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/header_acc_1",
+      "user-agent": "dummy",
+      "x-forwarded-for": "1.2.3.4"
+    },
+    "name": "test for a single header (1)",
+    "response": {
+      "gf_triggers": [
+        {
+          "trigger_name": "header 1",
+          "action": "monitor",
+          "section": "uri",
+          "trigger_id": "header1"
+        }
+      ],
+      "action": "pass",
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:1-2-3-4",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "bot",
+        "header1"
+      ],
+      "headers": {
+        "header1": "value_1"
+      }
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/nandemonai",
+      "user-agent": "dummy",
+      "x-forwarded-for": "1.2.3.4"
+    },
+    "plugins": {
+      "header": {
+        "test": "yes"
+      }
+    },
+    "name": "test for a single header (2)",
+    "response": {
+      "gf_triggers": [
+        {
+          "section": "plugins",
+          "value": "yes",
+          "trigger_name": "header 2",
+          "action": "monitor",
+          "name": "header.test",
+          "trigger_id": "header2"
+        }
+      ],
+      "action": "pass",
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:1-2-3-4",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "bot",
+        "header2"
+      ],
+      "headers": {
+        "header2": "value_2"
+      }
+    }
+  },
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/header_acc_1",
+      "user-agent": "dummy",
+      "x-forwarded-for": "1.2.3.4"
+    },
+    "plugins": {
+      "header": {
+        "test": "yes"
+      }
+    },
+    "name": "test for two headers",
+    "response": {
+      "gf_triggers": [
+        {
+          "trigger_name": "header 1",
+          "action": "monitor",
+          "section": "uri",
+          "trigger_id": "header1"
+        },
+        {
+          "section": "plugins",
+          "value": "yes",
+          "trigger_name": "header 2",
+          "action": "monitor",
+          "name": "header.test",
+          "trigger_id": "header2"
+        }
+      ],
+      "action": "pass",
+      "tags": [
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "all",
+        "sante",
+        "ip:1-2-3-4",
+        "securitypolicy-entry:default",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "aclid:--default--",
+        "contentfilterid:--default--",
+        "bot",
+        "header1",
+        "header2"
+      ],
+      "headers": {
+        "header1": "value_1",
+        "header2": "value_2"
+      }
+    }
+  }
+]

@@ -1,0 +1,160 @@
+# Source: hwameistor/templates/local-storage-csi-controller.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-local-storage-csi-controller 
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: hwameistor-local-storage-csi-controller
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hwameistor-local-storage-csi-controller
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - hwameistor-local-storage
+            topologyKey: topology.lvm.hwameistor.io/node
+      containers:
+      - args:
+        - --v=5
+        - --csi-address=$(CSI_ADDRESS)
+        - --leader-election=true
+        - --feature-gates=Topology=true
+        - --strict-topology
+        - --extra-create-metadata=true
+        env:
+        - name: CSI_ADDRESS
+          value: /csi/csi.sock
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: provisioner
+        resources: 
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --v=5
+        - --csi-address=$(CSI_ADDRESS)
+        - --leader-election=true
+        - --timeout=120s
+        env:
+        - name: CSI_ADDRESS
+          value: /csi/csi.sock
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: attacher
+        resources: 
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+          - "--v=5"
+          - "--csi-address=$(CSI_ADDRESS)"
+          - "--leader-election"
+          - "--http-endpoint=:8080"
+        env:
+          - name: CSI_ADDRESS
+            value: /csi/csi.sock
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: monitor
+        volumeMounts:
+          - name: socket-dir
+            mountPath: /csi
+        ports:
+          - containerPort: 8080
+            name: http-endpoint
+            protocol: TCP
+        livenessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /healthz/leader-election
+            port: http-endpoint
+          initialDelaySeconds: 10
+          timeoutSeconds: 10
+          periodSeconds: 20
+      - args:
+        - --v=5
+        - --csi-address=$(CSI_ADDRESS)
+        - --leader-election=true
+        env:
+        - name: CSI_ADDRESS
+          value: /csi/csi.sock
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: resizer
+        resources: 
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --v=5
+        - --leader-election=true
+        name: snapshot-controller
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        resources:
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+          - --v=5
+          - --leader-election=true
+          - --csi-address=$(CSI_ADDRESS)
+          - --leader-election
+        env:
+          - name: CSI_ADDRESS
+            value: /csi/csi.sock
+        volumeMounts:
+          - mountPath: /csi
+            name: socket-dir
+        name: csi-snapshotter
+        image: dynamic_parameters/dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        resources:
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      priorityClassName: dynamic_parameters
+      restartPolicy: Always
+      serviceAccountName: hwameistor-admin 
+      serviceAccount: hwameistor-admin
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
+      - effect: NoSchedule
+        key: node.cloudprovider.kubernetes.io/uninitialized
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: dynamic_parameters/plugins/lvm.hwameistor.io
+          type: DirectoryOrCreate
+        name: socket-dir

@@ -1,0 +1,27 @@
+distspecversion: 1.1.0
+http:
+  address: 127.0.0.1
+  auth:
+    faildelay: 5
+    htpasswd:
+      path: test/data/htpasswd
+    ldap:
+      address: ldap.example.org
+      basedn: ou=Users,dc=example,dc=org
+      credentialsFile: examples/config-ldap-credentials.json
+      port: 389
+      skipverify: false
+      starttls: false
+      subtreesearch: true
+      userattribute: uid
+  port: 8080
+  realm: zot
+  tls:
+    cert: test/data/server.cert
+    key: test/data/server.key
+log:
+  audit: /tmp/zot-audit.log
+  level: debug
+  output: /tmp/zot.log
+storage:
+  rootdirectory: /tmp/zot

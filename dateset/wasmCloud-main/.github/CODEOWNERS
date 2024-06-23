@@ -1,0 +1,47 @@
+# Default to org maintainers
+* @wasmCloud/org-maintainers
+
+# .github CI
+.github @wasmCloud/ci-maintainers
+.github/CODEOWNERS @wasmCloud/org-maintainers
+
+# nix
+.github/actions/build-nix @wasmCloud/ci-maintainers
+.github/actions/install-nix @wasmCloud/ci-maintainers
+.github/workflows/nix.yml @wasmCloud/ci-maintainers
+flake.* @wasmCloud/ci-maintainers
+garnix.yaml @wasmCloud/ci-maintainers
+
+# host-related code
+crates/actor @wasmCloud/host-maintainers
+crates/compat @wasmCloud/host-maintainers
+crates/host @wasmCloud/host-maintainers
+crates/host-sys @wasmCloud/host-maintainers
+crates/runtime @wasmCloud/host-maintainers
+src/main.rs @wasmCloud/host-maintainers
+tests/actors @wasmCloud/host-maintainers
+tests/providers @wasmCloud/host-maintainers
+tests/local.rs @wasmCloud/host-maintainers
+tests/wasmbus.rs @wasmCloud/host-maintainers
+wit @wasmCloud/host-maintainers
+Cargo.* @wasmCloud/host-maintainers
+.cargo @wasmCloud/host-maintainers
+
+# shared crates
+crates/control-interface @wasmCloud/control-interface-maintainers
+crates/core @wasmCloud/org-maintainers
+crates/opentelemetry-nats @wasmCloud/observability-maintainers
+crates/provider-archive @wasmCloud/capability-provider-maintainers
+crates/provider-sdk @wasmCloud/capability-provider-sdk-maintainers
+crates/provider-wit-bindgen @wasmCloud/capability-provider-wit-bindgen-maintainers
+crates/provider-wit-bindgen-macro @wasmCloud/capability-provider-wit-bindgen-maintainers
+crates/tracing @wasmCloud/observability-maintainers
+crates/wascap @wasmCloud/wascap-maintainers
+
+# projects
+crates/providers @wasmCloud/capability-provider-maintainers
+crates/wash-cli @wasmCloud/wash-maintainers
+crates/wash-lib @wasmCloud/wash-maintainers
+examples @wasmCloud/examples-maintainers
+vendor/capability-providers @wasmCloud/capability-provider-maintainers
+washboard-ui @wasmCloud/washboard-maintainers

@@ -1,0 +1,19 @@
+# Source: dapr/charts/dapr_config/templates/dapr_default_config.yaml
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: daprsystem
+  namespace: default
+  labels:
+    app.kubernetes.io/component: config
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  mtls:
+    enabled: true
+    workloadCertTTL: 24h
+    allowedClockSkew: 15m
+    controlPlaneTrustDomain: cluster.local
+    sentryAddress: dapr-sentry.default.svc.cluster.local:443

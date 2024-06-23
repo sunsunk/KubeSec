@@ -1,0 +1,16 @@
+version: v2beta1
+name: import3
+
+vars:
+  TOP: import3
+  IMPORT3: import3
+
+pipelines:
+  import3:
+    run: |-
+      echo ${IMPORT3}
+  import3-dep:
+    run: |-
+      echo ${IMPORT3}
+      echo ${devspace.name} > dependency-name.txt
+      echo ${DEVSPACE_TMPDIR} > dependency-temp.txt

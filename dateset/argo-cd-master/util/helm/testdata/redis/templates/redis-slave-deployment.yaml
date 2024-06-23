@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-slave
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: "dynamic_parameters"
+    heritage: "dynamic_parameters"
+spec:
+  replicas: dynamic_parameters
+  template:
+    metadata:
+      labels:
+        release: "dynamic_parameters"
+        role: slave
+        app: dynamic_parameters
+      annotations:
+    spec:
+      imagePullSecrets:
+        - name: dynamic_parameters
+      serviceAccountName: "dynamic_parameters"
+      nodeSelector:
+      tolerations:
+      schedulerName: "dynamic_parameters"
+      affinity:
+      containers:
+      - name: dynamic_parameters
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        args:
+        env:
+        - name: REDIS_REPLICATION_MODE
+          value: slave
+        - name: REDIS_MASTER_HOST
+          value: dynamic_parameters-master
+        - name: REDIS_PORT
+          value: dynamic_parameters
+        - name: REDIS_MASTER_PORT_NUMBER
+          value: dynamic_parameters
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dynamic_parameters
+              name: dynamic_parameters
+              key: redis-password
+        - name: REDIS_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dynamic_parameters
+              name: dynamic_parameters
+              key: redis-password
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: REDIS_DISABLE_COMMANDS
+          value: dynamic_parameters
+        - name: REDIS_EXTRA_FLAGS
+          value: dynamic_parameters
+        ports:
+        - name: redis
+          containerPort: dynamic_parameters
+        resources:
+
+---

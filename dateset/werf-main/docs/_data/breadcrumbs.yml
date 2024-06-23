@@ -1,0 +1,68 @@
+en:
+  /documentation: &documentation
+    title: Documentation
+    url: /index.html
+  /usage: &documentation-usage
+    title: Usage
+    url: usage/project_configuration/overview.html
+  /usage/project_configuration: &documentation-usage-project_configuration
+    title: Project configuration
+    url: usage/project_configuration/overview.html
+  /usage/build: &documentation-usage-build_draft
+    title: Build
+    url: usage/build/overview.html
+  /usage/build/stapel: &documentation-usage-build_draft-stapel
+    title: Stapel
+    url: usage/build/stapel/overview.html
+  /usage/deploy: &documentation-usage-deploy
+    title: Deploy
+    url: usage/deploy/overview.html
+  /usage/distribute: &documentation-usage-distribute
+    title: Distribute
+    url: usage/distribute/bundles.html
+  /usage/cleanup: &documentation-usage-cleanup
+    title: Cleanup
+    url: usage/cleanup/cr_cleanup.html
+  /reference: &documentation-reference
+    title: Reference
+    url: /reference/werf_yaml.html
+  /reference/cli: &documentation-reference-cli
+    title: Command line interface
+    url: /reference/cli/overview.html
+  /resources: &documentation-resources
+    title: Resources
+    url: /resources/how_to_migrate_from_v1_1_to_v1_2.html
+ru:
+  /documentation:
+    <<: *documentation
+    title: Документация
+  /usage:
+    <<: *documentation-usage
+    title: Использование
+  /usage/project_configuration:
+    <<: *documentation-usage-project_configuration
+    title: Конфигурация проекта
+  /usage/build:
+    <<: *documentation-usage-build_draft
+    title: Сборка
+  /usage/build/stapel:
+    <<: *documentation-usage-build_draft-stapel
+    title: Stapel
+  /usage/deploy:
+    <<: *documentation-usage-deploy
+    title: Развертывание
+  /usage/distribute:
+    <<: *documentation-usage-distribute
+    title: Дистрибуция
+  /usage/cleanup:
+    <<: *documentation-usage-cleanup
+    title: Очистка
+  /reference:
+    <<: *documentation-reference
+    title: Справочник
+  /reference/cli:
+    <<: *documentation-reference-cli
+    title: Интерфейс командной строки
+  /resources:
+    <<: *documentation-resources
+    title: Ресурсы

@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: dynamic_parameters
+  labels:
+    app: istiod
+    release: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+subjects:
+  - kind: ServiceAccount
+    namespace: dynamic_parameters
+
+---

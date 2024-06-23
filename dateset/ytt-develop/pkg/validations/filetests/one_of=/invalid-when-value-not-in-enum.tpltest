@@ -1,0 +1,11 @@
+#@assert/validate one_of=["debug","info","warning","error","fatal"]
+foo: critical
+
++++
+
+ERR:
+  foo
+    from: stdin:2
+    - must be: one of ["debug", "info", "warning", "error", "fatal"] (by: stdin:1)
+      found: not one of allowed values
+

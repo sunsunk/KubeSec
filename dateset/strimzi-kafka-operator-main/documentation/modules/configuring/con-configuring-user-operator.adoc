@@ -1,0 +1,61 @@
+// Module included in the following assemblies:
+//
+// ref-kafka-entity-operator.adoc
+
+[id='user-operator-{context}']
+= Configuring the User Operator
+
+[role="_abstract"]
+Use `userOperator` properties in `Kafka.spec.entityOperator` to configure the User Operator.
+The following properties are supported:
+
+`watchedNamespace`::
+The Kubernetes namespace in which the User Operator watches for `KafkaUser` resources.
+Default is the namespace where the Kafka cluster is deployed.
+
+`reconciliationIntervalSeconds`::
+The interval between periodic reconciliations in seconds.
+Default `120`.
+
+`image`::
+The `image` property can be used to configure the container image which will be used.
+To learn more, refer to the information provided on link:{BookURLConfiguring}#con-common-configuration-images-reference[configuring the `image` property`^].
+
+`resources`::
+The `resources` property configures the amount of resources allocated to the User Operator.
+You can specify requests and limits for `memory` and `cpu` resources. 
+The requests should be enough to ensure a stable performance of the operator.
+
+`logging`::
+The `logging` property configures the logging of the User Operator.
+To learn more, refer to the information provided on link:{BookURLConfiguring}#property-user-operator-logging-reference[User Operator logging^].
+
+`secretPrefix`::
+The `secretPrefix` property adds a prefix to the name of all Secrets created from the KafkaUser resource. For example, `secretPrefix: kafka-` would prefix all Secret names with `kafka-`. So a KafkaUser named `my-user` would create a Secret named `kafka-my-user`.
+
+.Example User Operator configuration
+[source,yaml,subs=attributes+]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    # ...
+  zookeeper:
+    # ...
+  entityOperator:
+    # ...
+    userOperator:
+      watchedNamespace: my-user-namespace
+      reconciliationIntervalSeconds: 60
+      resources:
+        requests:
+          cpu: "1"
+          memory: 500Mi
+        limits:
+          cpu: "1"
+          memory: 500Mi
+    # ...
+----

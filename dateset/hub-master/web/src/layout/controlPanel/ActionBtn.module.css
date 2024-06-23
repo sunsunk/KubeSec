@@ -1,0 +1,26 @@
+.tooltip {
+  width: 150px;
+}
+
+.tooltipArrow {
+  margin-top: 7px;
+  left: 10px;
+}
+
+.tooltipArrow::before {
+  border-bottom-color: var(--bs-dark) !important;
+}
+
+.tooltipContent {
+  background-color: var(--bs-dark) !important;
+}
+
+.disabled {
+  cursor: no-drop !important;
+}
+
+@media (hover: hover) {
+  .tooltip {
+    opacity: 0.9;
+  }
+}

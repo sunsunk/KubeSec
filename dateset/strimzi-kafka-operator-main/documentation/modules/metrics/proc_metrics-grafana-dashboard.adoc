@@ -1,0 +1,93 @@
+// This assembly is included in the following assemblies:
+//
+// metrics/assembly_metrics-grafana.adoc
+
+[id='proc-metrics-grafana-dashboard-{context}']
+
+= Enabling the example Grafana dashboards
+
+[role="_abstract"]
+Use Grafana to provide visualizations of Prometheus metrics on customizable dashboards.
+
+You can use your own Grafana deployment or deploy Grafana using the xref:assembly-metrics-config-files-{context}[example metrics configuration files] provided by Strimzi.
+The example files include a configuration file for a Grafana deployment
+
+* `examples/metrics/grafana-install/grafana.yaml`
+
+Strimzi also provides xref:ref-metrics-dashboards-{context}[example dashboard configuration files for Grafana] in JSON format.
+
+* `examples/metrics/grafana-dashboards`
+
+This procedure uses the example Grafana configuration file and example dashboards.
+
+The example dashboards are a good starting point for monitoring key metrics, but they don't show all the metrics supported by Kafka.
+You can modify the example dashboards or add other metrics, depending on your infrastructure.
+
+NOTE: No alert notification rules are defined.
+
+When accessing a dashboard, you can use the `port-forward` command to forward traffic from the Grafana pod to the host.
+The name of the Grafana pod is different for each user.
+
+.Prerequisites
+* xref:proc-metrics-kafka-deploy-options-{context}[Metrics are configured for the Kafka cluster resource]
+* xref:assembly-metrics-prometheus-{context}[Prometheus and Prometheus Alertmanager are deployed]
+
+.Procedure
+
+. Deploy Grafana.
++
+[source,shell,subs="+quotes,attributes"]
+kubectl apply -f grafana.yaml
+
+. Get the details of the Grafana service.
++
+[source,shell]
+----
+kubectl get service grafana
+----
++
+For example:
++
+[table,stripes=none]
+|===
+|NAME     |TYPE      |CLUSTER-IP    |PORT(S)
+
+|grafana  |ClusterIP |172.30.123.40 |3000/TCP
+|===
++
+Note the port number for port forwarding.
+
+. Use `port-forward` to redirect the Grafana user interface to `localhost:3000`:
++
+[source,shell]
+----
+kubectl port-forward svc/grafana 3000:3000
+----
+
+. In a web browser, access the Grafana login screen using the URL `http://localhost:3000`.
++
+The Grafana Log In page appears.
+
+. Enter your user name and password, and then click *Log In*.
++
+The default Grafana user name and password are both `admin`. After logging in for the first time, you can change the password.
+
+. In *Configuration > Data Sources*, add Prometheus as a _data source_.
++
+* Specify a name
+* Add _Prometheus_ as the type
+* Specify a Prometheus server URL
++
+The Prometheus operator service (`prometheus-operated`) is accessible internally within the Kubernetes cluster on port 9090: `\http://prometheus-operated:9090`.
++
+Save and test the connection when you have added the details.
+
+. Click the *+* icon and then click *Import*.
+
+. In `examples/metrics/grafana-dashboards`, copy the JSON of the dashboard to import.
+
+. Paste the JSON into the text box, and then click *Load*.
+
+. Repeat steps 7-9 for the other example Grafana dashboards.
+
+The imported Grafana dashboards are available to view from the *Dashboards* home page.

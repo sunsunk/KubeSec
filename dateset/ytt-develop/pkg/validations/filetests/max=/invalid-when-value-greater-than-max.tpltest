@@ -1,0 +1,11 @@
+#@assert/validate max=10
+foo: 11
+
++++
+
+ERR:
+  foo
+    from: stdin:2
+    - must be: a value <= 10 (by: stdin:1)
+      found: value > 10
+

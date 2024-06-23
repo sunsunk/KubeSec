@@ -1,0 +1,126 @@
+# Source: dapr/charts/dapr_sentry/templates/dapr_sentry_deployment.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dapr-trust-bundle
+  namespace: default
+  labels:
+    app: dapr-sentry
+    app.kubernetes.io/component: sentry
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+
+---
+# Source: dapr/charts/dapr_sentry/templates/dapr_sentry_deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dapr-trust-bundle
+  namespace: default
+  labels:
+    app: dapr-sentry
+    app.kubernetes.io/component: sentry
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+
+---
+# Source: dapr/charts/dapr_sentry/templates/dapr_sentry_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dapr-sentry
+  namespace: default
+  labels:
+    app: dapr-sentry
+    app.kubernetes.io/component: sentry
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dapr-sentry
+  template:
+    metadata:
+      labels:
+        app: dapr-sentry
+        app.kubernetes.io/component: sentry
+        app.kubernetes.io/managed-by: helm
+        app.kubernetes.io/name: my-release
+        app.kubernetes.io/part-of: dapr
+        app.kubernetes.io/version: edge
+      annotations:
+        dapr.io/control-plane: sentry
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/"
+    spec:
+      containers:
+      - name: dapr-sentry
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 5
+        image: "ghcr.io/dapr/sentry:edge"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 50001
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        resources:
+          {}
+        volumeMounts:
+          - name: credentials
+            mountPath: /var/run/secrets/dapr.io/credentials
+            readOnly: true
+        command:
+        - "/sentry"
+        args:
+        - "--log-level"
+        - info
+        - "--enable-metrics"
+        - "--metrics-port"
+        - "9090"
+        - "--trust-domain"
+        - cluster.local
+      serviceAccountName: dapr-sentry
+      volumes:
+        - name: credentials
+          secret:
+            secretName: dapr-trust-bundle
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                    - linux

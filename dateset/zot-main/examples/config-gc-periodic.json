@@ -1,0 +1,24 @@
+{
+    "distSpecVersion": "1.1.0",
+    "storage": {
+        "rootDirectory": "/tmp/zot",
+        "gc": true,
+        "gcDelay": "1h",
+        "gcInterval": "1h",
+        "subPaths": {
+            "/a": {
+                "rootDirectory": "/tmp/zot1",
+                "gc": true,
+                "gcDelay": "1h",
+                "gcInterval": "1h"
+            }
+        }
+    },
+    "http": {
+        "address": "127.0.0.1",
+        "port": "8080"
+    },
+    "log": {
+        "level": "debug"
+    }
+}

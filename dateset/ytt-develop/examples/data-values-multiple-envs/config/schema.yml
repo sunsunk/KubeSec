@@ -1,0 +1,5 @@
+#@data/values-schema
+---
+#@schema/nullable
+version: ""
+port: 8080

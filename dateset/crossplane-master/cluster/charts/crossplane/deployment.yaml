@@ -1,0 +1,171 @@
+# Source: crossplane/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crossplane
+  namespace: default
+  labels:
+    app: crossplane
+    release: my-release    
+    helm.sh/chart: crossplane-0.0.1
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: cloud-infrastructure-controller
+    app.kubernetes.io/part-of: crossplane
+    app.kubernetes.io/name: crossplane
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crossplane
+      release: my-release
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: crossplane
+        release: my-release        
+        helm.sh/chart: crossplane-0.0.1
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: cloud-infrastructure-controller
+        app.kubernetes.io/part-of: crossplane
+        app.kubernetes.io/name: crossplane
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.0.1"
+    spec:
+      serviceAccountName: crossplane
+      hostNetwork: false
+      initContainers:
+        - image: "xpkg.upbound.io/crossplane/crossplane:v0.0.1"
+          args:
+          - core
+          - init
+          imagePullPolicy: IfNotPresent
+          name: crossplane-init
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsUser: 65532
+          env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: crossplane-init
+                resource: limits.cpu
+                divisor: "1"
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: crossplane-init
+                resource: limits.memory
+                divisor: "1"
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: "WEBHOOK_SERVICE_NAME"
+            value: crossplane-webhooks
+          - name: "WEBHOOK_SERVICE_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: "WEBHOOK_SERVICE_PORT"
+            value: "9443"
+          - name: "TLS_CA_SECRET_NAME"
+            value: crossplane-root-ca
+          - name: "TLS_SERVER_SECRET_NAME"
+            value: crossplane-tls-server
+          - name: "TLS_CLIENT_SECRET_NAME"
+            value: crossplane-tls-client
+      containers:
+      - image: "xpkg.upbound.io/crossplane/crossplane:v0.0.1"
+        args:
+        - core
+        - start
+        imagePullPolicy: IfNotPresent
+        name: crossplane
+        resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 2
+          tcpSocket:
+            port: readyz
+        ports:
+        - name: readyz
+          containerPort: 8081
+        - name: webhooks
+          containerPort: 9443
+        securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsUser: 65532
+        env:
+          - name: GOMAXPROCS
+            valueFrom:
+              resourceFieldRef:
+                containerName: crossplane
+                resource: limits.cpu
+                divisor: "1"
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: crossplane
+                resource: limits.memory
+                divisor: "1"
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: LEADER_ELECTION
+            value: "true"
+          - name: "TLS_SERVER_SECRET_NAME"
+            value: crossplane-tls-server
+          - name: "TLS_SERVER_CERTS_DIR"
+            value: /tls/server
+          - name: "TLS_CLIENT_SECRET_NAME"
+            value: crossplane-tls-client
+          - name: "TLS_CLIENT_CERTS_DIR"
+            value: /tls/client
+        volumeMounts:
+          - mountPath: /cache
+            name: package-cache
+          - mountPath: /tls/server
+            name: tls-server-certs
+          - mountPath: /tls/client
+            name: tls-client-certs
+      volumes:
+      - name: package-cache
+        emptyDir:
+          medium: 
+          sizeLimit: 20Mi
+      - name: tls-server-certs
+        secret:
+          secretName: crossplane-tls-server
+      - name: tls-client-certs
+        secret:
+          secretName: crossplane-tls-client

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+{{ include "kanister-operator.helmLabels" . | indent 4 }}
+  name: {{ template "kanister-operator.fullname" . }}
+spec:
+  ports:
+  - port: {{ template "kanister-operator.servicePort" . }}
+    protocol: TCP
+    targetPort: {{ template "kanister-operator.targetPort" . }}
+    name: controller-port
+{{- if .Values.validatingWebhook.repositoryserver.enabled }}
+  - port:  {{ template "reposerver-controller.servicePort" . }}
+    protocol: TCP
+    targetPort: {{ template "reposerver-controller.targetPort" . }}
+    name: reposervercontroller-port
+{{- end }}
+  selector:
+    app: {{ template "kanister-operator.name" . }}
+status:
+  loadBalancer: {}

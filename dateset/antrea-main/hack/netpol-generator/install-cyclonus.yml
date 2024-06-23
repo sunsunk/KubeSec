@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cyclonus
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - command:
+        - ./cyclonus
+        - generate
+        - --include=upstream-e2e
+        - --exclude=
+        - --noisy=true
+        - --perturbation-wait-seconds=5
+        - --cleanup-namespaces=true
+        - --server-protocol=tcp,udp
+        name: cyclonus
+        imagePullPolicy: IfNotPresent
+        image: mfenwick100/cyclonus:v0.4.7
+      serviceAccount: cyclonus

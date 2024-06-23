@@ -1,0 +1,25 @@
+[workspace]
+
+members = [
+    "curiefense",
+    "curiefense-lua",
+    "curiefense-ffi",
+    "curiefense-py",
+    "curiefense-externalprocessing",
+]
+
+default-members = [
+    "curiefense",
+    "curiefense-lua",
+    "curiefense-ffi",
+    "curiefense-externalprocessing",
+]
+
+[profile.bench]
+debug = true
+lto = true
+codegen-units = 1
+
+[profile.release]
+lto = true
+codegen-units = 1

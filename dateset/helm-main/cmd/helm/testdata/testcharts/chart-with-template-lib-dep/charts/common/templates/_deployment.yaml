@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+        release: dynamic_parameters
+    spec:
+      containers:
+      -
+
+---

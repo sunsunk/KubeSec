@@ -1,0 +1,15 @@
+database: schemahero
+name: users
+schema:
+  mysql:
+    primaryKey: [id]
+    defaultCharset: utf8
+    columns:
+      - name: id
+        type: integer
+        constraints:
+          notNull: true
+      - name: email
+        type: varchar (255)
+        constraints:
+          notNull: true

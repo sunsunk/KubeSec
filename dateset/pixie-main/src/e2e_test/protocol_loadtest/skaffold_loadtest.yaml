@@ -1,0 +1,17 @@
+---
+apiVersion: skaffold/v4beta1
+kind: Config
+build:
+  artifacts:
+  - image: protocol_loadtest_server_image
+    context: .
+    bazel:
+      target: //src/e2e_test/protocol_loadtest:protocol_loadtest_server_image.tar
+  tagPolicy:
+    dateTime: {}
+  local:
+    push: true
+manifests:
+  kustomize:
+    paths:
+    - src/e2e_test/protocol_loadtest/k8s/server

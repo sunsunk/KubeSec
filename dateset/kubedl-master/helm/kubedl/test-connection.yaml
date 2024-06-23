@@ -1,0 +1,20 @@
+# Source: kubedl/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "my-release-kubedl-test-connection"
+  labels:
+    helm.sh/chart: kubedl-0.1.0
+    app.kubernetes.io/name: kubedl
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.4.2"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['my-release-kubedl:80/metrics']
+  restartPolicy: Never

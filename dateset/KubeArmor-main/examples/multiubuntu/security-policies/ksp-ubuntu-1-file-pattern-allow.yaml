@@ -1,0 +1,30 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-ubuntu-1-file-pattern-allow
+  namespace: multiubuntu
+spec:
+  severity: 5
+  message: "allow files following a pattern"
+  selector:
+    matchLabels:
+      container: ubuntu-1
+  process:
+    matchDirectories:
+    - dir: /bin/
+  file:
+    matchPaths:
+    - path: /root/.bashrc
+    - path: /root/.bash_history
+    matchPatterns:
+    - pattern: /etc/*hado?
+  action:
+    Allow
+
+# test
+# $ cat /etc/hosts
+# cat: /etc/hosts: Permission denied
+# $ cat /etc/shadow
+# root:*:18900:0:99999:7::: ...
+# $ cat /etc/gshadow
+# root:*:: ...

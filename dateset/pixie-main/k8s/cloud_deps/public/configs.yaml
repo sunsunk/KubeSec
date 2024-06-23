@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-announcement-config
+data:
+  # Flip this flag to enable announce kit for changelogs, release notes etc.
+  ANNOUNCEMENT_ENABLED: "false"
+  # The URL for the announce kit widget.
+  ANNOUNCE_WIDGET_URL: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-ld-config
+data:
+  # Set this key to enable launchdarkly to gate development features.
+  PL_LD_CLIENT_ID: ""
+  PL_LD_SDK_KEY: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-oauth-config
+data:
+  # Currently supported options are hydra and auth0.
+  # Hydra is the easiest option to get started with.
+  PL_OAUTH_PROVIDER: hydra
+  PL_AUTH_URI: /oauth/hydra
+  PL_AUTH_CLIENT_ID: auth-code-client
+  PL_AUTH_EMAIL_PASSWORD_CONN: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: segment-config
+data:
+  write-key: ""
+  ui-write-key: ""
+  cli-write-key: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-sentry-dsn-config
+data:
+  PL_PROD_SENTRY: ""
+  PL_DEV_SENTRY: ""
+  PL_OPERATOR_SENTRY: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-auth-connector-config
+data:
+  # Pixie can be used as an auth connector with other products. By calling "api/auth/<connector_name>",
+  # Pixie can send user info and access tokens to other products through the given callback URL.
+  PL_AUTH_CONNECTOR_NAME: ""
+  PL_AUTH_CONNECTOR_CALLBACK_URL: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pl-errors-config
+data:
+  # Pixie can send errors to Sentry. To do so, you can add the DSN for your sentry project here.
+  PL_SENTRY_DSN: ""

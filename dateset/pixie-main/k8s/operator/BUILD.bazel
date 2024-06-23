@@ -1,0 +1,79 @@
+# Copyright 2018- The Pixie Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "container_push")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("//bazel:images.bzl", "list_image_bundle")
+load("//bazel:kustomize.bzl", "kustomize_build")
+
+package(default_visibility = ["//visibility:public"])
+
+OPERATOR_IMAGE_TO_LABEL = {
+    "$(IMAGE_PREFIX)/operator-operator_image:$(BUNDLE_VERSION)": "//src/operator:operator_image",
+    "$(IMAGE_PREFIX)/operator-vizier_deleter:$(BUNDLE_VERSION)": "//src/utils/pixie_deleter:vizier_deleter_image",
+}
+
+container_bundle(
+    name = "image_bundle",
+    images = OPERATOR_IMAGE_TO_LABEL,
+    toolchains = [
+        "//k8s:image_prefix",
+        "//k8s:bundle_version",
+    ],
+)
+
+container_push(
+    name = "operator_images_push",
+    bundle = ":image_bundle",
+    format = "Docker",
+)
+
+list_image_bundle(
+    name = "list_image_bundle",
+    images = OPERATOR_IMAGE_TO_LABEL,
+    toolchains = [
+        "//k8s:image_prefix",
+        "//k8s:bundle_version",
+    ],
+)
+
+kustomize_build(
+    name = "vizier_crd",
+    srcs = glob(
+        ["crd/base/*.yaml"],
+        exclude = ["crd/base/kustomization.yaml"],
+    ),
+    kustomization = "crd/base/kustomization.yaml",
+)
+
+pkg_tar(
+    name = "operator_templates",
+    srcs = glob(
+        [
+            "helm/templates/*_*.yaml",
+        ],
+    ) + [
+        "helm/crds/olm_crd.yaml",
+        ":vizier_crd",
+    ],
+    package_dir = "/yamls",
+    remap_paths = {
+        "/operator/helm": "/",
+        "/operator/vizier_crd.yaml": "/crds/vizier_crd.yaml",
+    },
+    strip_prefix = "/k8s",
+)

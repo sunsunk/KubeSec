@@ -1,0 +1,83 @@
+# Source: kuma/templates/pre-upgrade-install-crds-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kuma-install-crds
+  namespace: default
+  labels:
+  
+    helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+spec:
+  template:
+    metadata:
+      name: kuma-install-crds-job
+      labels:
+    
+        helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+        app.kubernetes.io/name: kuma
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: kuma-install-crds
+      nodeSelector:
+      
+        kubernetes.io/os: linux
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: pre-upgrade-job
+          image: "docker.io/bitnami/kubectl:1.27.5"
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 65534
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          command: ["/kuma/scripts/install_crds.sh"]
+          volumeMounts:
+            - mountPath: /kuma/crds
+              name: crds
+              readOnly: true
+            - mountPath: /kuma/scripts
+              name: scripts
+              readOnly: true
+      initContainers:
+        - name: pre-upgrade-job-init
+          image: "docker.io/kumahq/kumactl:0.0.0-preview.vlocal-build"
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          volumeMounts:
+          - mountPath: /kuma/crds
+            name: crds
+          - mountPath: /kuma/scripts
+            name: scripts
+            readOnly: true
+          command: ["sh", "-c"]
+          args: ["/kuma/scripts/save_crds.sh"]
+      volumes:
+        - name: scripts
+          configMap:
+            name: kuma-install-crds-scripts
+            defaultMode: 0755
+        - name: crds
+          emptyDir: {}

@@ -1,0 +1,128 @@
+# syntax = docker/dockerfile:experimental
+FROM ubuntu:23.04 as ovs-builder
+
+ARG ARCH
+ARG DEBIAN_FRONTEND=noninteractive
+ENV SRC_DIR='/usr/src'
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+
+RUN apt update && apt install -y git curl
+
+# The support for AVX-512 depends on your build machine's CPU. judge it support the avx512 use the command 'cat /proc/cpuinfo | grep avx512'
+RUN cd /usr/src/ && \
+    git clone -b branch-3.1 --depth=1 https://github.com/openvswitch/ovs.git && \
+    cd ovs && \
+    # fix memory leak by ofport_usage and trim memory periodically
+    curl -s https://github.com/kubeovn/ovs/commit/25d71867370c9a44c66b973556338de7a4d9bad7.patch | git apply && \
+    # increase election timer
+    curl -s https://github.com/kubeovn/ovs/commit/31f736fb54cf00e893a23e396958883f54f4080f.patch | git apply && \
+    # add fdb update logging
+    curl -s https://github.com/kubeovn/ovs/commit/119ab5c7e104d25641cdf4506a359c5729acdd9a.patch | git apply && \
+    # fdb: fix mac learning in environments with hairpin enabled
+    curl -s https://github.com/kubeovn/ovs/commit/40d5597a9a3a09015dda2202f6aa81791c5c03f3.patch | git apply && \
+    # ovsdb-tool: add optional server id parameter for "join-cluster" command
+    curl -s https://github.com/kubeovn/ovs/commit/ebf61515da71fa2e23125a92859fbdb96dcbffe7.patch | git apply && \
+    # Add jitter parameter patch for netem qos
+    curl -s https://github.com/kubeovn/ovs/commit/2eaaf89fbf3ee2172719ed10d045fd79900edc8e.patch | git apply && \
+    # fix memory leak in qos
+    curl -s https://github.com/kubeovn/ovs/commit/6a4dd2f4b9311a227cc26fef7c398ae9b241311b.patch | git apply && \
+    # ovsdb-tool: add command fix-cluster
+    curl -s https://github.com/kubeovn/ovs/commit/f52c239f5ded40b503e4d217f916b46ca413da4c.patch | git apply
+
+RUN cd /usr/src/ && git clone -b branch-22.12 --depth=1 https://github.com/ovn-org/ovn.git && \
+    cd ovn && \
+    # change hash type from dp_hash to hash with field src_ip
+    curl -s https://github.com/kubeovn/ovn/commit/4ad8763f707ff4088ae61396c7931e8735f71f22.patch | git apply && \
+    # set ether dst addr for dnat on logical switch
+    curl -s https://github.com/kubeovn/ovn/commit/44875725ad6ce3cb38e4d471d540fe69ed204bff.patch | git apply && \
+    # modify src route priority
+    curl -s https://github.com/kubeovn/ovn/commit/da1388ece89b27012d081c31310fd577b036b071.patch | git apply && \
+    # fix reaching resubmit limit in underlay
+    curl -s https://github.com/kubeovn/ovn/commit/6934f1a1eb5986a904eefb560c0d6d57811453d9.patch | git apply && \
+    # ovn-controller: do not send GARP on localnet for Kube-OVN ports
+    curl -s https://github.com/kubeovn/ovn/commit/8af8751cdb55f582c675db921f2526b06fd3d8c0.patch | git apply
+
+RUN apt install -y build-essential fakeroot \
+    autoconf automake bzip2 debhelper-compat dh-exec dh-python dh-sequence-python3 dh-sequence-sphinxdoc \
+    graphviz iproute2 libcap-ng-dev libdbus-1-dev libnuma-dev libpcap-dev libssl-dev libtool libunbound-dev \
+    openssl pkg-config procps python3-all-dev python3-setuptools python3-sortedcontainers python3-sphinx \
+    libjemalloc-dev python3-pip libibverbs1 libibverbs-dev ibverbs-providers libsystemd-dev
+
+RUN pip3 install meson ninja pyelftools
+
+RUN cd /usr/src/ && \
+    curl -o dpdk-22.11.1.tar.xz https://fast.dpdk.org/rel/dpdk-22.11.1.tar.xz && \
+    tar xf dpdk-22.11.1.tar.xz && \
+    export DPDK_DIR=/usr/src/dpdk-stable-22.11.1 && \
+    export DPDK_BUILD=$DPDK_DIR/build && \
+    cd $DPDK_DIR && \
+    meson build && \
+    ninja -C build && \
+    ninja -C build install && \
+    ldconfig
+
+RUN cd /usr/src/ovs && \
+    ./boot.sh && \
+    ./configure --with-dpdk=shared && \
+    rm -rf .git && \
+    echo override_dh_shlibdeps: >> /usr/src/ovs/debian/rules && \
+    echo "\tdh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info" >> /usr/src/ovs/debian/rules && \
+    export DPDK_DIR=/usr/src/dpdk-stable-22.11.1 && \
+    CONFIGURE_OPTS='CFLAGS="-fPIC"' && \
+    if [ "$ARCH" = "amd64" ]; then CONFIGURE_OPTS='CFLAGS="-O2 -g -msse4.2 -mpopcnt -fPIC"'; fi && \
+    DATAPATH_CONFIGURE_OPTS='--prefix=/usr' EXTRA_CONFIGURE_OPTS=$CONFIGURE_OPTS make debian-deb
+
+RUN cd /usr/src/ovn && \
+    sed -i 's/OVN/ovn/g' debian/changelog && \
+    rm -rf .git && \
+    ./boot.sh && \
+    CONFIGURE_OPTS='--with-ovs-build=/usr/src/ovs/_debian CFLAGS="-fPIC"' && \
+    if [ "$ARCH" = "amd64" ]; then CONFIGURE_OPTS="--with-ovs-build=/usr/src/ovs/_debian CFLAGS='-O2 -g -msse4.2 -mpopcnt -fPIC'"; fi && \
+    OVSDIR=/usr/src/ovs EXTRA_CONFIGURE_OPTS=$CONFIGURE_OPTS DEB_BUILD_OPTIONS='parallel=8 nocheck' fakeroot debian/rules binary
+
+RUN mkdir /packages/ && \
+    cp /usr/src/openvswitch-*deb /packages && \
+    cp /usr/src/python3-openvswitch*deb /packages && \
+    cp /usr/src/ovn-*deb /packages && \
+    cd /packages && rm -f *source* *doc* *datapath* *docker* *vtep* *test* *dev*
+
+FROM ubuntu:23.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+
+RUN apt update && apt upgrade -y && apt install ca-certificates python3 hostname libunwind8 netbase \
+        ethtool iproute2 ncat libunbound-dev procps libatomic1 kmod iptables python3-netifaces python3-sortedcontainers \
+        tcpdump ipset curl uuid-runtime openssl inetutils-ping arping ndisc6 \
+        logrotate dnsutils net-tools strongswan strongswan-pki libcharon-extra-plugins \
+        libcharon-extauth-plugins libstrongswan-extra-plugins libstrongswan-standard-plugins \
+        python3-pip build-essential libssl-dev libibverbs-dev libnuma-dev libpcap-dev -y --no-install-recommends && \
+        rm -rf /var/lib/apt/lists/* && \
+        rm -rf /etc/localtime
+
+RUN pip3 install meson ninja pyelftools
+
+RUN mkdir -p /var/run/openvswitch && \
+    mkdir -p /var/run/ovn && \
+    mkdir -p /etc/cni/net.d && \
+    mkdir -p /opt/cni/bin
+
+ARG ARCH
+ENV CNI_VERSION=v1.4.1
+RUN curl -sSf -L --retry 5 https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-${ARCH}-${CNI_VERSION}.tgz | tar -xz -C . ./loopback ./portmap ./macvlan
+
+COPY --from=ovs-builder /usr/src/dpdk-stable-22.11.1 /usr/src/dpdk-stable-22.11.1
+
+RUN cd /usr/src/dpdk-stable-22.11.1 && \
+    rm -rf ./build && \
+    meson build && \
+    ninja -C build && \
+    ninja -C build install && \
+    ldconfig && \
+    rm -rf /usr/src/dpdk-stable-22.11.1
+
+
+RUN --mount=type=bind,target=/packages,from=ovs-builder,source=/packages  \
+    dpkg -i --ignore-depends=dpdk /packages/*.deb
+
+RUN cp /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd-dpdk /usr/sbin/ovs-vswitchd

@@ -1,0 +1,205 @@
+name: Continuous Integration
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      trigger_docker:
+        description: "'parsec-service-test-all' if docker build should be triggered"
+        required: false
+        default: ""
+
+env:
+  TEST_ALL_DOCKER_IMAGE: ${{ github.event.inputs.trigger_docker || 'ghcr.io/parallaxsecond/parsec-service-test-all' }}
+
+jobs:
+  build-and-export-test-all-docker:
+    runs-on: ubuntu-latest
+    # For running this job  we need to manually trigger the CI and set the variable
+    if: ${{ github.event.inputs.trigger_docker == 'parsec-service-test-all' }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the docker container
+      run: pushd e2e_tests/docker_image && docker build -t parsec-service-test-all -f parsec-service-test-all.Dockerfile . && popd
+    - name: Export the docker container
+      run: docker save parsec-service-test-all > /tmp/parsec-service-test-all.tar
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: parsec-service-test-all
+        path: /tmp/parsec-service-test-all.tar
+
+  all-providers:
+    name: Various tests targeting a Parsec image with all providers included
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "all"
+
+  build-all-providers-msrv:
+    name: MSRV - Cargo check all-providers
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "cargo-check"
+          rs-version: "1.66.0"
+
+  build-all-providers-stable:
+    name: Cargo check all-providers (current Rust stable)
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "cargo-check"
+
+  mbed-crypto-provider:
+    name: Integration tests using Mbed Crypto provider
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "mbed-crypto"
+
+  pkcs11-provider:
+    name: Integration tests using PKCS 11 provider
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "pkcs11 --no-stress-test"
+
+  tpm-provider:
+    name: Integration tests using TPM provider
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "tpm"
+
+  trusted-service-provider:
+    name: Integration tests using Crypto Trusted Service provider
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "trusted-service"
+
+  cryptoauthlib-provider:
+    name: Integration tests using CryptoAuthentication Library provider
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "cryptoauthlib --no-stress-test"
+
+  fuzz-test-checker:
+    name: Check that the fuzz testing framework is still working
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Load Docker
+        uses: ./.github/actions/load_docker
+        if: ${{ env.TEST_ALL_DOCKER_IMAGE == 'parsec-service-test-all' }}
+        with:
+          image-name: "${{ env.TEST_ALL_DOCKER_IMAGE }}"
+          image-path: "/tmp"
+        # Not running stress tests because rust-cryptoauthlib test-interface does not support required calls
+      - name: Run the fuzz test script From Container
+        # When running the container built on the CI
+        if: ${{ env.TEST_ALL_DOCKER_IMAGE == 'parsec-service-test-all' }}
+        run: CONTAINER_TAG=parsec-service-test-all ./fuzz.sh test
+      - name: Run the fuzz test script
+        if: ${{ env.TEST_ALL_DOCKER_IMAGE != 'parsec-service-test-all' }}
+        run: ./fuzz.sh test
+
+  on-disk-kim:
+    name: OnDiskKIM E2E tests on all providers
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build-and-export-test-all-docker]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the container to execute the test script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "on-disk-kim"
+
+  cross-compilation:
+    # Currently only the Mbed Crypto, PKCS 11, and TPM providers are tested as the other ones need to cross-compile other libraries.
+    name: Cross-compile Parsec to various targets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run the container to execute the test script
+        run:
+          docker run -v $(pwd):/tmp/parsec -w /tmp/parsec ghcr.io/parallaxsecond/parsec-service-test-cross-compile /tmp/parsec/test/cross-compile.sh
+        # When running the container built on the CI
+        # run: docker run -v $(pwd):/tmp/parsec -w /tmp/parsec -t parsec-service-test-cross-compile /tmp/parsec/test/cross-compile.sh
+
+  links:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Link Checker
+        uses: peter-evans/link-checker@v1
+        with:
+          args: -v -r *.md
+      - name: Fail if there were link errors
+        run: exit ${{ steps.lc.outputs.exit_code }}
+
+  cargo-deny:
+    name: "Run cargo deny"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: EmbarkStudios/cargo-deny-action@v1
+
+  mismatcher:
+    name: Check for mismatched dependencies (those that have more than one version)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.inputs.rev }}"
+      - name: Run the container to execute the dependency mismatcher script
+        uses: ./.github/actions/ci_script
+        with:
+          ci-flags: "mismatcher"

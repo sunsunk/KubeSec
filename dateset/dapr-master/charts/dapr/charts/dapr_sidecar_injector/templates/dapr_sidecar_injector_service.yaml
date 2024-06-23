@@ -1,0 +1,23 @@
+{{- if eq .Values.enabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: dapr-sidecar-injector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- range $key, $value := .Values.global.k8sLabels }}
+    {{ $key }}: {{ tpl $value $ }}
+    {{- end }}
+{{- if .Values.service.annotations }}
+{{ toYaml .Values.service.annotations | indent 4}}
+{{- end }}
+spec:
+  selector:
+    app: dapr-sidecar-injector
+  type: {{ .Values.service.type }}
+  ports:
+  - port: 443
+    targetPort: https
+    protocol: TCP
+    name: https
+{{- end }}

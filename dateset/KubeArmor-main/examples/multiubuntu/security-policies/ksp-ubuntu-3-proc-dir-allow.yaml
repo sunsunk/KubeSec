@@ -1,0 +1,28 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: ksp-ubuntu-3-proc-dir-allow
+  namespace: multiubuntu
+spec:
+  severity: 5
+  message: "allow credentials only"
+  selector:
+    matchLabels:
+      container: ubuntu-3
+  process:
+    matchDirectories:
+    - dir: /bin/
+  file:
+    matchDirectories:
+    - dir: /credentials/
+      recursive: true
+  action:
+    Allow
+
+# multiubuntu_test_08
+
+# test
+# $ cat /credentials/password
+# password file
+# $ cat /etc/hostname
+# cat: /etc/hostname: Permission denied

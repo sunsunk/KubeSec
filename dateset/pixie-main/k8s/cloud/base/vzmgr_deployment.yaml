@@ -1,0 +1,104 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vzmgr-server
+  labels:
+    db: pgsql
+spec:
+  selector:
+    matchLabels:
+      name: vzmgr-server
+  template:
+    metadata:
+      labels:
+        name: vzmgr-server
+        monitoring.gke.io/scrape: 'true'
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '51801'
+        prometheus.io/scheme: 'http'
+    spec:
+      containers:
+      - name: vzmgr-server
+        imagePullPolicy: IfNotPresent
+        image: cloud-vzmgr_server_image
+        ports:
+        - containerPort: 51800
+          name: http2
+        - containerPort: 51801
+          name: metrics-http
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /readyz
+            port: 51800
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 51800
+        envFrom:
+        - configMapRef:
+            name: pl-db-config
+        - configMapRef:
+            name: pl-tls-config
+        - configMapRef:
+            name: pl-domain-config
+        - configMapRef:
+            name: pl-jetstream-config
+        - configMapRef:
+            name: pl-errors-config
+            optional: true
+        env:
+        - name: PL_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloud-auth-secrets
+              key: jwt-signing-key
+        - name: PL_DATABASE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: database-key
+        - name: PL_ARTIFACT_TRACKER_SERVICE
+          valueFrom:
+            configMapKeyRef:
+              name: pl-service-config
+              key: PL_ARTIFACT_TRACKER_SERVICE
+        - name: PL_POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_USERNAME
+        - name: PL_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pl-db-secrets
+              key: PL_POSTGRES_PASSWORD
+        - name: PL_SEGMENT_WRITE_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: segment-config
+              key: write-key
+        volumeMounts:
+        - name: certs
+          mountPath: /certs
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 10100
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10100
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: certs
+        secret:
+          secretName: service-tls-certs

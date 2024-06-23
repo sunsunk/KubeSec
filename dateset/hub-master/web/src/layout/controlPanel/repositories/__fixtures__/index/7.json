@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "kind": 0,
+      "repository_id": "test",
+      "name": "test",
+      "url": "http://test.com",
+      "userAlias": "user"
+    }
+  ],
+  "paginationTotalCount": "1"
+}

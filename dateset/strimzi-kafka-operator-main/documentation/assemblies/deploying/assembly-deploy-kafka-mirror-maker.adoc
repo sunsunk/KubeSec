@@ -1,0 +1,27 @@
+// This assembly is included in the following assemblies:
+//
+// deploy/assembly-deploy-tasks.adoc
+// getting-started.adoc
+
+[id='kafka-mirror-maker-{context}']
+= Deploying Kafka MirrorMaker
+
+[role="_abstract"]
+Kafka MirrorMaker replicates data between two or more Kafka clusters, within or across data centers.
+This process is called mirroring to avoid confusion with the concept of Kafka partition replication.
+MirrorMaker consumes messages from a source cluster and republishes those messages to a target cluster.
+
+Data replication across clusters supports scenarios that require the following:
+
+* Recovery of data in the event of a system failure
+* Consolidation of data from multiple source clusters for centralized analysis
+* Restriction of data access to a specific cluster
+* Provision of data at a specific location to improve latency
+
+//Procedure to deploy a MirrorMaker cluster
+include::../../modules/deploying/proc-deploy-kafka-mirror-maker.adoc[leveloffset=+1]
+//Resources created for Kafka MirrorMaker 2
+include::../../modules/configuring/ref-list-of-mirrormaker2-resources.adoc[leveloffset=+1]
+//Resources created for Kafka MirrorMaker
+include::../../modules/configuring/ref-list-of-mirrormaker-resources.adoc[leveloffset=+1]
+

@@ -1,0 +1,21 @@
+---
+apiVersion: skaffold/v4beta1
+kind: Config
+build:
+  artifacts:
+  - image: jetstream_loadtest-publisher_image
+    context: .
+    bazel:
+      target: //src/e2e_test/jetstream_loadtest/publisher:publisher_image.tar
+  - image: jetstream_loadtest-subscriber_image
+    context: .
+    bazel:
+      target: //src/e2e_test/jetstream_loadtest/subscriber:subscriber_image.tar
+  tagPolicy:
+    dateTime: {}
+  local:
+    push: true
+manifests:
+  kustomize:
+    paths:
+    - src/e2e_test/jetstream_loadtest/k8s/

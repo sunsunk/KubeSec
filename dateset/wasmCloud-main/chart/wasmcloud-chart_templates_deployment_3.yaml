@@ -1,0 +1,73 @@
+# Source: wasmcloud-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release-wasmcloud-chart
+  labels:
+    helm.sh/chart: wasmcloud-chart-0.7.2
+    app.kubernetes.io/name: wasmcloud-chart
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.81.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wasmcloud-chart
+      app.kubernetes.io/instance: my-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wasmcloud-chart
+        app.kubernetes.io/instance: my-release
+    spec:
+      serviceAccountName: my-release-wasmcloud-chart
+      securityContext:
+        {}
+      containers:
+        - name: wasmcloud-chart
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          image: "wasmcloud/wasmcloud:0.81.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WASMCLOUD_NATS_HOST
+              value: "127.0.0.1"
+            - name: WASMCLOUD_NATS_PORT
+              value: "4222"
+            - name: WASMCLOUD_LABEL_kubernetes
+              value: "true"
+          resources:
+            {}
+        - name: nats
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          image: "nats:2.10.7-alpine"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "-js"
+          ports:
+            - name: client
+              containerPort: 4222
+            - name: clustering
+              containerPort: 6222
+            - name: management
+              containerPort: 8222
+          resources:
+            {}

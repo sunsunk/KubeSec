@@ -1,0 +1,49 @@
+---
+---
+@charset "utf-8";
+// Core variables and mixins
+@import "base/variables.scss";
+@import "base/mixins.scss";
+
+// Custom colors
+$primary: {{ site.data.style.highlight | class: "btn" }};
+$white: {{ site.data.style.white | default: "#fff" }} !default;
+$black: {{ site.data.style.black | default: "#000" }} !default;
+// .btn {
+//         cursor: pointer;
+//         border: 2px solid #000;
+//         background-color: transparent;
+//         height: auto;
+//         width: 200px;
+//         color: $white;
+//         font-size: 4.0em;
+//         box-shadow: 0 20px 20px rgba(0.4, 0.4, 0, 0.25);
+//        }
+
+
+// Custom Images
+$header-image: "{{ site.data.style.header-image }}";
+$subscribe-image: "{{ site.data.style.subscribe-image }}";
+
+// Global CSS
+@import "base/page.scss";
+
+// Components
+@import "components/buttons.scss";
+@import "components/navbar.scss";
+@import "components/client-scroll.scss";
+
+// Layout
+@import "layout/masthead.scss";
+@import "layout/contributors.scss";
+@import "layout/posts.scss";
+@import "layout/about.scss";
+@import "layout/engage.scss";
+@import "layout/implementation.scss";
+@import "layout/subscribe.scss";
+@import "layout/footer.scss";
+@import "layout/blog.scss";
+@import "layout/cncf-project.scss";
+@import "layout/dashboard.scss";
+@import "layout/meshmark.scss";
+@import "layout/discussion.scss";

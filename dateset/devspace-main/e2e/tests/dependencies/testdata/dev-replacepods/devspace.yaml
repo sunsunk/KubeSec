@@ -1,0 +1,15 @@
+version: v2beta1
+
+dev:
+  terminal:
+    imageSelector: username/app
+    terminal:
+      command: "sh -c 'exit 0'"
+      disableReplace: true
+
+dependencies:
+  dep:
+    path: dep.yaml
+    pipeline: dev
+
+

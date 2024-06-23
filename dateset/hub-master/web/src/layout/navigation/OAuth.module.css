@@ -1,0 +1,18 @@
+.separator {
+  z-index: 1;
+}
+
+.divider {
+  margin-top: -1px;
+  height: 2px;
+  background-color: var(--color-1-20);
+  z-index: -1;
+}
+
+.logo {
+  height: 1rem;
+}
+
+.btn:hover .logo {
+  filter: brightness(0) invert(1);
+}

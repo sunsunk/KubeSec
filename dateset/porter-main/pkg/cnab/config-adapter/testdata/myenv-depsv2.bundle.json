@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "1.2.0",
+  "name": "myenv",
+  "version": "0.1.0",
+  "description": "A 'meta' bundle that deploys everything it needs by adding dependencies",
+  "invocationImages": [
+    {
+      "imageType": "docker",
+      "image": "localhost:5000/myenv:porter-b1619b27d3e514d7a062207188a87e16"
+    }
+  ],
+  "parameters": {
+    "logLevel": {
+      "definition": "logLevel-parameter",
+      "destination": {
+        "env": "LOGLEVEL"
+      }
+    },
+    "porter-debug": {
+      "definition": "porter-debug-parameter",
+      "description": "Print debug information from Porter when executing the bundle",
+      "destination": {
+        "env": "PORTER_DEBUG"
+      }
+    },
+    "porter-infra-ip-dep-output": {
+      "definition": "porter-infra-ip-dep-output",
+      "description": "Wires up the infra dependency ip output for use as a parameter. Porter internal parameter that should not be set manually.",
+      "destination": {
+        "env": "PORTER_INFRA_IP_DEP_OUTPUT"
+      }
+    },
+    "porter-infra-mysql-connstr-dep-output": {
+      "definition": "porter-infra-mysql-connstr-dep-output",
+      "description": "Wires up the infra dependency mysql-connstr output for use as a parameter. Porter internal parameter that should not be set manually.",
+      "destination": {
+        "env": "PORTER_INFRA_MYSQL_CONNSTR_DEP_OUTPUT"
+      }
+    },
+    "porter-state": {
+      "definition": "porter-state",
+      "description": "Supports persisting state for bundles. Porter internal parameter that should not be set manually.",
+      "destination": {
+        "path": "/porter/state.tgz"
+      }
+    }
+  },
+  "credentials": {
+    "token": {
+      "required": true
+    }
+  },
+  "outputs": {
+    "endpoint": {
+      "definition": "endpoint-output",
+      "path": "/cnab/app/outputs/endpoint"
+    },
+    "porter-state": {
+      "definition": "porter-state",
+      "description": "Supports persisting state for bundles. Porter internal parameter that should not be set manually.",
+      "path": "/cnab/app/outputs/porter-state"
+    }
+  },
+  "definitions": {
+    "endpoint-output": {
+      "type": "string"
+    },
+    "logLevel-parameter": {
+      "default": "info",
+      "type": "string"
+    },
+    "porter-debug-parameter": {
+      "$comment": "porter-internal",
+      "$id": "https://porter.sh/generated-bundle/#porter-debug",
+      "default": false,
+      "description": "Print debug information from Porter when executing the bundle",
+      "type": "boolean"
+    },
+    "porter-infra-ip-dep-output": {
+      "$comment": "porter-internal",
+      "$id": "https://porter.sh/generated-bundle/#porter-parameter-source-definition"
+    },
+    "porter-infra-mysql-connstr-dep-output": {
+      "$comment": "porter-internal",
+      "$id": "https://porter.sh/generated-bundle/#porter-parameter-source-definition"
+    },
+    "porter-state": {
+      "$comment": "porter-internal",
+      "$id": "https://porter.sh/generated-bundle/#porter-state",
+      "contentEncoding": "base64",
+      "description": "Supports persisting state for bundles. Porter internal parameter that should not be set manually.",
+      "type": "string"
+    }
+  },
+  "requiredExtensions": [
+    "sh.porter.file-parameters",
+    "org.getporter.dependencies@v2",
+    "io.cnab.parameter-sources"
+  ],
+  "custom": {
+    "io.cnab.parameter-sources": {
+      "porter-infra-ip-dep-output": {
+        "priority": [
+          "dependencies.output"
+        ],
+        "sources": {
+          "dependencies.output": {
+            "dependency": "infra",
+            "name": "ip"
+          }
+        }
+      },
+      "porter-infra-mysql-connstr-dep-output": {
+        "priority": [
+          "dependencies.output"
+        ],
+        "sources": {
+          "dependencies.output": {
+            "dependency": "infra",
+            "name": "mysql-connstr"
+          }
+        }
+      },
+      "porter-state": {
+        "priority": [
+          "output"
+        ],
+        "sources": {
+          "output": {
+            "name": "porter-state"
+          }
+        }
+      }
+    },
+    "org.getporter.dependencies@v2": {
+      "requires": {
+        "app": {
+          "bundle": "localhost:5000/myapp:v1.2.3",
+          "sharing": {
+            "group": {}
+          },
+          "parameters": {
+            "logLevel": "${bundle.parameters.logLevel}"
+          },
+          "credentials": {
+            "db-connstr": "${bundle.dependencies.infra.outputs.mysql-connstr}"
+          },
+          "outputs": {
+            "endpoint": "https://${bundle.dependencies.infra.outputs.ip}:${outputs.port}/myapp"
+          }
+        },
+        "infra": {
+          "bundle": "localhost:5000/myinfra:v0.1.0",
+          "sharing": {
+            "group": {}
+          },
+          "parameters": {
+            "database": "myenvdb",
+            "logLevel": "${bundle.parameters.logLevel}"
+          },
+          "credentials": {
+            "token": "${bundle.credentials.token}"
+          }
+        }
+      }
+    },
+    "sh.porter": {
+      "manifestDigest": "",
+      "mixins": {
+        "exec": {
+          "version": "v1.2.3"
+        }
+      },
+      "manifest": "c2NoZW1hVmVyc2lvbjogMS4xLjAKbmFtZTogbXllbnYKdmVyc2lvbjogMC4xLjAKZGVzY3JpcHRpb246ICJBICdtZXRhJyBidW5kbGUgdGhhdCBkZXBsb3lzIGV2ZXJ5dGhpbmcgaXQgbmVlZHMgYnkgYWRkaW5nIGRlcGVuZGVuY2llcyIKcmVnaXN0cnk6ICJsb2NhbGhvc3Q6NTAwMCIKCmNyZWRlbnRpYWxzOgogIC0gbmFtZTogdG9rZW4KCnBhcmFtZXRlcnM6CiAgLSBuYW1lOiBsb2dMZXZlbAogICAgdHlwZTogc3RyaW5nCiAgICBkZWZhdWx0OiBpbmZvCgpvdXRwdXRzOgogIC0gbmFtZTogZW5kcG9pbnQKICAgIHR5cGU6IHN0cmluZwoKZGVwZW5kZW5jaWVzOgogIHJlcXVpcmVzOgogICAgLSBuYW1lOiBpbmZyYQogICAgICBidW5kbGU6CiAgICAgICAgaWQ6ICJodHRwczovL3BvcnRlci5zaC9pbnRlcmZhY2VzL215c3FsIgogICAgICAgIHJlZmVyZW5jZTogImxvY2FsaG9zdDo1MDAwL215aW5mcmE6djAuMS4wIgogICAgICAgICMgVE9ETyhQRVAwMDMpOiBJbXBsZW1lbnQgd2l0aCBodHRwczovL2dpdGh1Yi5jb20vZ2V0cG9ydGVyL3BvcnRlci9pc3N1ZXMvMjU0OAogICAgICAgICNpbnRlcmZhY2U6CiAgICAgICAgIyAgZG9jdW1lbnQ6CiAgICAgICAgIyAgICBvdXRwdXRzOgogICAgICAgICMgICAgICAtIG5hbWU6IG15c3FsLWNvbm5zdHIKICAgICAgICAjICAgICAgICAkaWQ6ICJwb3J0ZXIuc2gvaW50ZXJmYWNlcy9teXNxbC5jb25uZWN0aW9uLXN0cmluZyIKICAgICAgY3JlZGVudGlhbHM6CiAgICAgICAgdG9rZW46ICR7YnVuZGxlLmNyZWRlbnRpYWxzLnRva2VufQogICAgICBwYXJhbWV0ZXJzOgogICAgICAgIGRhdGFiYXNlOiBteWVudmRiCiAgICAgICAgbG9nTGV2ZWw6ICR7YnVuZGxlLnBhcmFtZXRlcnMubG9nTGV2ZWx9CiAgICAtIG5hbWU6IGFwcAogICAgICBidW5kbGU6CiAgICAgICAgcmVmZXJlbmNlOiAibG9jYWxob3N0OjUwMDAvbXlhcHA6djEuMi4zIgogICAgICBjcmVkZW50aWFsczoKICAgICAgICBkYi1jb25uc3RyOiAke2J1bmRsZS5kZXBlbmRlbmNpZXMuaW5mcmEub3V0cHV0cy5teXNxbC1jb25uc3RyfQogICAgICBwYXJhbWV0ZXJzOgogICAgICAgIGxvZ0xldmVsOiAke2J1bmRsZS5wYXJhbWV0ZXJzLmxvZ0xldmVsfQogICAgICBvdXRwdXRzOgogICAgICAgIGVuZHBvaW50OiAiaHR0cHM6Ly8ke2J1bmRsZS5kZXBlbmRlbmNpZXMuaW5mcmEub3V0cHV0cy5pcH06JHtvdXRwdXRzLnBvcnR9L215YXBwIgoKIyBUaGUgcmVzdCBiZWxvdyBpcyBib2lsZXJwbGF0ZSB0byBtYWtlIHBvcnRlciBoYXBweQojIFNpbmNlIHRoaXMgaXMgYSAibWV0YSIgYnVuZGxlLCBpdCBkb2Vzbid0IGRvIGFueXRoaW5nIGl0c2VsZiwganVzdCByZWZlcmVuY2VzIG90aGVyIGJ1bmRsZXMKbWl4aW5zOgogIC0gZXhlYwoKaW5zdGFsbDoKICAtIGV4ZWM6CiAgICAgIGNvbW1hbmQ6IGVjaG8KICAgICAgYXJndW1lbnRzOgogICAgICAgIC0gIkluc3RhbGxpbmcgYW4gZW52aXJvbm1lbnQiCgp1cGdyYWRlOgogIC0gZXhlYzoKICAgICAgY29tbWFuZDogZWNobwogICAgICBhcmd1bWVudHM6CiAgICAgICAgLSAiVXBncmFkaW5nIGFuIGVudmlyb25tZW50IgoKdW5pbnN0YWxsOgogIC0gZXhlYzoKICAgICAgY29tbWFuZDogZWNobwogICAgICBhcmd1bWVudHM6CiAgICAgICAgLSAiVW5pbnN0YWxsaW5nIGFuIGVudmlyb25tZW50Igo=",
+      "version": "",
+      "commit": ""
+    },
+    "sh.porter.file-parameters": {}
+  }
+}

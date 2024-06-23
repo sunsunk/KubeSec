@@ -1,0 +1,27 @@
+name: Check Docs
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  docs:
+    runs-on: ubuntu-latest-8-cores
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: sudo apt-get -qy update && sudo apt-get install -y libssl-dev libssl1.1; sudo apt-get clean
+      - uses: Swatinem/rust-cache@v2
+      - name: make docs
+        run: |
+          mkdir docs-test
+          cd docs-test
+          git clone --depth  1 --branch main https://github.com/tremor-rs/tremor-www.git
+          cd tremor-www
+          ln -s ../../../tremor-runtime tremor-runtime
+          make tremor-runtime-docs
+          make openapi
+          make docusaurus

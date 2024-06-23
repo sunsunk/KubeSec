@@ -1,0 +1,187 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dapr-sidecar-injector
+  namespace: dynamic_parameters
+  labels:
+    app: dapr-sidecar-injector
+spec:
+  replicas: dynamic_parameters
+  replicas: dynamic_parameters  
+  selector:
+    matchLabels:
+      app: dapr-sidecar-injector
+  template:
+    metadata:
+      labels:
+        app: dapr-sidecar-injector
+      annotations:
+        dapr.io/control-plane: injector
+        prometheus.io/scrape: "dynamic_parameters"
+        prometheus.io/port: "dynamic_parameters"
+        prometheus.io/path: "/"
+    spec:
+      hostNetwork: true
+      serviceAccountName: dapr-injector
+      containers:
+      - name: dapr-sidecar-injector
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: dynamic_parameters
+          initialDelaySeconds: dynamic_parameters
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          failureThreshold: dynamic_parameters
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: dynamic_parameters
+          initialDelaySeconds: dynamic_parameters
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          failureThreshold: dynamic_parameters
+        image: "dynamic_parameters"
+        image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+        imagePullPolicy: dynamic_parameters
+        securityContext:
+          runAsNonRoot: dynamic_parameters
+          runAsUser: 1000
+          capabilities:
+            add: ["SYS_PTRACE"]
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+          seccompProfile:
+            type: dynamic_parameters
+        command:
+        - "/injector"
+        - "/dlv"
+        args:
+        - "--listen=:dynamic_parameters"
+        - "--accept-multiclient"
+        - "--headless=true"
+        - "--log"
+        - "--api-version=2"
+        - "exec"
+        - "/injector"
+        - "--"
+        - "--log-level"
+        - dynamic_parameters
+        - "--log-as-json"
+        - "--enable-metrics"
+        - "--metrics-port"
+        - "dynamic_parameters"
+        - "--enable-metrics=false"
+        - "--healthz-port"
+        - dynamic_parameters
+        env:
+        - name: DAPR_TRUST_ANCHORS_FILE
+          value: /var/run/secrets/dapr.io/tls/ca.crt
+        - name: DAPR_CONTROL_PLANE_TRUST_DOMAIN
+          value: dynamic_parameters
+        - name: DAPR_SENTRY_ADDRESS
+          value: dynamic_parametersdynamic_parametersdynamic_parametersdapr-sentry.dynamic_parameters.svc.cluster.local:443dynamic_parameters
+        - name: dynamic_parameters
+          value: dynamic_parameters
+        - name: KUBE_CLUSTER_DOMAIN
+          value: dynamic_parameters
+        - name: SIDECAR_IMAGE
+          value: dynamic_parameters
+          value: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+        - name: SIDECAR_IMAGE_PULL_POLICY
+          value: dynamic_parameters
+        # Configuration for injected sidecars
+        - name: SIDECAR_RUN_AS_NON_ROOT
+          value: dynamic_parameters
+        - name: ENABLE_K8S_DOWNWARD_APIS
+          value: dynamic_parameters
+        - name: SIDECAR_DROP_ALL_CAPABILITIES
+          value: dynamic_parameters
+        - name: SIDECAR_READ_ONLY_ROOT_FILESYSTEM
+          value: dynamic_parameters
+
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+
+        - name: IGNORE_ENTRYPOINT_TOLERATIONS
+          value: dynamic_parameters
+
+        # Configuration for actors and reminders
+        - name: ACTORS_ENABLED
+          value: dynamic_parameters
+        - name: ACTORS_SERVICE_NAME
+          value: dynamic_parameters
+        - name: ACTORS_SERVICE_ADDRESS
+          value: dynamic_parameters
+        - name: REMINDERS_SERVICE_NAME
+          value: dynamic_parameters
+        - name: REMINDERS_SERVICE_ADDRESS
+          value: dynamic_parameters
+
+        - name: ALLOWED_SERVICE_ACCOUNTS
+          value: dynamic_parameters
+        - name: ALLOWED_SERVICE_ACCOUNTS_PREFIX_NAMES
+          value: dynamic_parameters
+        ports:
+        - name: https
+          containerPort: 4000
+          protocol: TCP
+        - name: metrics
+          containerPort: dynamic_parameters
+          protocol: TCP
+        - name: debug
+          containerPort: dynamic_parameters
+          protocol: TCP
+        resources:
+        volumeMounts:
+        - name: dapr-trust-bundle
+          mountPath: /var/run/secrets/dapr.io/tls
+          readOnly: true
+        - name: dapr-identity-token
+          mountPath: /var/run/secrets/dapr.io/sentrytoken
+          readOnly: true
+      volumes:
+      - name: dapr-trust-bundle
+        configMap:
+          name: dapr-trust-bundle
+      - name: dapr-identity-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 600
+              audience: "spiffe://dynamic_parameters/ns/dynamic_parameters/dapr-sentry"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - dynamic_parameters
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - dynamic_parameters
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dapr-sidecar-injector
+              topologyKey: topology.kubernetes.io/zone
+      imagePullSecrets:
+
+      nodeSelector:
+      tolerations:
+      priorityClassName:
+
+---

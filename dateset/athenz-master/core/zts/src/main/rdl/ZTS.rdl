@@ -1,0 +1,29 @@
+// Copyright The Athenz Authors
+// Licensed under the terms of the Apache version 2.0 license. See LICENSE file for terms.
+
+//
+//The Authorization Token Service (ZTS) API
+//
+name ZTS;
+version 1;
+namespace com.yahoo.athenz.zts;
+
+include "Access.rdli";
+include "ServiceIdentity.rdli";
+include "SignedPolicies.rdli";
+include "Token.rdli";
+include "Tenancy.rdli";
+include "Identity.rdli";
+include "AWSAuth.rdli";
+include "Instance.rdli";
+include "DomainMetrics.rdli";
+include "Status.rdli";
+include "SSHCert.rdli";
+include "OAuth.rdli";
+include "RoleCert.rdli";
+include "Workload.rdli";
+include "TransportRule.rdli";
+include "Info.rdli";
+include "ExternalCredentials.rdli";
+include "DomainDetails.rdli";
+include "Schema.rdli";

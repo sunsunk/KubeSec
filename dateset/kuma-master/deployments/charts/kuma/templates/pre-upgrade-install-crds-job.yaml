@@ -1,0 +1,163 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "dynamic_parameters"
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+imagePullSecrets:
+  - name: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters-install-crds
+  annotations:
+    "helm.sh/hook": "dynamic_parameters"
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+rules:
+  - apiGroups:
+    - "apiextensions.k8s.io"
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - create
+      - patch
+      - update
+      - list
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters-install-crds
+  annotations:
+    "helm.sh/hook": "dynamic_parameters"
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
+  labels:
+  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters-install-crds
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dynamic_parameters-install-crds-scripts
+  namespace: dynamic_parameters
+  annotations:
+    "helm.sh/hook": "dynamic_parameters"
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+  labels:
+  
+data:
+  install_crds.sh: |
+    #!/usr/bin/env sh
+    set -e
+
+    if [ -s /kuma/crds/crds.yaml ]; then
+      echo "/kuma/crds/crds.yaml found and is not empty, adding crds"
+      kubectl apply -f /kuma/crds/crds.yaml
+    else
+      echo "/kuma/crds/crds.yaml not found or empty, it looks like there is no crds to install"
+    fi
+  save_crds.sh: |
+    set -e
+
+    crds="$(kumactl install crds --no-config dynamic_parameters--experimental-gatewayapidynamic_parameters)"
+
+      echo "found crds - saving to /kuma/crds/crds.yaml"
+    fi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamic_parameters-install-crds
+  namespace: dynamic_parameters
+  labels:
+  annotations:
+    "helm.sh/hook": "dynamic_parameters"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+spec:
+  template:
+    metadata:
+      name: dynamic_parameters-install-crds-job
+      labels:
+    spec:
+      serviceAccountName: dynamic_parameters
+      nodeSelector:
+      tolerations:
+      restartPolicy: OnFailure
+      securityContext:
+      containers:
+        - name: pre-upgrade-job
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          securityContext:
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          command: ["/kuma/scripts/install_crds.sh"]
+          volumeMounts:
+            - mountPath: /kuma/crds
+              name: crds
+              readOnly: true
+            - mountPath: /kuma/scripts
+              name: scripts
+              readOnly: true
+      initContainers:
+        - name: pre-upgrade-job-init
+          image: dynamic_parameters
+          securityContext:
+          resources:
+             requests:
+               cpu: "100m"
+               memory: "256Mi"
+             limits:
+               cpu: "100m"
+               memory: "256Mi"
+          volumeMounts:
+          - mountPath: /kuma/crds
+            name: crds
+          - mountPath: /kuma/scripts
+            name: scripts
+            readOnly: true
+          command: ["sh", "-c"]
+          args: ["/kuma/scripts/save_crds.sh"]
+      volumes:
+        - name: scripts
+          configMap:
+            name: dynamic_parameters-install-crds-scripts
+            defaultMode: 0755
+        - name: crds
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

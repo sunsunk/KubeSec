@@ -1,0 +1,14 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  labels:
+    kudo.dev/operator: toy
+  name: toy1
+spec:
+  operatorVersion:
+    name: toy-1.0.0
+    kind: OperatorVersion
+    namespace: default
+  parameters:
+    Param: "after"
+    Replicas: "1"

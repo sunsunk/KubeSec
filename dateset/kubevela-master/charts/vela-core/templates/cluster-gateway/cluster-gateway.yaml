@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-cluster-gateway
+  namespace: dynamic_parameters
+  labels:
+  
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+    
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9443"
+        prometheus.io/scrape: "true"
+        prometheus.io/scheme: "https"
+      labels:
+      
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      containers:
+        - name: dynamic_parameters-cluster-gateway
+          securityContext:
+          args:
+            - "apiserver"
+            - "--secure-port=dynamic_parameters"
+            - "--secret-namespace=dynamic_parameters"
+            - "--feature-gates=APIPriorityAndFairness=false,ClientIdentityPenetration=dynamic_parameters"
+            - "--cluster-gateway-proxy-config=/etc/proxy-config/config.yaml"
+            - "--tls-cert-file=dynamic_parameters/tls.crt"
+            - "--tls-private-key-file=dynamic_parameters/tls.key"
+            - "--authorization-always-allow-paths=/healthz,/readyz,/livez,/metrics"
+          image: dynamic_parametersdynamic_parameters:dynamic_parameters
+          imagePullPolicy: dynamic_parameters
+          resources:
+          ports:
+            - containerPort: dynamic_parameters
+          volumeMounts:
+            - mountPath: /etc/proxy-config
+              name: proxy-config
+            - mountPath: dynamic_parameters
+              name: tls-cert-vol
+              readOnly: true
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: dynamic_parameters-cluster-gateway-proxy-config
+          name: proxy-config
+        - name: tls-cert-vol
+          secret:
+            defaultMode: 420
+            secretName: dynamic_parameters-cluster-gateway-tls-v2
+      nodeSelector:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      tolerations:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dynamic_parameters-cluster-gateway-proxy-config
+  namespace: dynamic_parameters
+data:
+  config.yaml: |
+    apiVersion: cluster.core.oam.dev/v1alpha1
+    kind: ClusterGatewayProxyConfiguration
+    spec:
+      clientIdentityExchanger:
+        rules:
+          - name: super-user
+            source:
+              group: kubevela:ux
+            type: PrivilegedIdentityExchanger
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynamic_parameters-cluster-gateway-service
+  namespace: dynamic_parameters
+spec:
+  selector:
+  
+  ports:
+    - protocol: TCP
+      port: dynamic_parameters
+      targetPort: dynamic_parameters
+---
+# 1.  Check whether APIService ""v1alpha1.cluster.core.oam.dev" is already present in the cluster
+# 2.a If the APIService doesn't exist, create it.
+# 2.b If the APIService exists without helm-chart related annotation, skip creating it to the
+#     cluster because the APIService can be managed by an external controller.
+# 2.c If the APIService exists with valid helm-chart annotations, which means that the APIService
+#     is previously managed by helm commands, hence update the APIService consistently.
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.cluster.core.oam.dev
+  annotations:
+    cert-manager.io/inject-ca-from: "dynamic_parameters/dynamic_parameters-cluster-gateway-tls-v2"
+  labels:
+    api: cluster-extension-apiserver
+    apiserver: "true"
+spec:
+  version: v1alpha1
+  group: cluster.core.oam.dev
+  groupPriorityMinimum: 2000
+  service:
+    name: dynamic_parameters-cluster-gateway-service
+    namespace: dynamic_parameters
+    port: dynamic_parameters
+  versionPriority: 10
+  insecureSkipTLSVerify: dynamic_parameters
+  caBundle: Cg==
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dynamic_parameters:cluster-gateway:proxy
+rules:
+  - apiGroups: [ "cluster.core.oam.dev" ]
+    resources: [ "clustergateways/proxy" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dynamic_parameters:cluster-gateway:proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dynamic_parameters:cluster-gateway:proxy
+subjects:
+  - kind: Group
+    name: kubevela:client
+    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---

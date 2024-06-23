@@ -1,0 +1,159 @@
+// Module included in the following assemblies:
+//
+// configuring/assembly-reassign-tool.adoc
+
+[id='con-partition-reassignment-{context}']
+
+= Partition reassignment tool overview
+
+[role="_abstract"]
+The partition reassignment tool provides the following capabilities for managing Kafka partitions and brokers:
+
+Redistributing partition replicas:: Scale your cluster up and down by adding or removing brokers, and move Kafka partitions from heavily loaded brokers to under-utilized brokers. 
+To do this, you must create a partition reassignment plan that identifies which topics and partitions to move and where to move them.
+Cruise Control is recommended for this type of operation as it xref:cruise-control-concepts-str[automates the cluster rebalancing process]. 
+
+Scaling topic replication factor up and down:: Increase or decrease the replication factor of your Kafka topics. To do this, you must create a partition reassignment plan that identifies the existing replication assignment across partitions and an updated assignment with the replication factor changes.
+
+Changing the preferred leader:: Change the preferred leader of a Kafka partition. This can be useful if the current preferred leader is unavailable or if you want to redistribute load across the brokers in the cluster. To do this, you must create a partition reassignment plan that specifies the new preferred leader for each partition by changing the order of replicas.
+
+Changing the log directories to use a specific JBOD volume:: Change the log directories of your Kafka brokers to use a specific JBOD volume. This can be useful if you want to move your Kafka data to a different disk or storage device. To do this, you must create a partition reassignment plan that specifies the new log directory for each topic.
+
+== Generating a partition reassignment plan
+
+The partition reassignment tool (`kafka-reassign-partitions.sh`) works by generating a partition assignment plan that specifies which partitions should be moved from their current broker to a new broker.
+
+If you are satisfied with the plan, you can execute it.
+The tool then does the following:
+
+* Migrates the partition data to the new broker
+* Updates the metadata on the Kafka brokers to reflect the new partition assignments
+* Triggers a rolling restart of the Kafka brokers to ensure that the new assignments take effect
+
+The partition reassignment tool has three different modes:
+
+`--generate`::
+Takes a set of topics and brokers and generates a _reassignment JSON file_ which will result in the partitions of those topics being assigned to those brokers.
+Because this operates on whole topics, it cannot be used when you only want to reassign some partitions of some topics.
+
+`--execute`::
+Takes a _reassignment JSON file_ and applies it to the partitions and brokers in the cluster.
+Brokers that gain partitions as a result become followers of the partition leader.
+For a given partition, once the new broker has caught up and joined the ISR (in-sync replicas) the old broker will stop being a follower and will delete its replica.
+
+`--verify`::
+Using the same _reassignment JSON file_ as the `--execute` step, `--verify` checks whether all the partitions in the file have been moved to their intended brokers.
+If the reassignment is complete, `--verify` also removes any traffic throttles (`--throttle`) that are in effect.
+Unless removed, throttles will continue to affect the cluster even after the reassignment has finished.
+
+It is only possible to have one reassignment running in a cluster at any given time, and it is not possible to cancel a running reassignment.
+If you must cancel a reassignment, wait for it to complete and then perform another reassignment to revert the effects of the first reassignment.
+The `kafka-reassign-partitions.sh` will print the reassignment JSON for this reversion as part of its output.
+Very large reassignments should be broken down into a number of smaller reassignments in case there is a need to stop in-progress reassignment.
+
+== Specifying topics in a partition reassignment JSON file
+
+The `kafka-reassign-partitions.sh` tool uses a reassignment JSON file that specifies the topics to reassign.
+You can generate a reassignment JSON file or create a file manually if you want to move specific partitions.
+
+A basic reassignment JSON file has the structure presented in the following example, which describes three partitions belonging to two Kafka topics. 
+Each partition is reassigned to a new set of replicas, which are identified by their broker IDs.
+The `version`, `topic`, `partition`, and `replicas` properties are all required. 
+
+.Example partition reassignment JSON file structure
+[source,subs=+quotes]
+----
+{
+  "version": 1, # <1>
+  "partitions": [ # <2>
+    {
+      "topic": "example-topic-1", # <3>
+      "partition": 0, # <4>
+      "replicas": [1, 2, 3] # <5>
+    },
+    {
+      "topic": "example-topic-1",
+      "partition": 1,
+      "replicas": [2, 3, 4]
+    },
+    {
+      "topic": "example-topic-2",
+      "partition": 0,
+      "replicas": [3, 4, 5]
+    }
+  ]
+}
+----
+<1> The version of the reassignment JSON file format. Currently, only version 1 is supported, so this should always be 1.
+<2> An array that specifies the partitions to be reassigned. 
+<3> The name of the Kafka topic that the partition belongs to.
+<4> The ID of the partition being reassigned.
+<5> An ordered array of the IDs of the brokers that should be assigned as replicas for this partition. The first broker in the list is the leader replica.
+
+NOTE: Partitions not included in the JSON are not changed.
+
+If you specify only topics using a `topics` array, the partition reassignment tool reassigns all the partitions belonging to the specified topics.
+
+.Example reassignment JSON file structure for reassigning all partitions for a topic
+[source,subs=+quotes]
+----
+{
+  "version": 1,
+  "topics": [
+    { "topic": "my-topic"}
+  ]
+}
+----
+
+== Reassigning partitions between JBOD volumes
+
+When using JBOD storage in your Kafka cluster, you can reassign the partitions between specific volumes and their log directories (each volume has a single log directory).
+
+To reassign a partition to a specific volume, add `log_dirs` values for each partition in the reassignment JSON file.
+Each `log_dirs` array contains the same number of entries as the `replicas` array, since each replica should be assigned to a specific log directory.
+The `log_dirs` array contains either an absolute path to a log directory or the special value `any`. 
+The `any` value indicates that Kafka can choose any available log directory for that replica, which can be useful when reassigning partitions between JBOD volumes.
+
+.Example reassignment JSON file structure with log directories
+[source,subs=+quotes]
+----
+{
+  "version": 1,
+  "partitions": [
+    {
+      "topic": "example-topic-1",
+      "partition": 0,
+      "replicas": [1, 2, 3]
+      "log_dirs": ["/var/lib/kafka/data-0/kafka-log1", "any", "/var/lib/kafka/data-1/kafka-log2"]
+    },
+    {
+      "topic": "example-topic-1",
+      "partition": 1,
+      "replicas": [2, 3, 4]
+      "log_dirs": ["any",  "/var/lib/kafka/data-2/kafka-log3", "/var/lib/kafka/data-3/kafka-log4"]
+    },
+    {
+      "topic": "example-topic-2",
+      "partition": 0,
+      "replicas": [3, 4, 5]
+      "log_dirs": ["/var/lib/kafka/data-4/kafka-log5", "any",  "/var/lib/kafka/data-5/kafka-log6"]
+    }
+  ]
+}
+----
+
+== Throttling partition reassignment
+
+Partition reassignment can be a slow process because it involves transferring large amounts of data between brokers.
+To avoid a detrimental impact on clients, you can throttle the reassignment process.
+Use the `--throttle` parameter with the `kafka-reassign-partitions.sh` tool to throttle a reassignment.
+You specify a maximum threshold in bytes per second for the movement of partitions between brokers.
+For example, `--throttle 5000000` sets a maximum threshold for moving partitions of 50 MBps.
+
+Throttling might cause the reassignment to take longer to complete.
+
+* If the throttle is too low, the newly assigned brokers will not be able to keep up with records being published and the reassignment will never complete.
+* If the throttle is too high, clients will be impacted.
+
+For example, for producers, this could manifest as higher than normal latency waiting for acknowledgment.
+For consumers, this could manifest as a drop in throughput caused by higher latency between polls.

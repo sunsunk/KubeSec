@@ -1,0 +1,13 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: upgrade-instance
+spec:
+  operatorVersion:
+    name: upgrade-operator-0.2.0
+  parameters:
+    version: 1.7.10
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE

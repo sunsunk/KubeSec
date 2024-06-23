@@ -1,0 +1,1 @@
+Moved to https://github.com/cdk8s-team/cdk8s-examples/tree/main/python/cdk8s-composition

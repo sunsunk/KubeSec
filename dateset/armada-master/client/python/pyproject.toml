@@ -1,0 +1,42 @@
+[project]
+name = "armada_client"
+version = "0.2.9"
+description = "Armada gRPC API python client"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = ["grpcio>=1.46.3", "grpcio-tools>=1.46.3", "mypy-protobuf>=3.2.0", "protobuf>=3.20.3"]
+license = { text = "Apache Software License" }
+authors = [{ name = "G-Research Open Source Software", email = "armada@armadaproject.io" }]
+
+[project.optional-dependencies]
+format = ["black==23.7.0", "flake8==7.0.0", "pylint==2.17.5"]
+# note(JayF): sphinx-jekyll-builder was broken by sphinx-markdown-builder 0.6 -- so pin to 0.5.5
+docs = ["sphinx==7.1.2", "sphinx-jekyll-builder==0.3.0", "sphinx-toolbox==3.2.0b1", "sphinx-markdown-builder==0.5.5"]
+test = ["pytest==7.3.1", "coverage>=6.5.0", "pytest-asyncio==0.21.1"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+exclude = [
+    '^typings\.py$',
+    '_pb2_\.pyi$',
+    '_pb2\.pyi$',
+    '_pb2_grpc\.pyi$',
+
+    '_pb2_\.py$',
+    '_pb2\.py$',
+    '_pb2_grpc\.py$',
+]
+
+[tool.coverage.run]
+omit = [
+    "*_pb2.py",
+    "*_pb2_grpc.py",
+]
+
+# py.typed is required for mypy to find type hints in the package
+# from: https://mypy.readthedocs.io/en/stable/installed_packages.html#making-pep-561-compatible-packages
+[tool.setuptools.package-data]
+"*" = ["*.pyi", "py.typed"]

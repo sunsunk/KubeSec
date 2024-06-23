@@ -1,0 +1,11 @@
+key1: val1
+
+#@yaml/text-templated-strings
+key(@= "1"+3 @): val2
+
++++
+
+ERR: 
+- unknown binary op: string + int
+    in <toplevel>
+      stdin:4 | = "1"+3 

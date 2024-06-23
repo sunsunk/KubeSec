@@ -1,0 +1,5 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+  - command: kubectl kudo upgrade --instance upgrade-instance ./second-operator -p version=1.7.10
+    namespaced: true

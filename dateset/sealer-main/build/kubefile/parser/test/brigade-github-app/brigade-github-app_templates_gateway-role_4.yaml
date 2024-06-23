@@ -1,0 +1,17 @@
+# Source: brigade-github-app/templates/gateway-role.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-release-brigade-github-app
+  labels:
+    app: my-release-brigade-github-app
+    chart: "brigade-github-app-0.8.0"
+    release: "my-release"
+    heritage: "Helm"
+subjects:
+- kind: ServiceAccount
+  name: my-release-brigade-github-app
+roleRef:
+  kind: Role
+  name: my-release-brigade-github-app
+  apiGroup: rbac.authorization.k8s.io

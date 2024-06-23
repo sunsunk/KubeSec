@@ -1,0 +1,42 @@
+.modal {
+  margin-top: 7rem;
+}
+
+.label {
+  font-size: 0.875rem;
+}
+
+.icon {
+  height: 17px;
+}
+
+.closeButton {
+  font-size: 0.75rem;
+  border-left-color: var(--color-1-700) !important;
+}
+
+.searchWrapper {
+  height: 50px;
+}
+
+.repoWrapper {
+  margin-bottom: 6px;
+}
+
+.tinyIcon {
+  font-size: 0.65rem;
+}
+
+.tinyIcon svg {
+  vertical-align: baseline;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .modal {
+    margin-top: 3rem;
+  }
+}

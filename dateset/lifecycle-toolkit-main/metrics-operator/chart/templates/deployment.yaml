@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-operator
+  namespace: dynamic_parameters
+  annotations: dynamic_parameters
+  labels:
+    app.kubernetes.io/part-of: keptn
+    app.kubernetes.io/component: metrics-operator
+    control-plane: metrics-operator
+    keptn.sh/inject-cert: "true"
+
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      control-plane: metrics-operator
+    
+  template:
+    metadata:
+      labels:
+        control-plane: metrics-operator
+      
+      annotations:
+        kubectl.kubernetes.io/default-container: metrics-operator
+        
+    spec:
+      containers:
+      - args:
+        - webhook-server
+        - --leader-elect
+        - --adapter-port=6443
+        - --adapter-certs-dir=/tmp/metrics-adapter/serving-certs
+        - --v=10
+        command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: EXPOSE_KEPTN_METRICS
+          value: dynamic_parameters
+        - name: ENABLE_CUSTOM_METRICS_API_SERVICE
+          value: dynamic_parameters
+        - name: METRICS_CONTROLLER_LOG_LEVEL
+        - name: ANALYSIS_CONTROLLER_LOG_LEVEL
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: dynamic_parameters
+        - name: CERT_MANAGER_ENABLED
+          value: dynamic_parameters
+        image: 
+        imagePullPolicy: dynamic_parameters
+        name: metrics-operator
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 9999
+          name: metrics
+          protocol: TCP
+        - containerPort: 6443
+          name: custom-metrics
+          protocol: TCP
+        resources: dynamic_parameters
+        securityContext:
+        volumeMounts:
+        - mountPath: /tmp/metrics-adapter/serving-certs
+          name: adapter-certs-dir
+        - name: keptn-certs
+          mountPath: /tmp/webhook/certs/ 
+        livenessProbe: 
+        livenessProbe:
+         httpGet:
+           path: /healthz
+           port: 8081
+         initialDelaySeconds: 15
+         periodSeconds: 20
+        readinessProbe: 
+        readinessProbe:
+         httpGet:
+           path: /readyz
+           port: 8081
+         initialDelaySeconds: 5
+         periodSeconds: 10
+        
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: metrics-operator
+      terminationGracePeriodSeconds: 10
+      volumes:
+        name: adapter-certs-dir
+      - name: keptn-certs
+        secret:
+          secretName: keptn-certs
+      topologySpreadConstraints: 
+      nodeSelector: 
+      tolerations: 
+
+---

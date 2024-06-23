@@ -1,0 +1,24 @@
+{
+  "diskSelector": [
+    {
+      "name": "carina-vg-ssd" ,
+      "re": ["vdc"],
+      "policy": "LVM",
+      "nodeLabel": "kubernetes.io/hostname"
+    },
+    {
+      "name": "carina-raw-ssd",
+      "re": ["vdd"],
+      "policy": "RAW",
+      "nodeLabel": "kubernetes.io/hostname"
+    },
+     {
+      "name": "carina-raw-loop",
+      "re": ["loop4","loop5"],
+      "policy": "RAW",
+      "nodeLabel": "kubernetes.io/hostname"
+    }
+  ],
+  "diskScanInterval": "300",
+  "schedulerStrategy": "spreadout"
+}

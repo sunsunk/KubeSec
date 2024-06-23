@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body id="page-top">
+
+	{% include analytics_body.html %}
+	{% include nav.html %}
+	{% include hero.html %}
+	{% include about.html %}
+	{% include contributors.html %}
+	{% include engage.html %}
+	{% include implementation.html %}
+	{% include posts_grid.html %}
+	{% include subscribe.html %}
+	{% include cncf-project.html %}
+	{% include related-discussion.html tag="SMP" location="homePage"%}
+	{% include footer.html %}	  
+
+	  <!-- Bootstrap core JavaScript -->
+	  <script src="assets/js/jquery.min.js"></script>
+	  <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+	  <!-- Plugin JavaScript -->
+	  <script src="assets/js/jquery.easing.min.js"></script>
+
+	  <!-- Contact form JavaScript -->
+	  <script src="assets/js/jqBootstrapValidation.js"></script>
+	  <script src="assets/js/contact_me.js"></script>
+
+	  <!-- Custom scripts for this template -->
+	  <script src="assets/js/agency.min.js"></script>
+	  <script>
+		function numberWithCommas(x) {
+    		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+
+		$(document).ready(function() {
+			$.get("https://meshery.layer5.io/api/performance/results/total", function(data, status) {
+				var testresults = JSON.parse(data);
+				document.getElementById("testresults").innerHTML = "&nbsp;"+numberWithCommas(testresults.total_runs)+"&nbsp;";
+			});
+		});
+	  </script>
+
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "kubectl.namespace.read",
+  "description": "View kubectl namespace information",
+  "base_url": "",
+  "resource_urls": [],
+  "resource_action_urls": [],
+  "authenticated": true,
+  "scope": "NAMESPACE"
+}

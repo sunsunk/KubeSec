@@ -1,0 +1,46 @@
+kind: "DevWorkspace"
+apiVersion: "workspace.devfile.io/v1alpha2"
+metadata:
+  "name": "myDevWorkspace"
+spec:
+  started: true
+  routingClass: 'openshift-auth'
+  template:
+    projects:
+      - name: "devworkspace-spec"
+        git:
+          remotes:
+            origin: "https://github.com/che-incubator/devworkspace-api"
+          checkoutFrom:
+            revision: "master"
+    components:
+      - name: editor
+        plugin:
+          id: eclipse/che-theia/latest
+      - name: "ownplugin"
+        plugin:
+          id: acme/newPlugin/latest
+          registryUrl: "https://acme.com/registry/"
+      - name: "myplugin"
+        plugin:
+          uri: "https://github.com/johndoe/che-plugins/blob/master/cool-plugin/0.0.1/meta.yaml"
+      - name: "mycontainer"
+        container:
+          image: "busybox"
+          memoryLimit: "128M"
+          mountSources: true
+          endpoints:
+            - name: term-websockets
+              protocol: ws
+              attributes:
+                type: terminal
+              targetPort: 4000
+      - name: "mynewcomponent"
+        custom:
+          componentClass: "NewComponentType"
+          embeddedResource:
+            field1: ""
+            field2: ""
+      - name: "production"
+        kubernetes:
+          uri: "https://somewhere/production-environment.yaml"

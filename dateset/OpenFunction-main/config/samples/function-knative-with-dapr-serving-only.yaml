@@ -1,0 +1,114 @@
+apiVersion: core.openfunction.io/v1beta2
+kind: Function
+metadata:
+  name: output-target
+spec:
+  image: openfunctiondev/v1beta1-output-target:latest
+  serving:
+    bindings:
+      target-topic:
+        ignoreErrors: false
+        initTimeout: ""
+        metadata:
+          - name: brokers
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: kafka-server-kafka-brokers:9092
+          - name: topics
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: knative-dapr
+          - name: consumerGroup
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: output-target
+          - name: publishTopic
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: knative-dapr
+          - name: authRequired
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: "false"
+        type: bindings.kafka
+        version: v1
+    template:
+      containers:
+        - imagePullPolicy: Always
+          name: function
+          resources: {}
+    triggers:
+      dapr:
+        - inputName: greeting
+          name: target-topic
+          type: bindings.kafka
+  version: v1.0.0
+  workloadRuntime: OCIContainer
+---
+apiVersion: core.openfunction.io/v1beta2
+kind: Function
+metadata:
+  name: function-front
+spec:
+  image: openfunctiondev/v1beta1-sample-knative-dapr:latest
+  serving:
+    bindings:
+      kafka-server:
+        ignoreErrors: false
+        initTimeout: ""
+        metadata:
+          - name: brokers
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: kafka-server-kafka-brokers:9092
+          - name: authRequired
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: "false"
+          - name: publishTopic
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: knative-dapr
+          - name: topics
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: knative-dapr
+          - name: consumerGroup
+            secretKeyRef:
+              key: ""
+              name: ""
+            value: function-front
+        type: bindings.kafka
+        version: v1
+    outputs:
+      - dapr:
+          name: kafka-server
+          operation: create
+          outputName: target
+          type: bindings.kafka
+    scaleOptions:
+      maxReplicas: 5
+      minReplicas: 0
+    template:
+      containers:
+        - imagePullPolicy: Always
+          name: function
+          resources: {}
+    triggers:
+      http:
+        port: 8080
+        route:
+          gatewayRef:
+            name: openfunction
+            namespace: openfunction
+  version: v1.0.0
+  workloadRuntime: OCIContainer

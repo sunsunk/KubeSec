@@ -1,0 +1,61 @@
+vineyard
+Copyright 2020 Alibaba Group Holding Limited
+
+The project includes software from the CMake project (BSD, 3-Clause)
+ * Copyright 2000-2020 Kitware, Inc. and Contributors
+ * https://github.com/Kitware/CMake
+
+The project includes software from the apache-arrow project (Apache 2.0)
+ * Copyright 2000-2020 Kitware, Inc. and Contributors
+ * https://github.com/apache/arrow
+
+The project includes software from the peloton project (Apache 2.0)
+ * Copyright (c) 2015-2018, Carnegie Mellon University Database Group
+ * https://github.com/cmu-db/peloton
+
+This product includes software from the Caffe project (BSD, 2-clause)
+ * All contributions by the University of California:
+    Copyright (c) 2014-2017 The Regents of the University of California (Regents)
+ * All other contributions:
+    Copyright (c) 2014-2017, the respective contributors
+ * https://github.com/BVLC/caffe
+
+This product includes software from the flat_hash_map project (Boost Software License - Version 1.0)
+ * Copyright (c) 2017 Malte Skarupke
+ * https://github.com/skarupke/flat_hash_map
+
+This product includes software from the wyhash project (MIT License)
+ * Copyright (c) 2022 Alain Espinosa
+ * https://github.com/alainesp/wy
+
+This product includes software from the Doug Lea's dlmalloc project
+ * Copyright (c) Doug Lea
+ * http://gee.cs.oswego.edu/dl/html/malloc.html
+
+This product includes software from the flingfd project
+ * Copyright 2013 Sharvil Nanavati
+ * https://github.com/sharvil/flingfd
+
+This product includes software from the boost/leaf project
+ * Copyright (c) 2018-2020 Emil Dotchevski and Reverge Studios, Inc.
+ * https://github.com/boostorg/leaf
+
+This product includes software from the s3fs project
+ * Copyright (c) 2016, Continuum Analytics, Inc. and contributors
+ * https://github.com/dask/s3fs
+
+This product includes software from the omniscidb project
+ * Copyright 2019 OmniSci, Inc.
+ * https://github.com/omnisci/omniscidb
+
+This product includes software from the ClickHouse project
+ * Copyright 2016-2022 ClickHouse, Inc.
+ * https://github.com/ClickHouse/ClickHouse
+
+This product includes software from the BBHash project
+ * Copyright (c) 2015 Guillaume Rizk
+ * https://github.com/rizkg/BBHash
+
+This product includes software from the rax project (BSD, 2-clause)
+ * Copyright (c) 2017-2019, Salvatore Sanfilippo <antirez at gmail dot com>
+ * https://github.com/antirez/rax

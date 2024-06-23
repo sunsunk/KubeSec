@@ -1,0 +1,9 @@
+### The `integer` module contains functions to work with integers.
+
+use std::integer::signed;
+use std::integer::unsigned;
+
+## Parses a string as an integer.
+##
+## Returns an `integer`.
+intrinsic fn parse(string) as integer::parse;

@@ -1,0 +1,1825 @@
+[
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:default",
+        "aclid:--default--",
+        "bot",
+        "cf-rule-category:libinjection",
+        "cf-rule-subcategory:libinjection-xss",
+        "cf-rule-risk:libinjection",
+        "cf-rule-id:libinjection-xss",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "libinjection xss",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/test\/?a=1&b=%3Cscript%3Edocument.body.innerHTML=",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:default",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "sante",
+        "all",
+        "container:1e219d8ed6b4",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl",
+        "sqli",
+        "waf",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "cf-rule-id:100016"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403,
+      "cf_triggers": [
+        {
+          "trigger_name": "default contentfilter",
+          "ruleid": "100016",
+          "section": "headers",
+          "value": "***xp_cmdshell***xp_makecab***",
+          "trigger_id": "__default__",
+          "action": "monitor",
+          "name": "malicious",
+          "risk_level": 5
+        }
+      ]
+    },
+    "name": "sqli (header)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/test\/",
+      ":method": "GET",
+      ":authority": "localhost:30081",
+      "malicious": "***xp_cmdshell***xp_makecab***"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "securitypolicy-entry:default",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "all",
+        "aclname:default-acl",
+        "container:1e219d8ed6b4",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "cf-rule-id:100016",
+        "status:403",
+        "status-class:4xx",
+        "sante"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "sqli (args)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/test\/?a=1&b=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "aclid:--default--",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy-entry:default",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100016",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "sante"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "sqli (cookies)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "cookie": "COOK=xp_cmdshell",
+      ":path": "\/test\/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "contentfiltername:omit-id-100016",
+        "contentfilterid:omitted",
+        "all",
+        "sante",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-omit-tests",
+        "ip:23-5-64-253",
+        "network:23-5-64-0-19",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "omit sqli",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.5.64.253",
+      ":path": "\/content-filter\/omitted?foo=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "contentfiltername:omit-id-100016",
+        "contentfilterid:omitted",
+        "aclid:--default--",
+        "all",
+        "securitypolicy-entry:content-filter-omit-tests",
+        "securitypolicy:default-entry",
+        "sante",
+        "container:1e219d8ed6b4",
+        "ip:23-5-64-253",
+        "network:23-5-64-0-19",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100016",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "non omitted sqli (headers)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.5.64.253",
+      ":path": "\/content-filter\/omitted",
+      ":method": "GET",
+      ":authority": "localhost:30081",
+      "malicious": "xp_cmdshell"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "all",
+        "sante",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "securitypolicy-entry:default",
+        "aclid:--default--",
+        "container:1e219d8ed6b4",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100017",
+        "cf-rule-risk:3",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "other sqli",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/misc\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "contentfiltername:omit-id-100016",
+        "contentfilterid:omitted",
+        "all",
+        "securitypolicy:default-entry",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-omit-tests",
+        "aclid:--default--",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100017",
+        "cf-rule-risk:3",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "other sqli, not omitted",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/omitted\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "securitypolicy-entry:default",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "all",
+        "securitypolicy:default-entry",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100016",
+        "cf-rule-id:100017",
+        "cf-rule-risk:3",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "two sqli, same parameter",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/misc\/?v=information_schema%28+xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "securitypolicy-entry:default",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "all",
+        "securitypolicy:default-entry",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100016",
+        "cf-rule-id:100017",
+        "cf-rule-risk:3",
+        "cf-rule-risk:5",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "two sqli",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/misc\/?v=information_schema%28&x=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:2",
+        "securitypolicy:default-entry",
+        "sante",
+        "aclname:default-acl",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "securitypolicy-entry:content-filter-omit-tests",
+        "contentfiltername:omit-id-100016",
+        "contentfilterid:omitted",
+        "container:1e219d8ed6b4",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100017",
+        "cf-rule-risk:3",
+        "cf-rule-category:sqli",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "aclid:--default--"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "two sqli, one omitted",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/omitted\/?v=information_schema%28&x=xp_cmdshell",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-noinjection-tests",
+        "aclname:default-acl",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "aclid:--default--",
+        "contentfiltername:omit-libinjection",
+        "contentfilterid:noinject",
+        "bot",
+        "sante"
+      ],
+      "action": "pass"
+    },
+    "name": "no libinjection",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/noinjection\/foo",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "aclid:--default--",
+        "securitypolicy-entry:content-filter-omit-tests",
+        "contentfiltername:omit-id-100016",
+        "sante",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "container:1e219d8ed6b4",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "contentfilterid:omitted",
+        "all",
+        "bot",
+        "generic",
+        "waf",
+        "cf-rule-id:100010",
+        "cf-rule-risk:5",
+        "cf-rule-category:generic",
+        "cf-rule-subcategory:generic",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "alphanum blocked",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/omitted\/?v=AZDGSDQZE16Z",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-noinjection-tests",
+        "contentfiltername:omit-libinjection",
+        "aclid:--default--",
+        "sante",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "securitypolicy:default-entry",
+        "contentfilterid:noinject",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "alphanum skipped",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter\/noinjection\/?v=AZDGSDQZE16Z",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "cookies:0",
+        "headers:1",
+        "args:5",
+        "host:localhost:30081",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "container:1e219d8ed6b4",
+        "sante",
+        "aclname:default-acl",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "securitypolicy:default-entry",
+        "bot",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "too many args",
+    "headers": {
+      ":path": "\/content-filter\/args\/?a=A&b=B&c=C&d=D&e=E",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:3",
+        "container:1e219d8ed6b4",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "aclname:default-acl",
+        "securitypolicy:default-entry",
+        "sante",
+        "bot"
+      ],
+      "action": "pass"
+    },
+    "name": "passing",
+    "headers": {
+      ":path": "\/content-filter\/args\/?a=A&b=B&c=C",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "all",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "sante",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "container:1e219d8ed6b4",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "bot"
+      ],
+      "action": "pass"
+    },
+    "name": "test args a",
+    "headers": {
+      ":path": "\/content-filter\/args\/?a=A",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "aclid:--default--",
+        "container:1e219d8ed6b4",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "aclname:default-acl",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "securitypolicy-entry:content-filter-args-tests",
+        "securitypolicy:default-entry",
+        "bot",
+        "all"
+      ],
+      "action": "pass"
+    },
+    "name": "test args b",
+    "headers": {
+      ":path": "\/content-filter\/args\/?b=B",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "sante",
+        "aclname:default-acl",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "securitypolicy:default-entry",
+        "all",
+        "bot",
+        "container:1e219d8ed6b4"
+      ],
+      "action": "pass"
+    },
+    "name": "test args c",
+    "headers": {
+      ":path": "\/content-filter\/args\/?c=C",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "aclid:--default--",
+        "sante",
+        "aclname:default-acl",
+        "securitypolicy:default-entry",
+        "all",
+        "securitypolicy-entry:content-filter-args-tests",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "bot",
+        "container:1e219d8ed6b4"
+      ],
+      "action": "pass"
+    },
+    "name": "test args d",
+    "headers": {
+      ":path": "\/content-filter\/args\/?d=D",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "securitypolicy-entry:content-filter-args-tests",
+        "sante",
+        "all",
+        "container:1e219d8ed6b4",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "bot"
+      ],
+      "action": "pass"
+    },
+    "name": "test args a (n)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?a=1",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "container:1e219d8ed6b4",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "aclid:--default--",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "securitypolicy:default-entry",
+        "all",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclname:default-acl",
+        "bot",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test args b (n)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?b=2",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "securitypolicy:default-entry",
+        "all",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "aclname:default-acl",
+        "sante",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "bot",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test args c (n)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?c=3",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "container:1e219d8ed6b4",
+        "all",
+        "sante",
+        "securitypolicy-entry:content-filter-args-tests",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "securitypolicy:default-entry",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "aclid:--default--",
+        "bot",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "test args d (n)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?d=4",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-args-tests",
+        "sante",
+        "container:1e219d8ed6b4",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "securitypolicy:default-entry",
+        "bot",
+        "all"
+      ],
+      "action": "pass"
+    },
+    "name": "test args a (nosig)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?a=AZDGSDQZE16Z",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "aclid:--default--",
+        "aclname:default-acl",
+        "container:1e219d8ed6b4",
+        "sante",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-args-tests",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "bot"
+      ],
+      "action": "pass"
+    },
+    "name": "test args b (nosig)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?b=AZDGSDQZE16Z",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "securitypolicy:default-entry",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclname:default-acl",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "all",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "sante",
+        "bot",
+        "aclid:--default--"
+      ],
+      "action": "pass"
+    },
+    "name": "test args c (nosig)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?c=AZDGSDQZE16Z",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:1",
+        "args:1",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-args-tests",
+        "aclid:--default--",
+        "sante",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "all",
+        "aclname:default-acl",
+        "contentfiltername:args-checkes",
+        "contentfilterid:argschecks",
+        "bot",
+        "securitypolicy:default-entry"
+      ],
+      "action": "pass"
+    },
+    "name": "test args d (nosig)",
+    "headers": {
+      ":path": "\/content-filter\/args\/?d=AZDGSDQZE16Z",
+      ":method": "GET",
+      "x-forwarded-for": "13.129.64.253",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "aclid:--default--",
+        "securitypolicy:default-entry",
+        "sante",
+        "aclname:default-acl",
+        "securitypolicy-entry:default",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "contentfilterid:--default--",
+        "contentfiltername:default-contentfilter",
+        "all",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "container:1e219d8ed6b4"
+      ],
+      "action": "custom_response",
+      "block_mode": false,
+      "status": 403
+    },
+    "name": "overlong header",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      "long-header": "Overlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_headerOverlong_header",
+      ":path": "\/content-filter\/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "aclid:--default--",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "all",
+        "contentfiltername:e2e-content-filter-short-headers",
+        "contentfilterid:e2e000000002",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "container:1e219d8ed6b4",
+        "sante",
+        "bot",
+        "securitypolicy-entry:content-filter-short-headers"
+      ],
+      "action": "pass"
+    },
+    "name": "short headers ok",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter-short-headers\/",
+      ":method": "GET",
+      "short-header": "01234567890123456789012345678901234567890123456789",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:0",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "securitypolicy:default-entry",
+        "sante",
+        "container:1e219d8ed6b4",
+        "securitypolicy-entry:content-filter-short-headers",
+        "aclid:--default--",
+        "contentfiltername:e2e-content-filter-short-headers",
+        "contentfilterid:e2e000000002",
+        "all",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "short headers reject",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      ":path": "\/content-filter-short-headers\/",
+      ":method": "GET",
+      "short-header": "01234567890123456789012345678901234567890123456789A",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "securitypolicy:default-entry",
+        "securitypolicy-entry:content-filter-restrict-tests",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "contentfiltername:rr",
+        "contentfilterid:rr",
+        "aclname:default-acl",
+        "sante",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "all"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "restrict 1",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      "regex-restrict": "invalid",
+      ":path": "\/rr\/blocklisted-value-regex-restrict-restrict",
+      ":method": "GET",
+      "short-header": "01234567890123456789012345678901234567890123456789A",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "contentfilterid:rr",
+        "contentfiltername:rr",
+        "all",
+        "sante",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "securitypolicy-entry:content-filter-restrict-tests",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "bot",
+        "status:403",
+        "status-class:4xx"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "restrict 2",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      "regex-norestrict": "invalid",
+      ":path": "\/rr\/blocklisted-value-regex-restrict-restrict",
+      ":method": "GET",
+      "short-header": "01234567890123456789012345678901234567890123456789A",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "contentfilterid:lvl2",
+        "securitypolicy-entry:content-filter-level2",
+        "contentfiltername:level-2",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "sqli",
+        "waf",
+        "cf-rule-id:100017",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:3",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 2 <= 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "/content-filter/lvl2/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl3",
+        "securitypolicy-entry:content-filter-level3",
+        "contentfiltername:level-3",
+        "sqli",
+        "waf",
+        "cf-rule-id:100017",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:3",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "aclname:default-acl"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 3 <= 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvl3\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl4",
+        "securitypolicy-entry:content-filter-level4",
+        "contentfiltername:level-4",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "test risk level ! 4 <= 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvl4\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl5",
+        "securitypolicy-entry:content-filter-level5",
+        "contentfiltername:level-5",
+        "aclname:default-acl"
+      ],
+      "action": "pass"
+    },
+    "name": "test risk level ! 5 <= 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvl5\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5",
+        "generic",
+        "waf",
+        "cf-rule-subcategory:generic",
+        "cf-rule-category:generic",
+        "cf-rule-risk:1",
+        "status:403",
+        "status-class:4xx",
+        "cf-rule-id:100099"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 headers 1",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "x-header": "/nettracker/",
+      ":path": "\/content-filter\/lvlX135\/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5",
+        "cf-rule-id:100017",
+        "sqli",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:3",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "status:403",
+        "status-class:4xx",
+        "waf"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 headers 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "x-header": "information_schema(",
+      ":path": "\/content-filter\/lvlX135\/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:3",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5",
+        "sqli",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:5",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "waf",
+        "status:403",
+        "status-class:4xx",
+        "cf-rule-id:100016"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 headers 5",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      "x-header": "xp_makecab",
+      ":path": "\/content-filter\/lvlX135\/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "pass"
+    },
+    "name": "test risk level 135 args 1",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135\/?v=/nettracker/",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "cf-rule-id:100017",
+        "sqli",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:3",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "waf",
+        "status:403",
+        "status-class:4xx",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 args 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135\/?v=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "cf-rule-id:100016",
+        "sqli",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:5",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "waf",
+        "status:403",
+        "status-class:4xx",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 args 5",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135\/?v=xp_makecab",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "pass"
+    },
+    "name": "test risk level 135 cookies 1",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135\/",
+      "cookie": "COOK=%2Fnettracker%2F",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "host:localhost:30081",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "pass"
+    },
+    "name": "test risk level 135 cookies 3",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135/",
+      "cookie": "COOK=information_schema%28",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:1",
+        "headers:2",
+        "args:0",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:lvl135",
+        "aclname:default-acl",
+        "cf-rule-id:100016",
+        "sqli",
+        "cf-rule-category:sqli",
+        "cf-rule-risk:5",
+        "cf-rule-subcategory:built-in-function-invocation",
+        "waf",
+        "securitypolicy-entry:content-filter-level-1-3-5",
+        "status:403",
+        "status-class:4xx",
+        "contentfiltername:level-1-3-5"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "test risk level 135 cookies 5",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/lvlX135\/",
+      "cookie": "COOK=xp_makecab",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:mixedmatch",
+        "aclname:default-acl",
+        "securitypolicy-entry:mixed-matcher",
+        "status:403",
+        "status-class:4xx",
+        "contentfiltername:mixed-matching"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403
+    },
+    "name": "mixed matching, non specific argument (block)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/mixedmatch\/?nonspecifickey=2",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:mixedmatch",
+        "aclname:default-acl",
+        "securitypolicy-entry:mixed-matcher",
+        "contentfiltername:mixed-matching"
+      ],
+      "action": "pass"
+    },
+    "name": "mixed matching, non specific argument (pass)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/mixedmatch\/?nonspecifickey=A",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "sante",
+        "ip:23-129-64-253",
+        "network:23-129-64-0-24",
+        "container:1e219d8ed6b4",
+        "all",
+        "securitypolicy:default-entry",
+        "aclid:--default--",
+        "bot",
+        "contentfilterid:mixedmatch",
+        "aclname:default-acl",
+        "securitypolicy-entry:mixed-matcher",
+        "contentfiltername:mixed-matching"
+      ],
+      "action": "pass"
+    },
+    "name": "specific argument (pass)",
+    "headers": {
+      "x-request-id": "e6acdce3-e076-4f0d-9a22-9d82fe01ba60",
+      "x-forwarded-for": "23.129.64.253",
+      ":path": "\/content-filter\/mixedmatch\/?specifickey=1",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "contentfilterid:invertedre",
+        "contentfiltername:inverted-regex",
+        "ire",
+        "all",
+        "sante",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "securitypolicy-entry:invertedre",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "bot",
+        "status:403",
+        "status-class:4xx",
+        "myextratag"
+      ],
+      "action": "custom_response",
+      "block_mode": true,
+      "status": 403,
+      "headers": {
+        "h1": "13.129.64.253"
+      }
+    },
+    "name": "inverted re block",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      "regex-norestrict": "invalid",
+      ":path": "\/invertedre?test=id",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  },
+  {
+    "response": {
+      "tags": [
+        "host:localhost:30081",
+        "cookies:0",
+        "headers:2",
+        "args:1",
+        "securitypolicy:default-entry",
+        "aclname:default-acl",
+        "contentfilterid:invertedre",
+        "contentfiltername:inverted-regex",
+        "all",
+        "sante",
+        "container:1e219d8ed6b4",
+        "aclid:--default--",
+        "securitypolicy-entry:invertedre",
+        "ip:13-129-64-253",
+        "network:13-128-0-0-10",
+        "bot"
+      ],
+      "action": "pass"
+    },
+    "name": "inverted re pass",
+    "headers": {
+      "x-forwarded-for": "13.129.64.253",
+      "regex-norestrict": "invalid",
+      ":path": "\/invertedre?test=ix",
+      ":method": "GET",
+      ":authority": "localhost:30081"
+    }
+  }
+]

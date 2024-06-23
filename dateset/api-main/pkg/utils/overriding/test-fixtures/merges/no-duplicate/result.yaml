@@ -1,0 +1,23 @@
+variables:
+  version1: main
+  version2: parent
+  version3: plugin
+attributes:
+  main: true
+  parent: true
+  plugin: true
+components:
+  - container:
+      image: "aValue"
+    name: "parent-component"
+  - image:
+      imageName: "myimage:xyz"
+      dockerfile:
+        uri: "uri/Dockerfile"
+    name: "parent-component-2"
+  - container:
+      image: "aValue"
+    name: "plugin-component"
+  - container:
+      image: "anyValue"
+    name: "new-component"

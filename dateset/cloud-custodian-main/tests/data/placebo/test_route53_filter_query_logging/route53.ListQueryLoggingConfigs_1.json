@@ -1,0 +1,13 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "QueryLoggingConfigs": [
+            {
+                "Id": "72c989f8-8be5-434e-b213-7a30ea34d482",
+                "HostedZoneId": "Z0423603VKO3K9HA5YQD",
+                "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/route53/custodian.io"
+            }
+        ]
+    }
+}

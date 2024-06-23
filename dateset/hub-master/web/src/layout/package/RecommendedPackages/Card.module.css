@@ -1,0 +1,20 @@
+.badge {
+  height: 25px;
+  max-width: 300px;
+  border-color: var(--border-md) !important;
+}
+
+.badgeContent {
+  font-size: 0.8rem;
+}
+
+.imageWrapper {
+  min-width: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}

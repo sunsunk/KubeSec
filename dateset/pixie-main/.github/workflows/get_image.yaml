@@ -1,0 +1,32 @@
+---
+name: get-image
+on:
+  workflow_call:
+    inputs:
+      image-base-name:
+        required: true
+        type: string
+      ref:
+        type: string
+        required: false
+        default: ''
+    outputs:
+      image-with-tag:
+        description: "A image with tag (from docker.properties) for the requested image"
+        value: ${{ jobs.get-image.outputs.image-with-tag }}
+permissions:
+  contents: read
+jobs:
+  get-image:
+    runs-on: ubuntu-latest
+    outputs:
+      image-with-tag: ${{ steps.get-version.outputs.image }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        ref: ${{ inputs.ref }}
+    - id: get-version
+      run: >-
+        IMAGE_NAME="ghcr.io/pixie-io/${{ inputs.image-base-name }}";
+        IMAGE_TAG="$(grep DOCKER_IMAGE_TAG docker.properties | cut -d'=' -f2)";
+        echo "image=${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_OUTPUT

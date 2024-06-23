@@ -1,0 +1,31 @@
+<!-- Posts Modals -->
+{% for posts in site.posts %}
+  <div class="posts-modal modal fade" id="p{{ forloop.index }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="close-modal" data-dismiss="modal">
+          <div class="lr">
+            <div class="rl"></div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-10 mx-auto">
+              <div class="modal-body">
+                <!-- posts Details Go Here -->
+                <h2 class="text-uppercase">{{ posts.title }}</h2>
+                <p class="item-intro text-muted">{{ posts.subtitle }}</p>
+                <img class="img-fluid d-block mx-auto" src="{{ posts.image }}" alt="{{ posts.alt }}">
+				<p>{{ posts.content }}</p>		
+                <button class="btn-med btn-primary" data-dismiss="modal" type="button">
+                  <i class="fas fa-window-close"></i>
+                  Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+<!-- End Posts Modals -->

@@ -1,0 +1,11 @@
+test1: first
+#@yaml/map-key-override
+test1: second
+test1: third
+
++++
+
+ERR: 
+- __ytt_tplXXX_start_node: expected key 'test1' to not be specified again (unless 'yaml/map-key-override' annotation is added)
+    in <toplevel>
+      stdin:4 | test1: third

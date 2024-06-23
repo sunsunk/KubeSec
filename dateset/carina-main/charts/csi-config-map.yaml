@@ -1,0 +1,39 @@
+# Source: carina-csi-driver/templates/csi-config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-release-csi-config
+  namespace: default
+  labels:
+    class: carina
+    app: csi-carina-node
+    release:  "my-release"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "carina-csi-driver"
+    app.kubernetes.io/version: "0.11.0"
+    helm.sh/chart: "carina-csi-driver-v0.11.0"
+data:
+  config.json: |-
+    {
+      "diskScanInterval": 300,
+      "diskSelector": [
+        {
+          "name": "carina-vg-ssd",
+          "nodeLabel": "kubernetes.io/hostname",
+          "policy": "LVM",
+          "re": [
+            "loop2+"
+          ]
+        },
+        {
+          "name": "carina-raw-ssd",
+          "nodeLabel": "kubernetes.io/hostname",
+          "policy": "RAW",
+          "re": [
+            "loop3+"
+          ]
+        }
+      ],
+      "schedulerStrategy": "spreadout"
+    }

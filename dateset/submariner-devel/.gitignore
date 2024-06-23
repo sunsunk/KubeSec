@@ -1,0 +1,17 @@
+.idea
+.dapper
+/bin
+/include
+/package/.image.*
+dist
+output
+/vendor
+.project
+.settings
+*coverprofile*
+junit.xml
+scripts/broker-info.subm*
+/Dockerfile.*
+.shflags
+Makefile.shipyard
+Makefile.dapper

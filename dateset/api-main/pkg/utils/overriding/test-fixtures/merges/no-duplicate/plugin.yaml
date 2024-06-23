@@ -1,0 +1,8 @@
+variables:
+  version3: plugin
+attributes:
+  plugin: true
+components:
+  - container:
+      image: "aValue"
+    name: "plugin-component"

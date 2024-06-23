@@ -1,0 +1,110 @@
+name: Run E2E tests
+
+on:
+  workflow_call:
+    inputs:
+      upgrade-test:
+        required: false
+        type: string
+      bucket-id:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-e2e-test-list:
+    name: "Build E2E Test List"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - id: set-test-matrix
+        run: |
+          readarray -d '' test_dirs < <(find ./test/e2e/tests -mindepth 1 -type d -print0)
+          json_array="$(printf "%s\n" "${test_dirs[@]}" | jq -R . | jq -cs)"
+          echo "e2e-tests=${json_array}" > $GITHUB_OUTPUT
+    outputs:
+      e2e-tests: ${{ steps.set-test-matrix.outputs.e2e-tests }}
+  e2e-test:
+    name: "E2E Tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs:
+      - build-e2e-test-list
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        KUBERNETES_VERSION: ["1.26.6", "1.27.3", "1.28.0", "1.29.0"]
+        E2E_TEST: ${{ fromJson(needs.build-e2e-test-list.outputs.e2e-tests) }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
+        with:
+          egress-policy: audit
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Fetch Build Artifacts
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          pattern: ${{ inputs.bucket-id }}-*
+          path: ${{ github.workspace }}/images
+          merge-multiple: true
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - name: Set env
+        run: |
+          ARCHIVE_DIR=${{ github.workspace }}/images
+          REMOVER_REPO=remover
+          MANAGER_REPO=manager
+          COLLECTOR_REPO=collector
+          TRIVY_SCANNER_REPO=scanner
+
+          REMOVER_TAG=test
+          MANAGER_TAG=test
+          COLLECTOR_TAG=test
+          TRIVY_SCANNER_TAG=test
+
+          echo REMOVER_REPO=$REMOVER_REPO >> $GITHUB_ENV
+          echo MANAGER_REPO=$MANAGER_REPO >> $GITHUB_ENV
+          echo COLLECTOR_REPO=$COLLECTOR_REPO >> $GITHUB_ENV
+          echo TRIVY_SCANNER_REPO=$TRIVY_SCANNER_REPO >> $GITHUB_ENV
+
+          echo REMOVER_TAG=$REMOVER_TAG >> $GITHUB_ENV
+          echo MANAGER_TAG=$MANAGER_TAG >> $GITHUB_ENV
+          echo COLLECTOR_TAG=$COLLECTOR_TAG >> $GITHUB_ENV
+          echo TRIVY_SCANNER_TAG=$TRIVY_SCANNER_TAG >> $GITHUB_ENV
+          echo ARCHIVE_DIR=$ARCHIVE_DIR >> $GITHUB_ENV
+
+          echo REMOVER_TARBALL_PATH=$ARCHIVE_DIR/${REMOVER_REPO}_${REMOVER_TAG}.tar >> $GITHUB_ENV
+          echo MANAGER_TARBALL_PATH=$ARCHIVE_DIR/${MANAGER_REPO}_${MANAGER_TAG}.tar >> $GITHUB_ENV
+          echo COLLECTOR_TARBALL_PATH=$ARCHIVE_DIR/${COLLECTOR_REPO}_${COLLECTOR_TAG}.tar >> $GITHUB_ENV
+          echo SCANNER_TARBALL_PATH=$ARCHIVE_DIR/${TRIVY_SCANNER_REPO}_${TRIVY_SCANNER_TAG}.tar >> $GITHUB_ENV
+
+          if [[ -n "${{ inputs.upgrade-test }}" ]]; then
+            echo HELM_UPGRADE_TEST=1 >> $GITHUB_ENV
+          fi
+      - name: Run e2e test
+        run: |
+          make e2e-test \
+            KUBERNETES_VERSION=${{ matrix.KUBERNETES_VERSION }} \
+            E2E_TESTS=${{ matrix.E2E_TEST }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3  # v4.3.1
+        if: always()
+        with:
+          name: test_logs
+          path: ${{ github.workspace }}/test_logs/
+          retention-days: 1
+          overwrite: true

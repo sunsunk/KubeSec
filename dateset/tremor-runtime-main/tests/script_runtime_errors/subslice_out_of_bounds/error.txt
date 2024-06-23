@@ -1,0 +1,3 @@
+Error: 
+    1 | event[1:4]
+      |       ^^^ Array index out of bounds, got index range 1:4 but expected a subrange of 0:3

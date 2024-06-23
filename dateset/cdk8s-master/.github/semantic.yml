@@ -1,0 +1,22 @@
+# only validate PR title because it will be used as the merge commit title
+titleOnly: true
+
+# only allow these scopes
+scopes:
+  - lib
+  - cli
+  - plus-17
+  - examples
+  - readme
+  - docs
+  - website
+  - release
+  - deps
+
+# only allow these types
+types:
+  - feat
+  - fix
+  - chore
+  - refactor
+  - revert

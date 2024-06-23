@@ -1,0 +1,156 @@
+Vagrant.require_version ">= 2.0.0"
+
+# default values
+OS        = ENV['OS'] || "ubuntu"
+NETNEXT   = ENV['NETNEXT'] || "0"
+K8S       = ENV['K8S'] || "k3s"
+RUNTIME   = ENV['RUNTIME'] || "docker"
+NODEV     = ENV['NODEV'] || "0"
+
+if OS == "centos" then
+  if NETNEXT == "1" then
+    VM_IMG = "generic/centos9s"
+    VM_NAME = "kubearmor-dev-next"
+  else # default
+    VM_IMG = "generic/centos8s" # 4.18
+    VM_NAME = "kubearmor-dev"
+  end
+else # ubuntu
+  if NETNEXT == "1" then
+    VM_IMG = "generic/ubuntu2204" # jammy (5.15)
+    VM_NAME = "kubearmor-dev-next"
+  elsif NETNEXT == "-1" then
+    VM_IMG = "generic/ubuntu1804" # bionic (4.15)
+    VM_NAME = "kubearmor-dev"
+  else # default
+    VM_IMG = "generic/ubuntu2004" # focal (5.4)
+    VM_NAME = "kubearmor-dev"
+  end
+end
+
+system("
+    if [ #{ARGV[0]} = 'up' ]; then
+      if [ ! -f ~/.ssh/id_rsa ]; then
+        echo '~/.ssh/id_rsa keys does not exist.'
+        ssh-keygen -t rsa -f ~/.ssh/id_rsa
+      fi
+    fi
+")
+
+Vagrant.configure("2") do |config|
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+
+  if Vagrant.has_plugin?("vagrant-reload")
+    config.vbguest.auto_update = false
+  end
+
+  # vagrant@VM_NAME
+  config.vm.hostname = VM_NAME
+
+  # vagrant plugins
+  config.vagrant.plugins = ["vagrant-vbguest", "vagrant-reload"]
+
+  config.vm.define VM_NAME do |cfg|
+    cfg.vm.box = VM_IMG
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.name = VM_NAME
+      vb.memory = 4096
+      vb.cpus = 4
+      vb.customize ['modifyvm', :id, '--nested-hw-virt', 'on']
+    end
+  end
+
+  # forward port for debug
+  if ENV['DLV_RPORT'] then
+    config.vm.network "forwarded_port", guest: 2345, host: ENV['DLV_RPORT'], auto_correct: true
+  end
+
+  # sync directories
+  kubearmor_home = "../.."
+  config.vm.synced_folder kubearmor_home, "/home/vagrant/KubeArmor", owner:"vagrant", group:"vagrant"
+
+  # copy ssh keys
+  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
+  config.vm.provision :shell, :inline => "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys", run: "always"
+
+  # copy git config
+  config.vm.provision :file, source: "~/.gitconfig", destination: "$HOME/.gitconfig"
+
+  if OS == "centos" then
+    if NODEV == "1" then
+      # skip to set up the development env
+    else
+      # install base dependencies
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s-selinux/setup.sh"
+    end
+
+    if RUNTIME == "crio" then
+      # install CRI-O
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s-selinux/crio/install_crio.sh"
+    else # docker by default
+      # install Docker
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s-selinux/docker/install_docker.sh"
+    end
+
+    if K8S == "kubeadm" then
+      # install Kubernetes
+      config.vm.provision :shell, :inline => "/home/vagrant/KubeArmor/contribution/self-managed-k8s-selinux/k8s/install_kubernetes.sh"
+
+      # initialize Kubernetes
+      config.vm.provision :shell, :inline => "CNI=cilium MASTER=true /home/vagrant/KubeArmor/contribution/self-managed-k8s-selinux/k8s/initialize_kubernetes.sh"
+    else # k3s by default
+      # install k3s
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/k3s/install_k3s.sh"
+    end
+
+    # enable SELinux
+    config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s-selinux/enable_selinux.sh"
+
+  else # ubuntu
+    if NODEV == "1" then
+      # skip to set up the development env
+    else
+      # install base dependencies
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s/setup.sh"
+    end
+
+    if NETNEXT == "1" then
+      config.vm.provision :shell, :inline => "sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"lsm=apparmor,bpf\"/g' /etc/default/grub"
+      config.vm.provision :shell, :inline => "update-grub"
+      config.vm.provision :reload
+    end
+
+    # additional task: linux-tools required by bpftool
+    config.vm.provision :shell, :inline => "apt-get install -y linux-tools-generic"
+
+    if RUNTIME == "containerd" then
+      # install Containerd
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s/containerd/install_containerd.sh"
+    elsif RUNTIME == "crio" then
+      # install CRI-O
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s/crio/install_crio.sh"
+    else # docker by default
+      # install Docker
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/self-managed-k8s/docker/install_docker.sh"
+    end
+
+    if K8S == "kubeadm" then
+      # install Kubernetes
+      config.vm.provision :shell, :inline => "/home/vagrant/KubeArmor/contribution/self-managed-k8s/k8s/install_kubernetes.sh"
+
+      # initialize Kubernetes
+      config.vm.provision :shell, :inline => "CNI=cilium MASTER=true /home/vagrant/KubeArmor/contribution/self-managed-k8s/k8s/initialize_kubernetes.sh"
+    else # k3s by default
+      # install k3s
+      config.vm.provision :shell, path: kubearmor_home + "/contribution/k3s/install_k3s.sh"
+    end
+  end
+
+  # change permissions
+  config.vm.provision :shell, :inline => "mkdir -p /home/vagrant/go; chown -R vagrant:vagrant /home/vagrant/go"
+
+  # avoid "make: warning: Clock skew detected."
+  config.vm.provision :shell, path: kubearmor_home + "/contribution/vagrant/time-update.sh"
+end

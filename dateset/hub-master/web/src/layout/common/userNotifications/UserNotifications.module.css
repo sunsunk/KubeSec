@@ -1,0 +1,47 @@
+.toast {
+  bottom: 20px;
+  transition: opacity 0.3s ease-in-out;
+  width: 700px;
+  max-width: 80%;
+  border-color: var(--color-1-500) !important;
+  z-index: 1100;
+}
+
+.isVisible {
+  box-shadow: 0px 0px 15px 0 var(--color-black-75);
+}
+
+.btnsWrapper {
+  margin-top: -3px;
+}
+
+.btn {
+  font-size: 0.65rem;
+  line-height: 1rem;
+}
+
+.closeBtn {
+  font-size: 0.75rem;
+}
+
+.content {
+  font-size: 0.8rem;
+}
+
+.content code {
+  color: var(--color-1-700);
+}
+
+.content .header {
+  font-size: 0.85rem;
+}
+
+.content p {
+  margin-bottom: 0rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: opacity 1.3s ease-in-out;
+  }
+}

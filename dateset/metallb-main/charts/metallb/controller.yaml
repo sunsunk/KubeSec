@@ -1,0 +1,121 @@
+# Source: metallb/templates/controller.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-controller
+  namespace: dynamic_parameters
+  labels:
+    
+    app.kubernetes.io/component: controller
+spec:
+  strategy: dynamic_parameters
+  selector:
+    matchLabels:
+      
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "dynamic_parameters"
+      labels:
+        
+        app.kubernetes.io/component: controller
+    spec:
+      runtimeClassName: dynamic_parameters
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      terminationGracePeriodSeconds: 0
+      securityContext:
+      containers:
+      - name: controller
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        command:
+          - dynamic_parameters
+        args:
+        - --port=dynamic_parameters
+        - --log-level=dynamic_parameters
+        - --lb-class=dynamic_parameters
+        - --webhook-mode=dynamic_parameters
+        - --tls-min-version=dynamic_parameters
+        - --tls-cipher-suites=dynamic_parameters
+        env:
+        - name: METALLB_ML_SECRET_NAME
+          value: dynamic_parameters
+        - name: METALLB_DEPLOYMENT
+          value: dynamic_parameters-controller
+        - name: METALLB_BGP_TYPE
+          value: frr
+        - name: METALLB_BGP_TYPE
+          value: frr-k8s
+        ports:
+        - name: monitoring
+          containerPort: dynamic_parameters
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: monitoring
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          timeoutSeconds: dynamic_parameters
+          successThreshold: dynamic_parameters
+          failureThreshold: dynamic_parameters
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: monitoring
+          initialDelaySeconds: dynamic_parameters
+          periodSeconds: dynamic_parameters
+          timeoutSeconds: dynamic_parameters
+          successThreshold: dynamic_parameters
+          failureThreshold: dynamic_parameters
+        resources:
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      - name: kube-rbac-proxy
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        args:
+          - --logtostderr
+          - --secure-listen-address=:dynamic_parameters
+          - --upstream=http://127.0.0.1:dynamic_parameters/
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+          - --tls-private-key-file=/etc/metrics/tls.key
+          - --tls-cert-file=/etc/metrics/tls.crt
+        ports:
+          - containerPort: dynamic_parameters
+            name: metricshttps
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+          - name: metrics-certs
+            mountPath: /etc/metrics
+            readOnly: true
+      nodeSelector:
+        "kubernetes.io/os": linux
+      affinity:
+      tolerations:
+      priorityClassName: dynamic_parameters
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: metallb-webhook-cert
+      - name: metrics-certs
+        secret:
+          secretName: dynamic_parameters

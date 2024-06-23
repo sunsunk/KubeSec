@@ -1,0 +1,44 @@
+name: image-scan
+on:
+  push:
+    branches:
+      - release/v2
+  pull_request_target:
+jobs:
+  trivy-container-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Build dev image
+        run: |
+          make save-tel2-image
+      - name: Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: build-output/tel2-image.tar
+          format: sarif
+          exit-code: 0 # only warn for now until we have backed it into our processes
+          output: trivy-results.sarif
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+          hide-progress: false
+      - name: Upload Scan to GitHub Security Tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results.sarif"
+  pass:
+    name: image-scan
+    needs:
+      - trivy-container-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: No-Op
+        if: ${{ false }}
+        run: "echo Pass"

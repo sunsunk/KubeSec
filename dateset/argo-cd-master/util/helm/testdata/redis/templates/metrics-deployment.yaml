@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters-metrics
+  labels:
+    app: dynamic_parameters
+    chart: dynamic_parameters
+    release: "dynamic_parameters"
+    heritage: "dynamic_parameters"
+spec:
+  template:
+    metadata:
+      labels:
+        release: "dynamic_parameters"
+        role: metrics
+        app: dynamic_parameters
+      annotations:
+    spec:
+      imagePullSecrets:
+        - name: dynamic_parameters
+      serviceAccountName: "dynamic_parameters"
+      nodeSelector:
+      tolerations:
+      containers:
+      - name: metrics
+        image: dynamic_parameters
+        imagePullPolicy: dynamic_parameters
+        env:
+        - name: REDIS_ADDR
+          value: dynamic_parameters
+          value: dynamic_parameters
+        - name: REDIS_ALIAS
+          value: dynamic_parameters
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dynamic_parameters
+              name: dynamic_parameters
+              key: redis-password
+        ports:
+        - name: metrics
+          containerPort: 9121
+        resources:
+
+---

@@ -1,0 +1,99 @@
+.iconWrapper {
+  width: 2rem;
+  height: 2rem;
+  padding: 2px;
+}
+
+.isDisabled {
+  cursor: auto;
+}
+
+.tooltip {
+  margin-left: -3px;
+}
+
+.dropdown {
+  width: 21rem;
+  top: 120% !important;
+}
+
+.arrow {
+  right: 0.3rem !important;
+}
+
+.darkArrow::after {
+  border-bottom-color: var(--light-gray) !important;
+}
+
+.dropdownItem:not(.isDisabled):hover {
+  background-color: var(--color-black-5);
+}
+
+.dropdownItem + .dropdownItem {
+  border-top: 1px solid var(--border-md);
+}
+
+.title {
+  font-size: 0.9rem;
+  background-color: var(--light-gray);
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.emptyListMsg {
+  font-size: 0.9rem;
+}
+
+.growWidth {
+  min-width: 1%;
+}
+
+.buttonsWrapper {
+  max-height: 380px;
+}
+
+.imageWrapper {
+  min-width: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  top: -1px !important;
+}
+
+.spinner:before,
+.spinner:after {
+  width: 1.5rem;
+  height: 1.5rem;
+  left: 3px;
+  top: 4px;
+}
+
+.updatingSpinner {
+  top: 6px;
+}
+
+.updatingSpinner:before,
+.updatingSpinner:after {
+  top: 2px;
+  left: 2px;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .dropdown {
+    width: 18rem;
+    right: -5rem;
+  }
+
+  .arrow {
+    right: 6.25rem !important;
+  }
+}

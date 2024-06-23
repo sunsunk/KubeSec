@@ -1,0 +1,107 @@
+/** Copyright 2020-2023 Alibaba Group Holding Limited.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+#ifndef MODULES_BASIC_DS_DATAFRAME_VINEYARD_MOD_
+#define MODULES_BASIC_DS_DATAFRAME_VINEYARD_MOD_
+
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "arrow/api.h"     // IWYU pragma: keep
+#include "arrow/io/api.h"  // IWYU pragma: keep
+
+#include "basic/ds/arrow.vineyard.h"  // IWYU pragma: keep
+#include "basic/ds/tensor.vineyard.h"
+#include "client/client.h"
+#include "client/ds/i_object.h"
+#include "client/ds/stream.h"  // IWYU pragma: keep
+#include "common/util/json.h"
+
+namespace vineyard {
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+
+class DataFrameBaseBuilder;
+
+class [[vineyard(streamable)]] DataFrame : public Registered<DataFrame> {
+ public:
+  /**
+   * @brief Get the column names.
+   *
+   * @return The vector of column names.
+   */
+  const std::vector<json>& Columns() const;
+
+  /**
+   * @brief Get the index of dataframe.
+   *
+   * @return The shared pointer to the index tensor.
+   */
+  std::shared_ptr<ITensor> Index() const;
+
+  /**
+   * @brief Get the column of the given column name.
+   *
+   * @param column The given column name.
+   * @return The shared pointer to the column tensor.
+   */
+  std::shared_ptr<ITensor> Column(json const& column) const;
+
+  /**
+   * @brief Get the partition index of the global dataframe.
+   *
+   * @return The pair of the partition_index on rows and the partition_index on
+   * columns.
+   */
+  const std::pair<size_t, size_t> partition_index() const;
+
+  /**
+   * @brief Get the shape of the dataframe.
+   *
+   * @return The pair of the number of rows and the number of columns.
+   */
+  const std::pair<size_t, size_t> shape() const;
+
+  /**
+   * @brief Get a RecordBatch view for the dataframe.
+   */
+  const std::shared_ptr<arrow::RecordBatch> AsBatch(bool copy = false) const;
+
+ private:
+  [[shared]] size_t partition_index_row_ = -1;
+  [[shared]] size_t partition_index_column_ = -1;
+
+  [[shared]] size_t row_batch_index_;
+
+  [[shared]] Tuple<json> columns_;
+  [[shared]] Map<json, std::shared_ptr<ITensor>> values_;
+
+  friend class Client;
+  friend class DataFrameBaseBuilder;
+};
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+}  // namespace vineyard
+
+#endif  // MODULES_BASIC_DS_DATAFRAME_VINEYARD_MOD_
+
+// vim: syntax=cpp

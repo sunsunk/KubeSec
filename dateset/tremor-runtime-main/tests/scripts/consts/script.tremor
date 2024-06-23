@@ -1,0 +1,2 @@
+const OUT = {"this was": ["a", "const"]};
+OUT

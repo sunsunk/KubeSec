@@ -1,0 +1,567 @@
+---
+- name: "Load cluster API groups"
+  set_fact:
+    api_groups: "dynamic_parameters"
+
+- name: "Transfer rwx_storage_class setting if hub_bucket_storage_class is not defined"
+  set_fact:
+    hub_bucket_storage_class: "dynamic_parameters"
+  when: rwx_storage_class is defined and hub_bucket_storage_class is not defined
+
+- name: "Transfer rwx_storage_class setting if cache_storage_class is not defined"
+  set_fact:
+    cache_storage_class: "dynamic_parameters"
+  when: rwx_storage_class is defined and cache_storage_class is not defined
+
+- name: "Transfer maven_data_volume_size setting"
+  set_fact:
+    cache_data_volume_size: "dynamic_parameters"
+  when: maven_data_volume_size is defined and hostvars[inventory_hostname]['cache_data_volume_size'] is not defined
+
+- name: "Enable OpenShift cluster environment"
+  set_fact:
+    openshift_cluster: true
+  when: "'route.openshift.io' in api_groups"
+
+- when: openshift_cluster|bool
+  block:
+    - name: "Get OpenShift cluster Proxy object"
+      set_fact:
+        proxy_cluster: "dynamic_parameters"
+
+    - when: (proxy_cluster.spec.trustedCA.name | length) > 0
+      block:
+        - name: "Enable trusted CA environment"
+          set_fact:
+            trusted_ca_enabled: true
+
+        - name: "Create an empty ConfigMap that will hold the trusted CA"
+          k8s:
+            state: present
+            definition: "dynamic_parameters"
+
+- when:
+    - feature_auth_required|bool
+    - feature_auth_type == "oauth"
+  block:
+    - name: "Check if Cookie Secret already exists"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: cookie-secret
+        namespace: "dynamic_parameters"
+      register: cookie_secret
+
+    - name: "Generate Cookie Secret"
+      set_fact:
+        new_cookie_secret: "dynamic_parameters"
+      when: (cookie_secret.resources | length) == 0
+
+    - name: "Create Cookie Secret"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+      when: (cookie_secret.resources | length) == 0
+
+    - name: "Retrieve Cookie Secret"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: cookie-secret
+        namespace: "dynamic_parameters"
+      register: cookie_secret
+
+    - name: "Set Cookie Secret"
+      set_fact:
+        cookie_secret_data: "dynamic_parameters"
+
+    - name: "Retrieve Oauth Client Secret if it exists"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: oauth-client-secret
+        namespace: "dynamic_parameters"
+      register: oauth_client_secret_status
+
+    - name: "Set Oauth Client Secret"
+      set_fact:
+        oauth_client_secret: "dynamic_parameters"
+      when: (oauth_client_secret_status.resources | length) > 0
+
+- when:
+    - feature_auth_required|bool
+    - feature_auth_type == "keycloak"
+  block:
+    - name: "Setup Keycloak PostgreSQL PersistentVolumeClaim"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+
+    - name: "Check if Keycloak PostgreSQL Secret exists already so we don't update it"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      register: keycloak_database_secret_status
+
+    - when: (keycloak_database_secret_status.resources | length) == 0
+      block:
+        - name: "Generate random values for Keycloak PostgreSQL credentials"
+          set_fact:
+            keycloak_database_db_username: "user-dynamic_parameters"
+            keycloak_database_db_password: "dynamic_parameters"
+
+        - name: "Encode Keycloak PostgreSQL credentials"
+          set_fact:
+            keycloak_database_db_username_b64: "dynamic_parameters"
+            keycloak_database_db_password_b64: "dynamic_parameters"
+
+        - name: "Setup Keycloak PostgreSQL Secret"
+          k8s:
+            state: present
+            definition: "dynamic_parameters"
+
+    - name: "Delete old Keycloak PostgreSQL Service"
+      k8s:
+        state: absent
+        kind: Service
+        api_version: v1
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Setup Keycloak PostgreSQL Service"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+
+    - name: "Setup Keycloak PostgreSQL Deployment"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+
+    - name: "Check status of Keycloak PostgreSQL"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "dynamic_parameters"
+        label_selectors:
+          - app.kubernetes.io/name = dynamic_parameters
+        wait: true
+        wait_condition:
+          type: "Ready"
+          status: "True"
+        wait_timeout: 240
+
+    - name: "Check if Keycloak SSO Secret exists already so we don't update it"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      register: keycloak_sso_secret_status
+
+    - when: (keycloak_sso_secret_status.resources | length) == 0
+      block:
+        - name: "Generate random values for Keycloak SSO credentials"
+          set_fact:
+            keycloak_sso_admin_password: "dynamic_parameters"
+
+        - name: "Encode Keycloak SSO credentials"
+          set_fact:
+            keycloak_sso_admin_password_b64: "dynamic_parameters"
+
+        - name: "Setup Keycloak SSO Secret"
+          k8s:
+            state: present
+            definition: "dynamic_parameters"
+
+    - when:
+        - app_profile == "konveyor"
+      block:
+        - name: "Setup Keycloak SSO Service"
+          k8s:
+            state: present
+            definition: "dynamic_parameters"
+
+        - name: "Setup Keycloak SSO Deployment"
+          k8s:
+            state: present
+            definition: "dynamic_parameters"
+
+- when:
+    - feature_auth_required|bool
+    - feature_auth_type == "keycloak"
+    - app_profile == "mta"
+  block:
+    - name: "Check for existing RHSSO Keycloak CR"
+      k8s_info:
+        api_version: "dynamic_parameters"
+        kind: Keycloak
+        namespace: "dynamic_parameters"
+        label_selectors:
+          - app = dynamic_parameters
+      register: rhsso_keycloak
+
+    - name: "Delete old RHSSO Keycloak"
+      k8s:
+        state: absent
+        api_version: "dynamic_parameters"
+        kind: Keycloak
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      when:
+        - rhsso_keycloak.resources | length > 0
+        - rhsso_keycloak.resources[0].status.secondaryResources.Deployment is defined
+        - '"keycloak-postgresql" in rhsso_keycloak.resources[0].status.secondaryResources.Deployment'
+
+    - name: "Get PostgreSQL Keycloak Secret"
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      register: keycloak_database_secret
+
+    - name: "Get DNS operator CR"
+      k8s_info:
+        api_version: operator.openshift.io/v1
+        kind: DNS
+        name: default
+      register: default_dns_operator
+
+    - name: "Collect service name components"
+      set_fact:
+        pgsql_svc_fqdn_parts:
+          - "dynamic_parameters"
+          - "dynamic_parameters"
+          - "svc"
+          - "dynamic_parameters"
+
+    - name: "Assemble service name"
+      set_fact:
+        pgsql_svc_fqdn: "dynamic_parameters"
+
+    - name: "Collect database coordinates"
+      set_fact:
+        rhsso_db_pass_b64: "dynamic_parameters"
+        rhsso_db_user_b64: "dynamic_parameters"
+        rhsso_db_host_b64: "dynamic_parameters"
+        rhsso_db_name_b64: "dynamic_parameters"
+
+    - name: "Setup Keycloak SSO Deployment"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+        merge_type: merge
+
+    - name: "Create RHSSO Keycloak CR"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+
+    - name: "Check RHSSO for readiness"
+      k8s_info:
+        api_version: "dynamic_parameters"
+        kind: Keycloak
+        namespace: "dynamic_parameters"
+        label_selectors:
+          - app = dynamic_parameters
+      register: cr
+      until: true in (cr | json_query('resources[].status.ready'))
+      retries: 30
+      delay: 5
+
+- name: "Setup Hub API Database PersistentVolumeClaim"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Retrieve the Hub API Bucket if it already exists"
+  k8s_info:
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: "dynamic_parameters"
+    namespace: "dynamic_parameters"
+  register: hub_bucket
+
+- name: "Update the Hub Bucket Access Mode to reflect its current state"
+  when: hub_bucket.resources | length > 0
+  set_fact:
+    hub_bucket_volume_claim_mode: "dynamic_parameters"
+
+- name: "Setup Hub API Bucket PersistentVolumeClaim"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Check if Hub Secret exists already so we don't update it"
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "dynamic_parameters"
+    namespace: "dynamic_parameters"
+  register: hub_secret_status
+
+- when: (hub_secret_status.resources | length) == 0
+  block:
+    - name: "Generate Hub random AES passphrase"
+      set_fact:
+        hub_aes_passphrase: "dynamic_parameters"
+
+    - name: "Encode Hub AES passphrase"
+      set_fact:
+        hub_aes_passphrase_b64: "dynamic_parameters"
+
+    - name: "Generate Hub addon token"
+      set_fact:
+        hub_addon_token: "dynamic_parameters"
+
+    - name: "Encode Hub addon token"
+      set_fact:
+        hub_addon_token_b64: "dynamic_parameters"
+
+    - name: "Setup Hub Secret"
+      k8s:
+        state: present
+        definition: "dynamic_parameters"
+
+- name: "Look up Keycloak DB Secret for Hashing"
+  set_fact:
+    keycloak_db_secret:
+      env: "dynamic_parameters"
+  when:
+    - feature_auth_required|bool
+    - app_profile == "mta"
+
+- name: "Setup Hub API Service"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Setup Hub API Deployment"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+    merge_type: merge
+
+- name: "Setup UI ServiceAccount"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Setup UI Service"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Setup UI Deployment"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+    merge_type: merge
+
+- name: "Set UI Ingress"
+  set_fact:
+    ui_ingress_state: "dynamic_parameters"
+
+- name: "Setup UI Ingress"
+  k8s:
+    state: "dynamic_parameters"
+    definition: "dynamic_parameters"
+    merge_type: merge
+  when: not openshift_cluster|bool
+
+- name: "Setup UI Route"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+  when: openshift_cluster|bool
+
+- name: "Setup Cache PersistentVolumeClaim"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+  when: (rwx_supported | bool)
+
+- name: "Remove Maven PersistentVolumeClaim"
+  k8s:
+    state: absent
+    kind: PersistentVolumeClaim
+    api_version: v1
+    name: "dynamic_parameters-maven-volume-claim"
+    namespace: "dynamic_parameters"
+
+- name: "Remove Admin Addon CR"
+  k8s:
+    state: absent
+    kind: Addon
+    api_version: tackle.konveyor.io/v1alpha1
+    name: "dynamic_parameters"
+    namespace: "dynamic_parameters"
+
+- name: "Create Windup Addon CR"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+
+- name: "Create Network Policy"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+  when: feature_isolate_namespace|bool
+
+- when:
+    - not(feature_auth_required|bool) or not(feature_auth_type == "keycloak")
+  block:
+    - name: Gather available apis
+      kubernetes.core.k8s_cluster_info:
+      register: cluster_info
+
+    - name: "Deprovision RHSSO Keycloak CR"
+      k8s:
+        state: absent
+        kind: Keycloak
+        api_version: "dynamic_parameters"
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      when:
+        - rhsso_api_version in cluster_info.apis
+        - '"Keycloak" in cluster_info.apis[rhsso_api_version]'
+
+    - name: "Deprovision RHSSO Keycloak Deployment"
+      k8s:
+        state: absent
+        kind: Deployment
+        api_version: apps/v1
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Deprovision RHSSO Keycloak Postgres"
+      k8s:
+        state: absent
+        kind: Deployment
+        api_version: apps/v1
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+- name: "Create Hub ServiceMonitor"
+  k8s:
+    state: present
+    definition: "dynamic_parameters"
+  when:
+    - hub_metrics_enabled|bool
+    - openshift_cluster|bool
+
+- name: "Check if pathfinder exists"
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "dynamic_parameters"
+    label_selectors:
+      - app.kubernetes.io/name = dynamic_parameters-dynamic_parameters
+  register: pathfinder_pod
+
+- when:
+    - (pathfinder_pod.resources | length) > 0
+  block:
+    - name: "Wait for Pathfinder to be Ready"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "dynamic_parameters"
+        label_selectors:
+          - app.kubernetes.io/name = dynamic_parameters-dynamic_parameters
+        wait: true
+        wait_condition:
+          type: "Ready"
+          status: "True"
+        wait_timeout: 240
+
+    - name: "Wait for the Hub to be Ready"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "dynamic_parameters"
+        label_selectors:
+          - app.kubernetes.io/name = dynamic_parameters-dynamic_parameters
+        wait: true
+        wait_condition:
+          type: "Ready"
+          status: "True"
+        wait_timeout: 240
+
+    - name: Retrieve Hub Secret
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Secret
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+      register: hub_secret
+
+    - name: Set Hub key
+      set_fact:
+        hub_key: "dynamic_parameters"
+
+    - name: Migrate assessments
+      shell: |
+        /usr/local/bin/migrate-pathfinder-assessments.py \
+        -p http://dynamic_parameters:8080/pathfinder \
+        -b http://dynamic_parameters:8080 \
+        -t $(/usr/local/bin/jwt.sh dynamic_parameters)
+      changed_when: false
+
+    - name: "Remove Pathfinder PostgreSQL Secret"
+      k8s:
+        state: absent
+        api_version: v1
+        kind: Secret
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Remove Pathfinder PostgreSQL Service"
+      k8s:
+        state: absent
+        api_version: v1
+        kind: Service
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Remove Pathfinder PostgreSQL Deployment"
+      k8s:
+        state: absent
+        api_version: apps/v1
+        kind: Deployment
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Remove Pathfinder Service"
+      k8s:
+        state: absent
+        api_version: v1
+        kind: Service
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+    - name: "Remove Pathfinder Deployment"
+      k8s:
+        state: absent
+        api_version: apps/v1
+        kind: Deployment
+        name: "dynamic_parameters"
+        namespace: "dynamic_parameters"
+
+- name: "Remove Pathfinder PostgreSQL Volume"
+  k8s:
+    state: absent
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: "dynamic_parameters"
+    namespace: "dynamic_parameters"
+  when:
+    - (pathfinder_delete_db_volume|bool)
+    - (pathfinder_pod.resources|length) == 0
+
+---
+
+---

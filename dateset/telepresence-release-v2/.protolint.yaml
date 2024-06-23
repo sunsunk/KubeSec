@@ -1,0 +1,9 @@
+lint:
+  # Which rules to enable/disable.
+  rules:
+    remove:
+      - ENUM_FIELD_NAMES_PREFIX
+  # Settings for those rules.
+  rules_option:
+    max_line_length:
+      max_chars: 120

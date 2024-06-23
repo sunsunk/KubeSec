@@ -1,0 +1,20 @@
+install:
+- exec:
+    description: "Install a VM and collect its ID"
+    command: gcloud
+    arguments:
+      - compute
+      - instances
+      - create
+    flags:
+      project: porterci
+      zone: us-central1-a
+      machine-type: f1-micro
+    envs:
+      SECRET: super-secret
+    ignoreError:
+      output:
+        contains: ["already exists"]
+    outputs:
+      - name: vms
+        jsonPath: "$[*].id"

@@ -1,0 +1,25 @@
+include::shared/attributes.adoc[]
+
+= Strimzi documentation contributor guide
+
+include::introduction.adoc[leveloffset=+1]
+
+include::contributor-guide.adoc[leveloffset=+1]
+
+include::formatting-guide.adoc[leveloffset=+1]
+
+include::styleguide.adoc[leveloffset=+1]
+
+include::make-tooling.adoc[leveloffset=+1]
+
+[appendix]
+include::files.adoc[leveloffset=+1]
+
+[appendix]
+include::git-setup-guide.adoc[leveloffset=+1]
+
+[appendix]
+include::git-tips.adoc[leveloffset=+1]
+
+// Revision information
+include::shared/revision-info.adoc[]

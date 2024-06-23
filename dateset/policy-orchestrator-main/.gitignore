@@ -1,0 +1,13 @@
+*.idea
+.DS_Store
+.env*
+**/.opa/**
+.postgres
+.bundle*
+.codeql
+.freshcloud
+
+**/*_real_test*
+Brewfile.lock.json
+
+!.envrc

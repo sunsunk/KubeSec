@@ -1,0 +1,212 @@
+name: Deploy Packages
+on:
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: Unconditionally trigger the release job
+        required: false
+        type: boolean
+  push:
+    branches: [master, patch/*]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      needs_release: ${{ steps.release_check.outputs.needs_release }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x, 20.x]
+
+    services:
+      postgres16:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      postgres12:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      mysql8:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306/tcp
+
+    env:
+      CI: true
+      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=8192 --no-node-snapshot' || '--max-old-space-size=8192' }}
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: Fetch previous commit for release check
+        run: git fetch origin '${{ github.event.before }}'
+
+      - name: Check if release
+        if: inputs.force_release != true
+        id: release_check
+        run: node scripts/check-if-release.js
+        env:
+          COMMIT_SHA_BEFORE: '${{ github.event.before }}'
+
+      - name: validate config
+        run: yarn backstage-cli config:check --lax
+
+      - name: lint
+        run: yarn backstage-cli repo lint
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: build
+        run: yarn backstage-cli repo build --all
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      - name: test (and upload coverage)
+        run: |
+          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage
+          bash <(curl -s https://codecov.io/bash)
+          # Upload code coverage for some specific flags. Also see .codecov.yml
+          bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
+          bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
+          bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+          BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+
+      - name: Discord notification
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9 # 0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+
+  # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
+  # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
+  # only run the build steps that are necessary for publishing
+  release:
+    needs: build
+
+    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == true
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    env:
+      CI: 'true'
+      NODE_OPTIONS: --max-old-space-size=8192
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: build type declarations
+        run: yarn tsc:full
+
+      - name: build packages
+        run: yarn backstage-cli repo build
+
+      - name: build embedded techdocs app
+        working-directory: packages/techdocs-cli-embedded-app
+        run: yarn build
+
+      # Publishes current version of packages that are not already present in the registry
+      - name: publish
+        run: |
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
+          if [ -f ".changeset/pre.json" ]; then
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
+          else
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Grabs the version in the root package.json and creates a tag on GitHub
+      - name: Create a release tag
+        id: create_tag
+        run: node scripts/create-release-tag.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      # Convert the newly created tag into a release with changelog information
+      - name: Create release on GitHub
+        run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Dispatch repository event
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        with:
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          event-type: release-published
+          client-payload: '{"version": "${{ steps.create_tag.outputs.version }}"}'
+
+      # Notify everyone about this great new release :D
+      - name: Discord notification
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9 # 0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+          TAG_NAME: ${{ steps.create_tag.outputs.tag_name }}
+        with:
+          args: 'A new release has been published! https://github.com/backstage/backstage/releases/tag/{{TAG_NAME}}'

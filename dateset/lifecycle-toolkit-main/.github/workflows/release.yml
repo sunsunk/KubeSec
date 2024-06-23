@@ -1,0 +1,253 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+      - "[0-9]+.[0-9]+.x"
+  workflow_dispatch:
+
+    # Declare default permissions as read only.
+permissions: read-all
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GO_VERSION: "~1.21"
+  # renovate: datasource=github-releases depName=kubernetes-sigs/controller-tools
+  CONTROLLER_TOOLS_VERSION: "v0.13.0"
+  SCHEDULER_COMPATIBLE_K8S_VERSION: "v0.24.3"
+  PUBLISHABLE_ITEMS: '[".","lifecycle-operator","metrics-operator","keptn-cert-manager","runtimes/deno-runtime","runtimes/python-runtime","scheduler"]'
+
+jobs:
+  release-please:
+    runs-on: ubuntu-22.04
+    outputs:
+      keptn-release-created: ${{ steps.release.outputs.release_created }}
+      keptn-tag-name: ${{ steps.release.outputs.tag_name }}
+      cert-manager-release-created: ${{ steps.release.outputs.keptn-cert-manager--release_created }}
+      cert-manager-tag-name: ${{ steps.release.outputs.keptn-cert-manager--tag_name }}
+      metrics-operator-release-created: ${{ steps.release.outputs.metrics-operator--release_created }}
+      metrics-operator-tag-name: ${{ steps.release.outputs.metrics-operator--tag_name }}
+      releases-created: ${{ steps.release.outputs.releases_created }}
+      build-matrix: ${{ steps.build-matrix.outputs.result }}
+      GIT_SHA: ${{ steps.extract_branch.outputs.GIT_SHA }}
+      DATETIME: ${{ steps.get_datetime.outputs.DATETIME }}
+      BUILD_TIME: ${{ steps.get_datetime.outputs.BUILD_TIME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Extract branch name
+        id: extract_branch
+        uses: keptn/gh-action-extract-branch-name@6ca4fe061da10c66b2d7341fd1fb12962ad911b2
+
+      - name: Get current date and time
+        id: get_datetime
+        run: |
+          DATETIME=$(date +'%Y%m%d%H%M')
+          BUILD_TIME=$(date -u "+%F_%T")
+          echo "DATETIME=$DATETIME" >> "$GITHUB_OUTPUT"
+          echo "BUILD_TIME=$BUILD_TIME" >> "$GITHUB_OUTPUT"
+
+      - name: Run release please
+        uses: google-github-actions/release-please-action@a37ac6e4f6449ce8b3f7607e4d97d0146028dc0b # v4
+        id: release
+        with:
+          token: ${{ secrets.KEPTN_BOT_TOKEN }}
+          default-branch: main
+          signoff: "keptn-bot <86361500+keptn-bot@users.noreply.github.com>"
+
+      - name: Debug info
+        env:
+          CHANGED_ITEMS: ${{ steps.release.outputs.paths_released }}
+          KEPTN_TAG: ${{ steps.release.outputs.tag_name }}
+          PATHS_RELEASED: ${{ steps.release.outputs.paths_released }}
+          ARTIFACT_TAG_NAME: ${{ steps.release.outputs[format('{0}--tag_name', fromJson(steps.release.outputs.paths_released)[0])] }}
+          FULL_RELEASE_OUTPUT: ${{ toJSON(steps.release.outputs) }}
+        run: |
+          echo "PATHS_RELEASE_JSON: ${PATHS_RELEASE_JSON}"
+          echo "FULL RELEASE OUTPUT: ${FULL_RELEASE_OUTPUT}"
+          echo "CHANGED_ITEMS: ${CHANGED_ITEMS}"
+          echo "KEPTN_TAG: ${KEPTN_TAG}"
+          echo "ARTIFACT_TAG_NAME: ${ARTIFACT_TAG_NAME}"
+          echo "PATHS_RELEASED: ${PATHS_RELEASED}"
+          echo "CERT_MANAGER_TAG_NAME: ${{ steps.release.outputs.keptn-cert-manager--tag_name }}"
+          echo "KEPTN_TAG_NAME: ${{ steps.release.outputs.tag_name }}"
+          echo "METRICS_OPERATOR_TAG_NAME: ${{ steps.release.outputs.metrics-operator--tag_name }}"
+
+      - name: Create release matrix
+        id: build-matrix
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        env:
+          CHANGED_ITEMS: ${{ steps.release.outputs.paths_released }}
+          KEPTN_TAG: ${{ steps.release.outputs.tag_name }}
+          ARTIFACT_TAG_NAME: ${{ steps.release.outputs[format('{0}--tag_name', fromJson(steps.release.outputs.paths_released)[0])] }}
+        with:
+          script: |
+            const changedItems = JSON.parse(process.env.CHANGED_ITEMS || '[]');
+            console.log("changed items", changedItems);
+            const eligibleItems = JSON.parse(process.env.PUBLISHABLE_ITEMS || '[]');
+            console.log("eligible items", eligibleItems);
+            const itemsToPublish = changedItems.filter(i => eligibleItems.includes(i));
+            console.log("items to publish", itemsToPublish);
+
+            console.log("setting up build matrix...");
+            const releaseMatrix = [];
+            itemsToPublish.forEach(item => {
+                switch (item) {
+                    case "lifecycle-operator":
+                    case "scheduler":
+                    case "metrics-operator":
+                        releaseMatrix.push({
+                            name: item,
+                            folder: item,
+                            tagName: process.env.ARTIFACT_TAG_NAME
+                        });
+                        break;
+                    case "keptn-cert-manager":
+                        releaseMatrix.push({
+                            name: "certificate-operator",
+                            folder: item,
+                            tagName: process.env.ARTIFACT_TAG_NAME
+                        });
+                        break;
+                    case "runtimes/deno-runtime":
+                    case "runtimes/python-runtime":
+                        releaseMatrix.push({
+                            name: item.replace("runtimes/", ""),
+                            folder: item,
+                            tagName: process.env.ARTIFACT_TAG_NAME
+                        });
+                        break;
+                    case ".":
+                    default:
+                        break;
+                }
+            });
+            console.log("release matrix: " + JSON.stringify({ config: releaseMatrix }));
+            return releaseMatrix.length > 0 ? { config: releaseMatrix } : {};
+
+  build-release:
+    if: needs.release-please.outputs.releases-created == 'true' && needs.release-please.outputs.build-matrix != '{}'
+    needs:
+      - release-please
+    strategy:
+      matrix: ${{ fromJson(needs.release-please.outputs.build-matrix) }}
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    env:
+      IMAGE_NAME: ghcr.io/keptn/${{ matrix.config.name }}
+      DATETIME: ${{ needs.release-please.outputs.DATETIME }}
+      BUILD_TIME: ${{ needs.release-please.outputs.BUILD_TIME }}
+      GIT_SHA: ${{ needs.release-please.outputs.GIT_SHA }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@2b51285047da1547ffb1b2203d8be4c0af6b1f20 # v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Cosign
+        uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4 # v3.4.0
+
+      - name: Clean up image tag
+        id: clean-image-tag
+        env:
+          IMAGE_TAG: ${{ matrix.config.tagName }}
+        run: |
+          # Remove artifact prefix from tag so that we get clean image tags
+          temp="${IMAGE_TAG##keptn-}"
+          temp="${temp##cert-manager-}"
+          temp="${temp##python-runtime-}"
+          temp="${temp##deno-runtime-}"
+          temp="${temp##scheduler-}"
+          temp="${temp##lifecycle-operator-}"
+          echo "IMAGE_TAG=${temp##metrics-operator-}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker Image
+        id: docker_build_image
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
+        with:
+          context: ${{ matrix.config.folder }}
+          platforms: linux/amd64,linux/arm64
+          target: production
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.clean-image-tag.outputs.IMAGE_TAG }}
+          build-args: |
+            GIT_HASH=${{ env.GIT_SHA }}
+            RELEASE_VERSION=dev-${{ env.DATETIME }}
+            BUILD_TIME=${{ env.BUILD_TIME }}
+            CONTROLLER_TOOLS_VERSION=${{ env.CONTROLLER_TOOLS_VERSION }}
+            SCHEDULER_COMPATIBLE_K8S_VERSION=${{ env.SCHEDULER_COMPATIBLE_K8S_VERSION }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          cache-from: type=gha,scope=${{ github.ref_name }}-${{ matrix.config.name }}
+          cache-to: type=gha,scope=${{ github.ref_name }}-${{ matrix.config.name }}
+
+      - name: Sign container image
+        env:
+          IMAGE_DIGEST: ${{ steps.docker_build_image.outputs.digest }}
+        run: |
+          cosign sign --yes ${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
+          cosign verify \
+            --certificate-identity-regexp="https://github.com/keptn/lifecycle-toolkit/.*" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            ${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@9fece9e20048ca9590af301449208b2b8861333b # v0.15.9
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ steps.clean-image-tag.outputs.IMAGE_TAG }}
+          artifact-name: sbom-${{ matrix.config.name }}
+          output-file: ./sbom-${{ matrix.config.name }}.spdx.json
+
+      - name: Attach SBOM to release
+        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
+        with:
+          tag_name: ${{ matrix.config.tagName }}
+          files: ./sbom-${{ matrix.config.name }}.spdx.json
+
+      - name: Attest the Image with SBOM
+        env:
+          IMAGE_DIGEST: ${{ steps.docker_build_image.outputs.digest }}
+        run: |
+          echo "Attesting SBOM for this release and image..."
+          cosign attest --yes --type spdxjson --predicate ./sbom-${{ matrix.config.name }}.spdx.json ${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
+          echo "Verifying that the attestation worked..."
+          cosign verify-attestation --type spdxjson \
+            --certificate-identity-regexp="https://github.com/keptn/lifecycle-toolkit/.*" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            --output-file ./cosign-attest-output.json \
+            ${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
+
+      - name: Upload verification log as artifact
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        with:
+          name: cosign-attest-verification-log
+          path: ./cosign-attest-output.json
+
+  update-examples:
+    name: Update examples
+    needs:
+      - release-please
+    if: needs.release-please.outputs.keptn-release-created == 'true'
+    with:
+      tag_name: ${{ needs.release-please.outputs.keptn-tag-name }}
+    uses: ./.github/workflows/release-examples.yml
+    secrets: inherit

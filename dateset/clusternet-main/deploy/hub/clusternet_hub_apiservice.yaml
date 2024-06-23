@@ -1,0 +1,28 @@
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.proxies.clusternet.io
+spec:
+  insecureSkipTLSVerify: true
+  group: proxies.clusternet.io
+  groupPriorityMinimum: 1000
+  versionPriority: 100
+  service:
+    name: clusternet-hub
+    namespace: clusternet-system
+  version: v1alpha1
+
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.shadow
+spec:
+  insecureSkipTLSVerify: true
+  group: shadow
+  groupPriorityMinimum: 1
+  versionPriority: 1
+  service:
+    name: clusternet-hub
+    namespace: clusternet-system
+  version: v1alpha1

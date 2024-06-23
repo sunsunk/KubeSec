@@ -1,0 +1,27 @@
+# Source: easegress-ingress-controller/templates/ConfigMap.yaml
+apiVersion: v1
+data:
+  easegress-server.yaml: |
+    name: my-release
+    cluster-name: easegress-ingress-controller
+    cluster-role: primary
+    api-addr: 0.0.0.0:2381
+    data-dir: /opt/easegress/data
+    log-dir: /opt/easegress/log
+    debug: false
+  controller.yaml: |
+    kind: IngressController
+    name: easegress-ingress-controller
+    namespaces:
+    - default
+    ingressClass: easegress
+    httpServer:
+      port: 8080
+      https: false
+      keepAlive: true
+      keepAliveTimeout: 60s
+      maxConnections: 10240
+kind: ConfigMap
+metadata:
+  name: my-release
+  namespace: default

@@ -1,0 +1,80 @@
+name: Broken Links Crawler
+run-name: Broken Links Crawler - ${{ github.ref_name }}
+
+on:
+  # So we can trigger manually if needed
+  workflow_dispatch:
+  # To confirm any changes to docs build successfully, without deploying them
+  workflow_run:
+    workflows: ["Generate and push docs"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  broken-links-crawler:
+    name: broken-links-crawler
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: get workflow_dispatch branch name
+        shell: bash
+        run: echo "branch=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        id: extract_branch
+        if: github.event_name != 'pull_request' && github.event_name != 'push'
+#         run: echo workflow_dispatch - running on branch ${GITHUB_REF##*/}
+
+      - name: echo workflow_dispatch branch name
+        run: echo workflow_dispatch - running on branch ${{ steps.extract_branch.outputs.branch }}
+        if: github.event_name != 'pull_request' && github.event_name != 'push'
+
+      - uses: ScholliYT/Broken-Links-Crawler-Action@fix-http-redirects
+        with:
+          website_url: https://docs.kubestellar.io/${{ steps.extract_branch.outputs.branch }}
+          include_url_prefix: https://docs.kubestellar.io/${{ steps.extract_branch.outputs.branch }}
+          exclude_url_prefix: 'mailto:,https://drive.google.com'
+          exclude_url_contained: '#__,/.,.svg'
+          resolve_before_filtering: 'true'
+          verbose: 'true'
+          max_retry_time: 30
+          max_retries: 5
+          max_depth: 4
+        if: github.event_name != 'pull_request' && github.event_name != 'push'
+        
+      - name: echo pull_request branch name
+        run: echo pull_request - running on branch ${{ github.event.pull_request.base.ref }}
+        if: github.event_name == 'pull_request' 
+#         $GITHUB_BASE_REF
+
+      - uses: ScholliYT/Broken-Links-Crawler-Action@fix-http-redirects
+        with:
+          website_url: https://docs.kubestellar.io/${{ github.event.pull_request.base.ref }}
+          include_url_prefix: https://docs.kubestellar.io/${{ github.event.pull_request.base.ref }}
+          exclude_url_prefix: 'mailto:,https://drive.google.com'
+          exclude_url_contained: '#__,/.,.svg'
+          resolve_before_filtering: 'true'
+          verbose: 'true'
+          max_retry_time: 30
+          max_retries: 5
+          max_depth: 4
+        if: github.event_name == 'pull_request' 
+
+      - name: echo push branch name
+        run: echo push - running on branch ${{ github.event.push.base.ref }}
+        if: github.event_name == 'push' 
+
+      - uses: ScholliYT/Broken-Links-Crawler-Action@fix-http-redirects
+        with:
+          website_url: https://docs.kubestellar.io/${{ github.event.push.base.ref }}
+          include_url_prefix: https://docs.kubestellar.io/${{ github.event.push.base.ref }}
+          exclude_url_prefix: 'mailto:,https://drive.google.com'
+          exclude_url_contained: '#__,/.,.svg'
+          resolve_before_filtering: 'true'
+          verbose: 'true'
+          max_retry_time: 30
+          max_retries: 5
+          max_depth: 4
+        if: github.event_name == 'push'
+          

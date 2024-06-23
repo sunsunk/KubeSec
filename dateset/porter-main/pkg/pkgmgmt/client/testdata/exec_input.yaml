@@ -1,0 +1,6 @@
+install:
+- exec:
+    description: "Say Hello"
+    command: bash
+    flags:
+        c: '"echo Hello World"'

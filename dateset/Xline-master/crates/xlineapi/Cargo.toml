@@ -1,0 +1,30 @@
+[package]
+name = "xlineapi"
+version = "0.1.0"
+edition = "2021"
+authors = ["DatenLord <dev@datenlord.io>"]
+description = "Xline RPC API"
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/xline-kv/Xline/tree/master/xlineapi"
+categories = ["RPC"]
+keywords = ["RPC", "Interfaces"]
+
+[dependencies]
+async-trait = "0.1.53"
+curp = { path = "../curp" }
+curp-external-api = { path = "../curp-external-api" }
+itertools = "0.11"
+prost = "0.12.3"
+serde = { version = "1.0.137", features = ["derive"] }
+thiserror = "1.0.58"
+tonic = { version = "0.4.1", package = "madsim-tonic" }
+utils = { path = "../utils", features = ["parking_lot"] }
+workspace-hack = { version = "0.1", path = "../../workspace-hack" }
+
+[build-dependencies]
+tonic-build = { version = "0.4.2", package = "madsim-tonic-build" }
+
+[dev-dependencies]
+strum = "0.25"
+strum_macros = "0.25"

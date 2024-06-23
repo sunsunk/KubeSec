@@ -1,0 +1,57 @@
+version: v2beta1
+
+vars:
+  IMAGE: maven:3.8.4-eclipse-temurin-16
+
+deployments:
+  mysql:
+    helm:
+      values:
+        containers:
+          - env:
+              - name: MYSQL_ROOT_PASSWORD
+                value: mypassword
+              - name: MYSQL_DATABASE
+                value: mydatabase
+            image: mariadb:10.5.8
+            volumeMounts:
+              - containerPath: /var/lib/mysql
+                volume:
+                  name: mysql-data
+                  subPath: /mysql
+        service:
+          name: mysql
+          ports:
+            - port: 3306
+        volumes:
+          - name: mysql-data
+            size: 5Gi
+
+  spring-boot:
+    helm:
+      values:
+        containers:
+        - image: ${IMAGE}
+
+dev:
+  spring-boot:
+    imageSelector: ${IMAGE}
+    # Change working dir to /src
+    workingDir: /src
+    # Make sure our entrypoint script is the container entrypoint
+    command: ["./run.sh"]
+    # Stream logs from the application
+    logs: {}
+    open:
+      - url: http://localhost:8080
+    # Forward 8080 -> 8080
+    ports:
+    - port: 8080
+    # Sync local files to container and restart after change
+    sync:
+    - path: .:/src
+      onUpload:
+        restartContainer: true
+      excludePaths:
+      - .git/
+      - target/

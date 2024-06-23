@@ -1,0 +1,8 @@
+* Richard "RichiH" Hartmann (Grafana Labs)
+* Brian Brazil (Robust Perception)
+* Paul Dix (InfluxDB)
+* Morgan McLean (Google)
+* Sumeer Bhola (Google)
+* Bogdan Drutu (Splunk)
+* Rob Skillington (Chronosphere)
+* Ben Kochie (GitLab)

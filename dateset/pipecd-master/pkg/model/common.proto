@@ -1,0 +1,100 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+
+enum ApplicationKind {
+    KUBERNETES = 0;
+    TERRAFORM = 1;
+    LAMBDA = 3;
+    CLOUDRUN = 4;
+    ECS = 5;
+}
+
+enum RollbackKind {
+    Rollback_KUBERNETES = 0;
+    Rollback_TERRAFORM = 1;
+    Rollback_LAMBDA = 3;
+    Rollback_CLOUDRUN = 4;
+    Rollback_ECS = 5;
+
+    Rollback_CUSTOM_SYNC = 15;
+}
+
+enum ApplicationActiveStatus {
+    ENABLED = 0;
+    DISABLED = 1;
+    DELETED = 2;
+}
+
+message ApplicationGitPath {
+    reserved 3;
+
+    // The repository that was configured at piped.
+    ApplicationGitRepository repo = 1 [(validate.rules).message.required = true];
+    // TODO: Make this field immutable.
+    string path = 2 [(validate.rules).string.pattern = "^[^/].+$"];
+    string config_filename = 4;
+    string url = 5;
+}
+
+message ApplicationGitRepository {
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string remote = 2;
+    string branch = 3;
+}
+
+enum SyncStrategy {
+    AUTO = 0;
+    QUICK_SYNC = 1;
+    PIPELINE = 2;
+}
+
+message ApplicationInfo {
+    reserved 14;
+
+    string id = 1;
+    string name = 2 [(validate.rules).string.min_len = 1];
+    // This field is not allowed to be changed.
+    ApplicationKind kind = 3 [(validate.rules).enum.defined_only = true];
+    map<string, string> labels = 4;
+    // This field is not allowed to be changed.
+    string repo_id = 5 [(validate.rules).string.min_len = 1];
+    // This field is not allowed to be changed.
+    string path = 6 [(validate.rules).string.pattern = "^[^/].+$"];
+    // This field is not allowed to be changed.
+    string config_filename = 7;
+    string piped_id = 8 [(validate.rules).string.min_len = 1];
+    string description = 9;
+}
+
+message ArtifactVersion {
+    enum Kind {
+        UNKNOWN = 0;
+        CONTAINER_IMAGE = 1;
+        S3_OBJECT = 2;
+        GIT_SOURCE = 3;
+        TERRAFORM_MODULE = 4;
+    }
+   
+    Kind kind = 1 [(validate.rules).enum.defined_only = true];
+    string version = 2;
+    string name = 3;
+    string url = 4;
+}

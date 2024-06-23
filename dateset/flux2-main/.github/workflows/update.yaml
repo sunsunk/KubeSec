@@ -1,0 +1,108 @@
+name: update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  update-components:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Setup Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: 1.20.x
+          cache-dependency-path: |
+            **/go.sum
+            **/go.mod
+      - name: Update component versions
+        id: update
+        run: |
+          PR_BODY=$(mktemp)
+
+          bump_version() {
+            local LATEST_VERSION=$(curl -s https://api.github.com/repos/fluxcd/$1/releases | jq -r 'sort_by(.published_at) | .[-1] | .tag_name')
+            local CTRL_VERSION=$(sed -n "s/.*$1\/releases\/download\/\(.*\)\/.*/\1/p;n" manifests/bases/$1/kustomization.yaml)
+            local CRD_VERSION=$(sed -n "s/.*$1\/releases\/download\/\(.*\)\/.*/\1/p" manifests/crds/kustomization.yaml)
+            local MOD_VERSION=$(go list -m -f '{{ .Version }}' "github.com/fluxcd/$1/api")
+
+            local changed=false
+
+            if [[ "${CTRL_VERSION}" != "${LATEST_VERSION}" ]]; then
+              sed -i "s/\($1\/releases\/download\/\)v.*\(\/.*\)/\1${LATEST_VERSION}\2/g" "manifests/bases/$1/kustomization.yaml"
+              changed=true
+            fi
+
+            if [[ "${CRD_VERSION}" != "${LATEST_VERSION}" ]]; then
+              sed -i "s/\($1\/releases\/download\/\)v.*\(\/.*\)/\1${LATEST_VERSION}\2/g" "manifests/crds/kustomization.yaml"
+              changed=true
+            fi
+
+            if [[ "${MOD_VERSION}" != "${LATEST_VERSION}" ]]; then
+              go mod edit -require="github.com/fluxcd/$1/api@${LATEST_VERSION}"
+              make tidy
+              changed=true
+            fi
+
+            if [[ "$changed" == true ]]; then
+              echo "- $1 to ${LATEST_VERSION}" >> $PR_BODY
+              echo "  https://github.com/fluxcd/$1/blob/${LATEST_VERSION}/CHANGELOG.md" >> $PR_BODY
+            fi
+          }
+
+          {
+            # bump controller versions
+            bump_version helm-controller
+            bump_version kustomize-controller
+            bump_version source-controller
+            bump_version notification-controller
+            bump_version image-reflector-controller
+            bump_version image-automation-controller
+
+            # diff change
+            git diff
+
+            # export PR_BODY for PR and commit
+            # NB: this may look strange but it is the way it should be done to
+            # maintain our precious newlines
+            # Ref: https://github.com/github/docs/issues/21529
+            echo 'pr_body<<EOF' >> $GITHUB_OUTPUT
+            cat $PR_BODY >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+          }
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6.0.0
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          commit-message: |
+            Update toolkit components
+
+            ${{ steps.update.outputs.pr_body }}
+          committer: GitHub <noreply@github.com>
+          author: fluxcdbot <fluxcdbot@users.noreply.github.com>
+          signoff: true
+          branch: update-components
+          title: Update toolkit components
+          body: |
+            ${{ steps.update.outputs.pr_body }}
+          labels: |
+            dependencies
+          reviewers: ${{ secrets.ASSIGNEES }}
+
+      - name: Check output
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

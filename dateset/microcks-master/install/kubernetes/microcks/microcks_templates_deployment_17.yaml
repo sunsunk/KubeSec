@@ -1,0 +1,72 @@
+# Source: microcks/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "microcks-postman-runtime"
+  labels:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks
+    
+  annotations:
+    
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "microcks"
+      deploymentconfig: "microcks-postman-runtime"
+      container: postman-runtime
+      group: microcks
+  template:
+    metadata:
+      labels:
+        app: "microcks"
+        deploymentconfig: "microcks-postman-runtime"
+        container: postman-runtime
+        group: microcks
+        
+      annotations:
+        checksum/config: 5c722b2436b9e8cb4ee071bef6cc1b1379aab4f410a352745b6704ad0cdb2336
+        
+    spec:
+      containers:
+      - name: postman-runtime
+        image: quay.io/microcks/microcks-postman-runtime:latest
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        env:
+        - name: LOG_LEVEL
+          value: info
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 4
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        terminationMessagePath: "/dev/termination-log"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst

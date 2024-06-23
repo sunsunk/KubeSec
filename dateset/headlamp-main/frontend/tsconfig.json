@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src"
+  ],
+  "typedocOptions": {
+    "out": "../docs/development/api",
+    "entryPoints": ["src/lib/k8s/", "src/redux/reducers/config.tsx",  "src/lib/k8s/cluster.ts", "src/lib/router.tsx", "src/lib/util.ts", "src/plugin/lib.ts", "src/plugin/registry.tsx"],
+    "entryPointStrategy": "expand",
+    "theme": "hugo",
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "hideBreadcrumbs": true,
+    "readme": "none",
+    "hideInPageTOC": true,
+    "indexTitle": "API"
+  }
+}

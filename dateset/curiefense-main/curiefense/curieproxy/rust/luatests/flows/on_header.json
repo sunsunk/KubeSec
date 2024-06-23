@@ -1,0 +1,53 @@
+[
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/flowheader?step=2",
+      ":authority": "www.example.com"
+    },
+    "delay": 0,
+    "tag": "flowheader",
+    "last_step": false,
+    "pass": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/flowheader?step=2",
+      ":authority": "www.example.com",
+      "test": "value"
+    },
+    "delay": 0,
+    "tag": "flowheader",
+    "last_step": true,
+    "pass": false
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/flowheader?step=1",
+      ":authority": "www.example.com",
+      "test": "value2"
+    },
+    "delay": 0,
+    "tag": "flowheader",
+    "last_step": false,
+    "pass": true
+  },
+  {
+    "headers": {
+      "x-forwarded-for": "23.129.64.253",
+      ":method": "GET",
+      ":path": "/flow-test/flowheader?step=2",
+      ":authority": "www.example.com",
+      "test": "value2"
+    },
+    "delay": 0,
+    "tag": "flowheader",
+    "last_step": true,
+    "pass": true
+  }
+]

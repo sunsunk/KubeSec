@@ -1,0 +1,11 @@
+# Source: kube-ovn/templates/vpc-nat-config.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ovn-vpc-nat-config
+  namespace: kube-system
+  annotations:
+    kubernetes.io/description: |
+      kube-ovn vpc-nat common config
+data:
+  image: docker.io/kubeovn/vpc-nat-gateway:v1.13.0

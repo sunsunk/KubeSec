@@ -1,0 +1,18 @@
+[submodule "inclavare-containers.io"]
+	path = inclavare-containers.io
+	url = https://github.com/inclavare-containers/inclavare-containers.io.git
+[submodule "inclavared"]
+	path = inclavared
+	url = https://github.com/inclavare-containers/inclavared.git
+[submodule "shelter"]
+	path = shelter
+	url = https://github.com/inclavare-containers/shelter.git
+[submodule "enclave-tls"]
+	path = enclave-tls
+	url = https://github.com/inclavare-containers/enclave-tls.git
+[submodule "verdictd"]
+	path = verdictd
+	url = https://github.com/inclavare-containers/verdictd.git
+[submodule "rats-tls"]
+	path = rats-tls
+	url = https://github.com/inclavare-containers/rats-tls.git

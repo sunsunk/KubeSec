@@ -1,0 +1,10 @@
+# TUF runtime requirements plus securesystemslib with extra dependencies
+#
+# This file together with 'pip-compile' is used to generate a pinned
+# requirements file with all immediate and transitive dependencies.
+#
+# 'pinned.txt' is updated on GitHub with Dependabot, which
+# triggers CI/CD builds to automatically test against updated dependencies.
+#
+securesystemslib[crypto, pynacl]
+requests

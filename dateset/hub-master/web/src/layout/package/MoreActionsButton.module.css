@@ -1,0 +1,29 @@
+.iconWrapper {
+  width: 2rem;
+  height: 2rem;
+  padding: 2px;
+}
+
+.dropdown {
+  min-width: 10rem;
+  top: 120% !important;
+}
+
+.arrow {
+  right: 0.3rem !important;
+}
+
+.icon {
+  margin-top: 2px;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .dropdown {
+    width: 18rem;
+    right: -5rem;
+  }
+
+  .arrow {
+    right: 6.25rem !important;
+  }
+}

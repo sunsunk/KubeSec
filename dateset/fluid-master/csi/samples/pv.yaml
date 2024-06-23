@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fluid-pv
+  labels:
+    name: fluid-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 100Gi
+  csi:
+    driver: fuse.csi.fluid.io
+    volumeHandle: fluid-pv
+    volumeAttributes:
+      fluid_path: "/mnt/alluxio"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: test
+          operator: In
+          values:
+          - abc

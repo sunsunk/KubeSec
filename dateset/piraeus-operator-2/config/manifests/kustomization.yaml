@@ -1,0 +1,13 @@
+resources:
+- bases/piraeus-operator.clusterserviceversion.yaml
+- ../default
+- ../samples
+- ../scorecard
+
+patches:
+  - target:
+      kind: ClusterServiceVersion
+    path: csv-resource-patch.yaml
+  - target:
+      kind: ClusterServiceVersion
+    path: csv-status-patch.yaml

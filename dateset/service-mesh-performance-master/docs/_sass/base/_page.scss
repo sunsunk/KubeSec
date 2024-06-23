@@ -1,0 +1,135 @@
+// Global styling for this template
+body {
+  overflow-x: hidden;
+  @include body-font;
+}
+
+p {
+  line-height: 1.75;
+}
+
+a {
+  color: $primary;
+  &:hover {
+    color: darken($primary, 10%);
+  }
+}
+
+
+.text-primary {
+  color: $primary !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+  @include heading-font;
+}
+
+.page-section {
+  // padding: 100px 0;
+  
+  h2.section-heading {
+    font-size: 45px;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  h3.section-subheading {
+    color: #ccc;
+    font-size: 1.35em;
+    font-weight: normal;
+    margin-bottom: 75px;
+    text-transform: none;
+    @include serif-font;
+  }
+
+  //For Specificity
+  .codewrapper{
+    pre {
+      code {
+        padding-top: 2em;
+        padding-bottom: 2em;
+        padding-left: 4em;
+        padding-right: 0;
+      }
+    }
+  }
+}
+@media(min-width:768px) {
+  section {
+    // padding: 150px 0;
+  }
+}
+
+@media(max-width:480px){
+  .container{
+    padding-left: 1.7rem;
+  }
+  .page-section {
+    // padding-left: 1em;
+    // padding-right: 1em;
+    h1.section-heading {
+      font-size: 1.5em;
+    }
+    h2.section-heading {
+      font-size: 1.5em;
+    }
+    div.about-body {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .codewrapper{
+      pre {
+        code {
+          padding-left: .4em;
+        }
+      }
+    }
+  }
+  .about {
+    iframe {
+      height: auto;
+    }
+  }
+}
+@media (min-width:300px) and (max-width: 479px){
+  .codewrapper{
+    pre {
+      code {
+        padding-left: .4em;
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+// Highlight color customization
+::-moz-selection {
+  background: $primary;
+  text-shadow: none;
+}
+
+::selection {
+  background: $primary;
+  text-shadow: none;
+}
+
+img::selection {
+  background: transparent;
+}
+
+img::-moz-selection {
+  background: transparent;
+}
+
+.smp-dark-yellow{
+  background-color: var(--main-dark-yellow) !important;
+}
+
+.smp-dark-yellow-text {
+  color: var(--main-dark-yellow) !important;
+}

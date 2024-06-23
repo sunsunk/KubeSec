@@ -1,0 +1,222 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ hub_deployment_name }}
+  namespace: {{ app_namespace }}
+  labels:
+    app.kubernetes.io/name: {{ hub_service_name }}
+    app.kubernetes.io/component: {{ hub_component_name }}
+    app.kubernetes.io/part-of: {{ app_name }}
+  annotations:
+    app.openshift.io/connects-to: >-
+      [
+{% if feature_auth_required|bool and feature_auth_type == "keycloak" %}
+{% if app_profile == 'konveyor' %}
+        { "apiVersion": "apps/v1", "kind": "Deployment", "name": "{{ keycloak_sso_deployment_name }}" },
+{% elif app_profile == 'mta' %}
+        { "apiVersion": "apps/v1", "kind": "StatefulSet", "name": "keycloak" },
+{% endif %}
+{% endif %}
+      ]
+spec:
+  replicas: {{ hub_deployment_replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ hub_service_name }}
+      app.kubernetes.io/component: {{ hub_component_name }}
+      app.kubernetes.io/part-of: {{ app_name }}
+{% if hub_deployment_strategy == 'Recreate' %}
+  strategy:
+    type: {{ hub_deployment_strategy }}
+{% endif %}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ hub_service_name }}
+        app.kubernetes.io/component: {{ hub_component_name }}
+        app.kubernetes.io/part-of: {{ app_name }}
+        app: {{ app_name }}
+        role: {{ hub_service_name }}
+{% if feature_auth_required|bool %}
+{% if app_profile == 'mta' %}
+        keycloak_db_secret_name: {{ keycloak_db_secret.env | k8s_config_resource_name }}
+{% endif %}
+{% endif %}
+    spec:
+      serviceAccountName: {{ hub_serviceaccount_name }}
+      containers:
+        - name: {{ hub_container_name }}
+          image: "{{ hub_image_fqin }}"
+          imagePullPolicy: "{{ image_pull_policy }}"
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: APP_NAME
+              value: "{{ app_name }}"
+            - name: PROFILE
+              value: "{{ app_profile }}"
+            - name: VERSION
+              value: "{{ app_version }}"
+            - name: HUB_BASE_URL
+              value: "{{ hub_url }}"
+{% if hub_tls_enabled|bool %}
+            - name: HUB_TLS_ENABLED
+              value: 'true'
+            - name: HUB_TLS_CERTIFICATE
+              value: "/var/run/secrets/{{ hub_tls_secret_name }}/tls.crt"
+            - name: HUB_TLS_KEY
+              value: "/var/run/secrets/{{ hub_tls_secret_name }}/tls.key"
+{% else %}
+            - name: HUB_TLS_ENABLED
+              value: 'false'
+{% endif %}
+            - name: ADDON_SECRET_PATH
+              value: "/var/run/secrets/{{ app_name }}-addon"
+            - name: ADDON_WORKING_DIR
+              value: "{{ hub_addon_working_path }}"
+            - name: DB_PATH
+              value: "{{ hub_database_volume_path }}/{{ hub_database_filename }}"
+            - name: BUCKET_PATH
+              value: "{{ hub_bucket_volume_path }}"
+            - name: BUCKET_PVC
+              value: "{{ hub_bucket_volume_claim_name }}"
+            - name: ENCRYPTION_PASSPHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ hub_secret_name }}"
+                  key: passphrase
+            - name: ADDON_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ hub_secret_name }}"
+                  key: addon_token
+            - name: METRICS_ENABLED
+              value: "{{ hub_metrics_enabled }}"
+            - name: METRICS_PORT
+              value: "{{ hub_metrics_port }}"
+{% if feature_auth_required|bool and feature_auth_type == "keycloak" %}
+            - name: AUTH_REQUIRED
+              value: "true"
+{% else %}
+            - name: AUTH_REQUIRED
+              value: "false"
+{% endif %}
+{% if feature_auth_required|bool and feature_auth_type == "keycloak" %}
+            - name: KEYCLOAK_REALM
+              value: "{{ keycloak_sso_realm }}"
+            - name: KEYCLOAK_CLIENT_ID
+              value: "{{ keycloak_sso_client_id }}"
+{% if app_profile == 'mta' %}
+            - name: KEYCLOAK_HOST
+              value: "{{ rhsso_url }}"
+            - name: KEYCLOAK_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ rhsso_secret_name }}"
+                  key: ADMIN_USERNAME
+            - name: KEYCLOAK_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ rhsso_secret_name }}"
+                  key: ADMIN_PASSWORD
+{% else %}
+            - name: KEYCLOAK_HOST
+              value: "{{ keycloak_sso_url }}"
+            - name: KEYCLOAK_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ keycloak_sso_secret_name }}"
+                  key: admin-username
+            - name: KEYCLOAK_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ keycloak_sso_secret_name }}"
+                  key: admin-password
+{% endif %}
+            - name: KEYCLOAK_REQ_PASS_UPDATE
+              value: "{{ keycloak_sso_req_passwd_update|lower }}"
+{% endif %}
+            - name: TASK_SA
+              value: "{{ hub_task_sa }}"
+{% if hub_task_reap_created is defined %}
+            - name: TASK_REAP_CREATED
+              value: "{{ hub_task_reap_created }}"
+{% endif %}
+{% if hub_task_reap_succeeded is defined %}
+            - name: TASK_REAP_SUCCEEDED
+              value: "{{ hub_task_reap_succeeded }}"
+{% endif %}
+{% if hub_task_reap_failed is defined %}
+            - name: TASK_REAP_FAILED
+              value: "{{ hub_task_reap_failed }}"
+{% endif %}
+{% if hub_task_retries is defined %}
+            - name: TASK_RETRIES
+              value: "{{ hub_task_retries }}"
+{% endif %}
+            - name: RWX_SUPPORTED
+              value: "{{ rwx_supported | string | lower }}"
+{% if rwx_supported|bool %}
+            - name: CACHE_PVC
+              value: "{{ cache_data_volume_claim_name }}"
+            - name: CACHE_PATH
+              value: "{{ cache_mount_path }}"
+{% endif %}
+{% if http_proxy|length >0 %}
+            - name: HTTP_PROXY
+              value: {{ http_proxy }}
+{% endif %}
+{% if https_proxy|length >0 %}
+            - name: HTTPS_PROXY
+              value: {{ https_proxy }}
+{% endif %}
+{% if no_proxy|length >0 %}
+            - name: NO_PROXY
+              value: {{ no_proxy }}
+{% endif %}
+          ports:
+            - containerPort: {{ hub_port }}
+              protocol: TCP
+          resources:
+            limits:
+              cpu: {{ hub_container_limits_cpu }}
+              memory: {{ hub_container_limits_memory }}
+            requests:
+              cpu: {{ hub_container_requests_cpu }}
+              memory: {{ hub_container_requests_memory }}
+# TODO: Add liveness and readiness probes
+          volumeMounts:
+            - name: {{ hub_database_volume_name }}
+              mountPath: {{ hub_database_volume_path }}
+            - name: {{ hub_bucket_volume_name }}
+              mountPath: {{ hub_bucket_volume_path }}
+{% if rwx_supported|bool %}
+            - name: {{ cache_data_volume_name }}
+              mountPath: {{ cache_mount_path }}
+{% endif %}
+{% if hub_tls_enabled|bool %}
+            - name: {{ hub_tls_secret_name }}
+              mountPath: /var/run/secrets/{{ hub_tls_secret_name }}/tls.crt
+{% endif %}
+      volumes:
+{% if rwx_supported|bool %}
+        - name: {{ cache_data_volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ cache_data_volume_claim_name }}
+{% endif %}
+        - name: {{ hub_database_volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ hub_database_volume_claim_name }}
+        - name: {{ hub_bucket_volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ hub_bucket_volume_claim_name }}
+{% if hub_tls_enabled|bool %}
+        - name: {{ hub_tls_secret_name }}
+          secret:
+            secretName: {{ hub_tls_secret_name }}
+            defaultMode: 420
+{% endif %}

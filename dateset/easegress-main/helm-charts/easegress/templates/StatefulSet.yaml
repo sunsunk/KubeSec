@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    name: dynamic_parameters
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      app: dynamic_parameters
+  serviceName: easegress-hs
+  template:
+    metadata:
+      labels:
+        app: dynamic_parameters
+    spec:
+      serviceAccountName: dynamic_parameters
+      containers:
+      - args:
+        - -c
+        - |-
+          echo name: $EG_NAME > /opt/eg-config/config.yaml &&
+          cat /opt/eg-config/eg-primary.yaml >> /opt/eg-config/config.yaml &&
+          /opt/easegress/bin/easegress-server \
+            -f /opt/eg-config/config.yaml \
+            --advertise-client-urls http://$(EG_NAME).easegress-hs.dynamic_parameters:2379 \
+            --initial-advertise-peer-urls http://$(EG_NAME).easegress-hs.dynamic_parameters:2380
+        command:
+        - /bin/sh
+        env:
+        - name: EG_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        image: dynamic_parameters:dynamic_parameters
+        imagePullPolicy: IfNotPresent
+        name: easegress
+        ports:
+        - containerPort: 2381
+          name: admin-port
+          protocol: TCP
+        - containerPort: 2380
+          name: peer-port
+          protocol: TCP
+        - containerPort: 2379
+          name: client-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1200m
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: /opt/eg-config/eg-primary.yaml
+          name: dynamic_parameters
+          subPath: eg-primary.yaml
+        - mountPath: /opt/easegress/data
+          name: dynamic_parameterseasegress-pv dynamic_parameters easegress-data-volume dynamic_parameters
+        - mountPath: dynamic_parameters
+          name: easegress-data-volume
+      restartPolicy: Always
+      volumes:
+        name: easegress-data-volume
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: eg-primary.yaml
+            path: eg-primary.yaml
+          name: dynamic_parameters
+        name: dynamic_parameters
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: easegress-pv
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Gi
+      storageClassName: easegress-storage
+      volumeMode: Filesystem
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---

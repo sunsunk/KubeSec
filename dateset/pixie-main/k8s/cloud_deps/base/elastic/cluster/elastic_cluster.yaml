@@ -1,0 +1,131 @@
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: pl-elastic
+spec:
+  # yamllint disable-line rule:line-length
+  image: gcr.io/pixie-oss/pixie-dev-public/elasticsearch:7.6.0-patched1@sha256:f734909115be9dba66736c4b7356fd52da58b1ffdb895ba74cb5c2fca2b133dd
+  version: 7.6.0
+  nodeSets:
+  - name: master
+    count: 3
+    config:
+      node.master: true
+      node.data: false
+      node.ingest: false
+      node.store.allow_mmap: true
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - SYS_CHROOT
+              - SETUID
+              drop:
+              - ALL
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+        initContainers:
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+              bin/elasticsearch-plugin install --batch repository-gcs
+        - name: sysctl
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            seccompProfile:
+              type: RuntimeDefault
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        - name: elastic-internal-init-filesystem
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 0Gi  # this is replaced by version specific patches
+  - name: data
+    # We need atleast 1 more than the number of index replicas we desire so that
+    # pods can be disrupted for nodepool upgrades.
+    count: 5
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      node.store.allow_mmap: true
+      node.attr.data: hot
+    podTemplate:
+      spec:
+        containers:
+        - env:
+          - name: ES_JAVA_OPTS
+            value: -Xms2g -Xmx2g -Dlog4j2.formatMsgNoLookups=True
+          name: elasticsearch
+          resources:
+            limits:
+              cpu: 2
+              memory: 4Gi
+            requests:
+              cpu: 0.5
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - SYS_CHROOT
+              - SETUID
+              drop:
+              - ALL
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+        initContainers:
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+              bin/elasticsearch-plugin install --batch repository-gcs
+        - name: sysctl
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            seccompProfile:
+              type: RuntimeDefault
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        - name: elastic-internal-init-filesystem
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 0Gi  # this is replaced by version specific patches

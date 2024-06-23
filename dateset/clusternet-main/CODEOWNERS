@@ -1,0 +1,44 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+
+# Order is important;
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @dixudx will be requested for
+# review when someone opens a pull request.
+*       @dixudx
+
+.github @clusternet/sig-admin
+
+Dockerfile @clusternet/sig-admin
+Makefile @clusternet/sig-admin
+
+# cmd
+/cmd @clusternet/sig-admin
+
+# deploy
+/deploy @clusternet/sig-admin
+
+# hack scripts
+/hack @clusternet/sig-utils
+
+# manifests
+/manifests @clusternet/sig-admin
+
+# pkg
+/pkg @clusternet/sig-admin
+
+/pkg/agent     @clusternet/sig-admin
+/pkg/hub       @clusternet/sig-admin
+/pkg/scheduler @clusternet/sig-scheduler @clusternet/sig-admin
+
+/pkg/apis          @clusternet/sig-apis
+/pkg/apis/clusters @clusternet/sig-clusters @clusternet/sig-apis
+/pkg/apis/proxies  @clusternet/sig-network @clusternet/sig-apis
+/pkg/apis/apps     @clusternet/sig-apps @clusternet/sig-apis
+
+/pkg/registry   @clusternet/sig-apis
+/pkg/exchanger  @clusternet/sig-network
+/pkg/features   @clusternet/sig-admin
+/pkg/utils      @clusternet/sig-utils

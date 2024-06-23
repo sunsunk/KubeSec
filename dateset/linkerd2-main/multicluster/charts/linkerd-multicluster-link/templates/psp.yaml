@@ -1,0 +1,19 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-multicluster-link-psp-dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+    namespace: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: psp
+subjects:
+- kind: ServiceAccount
+  name: linkerd-service-mirror-dynamic_parameters
+  namespace: dynamic_parameters
+
+---

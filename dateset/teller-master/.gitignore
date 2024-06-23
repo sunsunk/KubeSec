@@ -1,0 +1,11 @@
+autobrew
+dist/
+teller
+.vscode/
+node_modules/
+todo.txt
+.teller.writecase.yml
+coverage.out
+fixtures/sync/target.env
+dist/
+.idea

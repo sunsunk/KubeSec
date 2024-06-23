@@ -1,0 +1,283 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package grpc.service.apiservice;
+option go_package = "github.com/pipe-cd/pipecd/pkg/app/server/service/apiservice";
+
+import "validate/validate.proto";
+import "pkg/model/common.proto";
+import "pkg/model/application.proto";
+import "pkg/model/deployment.proto";
+import "pkg/model/logblock.proto";
+import "pkg/model/command.proto";
+import "pkg/model/planpreview.proto";
+import "pkg/model/piped.proto";
+
+// APIService contains all RPC definitions for external service, pipectl.
+// All of these RPCs are authenticated by using API key.
+service APIService {
+    rpc AddApplication(AddApplicationRequest) returns (AddApplicationResponse) {}
+    rpc SyncApplication(SyncApplicationRequest) returns (SyncApplicationResponse) {}
+    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {}
+    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {}
+    rpc UpdateApplication(UpdateApplicationRequest) returns (UpdateApplicationResponse) {}
+    rpc DeleteApplication(DeleteApplicationRequest) returns (DeleteApplicationResponse) {}
+    rpc EnableApplication(EnableApplicationRequest) returns (EnableApplicationResponse) {}
+    rpc DisableApplication(DisableApplicationRequest) returns (DisableApplicationResponse) {}
+    rpc RenameApplicationConfigFile(RenameApplicationConfigFileRequest) returns (RenameApplicationConfigFileResponse) {}
+
+    rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {}
+    rpc ListDeployments(ListDeploymentsRequest) returns (ListDeploymentsResponse) {}
+
+    rpc GetCommand(GetCommandRequest) returns (GetCommandResponse) {}
+
+    rpc GetPiped(GetPipedRequest) returns (GetPipedResponse) {}
+    rpc RegisterPiped(RegisterPipedRequest) returns (RegisterPipedResponse) {}
+    rpc UpdatePiped(UpdatePipedRequest) returns (UpdatePipedResponse) {}
+    rpc EnablePiped(EnablePipedRequest) returns (EnablePipedResponse) {}
+    rpc DisablePiped(DisablePipedRequest) returns (DisablePipedResponse) {}
+
+    rpc RegisterEvent(RegisterEventRequest) returns (RegisterEventResponse) {}
+
+    rpc RequestPlanPreview(RequestPlanPreviewRequest) returns (RequestPlanPreviewResponse) {}
+    rpc GetPlanPreviewResults(GetPlanPreviewResultsRequest) returns (GetPlanPreviewResultsResponse) {}
+
+    rpc Encrypt(EncryptRequest) returns (EncryptResponse) {}
+
+    rpc ListStageLogs(ListStageLogsRequest) returns (ListStageLogsResponse) {}
+}
+
+message AddApplicationRequest {
+    reserved 2,6;
+
+    string name = 1 [(validate.rules).string.min_len = 1];
+    string piped_id = 3 [(validate.rules).string.min_len = 1];
+    model.ApplicationGitPath git_path = 4 [(validate.rules).message.required = true];
+    model.ApplicationKind kind = 5 [(validate.rules).enum.defined_only = true];
+    string platform_provider = 8 [(validate.rules).string.min_len = 1];
+    string description = 7;
+}
+
+message AddApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message SyncApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message SyncApplicationResponse {
+    string command_id = 1;
+}
+
+message GetApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetApplicationResponse {
+    model.Application application = 1;
+}
+
+message ListApplicationsRequest {
+    reserved 3, 5;
+
+    string name = 1;
+    string kind = 2;
+    bool disabled = 4;
+    map<string, string> labels = 6;
+    int32 limit = 7;
+    string piped_id = 8;
+    string cursor = 10;
+}
+
+message ListApplicationsResponse {
+    repeated model.Application applications = 1;
+    string cursor = 2;
+}
+
+message GetPipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetPipedResponse {
+    model.Piped piped = 1;
+}
+
+message RegisterPipedRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    string desc = 2;
+}
+
+message RegisterPipedResponse {
+    string id  = 1;
+    string key = 2;
+}
+
+message UpdatePipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string desc = 3;
+}
+
+message UpdatePipedResponse {
+}
+
+message EnableApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message EnableApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisableApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisableApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message UpdateApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+    string piped_id = 2 [(validate.rules).string.min_len = 1];
+    string platform_provider = 3 [(validate.rules).string.min_len = 1];
+    model.ApplicationGitPath git_path = 4 [(validate.rules).message.required = true];
+}
+
+message UpdateApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteApplicationRequest {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteApplicationResponse {
+    string application_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message RenameApplicationConfigFileRequest {
+    // Maximum number of applications that can be updated in one request is 50.
+    // To update more than that, break them and send in multiple requests.
+    repeated string application_ids = 1 [(validate.rules).repeated = {min_items: 1, max_items: 50}];
+    string new_filename = 2 [(validate.rules).string.min_len = 1];
+}
+
+message RenameApplicationConfigFileResponse {
+}
+
+message GetDeploymentRequest {
+    string deployment_id = 1;
+}
+
+message GetDeploymentResponse {
+    model.Deployment deployment = 1;
+}
+
+message ListDeploymentsRequest {
+    repeated string statuses = 1;
+    repeated string kinds = 2;
+    repeated string application_ids = 3;
+    string application_name = 4;
+    map<string, string> labels = 5;
+    int32 limit = 6;
+    string cursor = 7;
+}
+
+message ListDeploymentsResponse {
+    repeated model.Deployment deployments = 1;
+    string cursor = 2;
+}
+
+message GetCommandRequest {
+    string command_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetCommandResponse {
+    model.Command command = 1;
+}
+
+message EnablePipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message EnablePipedResponse {
+}
+
+message DisablePipedRequest {
+    string piped_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DisablePipedResponse {
+}
+
+message RegisterEventRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    string data = 2 [(validate.rules).string.min_len = 1];
+    map<string,string> labels = 3 [(validate.rules).map.keys.string.min_len = 1, (validate.rules).map.values.string.min_len = 1];
+}
+
+message RegisterEventResponse {
+    string event_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message RequestPlanPreviewRequest {
+    string repo_remote_url = 1 [(validate.rules).string.min_len = 1];
+    string head_branch = 2 [(validate.rules).string.min_len = 1];
+    string head_commit = 3 [(validate.rules).string.min_len = 1];
+    string base_branch = 4 [(validate.rules).string.min_len = 1];
+    // Maximum number of seconds a Piped can take to handle a command.
+    int64 timeout = 5 [(validate.rules).int64.gte = 0];
+}
+
+message RequestPlanPreviewResponse {
+    repeated string commands = 1;
+}
+
+message GetPlanPreviewResultsRequest {
+    repeated string commands = 1;
+    // Maximum number of seconds a Piped can take to handle a command.
+    int64 command_handle_timeout = 2;
+}
+
+message GetPlanPreviewResultsResponse {
+    repeated model.PlanPreviewCommandResult results = 1;
+}
+
+message EncryptRequest {
+    string plaintext = 1 [(validate.rules).string.min_len = 1];
+    string piped_id = 2 [(validate.rules).string.min_len = 1];
+    // Whether the data should be base64 encoded before encrypting or not.
+    bool base64_encoding = 3;
+}
+
+message EncryptResponse {
+    string ciphertext = 1 [(validate.rules).string.min_len = 1];
+}
+
+message StageLog {
+    repeated model.LogBlock blocks = 1;
+    bool completed = 2;
+}
+
+message ListStageLogsRequest {
+    string deployment_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message ListStageLogsResponse {
+    map<string, StageLog> stage_logs = 1;
+}

@@ -1,0 +1,9 @@
+database: schemahero
+name: user_projects
+schema:
+  mysql:
+    columns:
+      - name: user_id
+        type: int
+        constraints:
+          notNull: true

@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: system:kcp:apiexport:tenancy:maximal-permission-policy
+rules:
+- apiGroups: ["tenancy.kcp.io"]
+  verbs: ["*"]
+  resources:
+  - workspaces
+  - workspacetypes
+- apiGroups: ["tenancy.kcp.io"]
+  verbs: ["list","watch","get"]
+  resources:
+  - workspaces/status
+  - workspacetypes/status

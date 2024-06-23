@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alluxioruntime-controller
+  namespace: dynamic_parameters
+  labels:
+    control-plane: alluxioruntime-controller
+spec:
+  selector:
+    matchLabels:
+      control-plane: alluxioruntime-controller
+  replicas: dynamic_parameters
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        control-plane: alluxioruntime-controller
+      annotations:
+        controller.runtime.fluid.io/replicas: dynamic_parameters
+    spec:
+      imagePullSecrets:
+      serviceAccountName: alluxioruntime-controller
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: NotIn
+                values:
+                - virtual-kubelet
+      tolerations:
+      #hostNetwork: true
+      containers:
+      - image: "dynamic_parameters"
+        name: manager
+        command: ["alluxioruntime-controller", "start"]
+        args:
+          - --development=false
+          - --runtime-node-port-range=dynamic_parameters
+          - --runtime-workers=dynamic_parameters
+          - --pprof-addr=:6060
+          - --enable-leader-election
+          - --leader-election-namespace=dynamic_parameters
+          - --port-allocate-policy=dynamic_parameters
+        env:
+          - name: FLUID_WORKDIR
+            value: dynamic_parameters
+          - name: DEFAULT_INIT_IMAGE_ENV
+            value: dynamic_parameters
+          - name: ALLUXIO_RUNTIME_IMAGE_ENV
+            value: dynamic_parameters
+          - name: ALLUXIO_FUSE_IMAGE_ENV
+            value: dynamic_parameters
+          - name: MOUNT_ROOT
+            value: dynamic_parameters
+          - name: CRITICAL_FUSE_POD
+            value: dynamic_parameters
+          - name: FLUID_SYNC_RETRY_DURATION
+            value: dynamic_parameters
+          - name: IMAGE_PULL_SECRETS
+            value: dynamic_parameters
+          - name: HELM_DRIVER
+            value: dynamic_parameters
+          - name: ALLUXIO_MOUNT_CONFIG_STORAGE
+            value: dynamic_parameters
+        ports:
+        - containerPort: 8080
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 1536Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 10
+
+---
+
+---

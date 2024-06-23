@@ -1,0 +1,42 @@
+.tableWrapper {
+  overflow: auto;
+}
+
+.table {
+  min-width: 874px;
+  font-size: 0.9rem;
+}
+
+.imageNameWrapper {
+  table-layout: fixed;
+}
+
+.tableTitle th {
+  width: 100px;
+}
+
+.legend {
+  font-size: 75%;
+}
+
+.tooltip {
+  margin-left: -3px;
+}
+
+.ratingBadge {
+  top: -3px;
+}
+
+.narrowCell {
+  padding: 0.5rem 0.75rem !important;
+}
+
+@media only screen and (min-width: 1200px) {
+  .tableWrapper {
+    overflow: visible;
+  }
+
+  .table {
+    font-size: 1rem;
+  }
+}

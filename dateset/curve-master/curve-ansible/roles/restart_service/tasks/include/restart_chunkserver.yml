@@ -1,0 +1,61 @@
+---
+#
+#  Copyright (c) 2020 NetEase Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+- name: get chunkserver number
+  include_tasks: "common_tasks/get_chunkserver_number.yml"
+
+- name: Determine need restart or not
+  include_tasks: append_need_restart_cs_list.yml
+  with_sequence: start=0 end={{ chunkserver_num | int - 1}}
+  when: not restart_directly | bool
+
+- name: set restart_cs_list as all
+  vars:
+    all_cs: all
+  set_fact:
+    restart_cs_list: "{{ restart_cs_list + [all_cs] }}"
+  when: restart_directly | bool
+
+- name: set sudo
+  set_fact:
+    sudo: "sudo"
+  when: command_need_sudo
+
+- name: restart chunkserver
+  shell: chdir={{ deploy_dir }} {{ sudo }} ./chunkserver_ctl.sh restart {{ item }}
+  async: "{{ restart_chunkserver_async }}"
+  poll: 0
+  register: restart_cs_res
+  with_items: "{{ restart_cs_list }}"
+  when: restart_cs_list != ""
+
+- name: wait for restart finish
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: jobs
+  until: jobs.finished
+  delay: "{{ restart_chunkserver_check_delay }}"
+  retries: "{{ restart_chunkserver_check_times }}"
+  with_items: "{{ restart_cs_res.results }}"
+  when: restart_cs_list != "" or restart_directly | bool
+
+- name: check chunkserver version after restart
+  vars:
+    metric_port: "{{ chunkserver_base_port | int + item | int }}"
+  include_tasks: check_version_after_restart.yml
+  with_items: "{{ restart_cs_list }}"
+  when: restart_cs_list != "" and not restart_directly | bool

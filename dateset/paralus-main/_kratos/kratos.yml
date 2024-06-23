@@ -1,0 +1,124 @@
+version: v0.11.0
+
+dsn: postgres://admindbuser:admindbpassword@localhost:5432/admindb?sslmode=disable&max_conns=20&max_idle_conns=4
+
+dev: true
+
+serve:
+  public:
+    base_url: http://127.0.0.1:4433/
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://127.0.0.1:3000
+        - http://127.0.0.1:3000/*
+        - http://127.0.0.1:19006
+        - http://127.0.0.1:19006/*
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Cookie
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+  admin:
+    base_url: http://127.0.0.1:4434/
+
+selfservice:
+  default_browser_return_url: http://127.0.0.1:3000/
+  allowed_return_urls:
+    - http://127.0.0.1:3000
+
+  methods:
+    password:
+      enabled: true
+    oidc:
+      config:
+        providers:
+          - provider: generic
+            id: okta
+            client_id: 0oa4g7baw738BjuNp5d7
+            client_secret: Ezuu9lExU6b8zaQ9LayTFk6fjDauITw8i83kdZmE
+            mapper_url: file:///etc/config/kratos/okta-mapper.jsonnet
+            issuer_url: https://dev-59990879.okta.com/oauth2/default
+            scope:
+              - email
+            # auth_url: http://openid-connect-provider/oauth2/auth
+            requested_claims:
+              email:
+                essential: true
+      enabled: true
+    link:
+      enabled: true
+    profile:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: http://127.0.0.1:3000/error-page
+
+    settings:
+      ui_url: http://127.0.0.1:3000/ksettings
+      privileged_session_max_age: 15m
+
+    recovery:
+      enabled: true
+      ui_url: http://127.0.0.1:3000/ksettings
+
+    verification:
+      enabled: true
+      ui_url: http://127.0.0.1:3000/verify
+      after:
+        default_browser_return_url: http://127.0.0.1:3000
+
+    logout:
+      after:
+        default_browser_return_url: http://127.0.0.1:3000/login
+
+    login:
+      ui_url: http://127.0.0.1:3000/login
+      lifespan: 10m
+
+    registration:
+      lifespan: 10m
+      ui_url: http://127.0.0.1:3000/registeroidc
+      after:
+        password:
+          hooks:
+            - hook: session
+        oidc:
+          hooks:
+            - hook: session
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+hashers:
+  argon2:
+    parallelism: 1
+    memory: 128MB
+    iterations: 2
+    salt_length: 16
+    key_length: 16
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.v1.json
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true&legacy_ssl=true

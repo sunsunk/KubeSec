@@ -1,0 +1,20 @@
+# Source: wasmcloud-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-wasmcloud-chart
+  labels:
+    helm.sh/chart: wasmcloud-chart-0.7.2
+    app.kubernetes.io/name: wasmcloud-chart
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.81.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: client
+      name: client
+  selector:
+    app.kubernetes.io/name: wasmcloud-chart
+    app.kubernetes.io/instance: my-release

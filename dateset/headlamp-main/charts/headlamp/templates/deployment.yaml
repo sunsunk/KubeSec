@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamic_parameters
+  labels:
+    
+spec:
+  replicas: dynamic_parameters
+  selector:
+    matchLabels:
+      
+  template:
+    metadata:
+      annotations:
+      labels:
+        
+    spec:
+      imagePullSecrets:
+      serviceAccountName: dynamic_parameters
+      securityContext:
+      initContainers:
+      containers:
+        - name: dynamic_parameters
+          securityContext:
+          image: "dynamic_parameters/dynamic_parameters:dynamic_parameters"
+          imagePullPolicy: dynamic_parameters
+          env:
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: clientID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: clientSecret
+            - name: OIDC_ISSUER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: issuerURL
+            - name: OIDC_SCOPES
+              valueFrom:
+                secretKeyRef:
+                  name: dynamic_parameters
+                  key: scopes
+          args:
+            - "-in-cluster"
+            - "-plugins-dir=dynamic_parameters"
+            - "-oidc-client-id=$(OIDC_CLIENT_ID)"
+            - "-oidc-client-secret=$(OIDC_CLIENT_SECRET)"
+            - "-oidc-idp-issuer-url=$(OIDC_ISSUER_URL)"
+            - "-oidc-scopes=$(OIDC_SCOPES)"
+            - "-base-url=dynamic_parameters"
+          ports:
+            - name: http
+              containerPort: 4466
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: "dynamic_parameters/"
+              port: http
+          readinessProbe:
+            httpGet:
+              path: "dynamic_parameters/"
+              port: http
+          resources:
+          volumeMounts:
+      nodeSelector:
+      affinity:
+      tolerations:
+      volumes:
+
+---

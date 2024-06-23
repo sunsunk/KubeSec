@@ -1,0 +1,88 @@
+on:
+  release:
+    types:
+    - published
+name: Build Release
+jobs:
+  release-assests:
+    name: release kubectl-karmada
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target:
+          - karmadactl
+          - kubectl-karmada
+        os:
+          - linux
+          - darwin
+        arch:
+          - amd64
+          - arm64
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.21.8
+    - name: Making and packaging
+      env:
+        GOOS: ${{ matrix.os }}
+        GOARCH: ${{ matrix.arch }}
+      run: make release-${{ matrix.target }}
+    - name: Making helm charts
+      env:
+        VERSION: ${{ github.ref_name }}
+      run: make package-chart
+    - name: Uploading assets...
+      if: ${{ !env.ACT }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          _output/release/${{ matrix.target }}-${{ matrix.os }}-${{ matrix.arch }}.tgz
+          _output/release/${{ matrix.target }}-${{ matrix.os }}-${{ matrix.arch }}.tgz.sha256
+  release-crds-assests:
+    name: release crds
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Rename the crds directory
+      run: |
+        mv ./charts/karmada/_crds ./charts/karmada/crds
+    - name: Tar the crds
+      uses: a7ul/tar-action@v1.1.3
+      with:
+        command: c
+        cwd: ./charts/karmada/
+        files: crds
+        outPath: crds.tar.gz
+    - name: Uploading crd assets...
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          crds.tar.gz
+  release-charts:
+    name: Release charts
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Making helm charts
+      env:
+        VERSION: ${{ github.ref_name }}
+      run: make package-chart
+    - name: Uploading assets...
+      if: ${{ !env.ACT }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          _output/charts/karmada-chart-${{ github.ref_name }}.tgz
+          _output/charts/karmada-chart-${{ github.ref_name }}.tgz.sha256
+          _output/charts/karmada-operator-chart-${{ github.ref_name }}.tgz
+          _output/charts/karmada-operator-chart-${{ github.ref_name }}.tgz.sha256
+  update-krew-index:
+    needs: release-assests
+    name: Update krew-index
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update new version in krew-index
+      uses: rajatjindal/krew-release-bot@v0.0.40

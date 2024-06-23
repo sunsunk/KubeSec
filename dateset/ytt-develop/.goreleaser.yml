@@ -1,0 +1,143 @@
+# This is an example .goreleaser.yml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    - ./hack/generate-website-assets.sh
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/ytt
+    binary: ytt-{{ .Os }}-{{ .Arch }}
+
+    flags:
+      - -trimpath
+
+    ldflags:
+      - -X carvel.dev/ytt/pkg/version.Version={{ .Version }}
+
+archives:
+  - format: binary
+    name_template: "{{ .Binary }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+  disable: false
+signs:
+  - artifacts: checksum
+    certificate: '${artifact}.pem'
+    cmd: cosign
+    args:
+      - sign-blob
+      - "--yes"
+      - '--output-certificate=${certificate}'
+      - '--output-signature=${signature}'
+      - '${artifact}'
+    output: true  
+snapshot:
+  name_template: "{{ .Tag }}-next"
+release:
+  # Repo in which the release will be created.
+  github:
+    owner: carvel-dev
+    name: ytt
+
+  # If set to true, will not auto-publish the release.
+  draft: true
+
+  # If set to auto, will mark the release as not ready for production
+  # in case there is an indicator for this in the tag e.g. v1.0.0-rc1
+  # If set to true, will mark the release as not ready for production.
+  # Default is false.
+  prerelease: auto
+
+  # use to change the name of the release.
+  name_template: "{{.Tag}}"
+
+  # You can disable this pipe in order to not upload any artifacts.
+  # Defaults to false.
+  disable: false
+
+  header: |
+    <details>
+
+    <summary><h2>Installation and signature verification</h2></summary>
+
+    ### Installation
+    
+    #### By downloading binary from the release
+
+    For instance, if you are using Linux on an AMD64 architecture:
+    ```shell
+    # Download the binary
+    curl -LO https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/{{ .ProjectName }}-linux-amd64
+
+    # Move the binary in to your PATH
+    mv kapp-linux-amd64 /usr/local/bin/ytt
+
+    # Make the binary executable
+    chmod +x /usr/local/bin/ytt
+    ```
+
+    #### Via Homebrew (macOS or Linux)
+    ```shell
+    $ brew tap carvel-dev/carvel
+    $ brew install ytt
+    $ ytt version  
+    ```
+
+    ### Verify checksums file signature
+
+    The checksums file provided within the artifacts attached to this release is signed using [Cosign](https://docs.sigstore.dev/cosign/overview/) with GitHub OIDC(Refer [this](https://docs.sigstore.dev/system_config/installation/) page for cosign installation). To validate the signature of this file, run the following commands:
+
+    ```shell
+    # Download the checksums file, certificate and signature
+    curl -LO https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/checksums.txt
+    curl -LO https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/checksums.txt.pem
+    curl -LO https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/checksums.txt.sig
+
+    # Verify the checksums file
+    cosign verify-blob checksums.txt \
+      --certificate checksums.txt.pem \
+      --signature checksums.txt.sig \
+      --certificate-identity-regexp=https://github.com/{{ .Env.GITHUB_REPOSITORY_OWNER }} \
+      --certificate-oidc-issuer=https://token.actions.githubusercontent.com
+    ```
+
+    ### Verify binary integrity
+
+    To verify the integrity of the downloaded binary, you can utilize the checksums file after having validated its signature.
+    ```shell
+    # Verify the binary using the checksums file
+    sha256sum -c checksums.txt --ignore-missing
+    ```
+    </details>
+
+changelog:
+  # Set it to true if you wish to skip the changelog generation.
+  # This may result in an empty release notes on GitHub/GitLab/Gitea.
+  skip: false
+
+  # Sorts the changelog by the commit's messages.
+  # Could either be asc, desc or empty
+  # Default is empty
+  sort: asc
+
+  filters:
+    # Commit messages matching the regexp listed here will be removed from
+    # the changelog
+    # Default is empty
+    exclude:
+      - '^docs:'
+      - typo

@@ -1,0 +1,36 @@
+image:
+  repository: gresearchdev/event-ingester-ingester
+  tag: 0.0.0-latest
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 300m
+  requests:
+    memory: 512Mi
+    cpu: 200m
+# -- Tolerations
+tolerations: []
+additionalLabels: {}
+additionalVolumeMounts: []
+additionalVolumes: []
+terminationGracePeriodSeconds: 30
+replicas: 1
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+  type: RollingUpdate
+customServiceAccount: null
+serviceAccount: null
+
+applicationConfig:
+  pulsar:
+    authenticationEnabled: false
+  batchSize: 1048576  #1MB
+  batchMessages: 10000
+  metricsPort: 9000
+
+prometheus:
+  enabled: false
+  labels: {}
+  scrapeInterval: 15s
+  scrapeTimeout: 10s

@@ -1,0 +1,17 @@
+# This file contains the configuration for the OpenMetrics website,
+# which is built by the Hugo (https://gohugo.io) static site
+# generator and hosted by Netlify (https://netlify.com). All assets
+# for the website are in the /website folder.
+[build]
+base    = "website"
+publish = "website/public"
+command = "make netlify-production-build"
+
+[build.environment]
+HUGO_VERSION = "0.46"
+
+[context.deploy-preview]
+command = "make netlify-staging-build"
+
+[context.branch-deploy]
+command = "hugo netlify-staging-build"

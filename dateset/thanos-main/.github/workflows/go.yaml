@@ -1,0 +1,97 @@
+name: go
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+  pull_request:
+
+# TODO(bwplotka): Add tests here.
+jobs:
+  cross-build-check:
+    runs-on: ubuntu-latest
+    name: Go build for different platforms
+    env:
+      GOBIN: /tmp/.bin
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Cross build check
+        run: make crossbuild
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Linters (Static Analysis) for Go
+    env:
+      GOBIN: /tmp/.bin
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Format.
+        run: make format
+
+      - name: Linting & vetting
+        run: make go-lint
+
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        parallelism: [8]
+        index: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    name: Thanos end-to-end tests
+    env:
+      GOBIN: /tmp/.bin
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go.
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Run e2e docker-based tests
+        run: make test-e2e GH_PARALLEL=${{ matrix.parallelism }} GH_INDEX=${{ matrix.index }}

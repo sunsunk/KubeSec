@@ -1,0 +1,2 @@
+use std::string;
+string::format(7, "snot", "badger")

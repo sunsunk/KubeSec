@@ -1,0 +1,61 @@
+# Default template choices for project generation
+#
+# Template type is `[[component]]`, `[[interface]]`, or `[[provider]]`
+# There should be at least one of each template type in this file
+#
+# Settings per template:
+# ---------------------
+# name        short template name               - required
+# description one-line template description     - required
+# git         https or ssh uri                  - either git or path is required
+# subfolder   relative path within git repo     - optional if git uri is used
+# branch      git branch name                   - optional if git uri is used
+# path        path to template on disk          - either git or path is required
+
+[[component]]
+name = "hello-world-rust"
+description = "a hello-world component (in Rust) that responds over an HTTP connection"
+git = "wasmCloud/wasmCloud"
+subfolder = "examples/rust/components/http-hello-world"
+
+[[component]]
+name = "hello-world-tinygo"
+description = "a hello-world component (in TinyGo) that responds over an HTTP connection"
+git = "wasmCloud/wasmCloud"
+subfolder = "examples/golang/components/http-hello-world"
+
+[[component]]
+name = "hello-world-typescript"
+description = "a hello-world component (in TypeScript) that responds over an HTTP connection"
+git = "wasmCloud/wasmCloud"
+subfolder = "examples/typescript/components/http-hello-world"
+
+[[component]]
+name = "hello-world-python"
+description = "a hello-world component (in Python) that responds over an HTTP connection"
+git = "wasmCloud/wasmCloud"
+subfolder = "examples/python/components/http-hello-world"
+
+[[interface]]
+name = "converter-interface"
+description = "an interface for actor-to-actor messages with a single Convert method"
+git = "wasmCloud/project-templates"
+subfolder = "interface/converter-actor"
+
+[[interface]]
+name = "factorial-interface"
+description = "an interface for a capability provider with capability contract"
+git = "wasmCloud/project-templates"
+subfolder = "interface/factorial"
+
+[[provider]]
+name = "factorial-provider"
+description = "a capability provider that computes factorials"
+git = "wasmCloud/project-templates"
+subfolder = "provider/factorial"
+
+[[provider]]
+name = "messaging-provider"
+description = "a capability provider that implements pubsub messaging"
+git = "wasmCloud/project-templates"
+subfolder = "provider/messaging"

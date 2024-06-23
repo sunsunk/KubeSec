@@ -1,0 +1,126 @@
+// Copyright 2024 The PipeCD Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/pipe-cd/pipecd/pkg/model";
+
+import "validate/validate.proto";
+import "pkg/model/application.proto";
+import "pkg/model/deployment.proto";
+
+enum NotificationEventType {
+    EVENT_DEPLOYMENT_TRIGGERED = 0;
+    EVENT_DEPLOYMENT_PLANNED = 1;
+    EVENT_DEPLOYMENT_APPROVED = 2;
+    EVENT_DEPLOYMENT_ROLLING_BACK = 3;
+    EVENT_DEPLOYMENT_SUCCEEDED = 4;
+    EVENT_DEPLOYMENT_FAILED = 5;
+    EVENT_DEPLOYMENT_CANCELLED = 6;
+    EVENT_DEPLOYMENT_WAIT_APPROVAL = 7;
+    EVENT_DEPLOYMENT_TRIGGER_FAILED = 8;
+
+    EVENT_APPLICATION_SYNCED = 100;
+    EVENT_APPLICATION_OUT_OF_SYNC = 101;
+
+    // Application Health Event
+    EVENT_APPLICATION_HEALTHY = 200;
+
+    EVENT_PIPED_STARTED = 300;
+    EVENT_PIPED_STOPPED = 301;
+}
+
+enum NotificationEventGroup {
+    EVENT_NONE = 0;
+    EVENT_DEPLOYMENT = 1;
+    EVENT_APPLICATION_SYNC = 2;
+    EVENT_APPLICATION_HEALTH = 3;
+    EVENT_PIPED = 4;
+}
+
+message NotificationEventDeploymentTriggered {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    repeated string mentioned_accounts = 3;
+}
+
+message NotificationEventDeploymentPlanned {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    string summary = 3;
+    repeated string mentioned_accounts = 4;
+}
+
+message NotificationEventDeploymentApproved {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    string approver = 3;
+    repeated string mentioned_accounts = 4;
+}
+
+message NotificationEventDeploymentRollingBack {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+}
+
+message NotificationEventDeploymentSucceeded {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    repeated string mentioned_accounts = 3;
+}
+
+message NotificationEventDeploymentFailed {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    string reason = 3;
+    repeated string mentioned_accounts = 4;
+}
+
+message NotificationEventDeploymentCancelled {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    string commander = 3;
+    repeated string mentioned_accounts = 4;
+}
+
+message NotificationEventDeploymentWaitApproval {
+    Deployment deployment = 1 [(validate.rules).message.required = true];
+    repeated string mentioned_accounts = 3;
+}
+
+message NotificationEventDeploymentTriggerFailed {
+    Application application = 1 [(validate.rules).message.required = true];
+    string commit_hash = 2 [(validate.rules).string.min_len = 1];
+    string commit_message = 3 [(validate.rules).string.min_len = 1];
+    string reason = 4 [(validate.rules).string.min_len = 1];
+    repeated string mentioned_accounts = 5;
+}
+
+message NotificationEventApplicationSynced {
+    Application application = 1 [(validate.rules).message.required = true];
+    ApplicationSyncState state = 3 [(validate.rules).message.required = true];
+}
+
+message NotificationEventApplicationOutOfSync {
+    Application application = 1 [(validate.rules).message.required = true];
+    ApplicationSyncState state = 3 [(validate.rules).message.required = true];
+}
+
+message NotificationEventPipedStarted {
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string version = 3;
+    string project_id = 4 [(validate.rules).string.min_len = 1];
+}
+
+message NotificationEventPipedStopped {
+    string id = 1 [(validate.rules).string.min_len = 1];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string version = 3;
+    string project_id = 4 [(validate.rules).string.min_len = 1];
+}

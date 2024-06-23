@@ -1,0 +1,12 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    kudo.dev/operator: toy
+  name: toy1
+spec:
+  operatorVersion:
+    name: toy-1.0.0
+    kind: OperatorVersion
+    namespace: default

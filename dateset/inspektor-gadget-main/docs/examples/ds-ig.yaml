@@ -1,0 +1,53 @@
+# This manifest is a template for running the ig binary as a daemon set. For simplicity, we use a
+# privileged pod, but you can use a more restrictive setup. Check
+# charts/gadget/templates/daemonset.yaml that is our source of true for the security configuration
+# needed by Inspektor Gadget.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ig
+  labels:
+    k8s-app: example-ig
+spec:
+  selector:
+    matchLabels:
+      name: example-ig
+  template:
+    metadata:
+      labels:
+        name: example-ig
+    spec:
+      containers:
+      - name: ig
+        # CHANGEME: use your own image
+        image: mycontainerimage:latest
+        securityContext:
+          # CHANGEME: see comment at the top of this file
+          privileged: true
+        # CHANGEME: replace this with your own commands
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "sleep inf"
+        env:
+        - name: HOST_ROOT
+          value: "/host"
+        volumeMounts:
+          - mountPath: /host
+            name: host
+          - mountPath: /run
+            name: run
+          - mountPath: /sys/kernel/debug
+            name: debugfs
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: host
+          hostPath:
+            path: /
+        - name: run
+          hostPath:
+            path: /run
+        - name: debugfs
+          hostPath:
+            path: /sys/kernel/debug

@@ -1,0 +1,71 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  name: namespace-metadata
+  namespace: dynamic_parameters
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  name: namespace-metadata
+  namespace: dynamic_parameters
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "patch"]
+  resourceNames: ["dynamic_parameters"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  name: namespace-metadata
+  namespace: dynamic_parameters
+roleRef:
+  kind: Role
+  name: namespace-metadata
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: namespace-metadata
+  namespace: dynamic_parameters
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: dynamic_parameters
+  labels:
+    linkerd.io/extension: multicluster
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  name: mc-namespace-metadata-linkerd-config
+roleRef:
+  kind: Role
+  name: ext-namespace-metadata-linkerd-config
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: namespace-metadata
+  namespace: dynamic_parameters
+
+---

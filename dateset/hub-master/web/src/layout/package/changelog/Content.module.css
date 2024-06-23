@@ -1,0 +1,90 @@
+.list {
+  font-size: 90%;
+}
+
+.versionWrapper {
+  min-width: 0px;
+}
+
+.btnTitle {
+  line-height: 1.2;
+}
+
+.btnLink {
+  top: -3px;
+}
+
+.badge {
+  top: -3px;
+  border-color: var(--bs-orange) !important;
+  color: var(--bs-orange);
+}
+
+.linksWrapper {
+  margin-top: -2px;
+}
+
+.link {
+  font-size: 0.7rem;
+}
+
+.changeBadgeWrapper {
+  margin-top: 3px;
+}
+
+.changeBadge {
+  width: 90px;
+  height: 15px;
+  line-height: 15px;
+  font-size: 60%;
+  background-color: var(--color-black-50);
+  color: var(--bs-white);
+}
+
+.addedChangeBadge {
+  background-color: #0594cb;
+}
+
+.changedChangeBadge {
+  background-color: #e0ae0b;
+}
+
+.deprecatedChangeBadge {
+  background-color: #6c757d;
+}
+
+.removedChangeBadge {
+  background-color: #f7860f;
+}
+
+.fixedChangeBadge {
+  background-color: #28a745;
+}
+
+.securityChangeBadge {
+  background-color: #df2a29;
+}
+
+.badgeIcon {
+  top: -1px;
+}
+
+.lastVersion {
+  min-height: calc(100% - 1.25rem);
+}
+
+@media only screen and (max-width: 767.98px) {
+  .list {
+    font-size: 80%;
+  }
+
+  .badgesWrapper {
+    font-size: 80%;
+    margin-top: 0.5rem;
+  }
+
+  .changeBadge {
+    width: 15px;
+    padding: 0;
+  }
+}

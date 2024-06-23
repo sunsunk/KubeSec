@@ -1,0 +1,28 @@
+---
+apiVersion: getambassador.io/v3alpha1
+kind: ConsulResolver
+metadata:
+  name: consul-dc1
+spec:
+  address: consul-server.default:$CONSULPORT
+  datacenter: dc1
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: hello
+  namespace: default
+spec:
+  prefix: /hello
+  service: hello
+  resolver: consul-dc1
+---
+apiVersion: getambassador.io/v3alpha1
+kind: TCPMapping
+metadata:
+  name: hello-tcp
+  namespace: default
+spec:
+  port: 3099
+  service: hello-tcp
+  resolver: consul-dc1

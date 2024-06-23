@@ -1,0 +1,11 @@
+# Source: eraser/templates/eraser-imagejob-pods-cluster-role-clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/instance: 'my-release'
+    app.kubernetes.io/managed-by: 'Helm'
+    app.kubernetes.io/name: 'eraser'
+    helm.sh/chart: 'eraser'
+  name: eraser-imagejob-pods-cluster-role

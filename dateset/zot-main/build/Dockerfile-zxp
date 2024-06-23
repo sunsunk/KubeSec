@@ -1,0 +1,38 @@
+# ---
+# Stage 1: Build binary, create default config file
+# ---
+FROM --platform=$BUILDPLATFORM ghcr.io/project-zot/golang:1.22 AS builder
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG COMMIT
+
+RUN mkdir -p /go/src/github.com/project-zot/zot
+WORKDIR /go/src/github.com/project-zot/zot
+COPY . .
+RUN make COMMIT=$COMMIT OS=$TARGETOS ARCH=$TARGETARCH clean exporter-minimal
+RUN echo '{\n\
+    "Server": {\n\
+        "protocol": "http",\n\
+        "host": "127.0.0.1",\n\
+        "port": "5000"\n\
+    },\n\
+    "Exporter": {\n\
+        "port": "5001",\n\
+        "log": {\n\
+            "level": "debug"\n\
+        }\n\
+    }\n\
+}\n' > config.json && cat config.json
+
+# ---
+# Stage 2: Final image with nothing but binary and default config file
+# ---
+FROM gcr.io/distroless/base-debian12 AS final
+ARG TARGETOS
+ARG TARGETARCH
+COPY --from=builder /go/src/github.com/project-zot/zot/bin/zxp-$TARGETOS-$TARGETARCH /zxp
+COPY --from=builder /go/src/github.com/project-zot/zot/config.json /etc/zxp/config.json
+ENTRYPOINT ["/zxp"]
+EXPOSE 5001
+CMD ["config", "/etc/zxp/config.json"]

@@ -1,0 +1,29 @@
+name: Validate Bundle CSV
+
+on:
+  pull_request:
+    branches:
+    - main
+    - 'release-*.*'
+    paths:
+    - 'bundle/**'
+    - 'helm/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Get Operator SDK
+        run: make operator-sdk
+
+      - name: Check config/ is in sync with bundle/
+        run: |
+          make bundle bundle-sync-check

@@ -1,0 +1,67 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+  ownerReferences:
+  - apiVersion: dynamic_parameters
+    blockOwnerDeletion: dynamic_parameters
+    controller: dynamic_parameters
+    kind: dynamic_parameters
+    name: dynamic_parameters
+    uid: dynamic_parameters
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/exec
+    verbs:
+      - get
+      - create
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+  ownerReferences:
+  - apiVersion: dynamic_parameters
+    blockOwnerDeletion: dynamic_parameters
+    controller: dynamic_parameters
+    kind: dynamic_parameters
+    name: dynamic_parameters
+    uid: dynamic_parameters
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic_parameters
+subjects:
+  - kind: ServiceAccount
+    name: dynamic_parameters
+    namespace: dynamic_parameters
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dynamic_parameters
+  namespace: dynamic_parameters
+  labels:
+    
+  ownerReferences:
+  - apiVersion: dynamic_parameters
+    blockOwnerDeletion: dynamic_parameters
+    controller: dynamic_parameters
+    kind: dynamic_parameters
+    name: dynamic_parameters
+    uid: dynamic_parameters
+
+---
+
+---

@@ -1,0 +1,328 @@
+[
+  {
+    "tags": ["flow1"],
+    "active": true,
+    "description": "New Flow Control Description and Remarks",
+    "exclude": [],
+    "id": "c03dabe4b9ca",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control same uri",
+    "sequence": [
+      {
+        "args": {
+          "step": "^1$"
+        },
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/action"
+      },
+      {
+        "args": {
+          "step": "^2$"
+        },
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/action"
+      },
+      {
+        "args": {
+          "step": "^3$"
+        },
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/action"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flow2"],
+    "active": true,
+    "description": "abc",
+    "exclude": [
+      "deny"
+    ],
+    "id": "d03dabe4b9ca",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control (simple)",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step2"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step3"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flow3"],
+    "active": true,
+    "description": "abc",
+    "exclude": [],
+    "id": "d03dabe4b9cx",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control (ban)",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/fcban1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/fcban2"
+      }
+    ],
+    "timeframe": 2
+  },
+  {
+    "tags": ["flowheader"],
+    "active": true,
+    "description": "",
+    "exclude": [],
+    "id": "c03dabe4b9cb",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "headers": "test"
+      }
+    ],
+    "name": "Flow Control on header (same uri)",
+    "sequence": [
+      {
+        "args": {
+          "step": "^1$"
+        },
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/flowheader"
+      },
+      {
+        "args": {
+          "step": "^2$"
+        },
+        "cookies": {},
+        "headers": {
+          "host": "www.example.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/flowheader"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flowc1"],
+    "active": true,
+    "description": "abc",
+    "exclude": [],
+    "id": "col1",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control (action collision 1)",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step2"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flowc2"],
+    "active": true,
+    "description": "abc",
+    "exclude": [],
+    "id": "col2",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control (action collision 2)",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step2"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flowc3"],
+    "active": true,
+    "description": "abc",
+    "exclude": [],
+    "id": "col3",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "ip"
+      }
+    ],
+    "name": "Flow Control (action collision 3)",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "Host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "Host": "www.collision.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/step2"
+      }
+    ],
+    "timeframe": 4
+  },
+  {
+    "tags": ["flowquery"],
+    "active": true,
+    "description": "abc",
+    "exclude": [],
+    "id": "fcbyquery",
+    "include": [
+      "all"
+    ],
+    "key": [
+      {
+        "attrs": "query"
+      }
+    ],
+    "name": "Flow Control by query",
+    "sequence": [
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.byquery.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/fc/by-query-step1"
+      },
+      {
+        "args": {},
+        "cookies": {},
+        "headers": {
+          "host": "www.byquery.com"
+        },
+        "method": "GET",
+        "uri": "/flow-test/fc/by-query-step2"
+      }
+    ],
+    "timeframe": 4
+  }
+]

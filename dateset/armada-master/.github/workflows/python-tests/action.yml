@@ -1,0 +1,51 @@
+name: "Python tox tests and linting"
+description: "Sets up go environment and runs python tests in tox"
+
+inputs:
+  path:
+    description: "Path to python package root relative to repo root"
+    required: true
+  python-version:
+    description: "Version of python to setup and run tests against"
+    required: true
+  tox-env:
+    description: "Tox environment to use for running the tests"
+    required: true
+  github-token:
+    description: "Token for authenticated github requests"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+    # Tox to run tests; build to build the wheel after tests pass
+    - run: pip install tox==3.27.1 build twine
+      shell: bash
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v2
+      with:
+        version: '23.3'
+        repo-token: ${{ inputs.github-token }}
+    # Generate the proto files for python, required for later steps
+    - run: go run github.com/magefile/mage@v1.14.0 -v buildPython
+      shell: bash
+    - name: Run tox format environment
+      run: tox -e format
+      shell: bash
+      working-directory: ${{ inputs.path }}
+    - name: Verify docs updated if needed
+      run: tox -e docs-check
+      shell: bash
+      working-directory: ${{ inputs.path }}
+    - name: Run tox python ${{ inputs.python-version }} unit tests
+      run: tox -e ${{ inputs.tox-env }}
+      shell: bash
+      working-directory: ${{ inputs.path }}
+    - name: Build and verify wheel
+      run: |
+        python -m build --wheel
+        twine check dist/*
+      shell: bash
+      working-directory: ${{ inputs.path }}

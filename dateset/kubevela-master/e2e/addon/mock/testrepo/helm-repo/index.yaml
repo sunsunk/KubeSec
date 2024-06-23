@@ -1,0 +1,81 @@
+apiVersion: v1
+entries:
+  fluxcd-test-version:
+    - apiVersion: v2
+      appVersion: 1.16.0
+      description: A Helm chart for Kubernetes
+      name: fluxcd-test-version
+      type: application
+      urls:
+        - http://127.0.0.1:9098/helm/fluxcd-test-version-1.0.0.tgz
+      version: 1.0.0
+      annotations:
+        system.vela: ">=1.3.0"
+        system.kubernetes: ">=1.10.0"
+    - apiVersion: v2
+      appVersion: 1.16.0
+      description: A Helm chart for Kubernetes
+      name: fluxcd-test-version
+      type: application
+      urls:
+        - http://127.0.0.1:9098/helm/fluxcd-test-version-2.0.0.tgz
+      version: 2.0.0
+      annotations:
+        system.vela: ">=1.5.0"
+        system.kubernetes: ">=1.30.0"
+  vela-workflow:
+    - annotations:
+        system.vela: '>=v1.6.0-beta.1'
+      created: "2022-10-29T09:11:16.865230605Z"
+      description: vela-workflow provides the capability to run a standalone workflow
+      home: https://github.com/kubevela/workflow
+      icon: https://static.kubevela.net/images/logos/KubeVela%20-03.png
+      name: vela-workflow
+      urls:
+        - http://127.0.0.1:9098/helm/vela-workflow-v0.3.5.tgz
+      version: v0.3.5
+  foo:
+    - created: "2022-10-29T09:11:16.865230605Z"
+      description: Vela test addon named foo
+      home:  https://www.foo.com/icon
+      icon: https://www.foo.com
+      name: foo
+      urls:
+        - http://127.0.0.1:9098/helm/foo-v1.0.0.tgz
+      version: v1.0.0
+  bar:
+    - created: "2022-10-29T09:11:16.865230605Z"
+      description: Vela test addon named bar
+      home:  https://www.bar.com/icon
+      icon: https://www.bar.com
+      name: foo
+      urls:
+        - http://127.0.0.1:9098/helm/bar-v1.0.0.tgz
+      version: v1.0.0
+    - created: "2022-10-29T09:11:16.865230605Z"
+      description: Vela test addon named bar
+      home:  https://www.bar.com/icon
+      icon: https://www.bar.com
+      name: foo
+      urls:
+        - http://127.0.0.1:9098/helm/bar-v2.0.0.tgz
+      version: v2.0.0
+  mock-be-dep-addon:
+    - created: "2022-10-29T09:11:16.865230605Z"
+      description: Vela test addon named mock-be-dep-addon
+      home:  https://www.test.com/icon
+      icon: https://www.test.com
+      name: mock-be-dep-addon
+      urls:
+        - http://127.0.0.1:9098/helm/mock-be-dep-addon-v1.0.0.tgz
+      version: v1.0.0
+  has-clusters-arg:
+    - created: "2023-06-01T09:11:16.865230605Z"
+      description: An addon for testing addon dependency with clusters.
+      home:  https://www.has-clusters-arg.com/icon
+      icon: https://www.has-clusters-arg.com
+      name: has-clusters-arg
+      urls:
+        - http://127.0.0.1:9098/helm/has-clusters-arg-v1.0.0.tgz
+      version: v1.0.0
+generated: "2022-06-15T13:17:04.733573+08:00"

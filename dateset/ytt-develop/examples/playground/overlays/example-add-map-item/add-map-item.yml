@@ -1,0 +1,15 @@
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.all
+---
+meta:
+  #@overlay/match missing_ok=True
+  hardcopy: true
+
+#! By default, `@overlay/match` applied to a map item
+#!   matches by key name (here: `hardcopy`).
+
+#! By default, the operation is `@overlay/merge`
+
+#! For more on `@overlay/match`:
+#!   https://carvel.dev/ytt/docs/latest/lang-ref-ytt-overlay/#overlaymatch

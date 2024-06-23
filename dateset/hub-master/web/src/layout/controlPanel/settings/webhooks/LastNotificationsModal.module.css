@@ -1,0 +1,41 @@
+.modalDialog {
+  max-width: 1000px !important;
+  width: 90%;
+  min-height: calc(100% - 10rem) !important;
+  max-height: calc(100% - 10rem) !important;
+  margin: 5rem auto !important;
+}
+
+.table {
+  font-size: 0.8rem;
+}
+
+.icon {
+  color: inherit;
+}
+
+.icon path {
+  stroke: inherit;
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+@media only screen and (max-height: 700px) {
+  .modalDialog {
+    min-height: calc(100% - 6rem) !important;
+    max-height: calc(100% - 6rem) !important;
+    margin: 3rem auto !important;
+  }
+
+  .modalFooter {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+}

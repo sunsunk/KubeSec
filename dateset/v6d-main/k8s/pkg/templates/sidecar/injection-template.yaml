@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: injection-containers
+# we only get the following containers
+spec:
+  containers:
+    - name: vineyard-sidecar
+      image: {{ .Spec.Vineyard.Image }}
+      imagePullPolicy: {{ .Spec.Vineyard.ImagePullPolicy }}
+{{- if .Spec.SecurityContext }}
+      securityContext:
+{{ toYaml .Spec.SecurityContext | indent 8 }}
+{{- end }}
+      env:
+      - name: VINEYARDD_UID
+        value: {{ .UID }}
+      - name: VINEYARDD_NAME
+        value: {{ .Name }}
+      - name: VINEYARDD_NAMESPACE
+        value: {{ .Namespace }}
+      command:
+      - /bin/bash
+      - -c
+      - >
+        /usr/local/bin/vineyardd
+        --sync_crds {{ .Spec.Vineyard.SyncCRDs }}
+        {{- if .Spec.Volume.MountPath }}
+        --socket {{ .Spec.Volume.MountPath }}/vineyard.sock
+        {{- else }}
+        --socket /var/run/vineyard.sock
+        {{- end }}
+        --size {{ .Spec.Vineyard.Size }}
+        {{- if .Spec.Vineyard.ReserveMemory }}
+        --reserve_memory
+        {{- end }}
+        --stream_threshold {{ .Spec.Vineyard.StreamThreshold }}
+        --etcd_cmd etcd
+        --etcd_prefix /vineyard
+        --etcd_endpoint http://{{ .Name }}-etcd-service:2379
+        {{- if .Spec.Vineyard.Spill.Path }}
+        --spill_path {{ .Spec.Vineyard.Spill.Path }}
+        --spill_lower_rate {{ .Spec.Vineyard.Spill.SpillLowerRate }}
+        --spill_upper_rate {{ .Spec.Vineyard.Spill.SpillUpperRate }}
+        {{- end }}
+        {{- if .Spec.Metric.Enable }}
+        --metrics
+        -log_dir /var/log/vineyard/
+        {{- end }}
+      ports:
+      - containerPort: 9600
+        name: vineyard-rpc
+        protocol: TCP
+      volumeMounts:
+      - name: vineyard-socket
+      {{- if .Spec.Volume.MountPath }}
+        mountPath: {{ .Spec.Volume.MountPath }}
+      {{- else }}
+        mountPath: /var/run
+      {{- end }}
+{{- if .Spec.VolumeMounts }}
+{{ toYaml .Spec.VolumeMounts | indent 6 }}
+{{- end }}
+      resources:
+        requests:
+          {{- if .Spec.Vineyard.CPU }}
+          cpu: "{{ .Spec.Vineyard.CPU }}"
+          {{- end }}
+          {{- if .Spec.Vineyard.Memory }}
+          memory: "{{ .Spec.Vineyard.Memory }}"
+          {{- end }}
+        limits:
+          {{- if .Spec.Vineyard.CPU }}
+          cpu: "{{ .Spec.Vineyard.CPU }}"
+          {{- end }}
+          {{- if .Spec.Vineyard.Memory }}
+          memory: "{{ .Spec.Vineyard.Memory }}"
+          {{- end }}
+    {{- if .Spec.Metric.Enable }}
+    - name: metrics
+      image : {{ .Spec.Metric.Image }}
+      imagePullPolicy: {{ .Spec.Metric.ImagePullPolicy }}
+      command: ["./grok_exporter"]
+      args: ["-config", "grok_exporter.yml", "-disable-exporter-metrics", "&"]
+      ports:
+      - name: exporter
+        containerPort: 9144
+        protocol: TCP
+      volumeMounts:
+      - name: log
+        mountPath: /var/log/vineyard
+    {{- end }}
+  volumes:
+  - name: vineyard-socket
+  {{- if .Spec.Volume.PvcName }}
+    persistentVolumeClaim:
+      claimName: {{ .Spec.Volume.PvcName }}
+  {{- else }}
+    emptyDir: {}
+  {{- end }}
+{{- if .Spec.Volumes }}
+{{ toYaml .Spec.Volumes | indent 2 }}
+{{- end }}
+  {{- if .Spec.Metric.Enable }}
+  - name: log
+    emptyDir: {}
+  {{- end }}

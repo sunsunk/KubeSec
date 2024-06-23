@@ -1,0 +1,133 @@
+[build-system]
+# Dependabot cannot do `build-system.requires` (dependabot/dependabot-core#8465)
+# workaround to get reproducibility and auto-updates:
+#   PIP_CONSTRAINT=requirements/build.txt python3 -m build ...
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tuf"
+description = "A secure updater framework for Python"
+readme = "README.md"
+license = { text = "MIT OR Apache-2.0" }
+requires-python = ">=3.8"
+authors = [
+  { email = "theupdateframework@googlegroups.com" },
+]
+keywords = [
+  "authentication",
+  "compromise",
+  "key",
+  "revocation",
+  "secure",
+  "update",
+  "updater",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Security",
+  "Topic :: Software Development",
+]
+dependencies = [
+  "requests>=2.19.1",
+  "securesystemslib>=0.26.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://theupdateframework.readthedocs.io/en/stable/"
+Homepage = "https://www.updateframework.com"
+Issues = "https://github.com/theupdateframework/python-tuf/issues"
+Source = "https://github.com/theupdateframework/python-tuf"
+
+[tool.hatch.version]
+path = "tuf/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/docs",
+  "/examples",
+  "/tests",
+  "/tuf",
+  "/requirements",
+  "/tox.ini",
+  "/setup.py",
+]
+
+[tool.hatch.build.targets.wheel]
+# The testing phase changes the current working directory to `tests` but the test scripts import
+# from `tests` so the root directory must be added to Python's path for editable installations
+dev-mode-dirs = ["."]
+
+# Ruff section
+# Read more here: https://docs.astral.sh/ruff/linter/#rule-selection
+[tool.ruff]
+line-length=80
+
+[tool.ruff.lint]
+select = [
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
+    "D",   # pydocstyle
+    "DTZ", # flake8-datetimez
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PL",  # pylint
+    "RET", # flake8-return
+    "S",   # flake8-bandit
+    "SIM", # flake8-simplify
+    "W",   # pycodestyle-warning
+] 
+ignore = ["D400","D415","D213","D205","D202","D107","D407","D413","D212","D104","D406","D105","D411","D401","D200","D203", "PLR0913", "PLR2004"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "D",    # pydocstyle: no docstrings required for tests
+    "E501", # line-too-long: embedded test data in "fmt: off" blocks is ok
+    "S",    # bandit: Not running bandit on tests
+]
+"examples/*/*" = [
+    "D", # pydocstyle: no docstrings required for examples
+    "S"  # bandit: Not running bandit on examples
+]
+"verify_release" = [
+    "S603", # bandit: this flags all uses of subprocess.run as vulnerable
+]
+
+# mypy section
+# Read more here: https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+[tool.mypy]
+warn_unused_configs = "True"
+warn_redundant_casts = "True"
+warn_unused_ignores = "True"
+warn_unreachable = "True"
+strict_equality = "True"
+disallow_untyped_defs = "True"
+disallow_untyped_calls = "True"
+show_error_codes = "True"
+disable_error_code = ["attr-defined"]
+
+[[tool.mypy.overrides]]
+module = [
+  "requests.*",
+  "securesystemslib.*",
+]
+ignore_missing_imports = "True"

@@ -1,0 +1,26 @@
+[
+  {
+    "headers": {
+      ":authority": "localhost:30081",
+      ":method": "GET",
+      ":path": "/",
+      "user-agent": "dummy",
+      "x-forwarded-for": "",
+      "test-global-filter-trigger": "header_value"
+    },
+    "name": "test global filter header trigger",
+    "response": {
+      "action": "pass",
+      "gf_triggers": [
+        {
+          "section": "headers",
+          "value": "header_value",
+          "trigger_name": "Filter header",
+          "action": "skip",
+          "name": "test-global-filter-trigger",
+          "trigger_id": "filter-header"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,93 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "Findings": [
+            {
+                "SchemaVersion": "2018-10-08",
+                "Id": "us-west-2/644160558196/31fd4463a46f8c8ab907befaf652cc86/58bb07b7c746e8a8cb4004b6c3e832d7",
+                "ProductArn": "arn:aws:securityhub:us-west-2::product/cloud-custodian/cloud-custodian",
+                "ProductName": "Cloud Custodian",
+                "CompanyName": "Cloud Custodian",
+                "Region": "us-west-2",
+                "GeneratorId": "rds-finding",
+                "AwsAccountId": "644160558196",
+                "Types": [
+                    "Software and Configuration Checks/AWS Security Best Practices"
+                ],
+                "CreatedAt": "2023-01-25T22:16:08.677783+00:00",
+                "UpdatedAt": "2023-01-25T22:16:08.677783+00:00",
+                "Severity": {
+                    "Product": 10,
+                    "Label": "INFORMATIONAL",
+                    "Normalized": 10
+                },
+                "Title": "rds-finding",
+                "Description": "rds-finding",
+                "ProductFields": {
+                    "resource": "rds",
+                    "ProviderName": "CloudCustodian",
+                    "ProviderVersion": "0.9.22",
+                    "aws/securityhub/FindingId": "arn:aws:securityhub:us-west-2::product/cloud-custodian/cloud-custodian/us-west-2/644160558196/31fd4463a46f8c8ab907befaf652cc86/58bb07b7c746e8a8cb4004b6c3e832d7",
+                    "aws/securityhub/ProductName": "Cloud Custodian",
+                    "aws/securityhub/CompanyName": "Cloud Custodian"
+                },
+                "Resources": [
+                    {
+                        "Type": "AwsRdsDbInstance",
+                        "Id": "arn:aws:rds:us-west-2:644160558196:db:test-instance-3",
+                        "Region": "us-west-2",
+                        "Details": {
+                            "AwsRdsDbInstance": {
+                                "CACertificateIdentifier": "rds-ca-2019",
+                                "DBClusterIdentifier": "test",
+                                "DBInstanceIdentifier": "test-instance-3",
+                                "DBInstanceClass": "db.m5d.xlarge",
+                                "DbiResourceId": "db-EH6SVXMILRMDTBVY4GNOOI3OL4",
+                                "Engine": "postgres",
+                                "EngineVersion": "13.7",
+                                "KmsKeyId": "arn:aws:kms:us-west-2:644160558196:key/31e94e00-358a-4f53-8a0c-48ae90c8cc23",
+                                "StorageEncrypted": true,
+                                "VpcSecurityGroups": [
+                                    {
+                                        "VpcSecurityGroupId": "sg-0e255aed9188d1fba",
+                                        "Status": "active"
+                                    }
+                                ],
+                                "MasterUsername": "postgres",
+                                "AllocatedStorage": 400,
+                                "PreferredBackupWindow": "11:55-12:25",
+                                "BackupRetentionPeriod": 7,
+                                "AvailabilityZone": "us-west-2b",
+                                "PreferredMaintenanceWindow": "tue:07:49-tue:08:19",
+                                "LicenseModel": "postgresql-license",
+                                "Iops": 3000,
+                                "OptionGroupMemberships": [
+                                    {
+                                        "OptionGroupName": "default:postgres-13",
+                                        "Status": "in-sync"
+                                    }
+                                ],
+                                "StorageType": "io1",
+                                "PromotionTier": 1
+                            }
+                        }
+                    }
+                ],
+                "WorkflowState": "NEW",
+                "Workflow": {
+                    "Status": "NEW"
+                },
+                "RecordState": "ACTIVE",
+                "FindingProviderFields": {
+                    "Severity": {
+                        "Label": "INFORMATIONAL"
+                    },
+                    "Types": [
+                        "Software and Configuration Checks/AWS Security Best Practices"
+                    ]
+                }
+            }
+        ]
+    }
+}

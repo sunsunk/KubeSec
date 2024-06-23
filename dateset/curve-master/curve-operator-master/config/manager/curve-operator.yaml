@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: curve-operator
+  name: curve
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: curve-operator
+  namespace: curve
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curve-operator
+  namespace: curve
+  labels:
+    control-plane: curve-operator
+    curve: operator
+spec:
+  selector:
+    matchLabels:
+      control-plane: curve-operator
+      curve: operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: curve-operator
+        curve: operator
+    spec:
+      containers:
+      - command:
+        - ./curve-operator
+        args:
+        - --enable-leader-election=true
+        image: curve2operator/curve-operator:v1.0.0
+        name: curve-operator
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+      serviceAccountName: curve-operator
+      terminationGracePeriodSeconds: 10

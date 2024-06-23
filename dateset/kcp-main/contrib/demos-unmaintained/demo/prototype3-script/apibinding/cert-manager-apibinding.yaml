@@ -1,0 +1,9 @@
+apiVersion: apis.kcp.io/v1alpha1
+kind: APIBinding
+metadata:
+  name: cert-manager
+spec:
+  reference:
+    workspace:
+      path: root:cert-manager-service
+      exportName: cert-manager-stable

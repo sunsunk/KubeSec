@@ -1,0 +1,6 @@
+use foo4;
+
+match event of
+  case {} => "snot #{foo4::SNOT}"
+  case _ => "ko"
+end;

@@ -1,0 +1,52 @@
+[package]
+name = "wasmcloud-tracing"
+version = "0.2.0"
+description = "wasmCloud tracing functionality"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = []
+otel = [
+    "opentelemetry",
+    "opentelemetry_sdk",
+    "opentelemetry-appender-tracing",
+    "tracing-opentelemetry",
+    "opentelemetry-otlp",
+]
+
+[dependencies]
+anyhow = { workspace = true }
+heck = { workspace = true }
+once_cell = { workspace = true }
+opentelemetry = { workspace = true, optional = true }
+opentelemetry_sdk = { workspace = true, optional = true, features = [
+    "logs",
+    "metrics",
+    "trace",
+    "rt-tokio",
+] }
+opentelemetry-appender-tracing = { workspace = true, optional = true }
+opentelemetry-otlp = { workspace = true, features = [
+    "grpc-tonic",
+    "http-proto",
+    "logs",
+    "trace",
+    "metrics",
+    "reqwest-client",
+], optional = true }
+serde = { workspace = true, features = ["derive"] }
+tracing = { workspace = true, features = ["log"] }
+tracing-futures = { workspace = true, features = ["default"] }
+tracing-opentelemetry = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, features = [
+    "ansi",
+    "env-filter",
+    "fmt",
+    "json",
+] }
+wasmcloud-core = { workspace = true, features = ["otel"] }

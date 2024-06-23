@@ -1,0 +1,53 @@
+---
+ 
+global:
+  measurements:
+  - name: podLatency
+
+indexers:
+  - type: opensearch
+    esServers: ["dynamic_parameters"]
+    defaultIndex: dynamic_parameters
+  - type: local
+    metricsDirectory: dynamic_parameters
+
+jobs:
+  - name: not-namespaced
+    jobType: create
+    jobIterations: dynamic_parameters
+    qps: dynamic_parameters
+    burst: 15
+    namespacedIterations: false
+    cleanup: true
+    namespace: not-namespaced
+    podWait: true
+    waitWhenFinished: false
+    verifyObjects: true
+    errorOnVerify: true
+    preLoadImages: false
+    maxWaitTimeout: 2m
+    objects:
+    
+    - objectTemplate: objectTemplates/deployment.yml
+      replicas: 1
+      inputVars:
+        containerImage: registry.k8s.io/pause:3.1
+        wait: true
+    
+     
+  - name: delete-job
+    jobType: delete
+    waitForDeletion: true
+    qps: 10
+    burst: 20
+    jobPause: 5s
+    objects:
+
+    - kind: Deployment
+      apiVersion: apps/v1
+
+    - kind: Namespace
+
+---
+
+---

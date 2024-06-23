@@ -1,0 +1,168 @@
+# Source: carina-csi-driver/templates/csi-controller.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: csi-carina-controller
+  namespace: default
+  labels:
+    class: carina
+    app: csi-carina-controller
+    release:  "my-release"
+    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "carina-csi-driver"
+    app.kubernetes.io/version: "0.11.0"
+    helm.sh/chart: "carina-csi-driver-v0.11.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csi-carina-controller
+  template:
+    metadata:
+      labels:
+        class: carina
+        app: csi-carina-controller
+        release:  "my-release"
+        app.kubernetes.io/instance: "my-release"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/name: "carina-csi-driver"
+        app.kubernetes.io/version: "0.11.0"
+        helm.sh/chart: "carina-csi-driver-v0.11.0"
+    spec:
+      hostNetwork: false
+      serviceAccountName: carina-csi-controller
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/controlplane
+          operator: Exists      
+      containers:
+        - name: csi-provisioner
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/csi-provisioner:v2.2.2"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--feature-gates=Topology=true"
+            - "--csi-address=$(ADDRESS)"
+            - "--v=5"
+            - "--timeout=15s"
+            - "--leader-election"
+            - "--worker-threads=40"
+            - "--extra-create-metadata=true"
+            - "--strict-topology=true"
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+        - name: csi-resizer
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/csi-resizer:v1.5.0"
+          args:
+            - "-csi-address=$(ADDRESS)"
+            - "-v=5"
+            - "-leader-election"
+            - "--retry-interval-start=500ms"
+            - '-handle-volume-inuse-error=false'
+            - "--timeout=150s"
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi             
+        - name: liveness-probe
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/livenessprobe:v2.7.0"
+          args:
+            - --csi-address=$(ADDRESS)
+            - --probe-timeout=3s
+            - --health-port=29602
+            - --v=5
+          env:
+            - name: ADDRESS
+              value: unix:///csi/csi-provisioner.sock  
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi          
+        - name: csi-carina-controller
+          image: "registry.cn-hangzhou.aliyuncs.com/carina/carina:v0.11.0"
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+          command: ["carina-controller"]    
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--cert-dir=/certs"
+            - "--metrics-addr=:8080"
+            - "--webhook-addr=:8443"
+          ports:
+            - containerPort: 8080
+              name: metrics
+            - containerPort: 8443
+              name: webhook  
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ADDRESS
+              value: /csi/csi-provisioner.sock
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+              mountPropagation: Bidirectional
+            - name: config
+              mountPath: /etc/carina/  
+            - name: certs
+              mountPath: /certs       
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 300m
+              memory: 64Mi
+      volumes:
+        - name: socket-dir
+          emptyDir: {
+            medium: "Memory"
+          }
+        - name: config
+          configMap:
+            name: my-release-csi-config
+        - name: certs
+          secret:
+            secretName: my-release-apiserver-cert

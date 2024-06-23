@@ -1,0 +1,12 @@
+auth:
+  basicAuth:
+    enableAuthentication: false
+  anonymousAuth: true
+  permissionGroupMapping:
+    submit_any_jobs: ["everyone"]
+    create_queue: ["everyone"]
+    delete_queue: ["everyone"]
+    cancel_any_jobs: ["everyone"]
+    reprioritize_any_jobs: ["everyone"]
+    watch_all_events: ["everyone"]
+    execute_jobs: ["everyone"]

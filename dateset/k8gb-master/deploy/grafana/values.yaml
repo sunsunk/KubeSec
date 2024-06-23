@@ -1,0 +1,50 @@
+adminUser: admin
+adminPassword: admin # don't use in production (1st login to web ui will ask for the password change)
+service:
+  nodePort: 30030 # allowed port range between 30000 and 32768
+  targetPort: 3000
+  port: 3000
+  type: NodePort
+sidecar:
+  dashboards:
+    enabled: true
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://k3d-test-gslb1-agent-0:30090
+      access: proxy
+      isDefault: true
+    - name: Prometheus-cluster1
+      type: prometheus
+      url: http://localhost:9080
+      access: direct
+      isDefault: false
+    - name: Prometheus-cluster2
+      type: prometheus
+      url: http://localhost:9081
+      access: direct
+      isDefault: false
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards
+dashboards:
+  default:
+    k8s-node-exporter-full:
+      # Node Exporter Full https://grafana.com/grafana/dashboards/1860
+      url: https://grafana.com/api/dashboards/1860/revisions/23/download
+rbac:
+  pspEnabled: false
+testFramework:
+  enabled: false

@@ -1,0 +1,20 @@
+nav:
+  - What is cdk8s?: index.md
+  - Getting started: get-started
+  - basics
+  - cdk8s+: plus
+  - CLI: cli
+  - API Reference: reference
+  - examples
+  - ecosystem-interoperability.md
+  - migrating-from-1.x.md
+  - Support:
+      - Issues: https://github.com/cdk8s-team/cdk8s/issues/
+      - Report a new issue: https://github.com/cdk8s-team/cdk8s/issues/new/choose
+      - Stack overflow: https://stackoverflow.com/questions/tagged/cdk8s
+      - Slack: https://cdk.dev
+      - Mailing list: https://groups.google.com/forum/#!forum/cdk8s
+  - CHANGELOG.md
+  - ROADMAP.md
+  - Contribution guide: CONTRIBUTING.md
+  - Media: media.md

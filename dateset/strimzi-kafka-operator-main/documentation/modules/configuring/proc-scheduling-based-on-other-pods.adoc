@@ -1,0 +1,52 @@
+// Module included in the following assemblies:
+//
+// assembly-scheduling.adoc
+
+[id='configuring-pod-anti-affinity-in-kafka-components-{context}']
+= Configuring pod anti-affinity in Kafka components
+
+Pod anti-affinity configuration helps with the stability and performance of Kafka brokers. By using `podAntiAffinity`, Kubernetes will not schedule Kafka brokers on the same nodes as other workloads. 
+Typically, you want to avoid Kafka running on the same worker node as other network or storage intensive applications such as databases, storage or other messaging platforms.
+
+.Prerequisites
+
+* A Kubernetes cluster
+* A running Cluster Operator
+
+.Procedure
+
+. Edit the `affinity` property in the resource specifying the cluster deployment.
+Use labels to specify the pods which should not be scheduled on the same nodes.
+The `topologyKey` should be set to `kubernetes.io/hostname` to specify that the selected pods should not be scheduled on nodes with the same hostname.
+For example:
++
+[source,yaml,subs=attributes+]
+----
+apiVersion: {KafkaApiVersion}
+kind: Kafka
+spec:
+  kafka:
+    # ...
+    template:
+      pod:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: application
+                      operator: In
+                      values:
+                        - postgresql
+                        - mongodb
+                topologyKey: "kubernetes.io/hostname"
+    # ...
+  zookeeper:
+    # ...
+----
+
+. Create or update the resource.
++
+This can be done using `kubectl apply`:
+[source,shell,subs=+quotes]
+kubectl apply -f _<kafka_configuration_file>_

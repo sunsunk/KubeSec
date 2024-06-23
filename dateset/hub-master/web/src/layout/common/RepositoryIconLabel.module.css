@@ -1,0 +1,24 @@
+.btn {
+  line-height: normal !important;
+}
+
+.badge {
+  font-size: 75%;
+  text-transform: none;
+  height: 19px;
+}
+
+.bg {
+  background-color: var(--badge-bg);
+  border-color: var(--gray) !important;
+}
+
+.icon {
+  height: 12px;
+  width: 12px;
+  top: -2px;
+}
+
+.text {
+  margin-top: -1px;
+}

@@ -1,0 +1,94 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{- $recoverConfig := getRecoverConfig }}
+{{- $failoverConfig := $recoverConfig.FailoverConfig }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $recoverConfig.Name }}
+  namespace: {{ $failoverConfig.Namespace }}
+spec:
+  parallelism: {{ $failoverConfig.Replicas }}
+  ttlSecondsAfterFinished: 80
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Name }}
+        {{- if $failoverConfig.WithScheduler }}
+        scheduling.k8s.v6d.io/vineyardd-namespace: {{ $failoverConfig.VineyarddNamespace }}
+        scheduling.k8s.v6d.io/vineyardd: {{ $failoverConfig.VineyarddName }}
+        scheduling.k8s.v6d.io/job: {{ $recoverConfig.Name }}
+        {{- end }}
+    spec:
+      {{- if $failoverConfig.WithScheduler }}
+      schedulerName: vineyard-scheduler
+      {{- end }}
+      containers:
+      - name: engine
+        image: ghcr.io/v6d-io/v6d/recover-job
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: RECOVER_PATH
+          value: {{ $failoverConfig.Path }}
+        - name: ENDPOINT
+          value: {{ $failoverConfig.Endpoint  }}
+        - name: SELECTOR
+          value: {{ .Name }}
+        - name: ALLINSTANCES
+          value: "{{ $failoverConfig.AllInstances }}"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - mountPath: /var/run
+          name: vineyard-sock
+        - mountPath: {{  $failoverConfig.Path }}
+          name: recover-path
+      volumes:
+      - name: vineyard-sock
+        hostPath:
+          # The path should be changed to the path provided by users.
+          path: {{ $failoverConfig.VineyardSockPath }}
+      - name: recover-path
+        persistentVolumeClaim:
+          claimName: {{ $failoverConfig.PVCName }}
+      restartPolicy: Never
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                     - {{ $recoverConfig.Name }}
+              topologyKey: "kubernetes.io/hostname"
+        {{- if not $failoverConfig.WithScheduler }}
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ $failoverConfig.VineyarddNamespace -}} - {{- $failoverConfig.VineyarddName }}
+              topologyKey: "kubernetes.io/hostname"
+        {{- end }}

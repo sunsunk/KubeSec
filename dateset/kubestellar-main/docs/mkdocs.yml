@@ -1,0 +1,211 @@
+site_name: KubeStellar
+repo_url: https://github.com/kubestellar/kubestellar
+site_url: https://docs.kubestellar.io/
+
+repo_short_name: kubestellar/kubestellar
+repo_default_file_path: kubestellar
+helm_repo_short_name: kubestellar/helm
+helm_repo_default_file_path: helm
+brew_repo_short_name: kubestellar/homebrew-kubestellar
+brew_repo_default_file_path: homebrew-kubestellar
+docs_url: https://docs.kubestellar.io
+repo_raw_url: https://raw.githubusercontent.com/kubestellar/kubestellar
+edit_uri: edit/main/docs/content
+ks_branch: 'main'
+ks_tag: 'latest'
+
+ks_stable_tag: 'v0.9.0'
+
+ks_current_branch: 'release-0.15'
+ks_current_tag: 'v0.15.0'
+ks_current_helm_version: '8'
+
+ks_next_branch: 'release-0.16'
+ks_next_tag: 'v0.16.0'
+ks_next_helm_version: '9'
+
+ks_kind_port_num: '1119'
+
+# Site content
+docs_dir: 'content'
+# Where to generate
+site_dir: 'generated'
+
+nav:
+  - Welcome:
+      - Landing: index.md 
+  - Overview:
+      - Readme: readme.md
+      - Architecture: direct/architecture.md
+      - Release-notes: direct/release-notes.md
+  - Getting Started: 
+          - Pre-reqs: direct/pre-reqs.md
+          - Setting up KubeStellar:
+              - Using existing hosting cluster: direct/hosting-cluster.md
+              - KubeStellar on KIND: direct/ks-on-kind.md
+              - KubeStellar on K3D: direct/deploy-on-k3d.md
+              - KubeStellar on OCP: direct/ks-on-ocp.md
+          - Examples: direct/examples.md
+  - Contributing: 
+      - Overview of contributing: direct/contributor.md
+      - Packaging: direct/packaging.md
+      - Release Process: direct/release.md
+      - Guidelines: Contribution guidelines/CONTRIBUTING.md
+      - Code of Conduct: Contribution guidelines/coc.md
+      - License: Contribution guidelines/LICENSE.md
+      - Governance: Contribution guidelines/governance.md
+      - Onboarding: Contribution guidelines/onboarding.md
+      - Website: Contribution guidelines/operations/document-management.md
+      - Security: 
+          - Policy: Contribution guidelines/security/security.md
+          - Contacts: Contribution guidelines/security/security_contacts.md
+  - Community: 
+    - Get Involved: Community/_index.md
+    - Contact Us:
+        - Mailing List: https://kubestellar.io/join_us
+        - Community Meeting Agenda (join mailing list first): https://kubestellar.io/agenda
+        - Slack: https://kubestellar.io/slack
+        - Medium Blog: https://kubestellar.io/blog 
+        - YouTube Channel: https://kubestellar.io/tv
+        - LinkedIn: https://kubestellar.io/linkedin
+        - Reddit: https://www.reddit.com/r/kubestellar/
+        - Google Drive: https://drive.google.com/drive/u/1/folders/1p68MwkX0sYdTvtup0DcnAEsnXElobFLS
+    - Partners:
+        - ArgoCD: Community/partners/argocd.md
+        - Turbonomic: Community/partners/turbonomic.md
+        - MVI: Community/partners/mvi.md
+        - FluxCD: Community/partners/fluxcd.md
+        - OpenZiti: Community/partners/openziti.md
+        - Kyverno: Community/partners/kyverno.md
+  - 'Blog': https://medium.com/@kubestellar/list/predefined:e785a0675051:READING_LIST" target="_blank
+  # # - Auto generated:
+  #   - ... | auto-generated/*/*.md
+
+theme:
+  font:
+    text: 'SapceMono'
+    code: 'Roboto Mono'
+  name: material
+  language: en
+  # Common files such as images, stylesheets, theme overrides
+  custom_dir: 'overrides'
+  features:
+    - content.action.edit
+    - content.action.view
+    # Enable navigation section index pages, so we don't see Concepts > Concepts
+    - navigation.indexes
+    - navigation.tabs
+    # - navigation.tabs.sticky
+    # - navigation.expand
+    - navigation.path
+    - navigation.footer
+    # - navigation.tracking
+    # Enable a copy button in code blocks
+    - content.code.copy
+    # Enable annotations on specific lines in code blocks
+    - content.code.annotate
+  logo: logo.png
+  favicon: favicons/favicon.ico
+
+extra:
+  # social:
+  #   - icon: fontawesome/brands/github
+  #     link: 'https://github.com/kubestellar/kubestellar'
+  #     name: KubeStellar on GitHub
+  #   - icon: fontawesome/brands/linkedin
+  #     link: 'https://www.linkedin.com/feed/hashtag/?keywords=kubestellar'
+  #     name: KubeStellar on LinkedIn
+  #   - icon: fontawesome/brands/medium
+  #     link: 'https://medium.com/@kubestellar/list/predefined:e785a0675051:READING_LIST'
+  #   - icon: fontawesome/brands/YouTube
+  #     link: 'https://www.youtube.com/@kubestellar'
+  #     name: KubeStellar on YouTube
+  #   - icon: fontawesome/brands/slack
+  #     link: 'https://kubernetes.slack.com/archives/C058SUSL5AA'
+  #     name: KubeStellar on Slack
+  #   - icon: fontawesome/solid/paper-plane
+  #     link: mailto:kubestellar-dev@google.groups.com
+  #     name: Email us
+  version:
+    default: stable
+    # Enable mike for multi-version selection
+    provider: mike
+  analytics:
+    provider: google
+    property: G-SR5TD1CXY7
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="https://github.com/kubestellar/kubestellar/issues/new?assignees=&labels=kind%2Fbug&projects=&template=bug_report.yaml&title=bug%3A+" target="_blank" rel="noopener">feedback form</a>.
+
+plugins:
+  # https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin
+  # Greater control over how navigation links are shown
+  - awesome-pages
+  # Docs site search
+  - search
+  - mermaid2:
+      version: 10.0.2
+  # Use Jinja macros in .md files
+  - open-in-new-tab
+  - include-markdown
+  - macros:
+      include_dir: 'overrides'
+      module_name: 'main'
+  # Configure multiple language support
+  - i18n:
+      default_language: en
+      languages:
+        en:
+          name: English
+  # - redirects:
+  #       redirect_maps:
+  #           'docs': 'docs/Coding%20Milestones/PoC2023q1/outline/'
+  #           'old/file.md': 'new/file.md'
+  #           'some_file.md': 'http://external.url.com/foobar'
+
+markdown_extensions:
+  - markdown_captions
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - attr_list
+  - md_in_html
+  - toc:               # Builds a table of contents 
+      permalink: "#"
+  # Code block highlighting
+  - pymdownx.highlight:
+      # Allows linking directly to specific lines in code blocks
+      anchor_linenums: true
+      pygments_lang_class: true
+  # Inline code block highlighting
+  - pymdownx.inlinehilite
+  # Lets you embed content from another file
+  - pymdownx.snippets
+  # Arbitrary nesting of code/content blocks inside each other
+  - pymdownx.tabbed:
+      alternate_style: true 
+  # Enable note/warning/etc. callouts
+  - admonition
+
+# Our CSS
+extra_css:
+  - stylesheets/kubestellar.css
+
+# Live reload if any of these change when running 'mkdocs serve'
+watch:
+  - mkdocs.yml
+  - content
+  - overrides

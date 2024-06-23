@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ReviewList should render 1`] = `
+.emotion-0 {
+  margin: 20px;
+  margin-bottom: 0px;
+}
+
+<div
+  class="emotion-0 emotion-1"
+  data-testid="review-list"
+/>
+`;
+
+exports[`ReviewList should render delegated role 1`] = `
+.emotion-0 {
+  margin: 20px;
+  margin-bottom: 0px;
+}
+
+<div
+  class="emotion-0 emotion-1"
+  data-testid="review-list"
+/>
+`;

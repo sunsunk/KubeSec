@@ -1,0 +1,29 @@
+name: ""
+
+owner:
+  enabled: false
+  name: ""
+  kind: ""
+  uid: ""
+  apiVersion: ""
+  blockOwnerDeletion: false
+  controller: false
+
+dataProcess:
+  targetDataset: ""
+  labels: {}
+  annotations: {}
+  serviceAccountName: ""
+  scriptProcessor:
+    image: ""
+    imagePullPolicy: IfNotPresent
+    restartPolicy: Never
+    command: []
+    args: []
+    source: ""
+    envs: []
+    volumes: []
+    volumeMounts: []
+    resources: {}
+  jobProcessor:
+    podSpec: {}

@@ -1,0 +1,57 @@
+readme: |
+
+  =====================
+  Appending Array Items
+  =====================
+
+  In ytt v0.32.0+, array items without a matching annotation
+  are appended to the end of the list. This operation ignores
+  other overlay annotations and always inserts after the last
+  item.
+
+  All other array item operations must specify how to match
+  as they are not indexed by keys. Do so using the same
+  `#@overlay/match by=...` annotation used on documents.
+
+  So, all of the following action annotations must be
+  paired with a matching annotation (`@overlay/match`)
+
+  - `@overlay/merge`
+  - `@overlay/replace`
+  - `@overlay/remove`
+  - `@overlay/insert`
+
+
+  ------------------------
+  Append vs. Ensure Exists
+  ------------------------
+
+  `append-https-port.yml` showcases how to add new array
+  items.
+
+  Explore:
+  1. Summarize what this overlay does in a sentence.
+
+  2. Examine the output of `config/service.yml`; what's
+     wrong there? (hint: ports must be unique)
+
+  3. Just above line 8 in `append-https-port.yml` _add_ the following:
+     ```
+     #@overlay/remove
+     #@overlay/match by="name", missing_ok=True
+     - name: https
+     ```
+
+     How does `config/service.yml` look?
+
+  4. Does the same possibility exist for the `Deployment`?
+
+
+  ................
+  Thinking in ytt:
+
+  "Overlays apply not to collections, but items:
+
+             not docsets, documents;
+                          not maps, map items;
+                                    not arrays, array items."

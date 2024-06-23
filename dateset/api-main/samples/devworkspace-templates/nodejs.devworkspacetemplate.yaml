@@ -1,0 +1,56 @@
+kind: "DevWorkspaceTemplate"
+apiVersion: "workspace.devfile.io/v1alpha2"
+metadata:
+  name: "nodejs-stack"
+spec:
+  projects:
+    - name: project   
+      git:
+        remotes:
+          origin: "https://github.com/che-samples/web-nodejs-sample.git"
+  components:
+    - name: editor
+      plugin:
+        id: eclipse/che-theia/7.1.0
+    - name: terminal
+      plugin:
+        id: eclipse/che-machine-exec-plugin/7.1.0
+    - name: "typescript-plugin"
+      plugin:
+        id: che-incubator/typescript/1.30.2
+        components:
+          - name: random-name
+            container:
+              memoryLimit: 512Mi
+    - name: nodejs
+      container:
+        image: quay.io/eclipse/che-nodejs10-ubi:nightly
+        memoryLimit: 512Mi
+        endpoints:
+          - name: nodejs
+            protocol: http
+            targetPort: 3000
+        mountSources: true
+  commands:
+    - id: download-dependencies
+      exec:
+        component: nodejs
+        commandLine: npm install
+        workingDir: ${PROJECTS_ROOT}/project/app
+    - id: run-the-app
+      exec:
+        component: nodejs
+        commandLine: nodemon app.js
+        workingDir: ${PROJECTS_ROOT}/project/app
+    - id: run-the-app-debugging-enabled
+      exec:
+        component: nodejs
+        commandLine: nodemon --inspect app.js
+        workingDir: ${PROJECTS_ROOT}/project/app
+    - id: stop-the-app
+      exec:
+        component: nodejs
+        commandLine: >-
+            node_server_pids=$(pgrep -fx '.*nodemon (--inspect )?app.js' | tr "\\n" " ") &&
+            echo "Stopping node server with PIDs: ${node_server_pids}" && 
+            kill -15 ${node_server_pids} &>/dev/null && echo 'Done.'

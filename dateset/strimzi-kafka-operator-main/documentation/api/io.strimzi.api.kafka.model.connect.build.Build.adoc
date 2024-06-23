@@ -1,0 +1,270 @@
+Configures additional connectors for Kafka Connect deployments.
+
+= `output`
+
+To build new container images with additional connector plugins, Strimzi requires a container registry where the images can be pushed to, stored, and pulled from.
+Strimzi does not run its own container registry, so a registry must be provided.
+Strimzi supports private container registries as well as public registries such as link:https://quay.io/[Quay^] or link:https://hub.docker.com//[Docker Hub^].
+The container registry is configured in the `.spec.build.output` section of the `KafkaConnect` custom resource.
+The `output` configuration, which is required, supports two types: `docker` and `imagestream`.
+
+.Using Docker registry
+
+To use a Docker registry, you have to specify the `type` as `docker`, and the `image` field with the full name of the new container image.
+The full name must include:
+
+* The address of the registry
+* Port number (if listening on a non-standard port)
+* The tag of the new container image
+
+Example valid container image names:
+
+* `docker.io/my-org/my-image/my-tag`
+* `quay.io/my-org/my-image/my-tag`
+* `image-registry.image-registry.svc:5000/myproject/kafka-connect-build:latest`
+
+Each Kafka Connect deployment must use a separate image, which can mean different tags at the most basic level.
+
+If the registry requires authentication, use the `pushSecret` to set a name of the Secret with the registry credentials.
+For the Secret, use the `kubernetes.io/dockerconfigjson` type and a `.dockerconfigjson` file to contain the Docker credentials.
+For more information on pulling an image from a private registry, see {K8sDockerSecret}.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example `output` configuration
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      type: docker # <1>
+      image: my-registry.io/my-org/my-connect-cluster:latest # <2>
+      pushSecret: my-registry-credentials # <3>
+  #...
+----
+<1> (Required) Type of output used by Strimzi.
+<2> (Required) Full name of the image used, including the repository and tag.
+<3> (Optional) Name of the secret with the container registry credentials.
+
+.Using OpenShift ImageStream
+
+Instead of Docker, you can use OpenShift ImageStream to store a new container image.
+The ImageStream has to be created manually before deploying Kafka Connect.
+To use ImageStream, set the `type` to `imagestream`, and use the `image` property to specify the name of the ImageStream and the tag used.
+For example, `my-connect-image-stream:latest`.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example `output` configuration
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      type: imagestream # <1>
+      image: my-connect-build:latest # <2>
+  #...
+----
+<1> (Required) Type of output used by Strimzi.
+<2> (Required) Name of the ImageStream and tag.
+
+= `plugins`
+
+Connector plugins are a set of files that define the implementation required to connect to certain types of external system.
+The connector plugins required for a container image must be configured using the `.spec.build.plugins` property of the `KafkaConnect` custom resource.
+Each connector plugin must have a name which is unique within the Kafka Connect deployment.
+Additionally, the plugin artifacts must be listed.
+These artifacts are downloaded by Strimzi, added to the new container image, and used in the Kafka Connect deployment.
+The connector plugin artifacts can also include additional components, such as (de)serializers.
+Each connector plugin is downloaded into a separate directory so that the different connectors and their dependencies are properly _sandboxed_.
+Each plugin must be configured with at least one `artifact`.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example `plugins` configuration with two connector plugins
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      #...
+    plugins: # <1>
+      - name: connector-1
+        artifacts:
+          - type: tgz
+            url: <url_to_download_connector_1_artifact>
+            sha512sum: <SHA-512_checksum_of_connector_1_artifact>
+      - name: connector-2
+        artifacts:
+          - type: jar
+            url: <url_to_download_connector_2_artifact>
+            sha512sum: <SHA-512_checksum_of_connector_2_artifact>
+  #...
+----
+<1> (Required) List of connector plugins and their artifacts.
+
+Strimzi supports the following types of artifacts:
+
+--
+* JAR files, which are downloaded and used directly
+* TGZ archives, which are downloaded and unpacked
+* ZIP archives, which are downloaded and unpacked
+* Maven artifacts, which uses Maven coordinates
+* Other artifacts, which are downloaded and used directly
+--
+
+IMPORTANT: Strimzi does not perform any security scanning of the downloaded artifacts.
+For security reasons, you should first verify the artifacts manually, and configure the checksum verification to make sure the same artifact is used in the automated build and in the Kafka Connect deployment.
+
+.Using JAR artifacts
+
+JAR artifacts represent a JAR file that is downloaded and added to a container image.
+To use a JAR artifacts, set the `type` property to `jar`, and specify the download location using the `url` property.
+
+Additionally, you can specify a SHA-512 checksum of the artifact.
+If specified, Strimzi will verify the checksum of the artifact while building the new container image.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example JAR artifact
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      #...
+    plugins:
+      - name: my-plugin
+        artifacts:
+          - type: jar # <1>
+            url: https://my-domain.tld/my-jar.jar # <2>
+            sha512sum: 589...ab4 # <3>
+          - type: jar
+            url: https://my-domain.tld/my-jar2.jar
+  #...
+----
+<1> (Required) Type of artifact.
+<2> (Required) URL from which the artifact is downloaded.
+<3> (Optional) SHA-512 checksum to verify the artifact.
+
+.Using TGZ artifacts
+
+TGZ artifacts are used to download TAR archives that have been compressed using Gzip compression.
+The TGZ artifact can contain the whole Kafka Connect connector, even when comprising multiple different files.
+The TGZ artifact is automatically downloaded and unpacked by Strimzi while building the new container image.
+To use TGZ artifacts, set the `type` property to `tgz`, and specify the download location using the `url` property.
+
+Additionally, you can specify a SHA-512 checksum of the artifact.
+If specified, Strimzi will verify the checksum before unpacking it and building the new container image.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example TGZ artifact
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      #...
+    plugins:
+      - name: my-plugin
+        artifacts:
+          - type: tgz # <1>
+            url: https://my-domain.tld/my-connector-archive.tgz # <2>
+            sha512sum: 158...jg10 # <3>
+  #...
+----
+<1> (Required) Type of artifact.
+<2> (Required) URL from which the archive is downloaded.
+<3> (Optional) SHA-512 checksum to verify the artifact.
+
+.Using ZIP artifacts
+
+ZIP artifacts are used to download ZIP compressed archives.
+Use ZIP artifacts in the same way as the TGZ artifacts described in the previous section.
+The only difference is you specify `type: zip` instead of  `type: tgz`.
+
+.Using Maven artifacts
+
+`maven` artifacts are used to specify connector plugin artifacts as Maven coordinates.
+The Maven coordinates identify plugin artifacts and dependencies so that they can be located and fetched from a Maven repository.
+
+NOTE: The Maven repository must be accessible for the connector build process to add the artifacts to the container image.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example Maven artifact
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      #...
+    plugins:
+      - name: my-plugin
+        artifacts:
+          - type: maven # <1>
+            repository: https://mvnrepository.com # <2>
+            group: <maven_group> # <3>
+            artifact: <maven_artifact> # <4>
+            version:  <maven_version_number> # <5>
+  #...
+----
+<1> (Required) Type of artifact.
+<2> (Optional) Maven repository to download the artifacts from. If you do not specify a repository, {MavenCentral} is used by default.
+<3> (Required) Maven group ID.
+<4> (Required) Maven artifact type.
+<5> (Required) Maven version number.
+
+.Using `other` artifacts
+
+`other` artifacts represent any kind of file that is downloaded and added to a container image.
+If you want to use a specific name for the artifact in the resulting container image, use the `fileName` field.
+If a file name is not specified, the file is named based on the URL hash.
+
+Additionally, you can specify a SHA-512 checksum of the artifact.
+If specified, Strimzi will verify the checksum of the artifact while building the new container image.
+
+[source,yaml,subs=attributes+,options="nowrap"]
+.Example `other` artifact
+----
+apiVersion: {KafkaConnectApiVersion}
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+spec:
+  #...
+  build:
+    output:
+      #...
+    plugins:
+      - name: my-plugin
+        artifacts:
+          - type: other  # <1>
+            url: https://my-domain.tld/my-other-file.ext  # <2>
+            sha512sum: 589...ab4  # <3>
+            fileName: name-the-file.ext  # <4>
+  #...
+----
+<1> (Required) Type of artifact.
+<2> (Required) URL from which the artifact is downloaded.
+<3> (Optional) SHA-512 checksum to verify the artifact.
+<4> (Optional) The name under which the file is stored in the resulting container image.

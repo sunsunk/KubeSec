@@ -1,0 +1,22 @@
+# Source: my-app/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-release
+  labels:
+    release: "my-release"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      release: "my-release"
+  template:
+    metadata:
+      annotations:
+        revision: "1"
+      labels:
+        release: "my-release"
+    spec:
+      containers:
+      - name: default
+        image: "php"

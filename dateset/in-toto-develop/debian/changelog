@@ -1,0 +1,101 @@
+in-toto (1.3.1-1) unstable; urgency=medium
+
+  * New upstream release includes among other things:
+    - ecdsa key support to the cli, and
+    - various docs and test improvements
+
+  * d/control:
+    - bump standards version to 4.6.2
+    - adopt upstream requirements changes
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Wed, 01 Feb 2023 12:32:45 +0100
+
+in-toto (1.2.0-1) unstable; urgency=medium
+
+  * New upstream releases include among other things:
+    - documentation and project metadata updates
+    - test and linter enhancements
+    - build on Python 3.7 through 3.10 and updated dependencies
+
+  * d/control:
+    - bump standards version to 4.6.0.1
+  * d/patches:
+    - adopt test patch upstream line offsets and minor changes
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Tue, 22 Feb 2022 09:42:10 +0100
+
+in-toto (1.0.1-1) unstable; urgency=medium
+
+  * New upstream release includes among other things:
+    - enhanced documentation,
+    - a new CI/CD test setup (GitHub Actions),
+    - updated tested dependencies,
+    - and it removes support for Python 3.5.
+
+  **NOTE**: this will be the final upstream release of in-toto that supports
+  Python 2.7.*
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Mon, 01 Mar 2021 20:13:58 +0100
+
+in-toto (1.0.0-3) unstable; urgency=medium
+
+  Misc Debian metadata changes:
+
+  * d/watch: add missing trailing newline
+  * d/control: specify upstream tracking branch for downstream-related changes
+  * d/upstream/: add basic metadata file
+  * d/copyright: add Upstream-Contact field and missing trailing newline
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Tue, 02 Feb 2021 12:52:12 +0200
+
+in-toto (1.0.0-2) unstable; urgency=medium
+
+  * Raise versioned build depends on python3-securesystemslib to >= 0.18.0.
+
+ -- Holger Levsen <holger@debian.org>  Fri, 22 Jan 2021 01:17:51 +0100
+
+in-toto (1.0.0-1) unstable; urgency=medium
+
+  * The 1.0.0 upstream release is above all a commitment to the maturity
+    of in-toto and the stability of its API. It also includes:
+    - new '-P/--password' (prompt) cli argument
+    - link command timeout setting
+    - enhanced documentation
+    - removal of 'util' module in favor of securesystemslib key interfaces
+
+  * Bump standards version and compat level in d/control
+  * Bump standard version in d/watch
+  * Adopt relevant upstream test changes in d/patches and add
+    "Forwarded: not-needed"-header (see patch description for rationale)
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Thu, 10 Dec 2020 14:01:34 +0200
+
+in-toto (0.5.0-1) unstable; urgency=medium
+
+  * New upstream release that includes i.a.:
+    - Removal of OpenPGP and subprocess interface
+      (transferred to python-securesystemslib)
+    - New command line arguments
+    - Improved code documentation
+
+  * Remove obsolete d/patches for issues fixed upstream
+  * Update d/rules
+    - Unpin python-securesystemslib dependency (Closes: #966972)
+    - Bump Standards-Version
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Thu, 13 Aug 2020 15:27:12 +0200
+
+in-toto (0.4.0-2) unstable; urgency=medium
+
+  * Add missing dependency to fix cli entry point loading.
+  * Pin securesystemslib minor version.
+  * Bump Standards-Version to 4.4.1 in d/control.
+  * Set Rules-Requires-Root: no in d/control.
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Tue, 15 Oct 2019 15:06:25 +0100
+
+in-toto (0.4.0-1) unstable; urgency=low
+
+  * Initial Debian release. (Closes: #934142)
+
+ -- Lukas Puehringer <lukas.puehringer@nyu.edu>  Wed, 11 Sep 2019 14:52:01 +0100

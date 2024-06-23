@@ -1,0 +1,18 @@
+.label {
+  font-size: 0.875rem;
+  line-height: 1rem;
+}
+
+.icon {
+  top: -1px;
+}
+
+.input,
+.input + label {
+  cursor: pointer;
+}
+
+.input[disabled] ~ .form-check-label,
+.input:disabled ~ .label {
+  color: var(--color-font);
+}

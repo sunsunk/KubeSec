@@ -1,0 +1,21 @@
+# Source: backstage/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-backstage-app
+  labels:
+    app.kubernetes.io/name: backstage-app
+    helm.sh/chart: backstage-0.1.1-alpha.12
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: app
+      protocol: TCP
+      name: app
+  selector:
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/instance: my-release

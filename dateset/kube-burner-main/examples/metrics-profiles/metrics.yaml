@@ -1,0 +1,101 @@
+# API server
+  metricName: API99thLatency
+
+  metricName: APIRequestRate
+
+  metricName: APIInflightRequests
+
+# Containers & pod metrics
+  metricName: podCPU
+
+  metricName: podMemory
+
+  metricName: containerDiskUsage
+
+# Kubelet & CRI-O metrics
+  metricName: kubeletCPU
+
+  metricName: kubeletMemory
+
+  metricName: crioCPU
+
+  metricName: crioMemory
+
+# Node metrics
+- query: sum(irate(node_cpu_seconds_total[2m])) by (mode,instance) > 0
+  metricName: nodeCPU
+
+- query: avg(node_memory_MemAvailable_bytes) by (instance)
+  metricName: nodeMemoryAvailable
+
+- query: avg(node_memory_Active_bytes) by (instance)
+  metricName: nodeMemoryActive
+
+- query: avg(node_memory_Cached_bytes) by (instance) + avg(node_memory_Buffers_bytes) by (instance)
+  metricName: nodeMemoryCached+nodeMemoryBuffers
+
+  metricName: rxNetworkBytes
+
+  metricName: txNetworkBytes
+
+  metricName: nodeDiskWrittenBytes
+
+  metricName: nodeDiskReadBytes
+
+- query: sum(rate(etcd_server_leader_changes_seen_total[2m]))
+  metricName: etcdLeaderChangesRate
+
+# Etcd metrics
+- query: etcd_server_is_leader > 0
+  metricName: etcdServerIsLeader
+
+- query: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[2m]))
+  metricName: 99thEtcdDiskBackendCommitDurationSeconds
+
+- query: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[2m]))
+  metricName: 99thEtcdDiskWalFsyncDurationSeconds
+
+- query: histogram_quantile(0.99, rate(etcd_network_peer_round_trip_time_seconds_bucket[5m]))
+  metricName: 99thEtcdRoundTripTimeSeconds
+
+- query: etcd_mvcc_db_total_size_in_bytes
+  metricName: etcdDBPhysicalSizeBytes
+
+- query: etcd_mvcc_db_total_size_in_use_in_bytes
+  metricName: etcdDBLogicalSizeBytes
+
+  metricName: etcdObjectCount
+
+- query: sum by (cluster_version)(etcd_cluster_version)
+  metricName: etcdVersion
+  instant: true
+
+# Cluster metrics
+- query: sum(kube_namespace_status_phase) by (phase) > 0
+  metricName: namespaceCount
+
+  metricName: podStatusCount
+
+  metricName: secretCount
+
+  metricName: deploymentCount
+
+  metricName: configmapCount
+
+  metricName: serviceCount
+
+  metricName: routeCount
+  instant: true
+
+- query: kube_node_role
+  metricName: nodeRoles
+  instant: true
+
+  metricName: nodeStatus
+
+  metricName: clusterVersion
+  instant: true
+
+---
+
+---

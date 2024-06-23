@@ -1,0 +1,55 @@
+## Dream is the umbrella operator that tests the creation of instances within an operator
+apiVersion: kudo.dev/v1beta1
+kind: Operator
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: dream
+---
+apiVersion: kudo.dev/v1beta1
+kind: OperatorVersion
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: dream-v1
+spec:
+  version: "1.0.0"
+  connectionString: ""
+  operator:
+    name: dream
+    kind: Operator
+  templates:
+    operator.yaml: |
+      apiVersion: kudo.dev/v1beta1
+      kind: Instance
+      metadata:
+        name: operator
+        labels:
+          kudo.dev/operator: test-operator
+      spec:
+        operatorVersion:
+          kind: OperatorVersion
+          name: test-operator-1.0
+          namespace: default
+        parameters:
+          REPLICAS: "{{ .Params.REPLICAS }}"
+          PARAM: "after"
+  tasks:
+    - name: operator
+      kind: Apply
+      spec:
+        resources:
+          - operator.yaml
+  parameters:
+    - name: REPLICAS
+      description: "Number of replicas"
+      default: "3"
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: dependencies
+          steps:
+            - name: operator
+              tasks:
+                - operator

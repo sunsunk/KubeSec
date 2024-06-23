@@ -1,0 +1,21 @@
+# Source: helloworld/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-release-helloworld
+  labels:
+    helm.sh/chart: helloworld-0.1.0
+    app.kubernetes.io/name: helloworld
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: helloworld
+    app.kubernetes.io/instance: my-release

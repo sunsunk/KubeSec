@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  name: {{ template "jindofs.fullname" . }}-config
+  labels:
+    name: {{ template "jindofs.fullname" . }}-config
+    app: {{ template "jindofs.name" . }}
+    chart: {{ template "jindofs.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- include "library.fluid.labels" . | nindent 4 }}
+data:
+  bigboot.cfg: |
+    [bigboot]
+    logger.dir =  {{ .Values.properties.logDir }}
+    logger.cleanner.enable = true
+    {{- if .Values.logConfig }}
+    {{- range $key, $val := .Values.logConfig }}
+    {{ $key }} = {{ $val }}
+    {{- end}}
+    {{- else }}
+    logger.jnilogger = false
+    logger.stderrlogger = true
+    {{- end}}
+    {{- range $key, $val := .Values.master.secretProperties }}
+    {{ $key }} = {{ $val }}
+    {{- end}}
+
+    [bigboot-namespace]
+    {{- range $key, $val := .Values.master.properties }}
+    {{ $key }} = {{ $val }}
+    {{- end}}
+    namespace.filelet.atime.enable = false
+
+    [bigboot-storage]
+    {{- range $key, $val := .Values.worker.properties }}
+    {{ $key }} = {{ $val }}
+    {{- end}}
+    storage.compaction.enable = false
+
+    [bigboot-client]
+    {{- range $key, $val := .Values.fuse.properties }}
+    {{ $key }} = {{ $val }}
+    {{- end}}
+    client.read.storagepolicy.ignore = true
+  core-site.xml: |
+    <?xml version="1.0"?>
+    <configuration>
+      <property>
+          <name>jindo.common.accessKeyId</name>
+          <value>{{ .Values.master.osskey }}</value>
+      </property>
+      <property>
+          <name>jindo.common.accessKeySecret</name>
+          <value>{{ .Values.master.osssecret }}</value>
+      </property>
+      <property>
+          <name>fs.jfs.credentials.provider</name>
+          <value>com.aliyun.emr.fs.auth.SimpleAliyunCredentialsProvider,com.aliyun.emr.fs.auth.EnvironmentVariableCredentialsProvider,com.aliyun.emr.fs.auth.JindoCommonCredentialsProvider,com.aliyun.emr.fs.auth.CustomCredentialsProvider</value>
+      </property>
+      <property>
+          <name>fs.jfs.cache.oss.credentials.provider</name>
+          <value>com.aliyun.emr.fs.auth.SimpleAliyunCredentialsProvider,com.aliyun.emr.fs.auth.EnvironmentVariableCredentialsProvider,com.aliyun.emr.fs.auth.JindoCommonCredentialsProvider,com.aliyun.emr.fs.auth.CustomCredentialsProvider</value>
+      </property>
+      <property>
+          <name>aliyun.oss.provider.url</name>
+          <value>secrets:///token/</value>
+      </property>
+    </configuration>

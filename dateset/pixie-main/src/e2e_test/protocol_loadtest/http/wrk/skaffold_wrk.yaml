@@ -1,0 +1,15 @@
+---
+apiVersion: skaffold/v4beta1
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/pixie-oss/pixie-dev/src/e2e_test/protocol_loadtest/http/wrk
+    context: src/e2e_test/protocol_loadtest/http/wrk
+  tagPolicy:
+    dateTime: {}
+  local:
+    push: true
+manifests:
+  kustomize:
+    paths:
+    - src/e2e_test/protocol_loadtest/http/wrk/k8s

@@ -1,0 +1,26 @@
+# path inside node/vm where containers are present
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "app=nginx"
+    appkind: "deployment"
+  chaosServiceAccount: disk-fill-sa
+  experiments:
+  - name: disk-fill
+    spec:
+      components:
+        env:
+        # provide the name of container runtime, it supports docker, containerd, crio
+        - name: CONTAINER_RUNTIME
+          value: 'containerd'
+        # provide the socket file path
+        - name: SOCKET_PATH
+          value: '/run/containerd/containerd.sock'
+        - name: TOTAL_CHAOS_DURATION
+          value: '60'

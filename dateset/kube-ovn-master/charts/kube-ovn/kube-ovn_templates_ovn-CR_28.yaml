@@ -1,0 +1,46 @@
+# Source: kube-ovn/templates/ovn-CR.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.k8s.io/system-only: "true"
+  name: system:kube-ovn-cni
+rules:
+  - apiGroups:
+      - "kubeovn.io"
+      - ""
+    resources:
+      - subnets
+      - provider-networks
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+      - "kubeovn.io"
+    resources:
+      - ovn-eips
+      - ovn-eips/status
+      - nodes
+    verbs:
+      - get
+      - list
+      - patch
+      - watch
+  - apiGroups:
+      - "kubeovn.io"
+    resources:
+      - ips
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update

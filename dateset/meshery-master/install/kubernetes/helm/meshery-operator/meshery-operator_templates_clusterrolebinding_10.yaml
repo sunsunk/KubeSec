@@ -1,0 +1,19 @@
+# Source: meshery-operator/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: meshery-leader-election-rolebinding
+  namespace: default
+  labels:
+    helm.sh/chart: meshery-operator-0.6.0
+    app.kubernetes.io/name: meshery-operator
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: meshery-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: meshery-operator
+  namespace: default

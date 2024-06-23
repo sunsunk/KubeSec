@@ -1,0 +1,24 @@
+# Source: microcks/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "microcks-postman-runtime"
+  labels:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks
+    
+  annotations:
+    
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 3000
+    name: postman-runtime
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: "microcks"
+    container: postman-runtime
+    group: microcks

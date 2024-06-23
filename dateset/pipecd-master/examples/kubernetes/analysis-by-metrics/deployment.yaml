@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analysis-by-metrics
+  labels:
+    app: analysis-by-metrics
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: analysis-by-metrics
+      pipecd.dev/variant: primary
+  template:
+    metadata:
+      labels:
+        app: analysis-by-metrics
+        pipecd.dev/variant: primary
+    spec:
+      containers:
+      - name: helloworld
+        image: ghcr.io/pipe-cd/helloworld:v0.30.0
+        args:
+          - server
+        ports:
+        - containerPort: 9085

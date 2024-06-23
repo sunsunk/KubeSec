@@ -1,0 +1,172 @@
+syntax = "proto3";
+package paralus.dev.rpc.v3;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "proto/types/infrapb/v3/cluster.proto";
+import "proto/types/commonpb/v3/common.proto";
+
+message RegisterClusterRequest {
+  string token = 1;
+  bytes signingRequest = 2;
+}
+
+message RegisterClusterResponse {
+  bytes certificate = 1;
+  bytes caCertificate = 2;
+}
+
+message DeleteClusterResponse {}
+
+message UpdateClusterStatusRequest {
+  paralus.dev.types.common.v3.Metadata metadata = 1;
+  paralus.dev.types.infra.v3.ClusterStatus clusterStatus = 2;
+}
+
+message UpdateClusterStatusResponse {}
+
+message GetClusterStatusRequest {
+  paralus.dev.types.common.v3.Metadata metadata = 1;
+}
+
+message GetClusterStatusResponse {
+  paralus.dev.types.common.v3.Metadata metadata = 1;
+  paralus.dev.types.infra.v3.ClusterStatus clusterStatus = 2;
+}
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title : "Cluster Service"
+    version : "3.0"
+    contact : {name : "Paralus Dev"}
+  }
+  schemes : HTTPS
+  consumes : "application/json"
+  consumes : "application/yaml"
+  produces : "application/json"
+  produces : "application/yaml"
+  security_definitions : {
+    security : {
+      key : "BasicAuth"
+      value : {type : TYPE_BASIC}
+    }
+    security : {
+      key : "ApiKeyAuth"
+      value : {type : TYPE_API_KEY in : IN_HEADER name : "X-API-KEYID"}
+    }
+    security : {
+      key : "ApiTokenAuth"
+      value : {
+        type : TYPE_API_KEY in : IN_HEADER name : "X-API-TOKEN"
+      }
+    }
+  }
+  security : {
+    security_requirement : {
+      key : "BasicAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiKeyAuth"
+      value : {}
+    }
+    security_requirement : {
+      key : "ApiTokenAuth"
+      value : {}
+    }
+  }
+  responses : {
+    key : "403"
+    value : {
+      description : "Returned when the user does not have permission to access "
+                    "the resource."
+    }
+  }
+  responses : {
+    key : "404"
+    value : {
+      description : "Returned when the resource does not exist."
+      schema : {json_schema : {type : STRING}}
+    }
+  }
+};
+
+service ClusterService {
+    rpc CreateCluster(paralus.dev.types.infra.v3.Cluster)
+        returns (paralus.dev.types.infra.v3.Cluster) {
+      option (google.api.http) = {
+        post : "/infra/v3/project/{metadata.project}/cluster"
+        body : "*"
+      };
+  
+      option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        responses : {
+          key : "201"
+          value : {
+            description : "Returned when edge is created successfully."
+          }
+        }
+      };
+    };
+  
+    rpc GetClusters(paralus.dev.types.common.v3.QueryOptions)
+        returns (paralus.dev.types.infra.v3.ClusterList) {
+      option (google.api.http) = {
+        get : "/infra/v3/project/{project}/cluster"
+      };
+    };
+  
+    rpc GetCluster(paralus.dev.types.infra.v3.Cluster)
+        returns (paralus.dev.types.infra.v3.Cluster) {
+      option (google.api.http) = {
+        get : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}"
+      };
+    };
+
+    rpc UpdateCluster(paralus.dev.types.infra.v3.Cluster)
+        returns (paralus.dev.types.infra.v3.Cluster) {
+        option (google.api.http) = {
+            put : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}"
+            body : "*"
+        };
+    };
+    
+    rpc DeleteCluster(paralus.dev.types.infra.v3.Cluster)
+        returns (DeleteClusterResponse) {
+      option (google.api.http) = {
+        delete : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}"
+      };
+  
+      option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        responses : {
+          key : "204"
+          value : {
+            description : "Returned when project is deleted successfully."
+          }
+        }
+      };
+    };
+
+    rpc DownloadCluster(paralus.dev.types.infra.v3.Cluster)
+        returns (paralus.dev.types.common.v3.HttpBody) {
+        option (google.api.http) = {
+        get : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}/download"
+        };
+    };
+
+    rpc UpdateClusterStatus(UpdateClusterStatusRequest)
+        returns (UpdateClusterStatusResponse) {
+        option (google.api.http) = {
+            put : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}/status"
+            body : "*"
+        };
+    };
+
+    rpc GetClusterStatus(GetClusterStatusRequest)
+        returns (GetClusterStatusResponse) {
+        option (google.api.http) = {
+            get : "/infra/v3/project/{metadata.project}/cluster/{metadata.name}/status"
+        };
+    };
+  
+  }

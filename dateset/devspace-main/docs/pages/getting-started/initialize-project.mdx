@@ -1,0 +1,197 @@
+---
+title: Initialize a Project
+sidebar_label: 2. Initialize Project
+---
+
+import ChooseProjectFragment from '../_partials/choose-project.mdx';
+
+## Choose a Project
+You can either deploy one of your own projects or alternatively, checkout one of our demo applications using git:
+
+<ChooseProjectFragment/>
+
+
+<br/>
+
+## Initialize Your Project
+Run this command in your project directory to create a `devspace.yaml` config file for your project:
+```bash
+devspace init
+```
+
+```
+
+     %########%      
+     %###########%       ____                 _____                      
+         %#########%    |  _ \   ___ __   __ / ___/  ____    ____   ____ ___ 
+         %#########%    | | | | / _ \\ \ / / \___ \ |  _ \  / _  | / __// _ \
+     %#############%    | |_| |(  __/ \ V /  ____) )| |_) )( (_| |( (__(  __/
+     %#############%    |____/  \___|  \_/   \____/ |  __/  \__,_| \___\\___|
+ %###############%                                  |_|
+ %###########%
+
+
+info Detecting programming language...
+```
+
+DevSpace's initialization wizard will walk you through the setup of the project
+```
+? Select the programming language of this project  [Use arrows to move, type to filter]
+  c# (dotnet)
+> go
+  java-gradle
+  java-maven
+  javascript
+  php
+  python
+```
+Choose the language of your quickstart project. This will determine the correct [devImage](/configuration/dev/modifications/dev-image).
+
+```
+? How do you want to deploy this project?  [Use arrows to move, type to filter]
+> helm
+  kubectl
+  kustomize
+```
+Now, you can pick your preferred way to deploy the project. For now, choose [`helm`](/configuration/deployments/helm/), you can always mix and match later.
+
+```
+? Is this a DevSpace Quickstart project?  [Use arrows to move, type to filter]
+> Yes
+  No
+```
+DevSpace can detect when you're using a quickstart project.
+
+```
+? Do you want to develop this project with DevSpace or just deploy it?  [Use arrows to move, type to filter]  [Use arrows to move, type to filter]
+> I want to develop this project and my current working dir contains the source code
+  I just want to deploy this project
+```
+When initializing DevSpace, you can ask it to monitor the source code for changes, or to only set up what's needed for deploying your application.  
+Since we want to see how DevSpace handles the entire development cycle, choose the first option here.
+
+```
+? How should DevSpace build the container image for this project?  [Use arrows to move, type to filter]
+> Use this existing Dockerfile: ./Dockerfile
+  Use a different Dockerfile (e.g. ./backend/Dockerfile)
+  Use alternative build tool (e.g. jib, bazel)
+  Skip / I don't know
+```
+DevSpace expects to receive instructions, how to containerize the source code. For the quickstart projects, a Dockerfile is provided in the root folder.
+
+```
+? If you were to push any images, which container registry would you want to push to?  [Use arrows to move, type to filter]
+> Skip Registry
+  Use hub.docker.com
+  Use GitHub image registry
+  Use other registry
+```
+For local development and quick feedback cycles, we recommend to skip pushing images to any registry.
+
+```
+done Project successfully initialized
+info Configuration saved in devspace.yaml - you can make adjustments as needed
+
+You can now run:
+1. devspace use namespace - to pick which Kubernetes namespace to work in
+2. devspace dev - to start developing your project in Kubernetes
+
+Run `devspace -h` or `devspace [command] -h` to see a list of available commands and flags
+```
+Congratulations! You have succesfully initialized your first DevSpace project! 🎉
+
+After running `devspace init`, you will see 3 changes in your project:
+1. New file `devspace.yaml` (tells DevSpace how this project should be build, deployed, and developed)
+2. New file `devspace_start.sh` (is used to show information to the user when the terminal for the dev container opens)
+3. Added `.devspace/` folder to `.gitignore` (the `.devspace/` folder is used by DevSpace to store some information locally when you are working with this project, e.g. caching to speed up things)
+
+The `devspace.yaml` should look similar to this one:
+```yaml title=devspace.yaml
+version: v2beta1
+name: devspace-quickstart-golang
+
+# This is a list of `pipelines` that DevSpace can execute (you can define your own)
+pipelines:
+  # This is the pipeline for the main command: `devspace dev` (or `devspace run-pipeline dev`)
+  dev:
+    run: |-
+      run_dependencies --all       # 1. Deploy any projects this project needs (see "dependencies")
+      create_deployments --all     # 2. Deploy Helm charts and manifests specfied as "deployments"
+      start_dev app                # 3. Start dev mode "app" (see "dev" section)
+  # You can run this pipeline via `devspace deploy` (or `devspace run-pipeline deploy`)
+  deploy:
+    run: |-
+      run_dependencies --all                            # 1. Deploy any projects this project needs (see "dependencies")
+      build_images --all -t $(git describe --always)    # 2. Build, tag (git commit hash) and push all images (see "images")
+      create_deployments --all                          # 3. Deploy Helm charts and manifests specfied as "deployments"
+
+# This is a list of `images` that DevSpace can build for this project
+# We recommend to skip image building during development (devspace dev) as much as possible
+images:
+  app:
+    image: ghcr.io/loft-sh/devspace/app
+    dockerfile: ./Dockerfile
+
+# This is a list of `deployments` that DevSpace can create for this project
+deployments:
+  app:
+    # This deployment uses `helm` but you can also define `kubectl` deployments or kustomizations
+    helm:
+      # We are deploying this project with the Helm chart you provided
+      chart:
+        name: component-chart
+        repo: https://charts.devspace.sh
+      # Under `values` we can define the values for this Helm chart used during `helm install/upgrade`
+      # You may also use `valuesFiles` to load values from files, e.g. valuesFiles: ["values.yaml"]
+      values:
+        containers:
+          - image: gentele/app
+        service:
+          ports:
+            - port: 8080
+
+# This is a list of `dev` containers that are based on the containers created by your deployments
+dev:
+  app:
+    # Search for the container that runs this image
+    imageSelector: ghcr.io/loft-sh/devspace/app
+    # Replace the container image with this dev-optimized image (allows to skip image building during development)
+    devImage: ghcr.io/loft-sh/devspace-containers/go:1.18-alpine
+    # Forward the following ports to be able access your application via localhost
+    ports:
+      - port: "2345"
+      - port: "8080"
+    # Open the following URLs once they return an HTTP status code other than 502 or 503
+    open:
+      - url: http://localhost:8080
+    # Open a terminal and use the following command to start it
+    terminal:
+      command: ./devspace_start.sh
+    # Sync files between the local filesystem and the development container
+    sync:
+      - path: ./
+    # Inject a lightweight SSH server into the container (so your IDE can connect to the remote dev env)
+    ssh:
+      enabled: true
+    # Make the following commands from my local machine available inside the dev container
+    proxyCommands:
+      - command: devspace
+      - command: kubectl
+      - command: helm
+      - command: git
+
+# Use the `commands` section to define repeatable dev workflows for this project 
+commands:
+  migrate-db:
+    command: |-
+      echo 'This is a cross-platform, shared command that can be used to codify any kind of dev task.'
+      echo 'Anyone using this project can invoke it via "devspace run migrate-db"'
+
+# Define dependencies to other projects with a devspace.yaml
+# dependencies:
+#   api:
+#     git: https://...  # Git-based dependencies
+#     tag: v1.0.0
+#   ui:
+#     path: ./ui        # Path-based dependencies (for monorepos)
+```

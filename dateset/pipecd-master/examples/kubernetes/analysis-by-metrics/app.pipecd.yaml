@@ -1,0 +1,31 @@
+apiVersion: pipecd.dev/v1beta1
+kind: KubernetesApp
+spec:
+  name: analysis-by-metrics
+  labels:
+    env: example
+    team: product
+  pipeline:
+    stages:
+      - name: K8S_CANARY_ROLLOUT
+        with:
+          replicas: 20%
+      - name: ANALYSIS
+        with:
+          duration: 30m
+          metrics:
+            - strategy: THRESHOLD
+              provider: my-prometheus
+              interval: 5m
+              expected:
+                max: 0.01
+              query: |
+                sum by (job) (rate(http_requests_total{status=~"5.*", job="analysis"}[5m]))
+                /
+                sum by (job) (rate(http_requests_total{job="analysis"}[5m]))
+      - name: K8S_PRIMARY_ROLLOUT
+      - name: K8S_CANARY_CLEAN
+  description: |
+    This app demonstrates how to use ANALYSIS stage to analyze the deployment based on its metrics.\
+    After new version has been deployed to receive 20% of traffic, Piped periodically requests the specified query to analyze its metrics data.\
+    References: [adding a new app](https://pipecd.dev/docs/user-guide/managing-application/adding-an-application/), [app configuration](https://pipecd.dev/docs/user-guide/configuration-reference/)

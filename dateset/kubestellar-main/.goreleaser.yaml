@@ -1,0 +1,32 @@
+builds:
+- id: "controller-manager"
+  main: ./cmd/controller-manager
+  binary: bin/controller-manager
+  ldflags:
+  - "{{ .Env.LDFLAGS }}"
+  goos:
+  - linux
+  goarch:
+  - amd64
+  - arm64
+  env:
+  - CGO_ENABLED=0
+kos:           
+  - repository: ghcr.io/kubestellar/kubestellar/controller-manager
+    main: ./cmd/controller-manager
+    build: controller-manager
+    tags:
+    - '{{.Version}}'
+    bare: true
+    preserve_import_paths: false
+    ldflags:
+    - "{{ .Env.LDFLAGS }}"
+    platforms:
+    - linux/amd64
+    - linux/arm64
+release:
+  draft: false
+  prerelease: auto
+  mode: keep-existing
+
+

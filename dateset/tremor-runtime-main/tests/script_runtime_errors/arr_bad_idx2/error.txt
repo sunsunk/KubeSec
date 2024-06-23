@@ -1,0 +1,3 @@
+Error: 
+    2 | event[idx]
+      |       ^^^ Array index out of bounds, got index 42 but expected an index in the range 0:3

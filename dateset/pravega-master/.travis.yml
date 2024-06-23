@@ -1,0 +1,59 @@
+#
+# Copyright Pravega Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+git:
+  depth: false
+language: java
+install: true
+jdk:
+ - openjdk11
+
+env:
+  global:
+    - GRADLE_OPTS="-Xms128m"
+
+jobs:
+  include:
+    # Travis CI build has been deprecated in favor of GitHub Actions.
+    - stage: build
+      if: type IN (push, pull_request)
+      install: echo "Travis task disabled."
+      script: echo "Travis task disabled."
+
+sudo: required
+
+services:
+  - docker
+
+cache:
+  directories:
+   - ".gradle"
+   - "$HOME/.gradle"
+   - "$HOME/.m2"
+
+notifications:
+  slack:
+    matrix:
+      - secure: Gv0RJx1Sa/y5fmvLNwY+2ivfWZYCM0ekrr6UAHqsegnid6P/DFZrSrfSpwvcVh2OVNH8DHLV0BoiuDJ7amtl1eMDMXz5/lLz8tFWFKaHv4yDSadm8ILY/KnYUoP4IRuM3NyKQmBrmZB9Or5KFXboG6ex6UkgbuYy0Zyl6syEe168Iw8hlCRx26Jei7/y+8eE2MIGFh09TLRZ/944YbULum9H3KQLYv8nFdPc7GmR5AK461fnwZ7iYjb7MXkCctE5Vml3p9+2Qliv1ZJqNsQeKmSFW6IhiP6pNZ1V8VJEWMQmX/nBr9745l/N+CoLQz9ajLonlxn9xHdWms4TEu1ynFk6uxEJjlcpXcvcEaKhqAKcTMl0GMMRab2m+/Vt3S/VutJnVXQmnhZGT9glLFQHwcdHNqM/LEbXtyisB7zmGImUQpF2InCwO25IXug5gv64IfOHGMzL56yNIhbRgBY9Ud4Tux+pmkV5ZxJiBkul7/FiHQX7tQLUrzQosD0oyCOmaWD7kmbt15A0TOkLgup4HE+sSS1ASwisa7J2+HsbI3Upy3rNVKuIJP0L4KSTn4HSlDlMLLcWM+nz/YCEfuwSRXJTIstotNYHdsLUZAZSYAX7ejpeiuBRed4a4AlCROeKbKKwCcSvqCOjmCaPTpwJAGeJByOXLL2hfQzpDMKCIKM=
+      - secure: hnpxdryHJEJk4S29yh0F2kRQEYN4uQp5Yk+mUTAm0sbdBLCP/v8l6982coWhqDOSR+FAtISoi23lgglbbHDZZTn/mjFx0tg5jrR1Gw17JnJkWEC7ffOnlbD498sTUZ+8nkYJooDsQVZbYN6ihjrPkbrEfaqLApLMqHqUkpdgx49E1huV7mgMM7BW7Y58OIp1rO/uTJOLWfrhh0ULa+X1EjVkUOUTpfwl/q7cuk0CtkpQZbmV2Dofg/6w+18jiDNZIdx1Mbf5hEy/nNzmrt8u1gcFvDxvtjLuzPckbkUGaq+jXXex83+mE72KT0BN6DKbzCoFEPIatJ7oDlZOLBwiChWEu4GBMKNmRH2M0lIwSs4pYni6K8nhFiMOjQlckmghnVB+izcpyZut8Bp91SureEL+lGWsv9zRn+CymaOM5ndiS0/MiFPXGUYak+6t4kYqADDqWMQC5auEn0VVDAsiy5Vzy+TCEpjwxtDfK3NuNEGoopqGsUA0pvxDjNOghZW5K2YylHQek4BcEjhSJhnPtv9h+5rDwz6kPQFpca4QmbBh3XOVXtTvPGqQlQiFyguT0C2dzfTNjjAwHE1g7bygXY2Uo6eetFi4Q2+i70OdTdKp2I9lpVlpEnjD7nhDjsj46EQy6aWp24q/LVaeh7hL0STFzzC+nwxBGnySUrVgEI0=
+    rooms:
+      - secure: Gv0RJx1Sa/y5fmvLNwY+2ivfWZYCM0ekrr6UAHqsegnid6P/DFZrSrfSpwvcVh2OVNH8DHLV0BoiuDJ7amtl1eMDMXz5/lLz8tFWFKaHv4yDSadm8ILY/KnYUoP4IRuM3NyKQmBrmZB9Or5KFXboG6ex6UkgbuYy0Zyl6syEe168Iw8hlCRx26Jei7/y+8eE2MIGFh09TLRZ/944YbULum9H3KQLYv8nFdPc7GmR5AK461fnwZ7iYjb7MXkCctE5Vml3p9+2Qliv1ZJqNsQeKmSFW6IhiP6pNZ1V8VJEWMQmX/nBr9745l/N+CoLQz9ajLonlxn9xHdWms4TEu1ynFk6uxEJjlcpXcvcEaKhqAKcTMl0GMMRab2m+/Vt3S/VutJnVXQmnhZGT9glLFQHwcdHNqM/LEbXtyisB7zmGImUQpF2InCwO25IXug5gv64IfOHGMzL56yNIhbRgBY9Ud4Tux+pmkV5ZxJiBkul7/FiHQX7tQLUrzQosD0oyCOmaWD7kmbt15A0TOkLgup4HE+sSS1ASwisa7J2+HsbI3Upy3rNVKuIJP0L4KSTn4HSlDlMLLcWM+nz/YCEfuwSRXJTIstotNYHdsLUZAZSYAX7ejpeiuBRed4a4AlCROeKbKKwCcSvqCOjmCaPTpwJAGeJByOXLL2hfQzpDMKCIKM=
+      - secure: hnpxdryHJEJk4S29yh0F2kRQEYN4uQp5Yk+mUTAm0sbdBLCP/v8l6982coWhqDOSR+FAtISoi23lgglbbHDZZTn/mjFx0tg5jrR1Gw17JnJkWEC7ffOnlbD498sTUZ+8nkYJooDsQVZbYN6ihjrPkbrEfaqLApLMqHqUkpdgx49E1huV7mgMM7BW7Y58OIp1rO/uTJOLWfrhh0ULa+X1EjVkUOUTpfwl/q7cuk0CtkpQZbmV2Dofg/6w+18jiDNZIdx1Mbf5hEy/nNzmrt8u1gcFvDxvtjLuzPckbkUGaq+jXXex83+mE72KT0BN6DKbzCoFEPIatJ7oDlZOLBwiChWEu4GBMKNmRH2M0lIwSs4pYni6K8nhFiMOjQlckmghnVB+izcpyZut8Bp91SureEL+lGWsv9zRn+CymaOM5ndiS0/MiFPXGUYak+6t4kYqADDqWMQC5auEn0VVDAsiy5Vzy+TCEpjwxtDfK3NuNEGoopqGsUA0pvxDjNOghZW5K2YylHQek4BcEjhSJhnPtv9h+5rDwz6kPQFpca4QmbBh3XOVXtTvPGqQlQiFyguT0C2dzfTNjjAwHE1g7bygXY2Uo6eetFi4Q2+i70OdTdKp2I9lpVlpEnjD7nhDjsj46EQy6aWp24q/LVaeh7hL0STFzzC+nwxBGnySUrVgEI0=
+  email:
+    - tom.kaitchuck@dell.com
+    - andrei.paduroiu@dell.com
+    - shivesh.ranjan@dell.com
+    - sandeep.shridhar@dell.com
+    - fpj@pravega.io

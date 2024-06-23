@@ -1,0 +1,123 @@
+# Source: dapr/charts/dapr_placement/templates/dapr_placement_statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dapr-placement-server
+  namespace: default
+  labels:
+    app: dapr-placement-server
+    app.kubernetes.io/component: placement
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/name: my-release
+    app.kubernetes.io/part-of: dapr
+    app.kubernetes.io/version: edge
+spec:
+  replicas: 1
+  serviceName: dapr-placement-server
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: dapr-placement-server
+  template:
+    metadata:
+      labels:
+        app: dapr-placement-server
+        app.kubernetes.io/component: placement
+        app.kubernetes.io/managed-by: helm
+        app.kubernetes.io/name: my-release
+        app.kubernetes.io/part-of: dapr
+        app.kubernetes.io/version: edge
+      annotations:
+        dapr.io/control-plane: placement
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/"
+    spec:
+      containers:
+      - name: dapr-placement-server
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 3
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 5
+        image: "ghcr.io/dapr/placement:edge"
+        imagePullPolicy: IfNotPresent
+        resources:
+          {}
+        volumeMounts:
+          - name: dapr-trust-bundle
+            mountPath: /var/run/secrets/dapr.io/tls
+            readOnly: true
+          - name: dapr-identity-token
+            mountPath: /var/run/secrets/dapr.io/sentrytoken
+        ports:
+          - containerPort: 50005
+            name: api
+          - containerPort: 8201
+            name: raft-node
+          - name: metrics
+            containerPort: 9090
+            protocol: TCP
+        command:
+        - "/placement"
+        args:
+        - "--log-level"
+        - info
+        - "--enable-metrics"
+        - "--replicationFactor"
+        - "100"
+        - "--max-api-level"
+        - "10"
+        - "--min-api-level"
+        - "0"
+        - "--metrics-port"
+        - "9090"
+        - "--tls-enabled"
+        - "--trust-domain=cluster.local"
+        - "--trust-anchors-file=/var/run/secrets/dapr.io/tls/ca.crt"
+        - "--sentry-address=dapr-sentry.default.svc.cluster.local:443"
+        - "--mode=kubernetes"
+        securityContext:
+          runAsUser: 0
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        env:
+        - name: PLACEMENT_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      serviceAccountName: dapr-placement
+      volumes:
+      - name: dapr-trust-bundle
+        configMap:
+          name: dapr-trust-bundle
+      - name: dapr-identity-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 600
+              audience: "spiffe://cluster.local/ns/default/dapr-sentry"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                    - linux

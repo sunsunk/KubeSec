@@ -1,0 +1,26 @@
+---
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: linstor-satellite
+  patch: |
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: linstor-satellite
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: usr-src
+            $patch: delete
+          initContainers:
+          - name: drbd-module-loader
+            volumeMounts:
+            - name: usr-src
+              mountPath: /usr/src
+              $patch: delete
+            env:
+            - name: LB_HOW
+              value: shipped_modules

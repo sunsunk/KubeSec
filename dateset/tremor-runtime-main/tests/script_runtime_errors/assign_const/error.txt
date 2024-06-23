@@ -1,0 +1,7 @@
+Error: 
+    1 | const A = {"snot": "badger"};
+    2 | 
+    3 | let A.snot = event;
+      |     ^^^^^^^^^^^^^^ Can't assign to a constant expression
+    4 | 
+    5 | A

@@ -1,0 +1,208 @@
+---
+name: build-and-test
+on:
+  pull_request_target:
+  push:
+    branches:
+    - 'main'
+  schedule:
+  # Run at 23:09 PST (07:09 UTC) every sunday. Github suggests not running actions on the hour.
+  - cron: '9 7 * * 0'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  env-protect-setup:
+    runs-on: ubuntu-latest
+    outputs:
+      env-name: ${{ steps.output.outputs.env-name }}
+      ref: ${{ steps.output.outputs.ref }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+    - id: output
+      uses: ./.github/actions/env_protected_pr
+  authorize:
+    runs-on: ubuntu-latest
+    needs: env-protect-setup
+    environment: ${{ needs.env-protect-setup.outputs.env-name }}
+    steps:
+    - run: echo "Authorized"
+  get-dev-image:
+    needs: [authorize, env-protect-setup]
+    uses: ./.github/workflows/get_image.yaml
+    with:
+      image-base-name: "dev_image_with_extras"
+      ref: ${{ needs.env-protect-setup.outputs.ref }}
+  clang-tidy:
+    runs-on: ubuntu-latest-16-cores
+    needs: [authorize, env-protect-setup, get-dev-image]
+    container:
+      image: ${{ needs.get-dev-image.outputs.image-with-tag }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        fetch-depth: 0
+        ref: ${{ needs.env-protect-setup.outputs.ref }}
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - name: get bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Save Diff Info
+      run: ./ci/save_diff_info.sh
+    - name: Run Clang Tidy
+      shell: bash
+      # yamllint disable rule:indentation
+      run: |
+        diff_file="diff_origin_main_cc"
+        if [[ "${{ github.event_name }}" == "push" ]] || [[ "${{ github.event_name }}" == "schedule" ]]; then
+          diff_file="diff_head_cc"
+        fi
+        ./ci/run_clang_tidy.sh -f "${diff_file}"
+      # yamllint enable rule:indentation
+  code-coverage:
+    if: github.event_name == 'push'
+    needs: [authorize, env-protect-setup, get-dev-image]
+    runs-on: ubuntu-latest-16-cores
+    container:
+      image: ${{ needs.get-dev-image.outputs.image-with-tag }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        fetch-depth: 0
+        ref: ${{ needs.env-protect-setup.outputs.ref }}
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - name: get bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        dev: 'false'
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Collect and upload coverage
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        # Github actions container runner creates a docker network without IPv6 support. We enable it manually.
+        sysctl -w net.ipv6.conf.lo.disable_ipv6=0
+        ./ci/collect_coverage.sh -u -b main -c "$(git rev-parse HEAD)" -r pixie-io/pixie
+  generate-matrix:
+    needs: [authorize, env-protect-setup, get-dev-image]
+    runs-on: ubuntu-latest-16-cores
+    container:
+      image: ${{ needs.get-dev-image.outputs.image-with-tag }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        fetch-depth: 0
+        ref: ${{ needs.env-protect-setup.outputs.ref }}
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - name: get bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Set matrix
+      id: set-matrix
+      shell: bash
+      run: |
+        matrix="$(./ci/github/matrix.sh '${{ github.event_name }}')"
+        echo "Build & Test matrix: ${matrix}"
+        echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+    - name: Upload Target Files
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce  # v3.1.2
+      with:
+        name: target_files
+        path: |
+          bazel_buildables_*
+          bazel_tests_*
+  build-and-test:
+    needs: [authorize, env-protect-setup, get-dev-image, generate-matrix]
+    runs-on: ubuntu-latest-16-cores
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    container:
+      image: ${{ needs.get-dev-image.outputs.image-with-tag }}
+      options: --privileged
+    if: ${{ needs.generate-matrix.outputs.matrix && (toJson(fromJson(needs.generate-matrix.outputs.matrix)) != '[]') }}
+    strategy:
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      with:
+        ref: ${{ needs.env-protect-setup.outputs.ref }}
+    - name: Add pwd to git safe dir
+      run: git config --global --add safe.directory `pwd`
+    - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a  # v3.0.2
+    - name: get bazel config
+      uses: ./.github/actions/bazelrc
+      with:
+        dev: ${{ github.event_name == 'push' && 'false' || 'true' }}
+        BB_API_KEY: ${{ secrets.BB_IO_API_KEY }}
+    - name: Clear stale test.xml
+      shell: bash
+      run: rm -rf "$(bazel info ${{ matrix.args }} bazel-testlogs --noshow_progress 2>/dev/null)"
+    - name: Build ${{ matrix.name }}
+      shell: bash
+      # yamllint disable rule:indentation
+      run: |
+        ./scripts/bazel_ignore_codes.sh build \
+          ${{ matrix.args }} \
+          --target_pattern_file=target_files/${{ matrix.buildables }} \
+          2> >(tee bazel_stderr)
+      # yamllint enable rule:indentation
+    - name: Test ${{ matrix.name }}
+      if: ${{ matrix.tests }}
+      shell: bash
+      # yamllint disable rule:indentation
+      run: |
+        # Github actions container runner creates a docker network without IPv6 support. We enable it manually.
+        sysctl -w net.ipv6.conf.lo.disable_ipv6=0
+        ./scripts/bazel_ignore_codes.sh test ${{ matrix.args }} --target_pattern_file=target_files/${{ matrix.tests }} \
+          2> >(tee bazel_stderr)
+      # yamllint enable rule:indentation
+    - name: Parse junit reports
+      uses: dorny/test-reporter@afe6793191b75b608954023a46831a3fe10048d4  # v1.7.0
+      if: always()
+      with:
+        name: testlogs-${{ matrix.name }} tests
+        path: 'bazel-testlogs/**/test.xml'
+        reporter: java-junit
+        list-suites: all
+        list-tests: failed
+        fail-on-empty: false
+    - name: Buildbuddy URL
+      if: always()
+      run: |
+        [[ -f bazel_stderr ]] || (echo "Error before bazel ran" && exit 1)
+        bb_url="$(cat bazel_stderr | grep -Po "(?<=Streaming build results to: ).*" | tail -n 1)"
+        echo "${bb_url}"
+      shell: bash
+  build-and-test-status:
+    if: always()
+    needs: [build-and-test, clang-tidy, generate-matrix]
+    runs-on: ubuntu-latest
+    steps:
+    - if: needs.build-and-test.result == 'success' && needs.clang-tidy.result == 'success'
+      run: echo "Build and Test complete ✓"
+    - if: >
+        needs.generate-matrix.result == 'success' && needs.clang-tidy.result == 'success'
+        && needs.build-and-test.result == 'skipped'
+      run: echo "Build and Test skipped no matrix configs generated ✓"
+    # yamllint disable rule:indentation
+    - if: >
+        !(needs.build-and-test.result == 'success' && needs.clang-tidy.result == 'success') &&
+        !(needs.generate-matrix.result == 'success' &&
+          needs.clang-tidy.result == 'success' &&
+          needs.build-and-test.result == 'skipped')
+    # yamllint enable rule:indentation
+      run: |
+        echo "Build and Test failed"
+        exit 1

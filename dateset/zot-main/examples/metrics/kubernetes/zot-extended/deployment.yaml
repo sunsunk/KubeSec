@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zot-extended
+  labels:
+    app: zot-extended
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zot-extended
+  template:
+    metadata:
+      labels:
+        app: zot-extended
+    spec:
+      containers:
+      - name: zot-extended
+        image: zot-build:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/usr/bin/zot"]
+        args: ["serve", "/zot-config/config.json"]
+        ports:
+        - name: zot-extended
+          containerPort: 5000
+          protocol: TCP
+        volumeMounts:
+          - name: zot-config
+            mountPath: /zot-config
+            readOnly: false
+      volumes:
+        - name: zot-config
+          configMap:
+            name: zot-config
+            items:
+            - key: zot_config.json
+              path: config.json
+            - key: htpasswd
+              path: htpasswd
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zot-config
+data:
+  zot_config.json: |
+    {
+      "distSpecVersion":"1.0.1",
+      "storage": {
+          "rootDirectory": "/var/lib/registry"
+      },
+      "http": {
+          "address": "0.0.0.0",
+          "port": "5000",
+          "auth": {
+              "htpasswd": {
+                "path": "/zot-config/htpasswd"
+              }
+          },
+          "accessControl": {
+              "metrics":{
+                  "users": ["metrics"]
+              },
+              "repositories": {
+                  "**": {
+                      "anonymousPolicy": [
+                          "read"
+                      ],
+                      "defaultPolicy": ["read","create"]
+                  }
+              }
+          }
+      },
+      "log": {
+          "level": "debug"
+      },
+      "extensions": {
+          "metrics": {
+              "enable": true,
+              "prometheus": {
+                  "path": "/metrics"
+              }
+          }
+      }
+    }
+  zot_minimal.json: |
+    {
+      "distSpecVersion":"1.0.1",
+      "storage": {
+          "rootDirectory": "/var/lib/registry"
+      },
+      "http": {
+          "address": "0.0.0.0",
+          "port": "5050"
+      },
+      "log": {
+          "level": "debug"
+      }
+    }
+  zxp.json: |
+    {
+      "Server": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": "5050"
+      },
+      "Exporter": {
+        "port": "5051",
+        "log": {
+            "level": "debug"
+        }
+      }
+    }
+  # Example htpasswd with 'test:test' & 'metrics:metrics' user:pass pairs
+  htpasswd: |-
+    test:$2y$05$.jSWenVyzEK3em/Gfr0AG.WRSAIdi4nxqW9h27xK7WCw24wmQH/1m
+    metrics:$2y$05$4yBka/ZTKgXhvCMb48BnyOZqj/DrKT1sGPZLAg5RbobQ0CQCJHmTO

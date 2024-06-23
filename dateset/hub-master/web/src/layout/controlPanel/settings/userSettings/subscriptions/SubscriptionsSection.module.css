@@ -1,0 +1,74 @@
+.fitCell {
+  width: 1%;
+}
+
+.table th {
+  line-height: 1;
+  height: 55px;
+}
+
+.tableTitle:hover {
+  background-color: inherit !important;
+}
+
+.checkbox {
+  margin-top: 0.25rem;
+}
+
+.checkbox,
+.checkbox + label {
+  cursor: pointer;
+}
+
+.checkbox:disabled,
+.checkbox:disabled + label {
+  cursor: auto;
+}
+
+.imageWrapper {
+  min-width: 25px;
+  width: 25px;
+  height: 25px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.icon {
+  width: 21px;
+}
+
+.legend {
+  font-size: 85%;
+}
+
+.switchLoading {
+  left: calc(50% + 1.5rem);
+  top: 0;
+}
+
+.body {
+  background-color: var(--bs-white);
+}
+
+@media only screen and (max-width: 767.98px) {
+  .btnAction {
+    margin-left: 0.6rem;
+    height: 2rem;
+    width: 2rem;
+    padding: 0 !important;
+    font-size: 1.5rem !important;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}

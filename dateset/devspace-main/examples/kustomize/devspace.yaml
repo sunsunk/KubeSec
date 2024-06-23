@@ -1,0 +1,22 @@
+version: v2beta1
+
+deployments:
+  my-deployment:
+    kubectl:
+      kustomize: true
+      manifests:
+      - kube
+
+dev:
+  my-dev:
+    labelSelector:
+      app.kubernetes.io/component: default
+    devImage: node:17-alpine
+    terminal: {}
+    workingDir: /app
+    ports:
+    - port: 3000
+    sync:
+    - path: ./
+      excludePaths:
+      - node_modules

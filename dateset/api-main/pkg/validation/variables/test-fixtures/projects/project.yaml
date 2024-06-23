@@ -1,0 +1,9 @@
+# Variables are defined in test-fixtures/variables/variables-referenced.yaml
+name: project1
+clonePath: "/{{foo}}"
+git:
+  checkoutFrom:
+    revision: "{{foo}}"
+  remotes:
+    "foo": "{{ bar }}"
+    "{{foo}}{{bar}}": "{{bar}}{{foo}}"

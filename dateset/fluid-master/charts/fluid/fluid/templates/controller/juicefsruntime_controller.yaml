@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juicefsruntime-controller
+  namespace: dynamic_parameters
+  labels:
+    control-plane: juicefsruntime-controller
+spec:
+  selector:
+    matchLabels:
+      control-plane: juicefsruntime-controller
+  replicas: dynamic_parameters
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        control-plane: juicefsruntime-controller
+      annotations:
+         controller.runtime.fluid.io/replicas: dynamic_parameters
+    spec:
+      imagePullSecrets:
+      serviceAccountName: juicefsruntime-controller
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: NotIn
+                values:
+                - virtual-kubelet
+      tolerations:
+      #hostNetwork: true
+      containers:
+      - image: "dynamic_parameters"
+        name: manager
+        args:
+          - --development=false
+          - --pprof-addr=:6060
+          - --enable-leader-election
+          - --runtime-workers=dynamic_parameters
+          - --leader-election-namespace=dynamic_parameters
+        command: ["juicefsruntime-controller", "start"]
+        env:
+          - name: IMAGE_PULL_SECRETS
+            value: dynamic_parameters
+          - name: JUICEFS_CE_IMAGE_ENV
+            value: dynamic_parameters
+          - name: JUICEFS_EE_IMAGE_ENV
+            value: dynamic_parameters
+          - name: MOUNT_ROOT
+            value: dynamic_parameters
+          - name: CRITICAL_FUSE_POD
+            value: dynamic_parameters
+          - name: FLUID_SYNC_RETRY_DURATION
+            value: dynamic_parameters
+          - name: HELM_DRIVER
+            value: dynamic_parameters
+        ports:
+        - containerPort: 8080
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 1536Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+      terminationGracePeriodSeconds: 10
+
+---
+
+---

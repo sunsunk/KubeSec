@@ -1,0 +1,27 @@
+# Source: hwameistor/templates/pvc-autoresizer.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwameistor-pvc-autoresizer
+  namespace: default
+  labels:
+    app: hwameistor-pvc-autoresizer
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hwameistor-pvc-autoresizer
+  template:
+    metadata:
+      labels:
+        app: hwameistor-pvc-autoresizer
+    spec:
+      serviceAccountName: hwameistor-admin
+      containers:
+        - name: pvc-autoresizer
+          image: ghcr.io/hwameistor/pvc-autoresizer:v0.14.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            null

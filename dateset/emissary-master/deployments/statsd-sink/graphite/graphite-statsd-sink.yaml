@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statsd-sink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: statsd-sink
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: statsd-sink
+    spec:
+      containers:
+      - name: statsd-sink
+        image: hopsoft/graphite-statsd:latest
+        resources: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: statsd-sink
+  name: statsd-sink
+spec:
+  ports:
+  - protocol: UDP
+    port: 8125
+    name: statsd-metrics
+  - protocol: TCP
+    port: 80
+    name: graphite-www
+  selector:
+    service: statsd-sink

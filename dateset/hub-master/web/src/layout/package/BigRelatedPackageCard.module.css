@@ -1,0 +1,89 @@
+.imageWrapper {
+  min-width: 50px;
+  width: 50px;
+  height: 50px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.link {
+  color: var(--gray-dark);
+}
+
+.link:hover {
+  color: inherit;
+}
+
+.mx50 {
+  max-width: 50%;
+}
+
+.title {
+  font-size: 1rem;
+}
+
+.titleWrapper {
+  margin-top: -3px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  line-height: 20px;
+}
+
+.subtitle span {
+  font-size: 0.75rem;
+}
+
+.kind {
+  font-size: 0.9rem;
+  color: var(--color-1-500);
+}
+
+.kindIcon {
+  height: 16px;
+  width: 16px;
+}
+
+.truncateWrapper {
+  min-width: 0;
+}
+
+.date {
+  font-size: 75%;
+}
+
+.userLink {
+  top: -1px;
+}
+
+.userIcon {
+  top: -2px;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    text-decoration: underline;
+  }
+
+  .card:hover {
+    border-color: var(--color-black-50);
+    box-shadow: 0 0.125rem 0.25rem var(--color-black-25);
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .imageWrapper {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+  }
+
+  .title {
+    font-size: 0.95rem;
+  }
+}

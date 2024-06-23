@@ -1,0 +1,46 @@
+{
+    "Tests" : [ 
+        { 
+            "FileName" : "projectsAll.yaml",
+            "ExpectOutcome" : "PASS",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsAll.yaml"] 
+        },
+        { 
+            "FileName" : "projectsMinimum.yaml",
+            "ExpectOutcome" : "PASS",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsMinimum.yaml"] 
+        },
+        { 
+            "FileName" : "projectsNoName.yaml",
+            "ExpectOutcome" : "missing properties: \"name\"",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsNoName.yaml"] 
+        },
+        { 
+            "FileName" : "projectsMixedCaseName.yaml",
+            "ExpectOutcome" : "does not match pattern",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                "devfiles/projects/projectsMixedCaseName.yaml"] 
+        }, 
+        { 
+            "FileName" : "projectsGitAndZip.yaml",
+            "ExpectOutcome" : "valid against schemas at indexes 0 and 1",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsGitAndZip.yaml"] 
+        },
+        { 
+            "FileName" : "projectsZipNoLocation.yaml",
+            "ExpectOutcome" : "expected object, but got null",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsZipNoLocation.yaml"] 
+        },
+        { 
+            "FileName" : "projectsNoGitOrZip.yaml",
+            "ExpectOutcome" : "oneOf failed",
+            "Files": ["devfiles/projects/projectsStart.yaml",
+                        "devfiles/projects/projectsNoGitOrZip.yaml"] 
+        }
+    ]                             
+}

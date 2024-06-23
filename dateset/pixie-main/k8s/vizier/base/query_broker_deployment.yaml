@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vizier-query-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vizier-query-broker
+  template:
+    metadata:
+      labels:
+        name: vizier-query-broker
+        plane: control
+      annotations:
+        px.dev/metrics_scrape: 'true'
+        px.dev/metrics_port: '50300'
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: Exists
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: Exists
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux
+      initContainers:
+      - name: mds-wait
+        # yamllint disable-line rule:line-length
+        image: gcr.io/pixie-oss/pixie-dev-public/curl:multiarch-7.87.0@sha256:f7f265d5c64eb4463a43a99b6bf773f9e61a50aaa7cefaf564f43e42549a01dd
+        # yamllint disable rule:indentation
+        command: ['sh', '-c', 'set -x;
+          URL="https://${SERVICE_NAME}:${SERVICE_PORT}/healthz";
+          until [ $(curl -m 0.5 -s -o /dev/null -w "%{http_code}" -k ${URL}) -eq 200 ]; do
+            echo "waiting for ${URL}";
+            sleep 2;
+          done;
+        ']
+        # yamllint enable rule:indentation
+        env:
+          # The name of the service that the QB must connect with before becoming available.
+        - name: SERVICE_NAME
+          value: "vizier-metadata-svc"
+        - name: SERVICE_PORT
+          value: "50400"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      containers:
+      - name: app
+        image: vizier-query_broker_server_image:latest
+        env:
+        - name: PL_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              key: jwt-signing-key
+              name: pl-cluster-secrets
+        - name: PL_POD_IP_ADDRESS
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PL_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PL_CLOUD_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: pl-cloud-config
+              key: PL_CLOUD_ADDR
+        - name: PL_DATA_ACCESS
+          value: "Full"
+        envFrom:
+        - configMapRef:
+            name: pl-tls-config
+        ports:
+        - containerPort: 50300
+        volumeMounts:
+        - mountPath: /certs
+          name: certs
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: 50300
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      serviceAccountName: query-broker-service-account
+      securityContext:
+        runAsUser: 10100
+        runAsGroup: 10100
+        fsGroup: 10100
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: certs
+        secret:
+          secretName: service-tls-certs
+      - name: envoy-yaml
+        configMap:
+          name: proxy-envoy-config

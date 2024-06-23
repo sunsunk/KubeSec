@@ -1,0 +1,442 @@
+# Copyright 2020-2023 Alibaba Group Holding Limited.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Vineyard CI
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/'
+      - '**/*.rst'
+      - '**/*.md'
+      - '**/*.txt'
+  pull_request:
+    paths-ignore:
+      - 'docs/'
+      - '**/*.rst'
+      - '**/*.md'
+      - '**/*.txt'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  CMAKE_C_COMPILER_LAUNCHER: ccache
+  CMAKE_CXX_COMPILER_LAUNCHER: ccache
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.repository == 'v6d-io/v6d' }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        metadata: [local, etcd, redis]  # disable redis for now as it seems has some nondeterministic bugs
+        exclude:
+          - metadata: local
+          - metadata: redis
+    env:
+      RUNNER_ARGS: "--meta=${{ matrix.metadata }}"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Free disk space
+        if: false
+        run: |
+          bash .github/free-disk-space.sh
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            mimalloc:
+              - 'modules/malloc/**'
+              - 'src/common/memory/**'
+              - 'src/server/memory/**'
+              - 'thirdparty/mimalloc/**'
+
+      - name: Generate Summary for Submodules
+        run: |
+          git submodule > git-modules.txt
+          cat git-modules.txt
+
+      - name: Cache for ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-${{ matrix.metadata }}-ccache-${{ hashFiles('**/git-modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.metadata }}-ccache-
+
+      - name: Install Dependencies for Linux
+        if: runner.os == 'Linux'
+        run: |
+          export PATH=/usr/lib/ccache:$PATH
+
+          sudo apt update -y
+          sudo apt install -y ca-certificates \
+                              ccache \
+                              cmake \
+                              doxygen \
+                              fuse3 \
+                              libboost-all-dev \
+                              libcurl4-openssl-dev \
+                              libfuse3-dev \
+                              libgflags-dev \
+                              libgoogle-glog-dev \
+                              libgmock-dev \
+                              libgrpc-dev \
+                              libgrpc++-dev \
+                              libkrb5-dev \
+                              libmpich-dev \
+                              libprotobuf-dev \
+                              librdkafka-dev \
+                              libgsasl7-dev \
+                              librdkafka-dev \
+                              libssl-dev \
+                              libunwind-dev \
+                              libuv1-dev \
+                              libxml2-dev \
+                              libz-dev \
+                              lsb-release \
+                              redis-server \
+                              pandoc \
+                              protobuf-compiler-grpc \
+                              python3-pip \
+                              uuid-dev \
+                              wget
+
+          # install apache-arrow
+          wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+          sudo apt install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+          sudo apt update
+          sudo apt install -y libarrow-dev=14.0.1-1 \
+                              libarrow-dataset-dev=14.0.1-1 \
+                              libarrow-acero-dev=14.0.1-1 \
+                              libarrow-flight-dev=14.0.1-1 \
+                              libgandiva-dev=14.0.1-1 \
+                              libparquet-dev=14.0.1-1
+
+          # install deps for java
+          sudo apt install -y default-jdk-headless maven
+
+          # install clang-format
+          sudo curl -L https://github.com/muttleyxd/clang-tools-static-binaries/releases/download/master-1d7ec53d/clang-format-11_linux-amd64 --output /usr/bin/clang-format
+          sudo chmod +x /usr/bin/clang-format
+
+          # avoid possible permission errors
+          ccache -o cache_dir=~/.ccache
+          sudo mkdir -p ~/.ccache
+          sudo chmod -R a+wrx ~/.ccache
+
+          # install python packages for codegen, and io adaptors
+          sudo pip3 install -U "Pygments>=2.4.1"
+          sudo pip3 install -r requirements-setup.txt -r requirements.txt -r requirements-dev.txt
+
+          # install linters
+          sudo pip3 install auditwheel black isort flake8 twine
+
+      - name: Setup tmate session
+        if: false
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Setup SSH environment
+        run: |
+          # avoid access node by DNS hostnames
+          r=`cat /etc/hosts | grep $(hostname) || true`
+          if [ -z "${r}" ];then export hn=$(hostname); sudo -E bash -c 'echo "127.0.0.1 ${hn}" >> /etc/hosts'; fi
+          cat /etc/hosts
+
+          # setup SSH server to allow login without password
+          cat > sshd_config <<EOF
+            SyslogFacility AUTHPRIV
+            PermitRootLogin yes
+            AuthorizedKeysFile	.ssh/authorized_keys
+            PasswordAuthentication yes
+            ChallengeResponseAuthentication no
+            UsePAM yes
+            UseDNS no
+            X11Forwarding no
+            PrintMotd no
+          EOF
+          sudo mv sshd_config /etc/ssh/sshd_config
+          sudo systemctl restart ssh
+
+          # generate proper SSH key
+          cat /dev/zero | ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/id_rsa
+
+          # add key to authorized_keys file
+          cat ~/.ssh/id_rsa.pub | tee -a ~/.ssh/authorized_keys
+
+          # ensure the permissions of SSH files
+          chmod 600 ~/.ssh/authorized_keys
+          chmod 700 ~/.ssh
+          sudo chmod -c 0755 ~/
+          ls -la ~/.ssh
+
+          # test SSH login, without password
+          ssh -vvv -i ~/.ssh/id_rsa -o BatchMode=yes -o StrictHostKeyChecking=no $(whoami)@localhost
+
+      - name: Setup tmate session
+        if: false
+        uses: mxschmitt/action-tmate@v3
+
+      - name: CMake
+        run: |
+          export PATH=/usr/lib/ccache:$PATH
+
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug \
+                   -DBUILD_SHARED_LIBS=ON \
+                   -DUSE_ASAN=ON \
+                   -DBUILD_VINEYARD_COVERAGE=ON \
+                   -DBUILD_VINEYARD_PYTHON_BINDINGS=ON \
+                   -DBUILD_VINEYARD_BASIC=ON \
+                   -DBUILD_VINEYARD_IO=ON \
+                   -DBUILD_VINEYARD_IO_KAFKA=ON \
+                   -DBUILD_VINEYARD_MALLOC=ON \
+                   -DBUILD_VINEYARD_HOSSEINMOEIN_DATAFRAME=ON \
+                   -DBUILD_VINEYARD_FUSE=ON \
+                   -DBUILD_VINEYARD_FUSE_PARQUET=ON \
+                   -DBUILD_VINEYARD_GRAPH=OFF \
+                   -DBUILD_VINEYARD_GRAPH_WITH_GAR=OFF \
+                   -DBUILD_VINEYARD_TESTS_ALL=ON
+
+          if [ "${{ matrix.metadata }}" == "redis" ]; then
+            cmake .. -DBUILD_VINEYARD_SERVER_REDIS=ON
+          fi
+
+      - name: Cpp format and lint
+        run: |
+          cd build
+
+          function prepend() { while read line; do echo "${1}${line}"; done; }
+
+          make vineyard_clformat
+          GIT_DIFF=$(git diff --ignore-submodules)
+          if [[ -n $GIT_DIFF ]]; then
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              echo "| clang-format failures found!"
+              echo "|"
+              echo "$GIT_DIFF" | prepend "| "
+              echo "|"
+              echo "| Run: "
+              echo "|"
+              echo "|    make vineyard_clformat"
+              echo "|"
+              echo "| to fix this error."
+              echo "|"
+              echo "| Ensure you are working with clang-format-11, which can be obtained from"
+              echo "|"
+              echo "|    https://github.com/muttleyxd/clang-tools-static-binaries/releases "
+              echo "|"
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              exit -1
+          fi
+
+          function ec() { [[ "$1" == "-h" ]] && { shift && eval $* > /dev/null 2>&1; ec=$?; echo $ec; } || eval $*; ec=$?; }
+
+          ec make vineyard_cpplint
+          if [[ "$ec" != "0" ]]; then
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              echo "| cpplint failures found! Run: "
+              echo "|"
+              echo "|    make vineyard_cpplint"
+              echo "|"
+              echo "| to fix this error."
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              exit -1
+          fi
+
+      - name: Python format and lint
+        run: |
+          function prepend() { while read line; do echo "${1}${line}"; done; }
+
+          python3 setup.py lint --inplace=true
+          GIT_DIFF=$(git diff --ignore-submodules)
+          if [[ -n $GIT_DIFF ]]; then
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              echo "| black (python format) failures found!"
+              echo "|"
+              echo "$GIT_DIFF" | prepend "| "
+              echo "|"
+              echo "|Run: "
+              echo "|"
+              echo "|    python3 setup.py lint --inplace=true"
+              echo "|"
+              echo "| to fix this error."
+              echo "|"
+              echo "| The tool black can be installed by"
+              echo "|"
+              echo "|    pip3 install black isort flake8"
+              echo "|"
+              echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+              exit -1
+          fi
+
+      - name: Build
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64
+
+          pushd build
+          make -j`nproc`
+          make vineyard_tests -j`nproc`
+          make vineyard_client_python -j`nproc`
+          make ccache-stats
+          sudo make install
+          popd
+
+          # not used anymore
+          rm -rf build/lib*
+
+          # build & install vineyard for python
+          rm -rf build/lib* build/bdist.*
+          python3 setup.py bdist_wheel
+
+          for pkg in airflow bdist dask pyspark io kedro ml llm; do
+            rm -rf build/lib* build/bdist.*
+            python3 setup_${pkg}.py bdist_wheel
+          done
+
+          # install python packages
+          twine check dist/*.whl
+          sudo pip3 install dist/*.whl -U
+
+          # don't upload incomplete vineyard_bdist to release
+          rm -rf dist/vineyard_bdist* || true
+
+      - name: Get test data
+        run: |
+          git clone https://github.com/GraphScope/gstest.git --depth=1
+
+      - name: Setup tmate session
+        if: false
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Run llm tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-llm
+
+      - name: Run cpp tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-cpp
+
+      - name: Run python tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-python
+
+      - name: Run deployment tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-deployment --with-migration
+
+      - name: Run llm python tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          pip3 install networkx==3.1 
+          pip3 install torch --index-url https://download.pytorch.org/whl/cpu
+          python3 test/runner.py $RUNNER_ARGS --with-llm-python
+
+      - name: Run contrib/thirdparty tests
+        if: false  # lack of heavy dependencies like torch/tensorflow in CI
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+          export VINEYARD_SPARK_PATH=`pwd`/java/spark/target/vineyard-spark_2.12-0.1-SNAPSHOT-jar-with-dependencies.jar
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-contrib
+
+      - name: Run I/O tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-io
+
+      - name: Run FUSE tests
+        run: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/local/lib/x86_64-linux-gnu
+          export VINEYARD_DATA_DIR=`pwd`/gstest
+          export TMPDIR="${TMPDIR:-$(dirname $(mktemp))}"
+
+          rm -rf default.etcd
+          rm -rf /dev/shm/etcd*
+          python3 test/runner.py $RUNNER_ARGS --with-fuse
+
+      - name: Run CMake tests
+        run: |
+          cmake -S test/vineyard-cmake-example -B build/vineyard-cmake-example
+          cmake --build build/vineyard-cmake-example
+
+      - name: Upload Coverage
+        if: runner.os == 'Linux'
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
+
+      - name: Extract tag name
+        id: tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Upload vineyard contrib wheels to tagged release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'v6d-io/v6d' }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*vineyard*.whl
+          file_glob: true
+          tag: ${{ steps.tag.outputs.TAG }}
+          prerelease: false
+          overwrite: true
+          body: "vineyard-contrib ${{ steps.tag.outputs.TAG }}"

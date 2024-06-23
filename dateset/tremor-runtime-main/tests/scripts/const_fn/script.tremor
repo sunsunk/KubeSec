@@ -1,0 +1,3 @@
+use std::math;
+const TWO = math::max(1, 2);
+TWO

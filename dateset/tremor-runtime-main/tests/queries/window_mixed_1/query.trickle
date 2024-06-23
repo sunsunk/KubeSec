@@ -1,0 +1,25 @@
+define window four_nanos from tumbling
+with
+  # the events have to sets of groups that alternate,
+  # a window of interval 4, since we emit an event per nanosecond,
+  # should contain 2 events for group 1 and two for group 2
+  interval = 4
+end;
+define window two_size from tumbling
+with
+  size = 2 
+end;
+define window nine_nanos from tumbling
+with
+  interval = 8 # 
+end;
+
+
+select {
+  "group": group[0],
+  "count": aggr::stats::count(),
+  "sum": aggr::stats::sum(event.num)
+}
+from in[four_nanos, two_size, nine_nanos] # tilt frame of three windows where the middle one can immediately emit, the others cant 
+group by set(event.g)
+into out;

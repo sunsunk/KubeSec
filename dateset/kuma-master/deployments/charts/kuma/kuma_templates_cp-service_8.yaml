@@ -1,0 +1,42 @@
+# Source: kuma/templates/cp-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuma-control-plane
+  namespace: default
+  labels: 
+    app: kuma-control-plane
+    helm.sh/chart: kuma-0.0.0-preview.vlocal-build
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/version: "0.0.0-preview.vlocal-build"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    prometheus.io/port: "5680"
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5680
+      name: diagnostics
+      appProtocol: http
+    - port: 5681
+      name: http-api-server
+      appProtocol: http
+    - port: 5682
+      name: https-api-server
+      appProtocol: https
+    - port: 443
+      name: https-admission-server
+      targetPort: 5443
+      appProtocol: https
+    - port: 5676
+      name: mads-server
+      appProtocol: https
+    - port: 5678
+      name: dp-server
+      appProtocol: https
+  selector:
+    app: kuma-control-plane
+    app.kubernetes.io/name: kuma
+    app.kubernetes.io/instance: my-release

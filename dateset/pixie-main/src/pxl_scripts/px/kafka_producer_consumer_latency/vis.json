@@ -1,0 +1,174 @@
+{
+    "variables": [
+        {
+            "name": "start_time",
+            "type": "PX_STRING",
+            "description": "The start time of the window in time units before now.",
+            "defaultValue": "-5m"
+        },
+        {
+            "name": "namespace",
+            "type": "PX_NAMESPACE",
+            "description": "Namespace of the application containing kafka."
+        },
+        {
+            "name": "topic",
+            "type": "PX_STRING",
+            "description": "Kafka topic.",
+            "defaultValue": "Please fill in from Kafka Topics below."
+        },
+        {
+            "name": "producer",
+            "type": "PX_STRING",
+            "description": "Kafka producer.",
+            "defaultValue": ""
+        },
+        {
+            "name": "consumer",
+            "type": "PX_STRING",
+            "description": "Kafka consumer.",
+            "defaultValue": ""
+        }
+    ],
+    "globalFuncs": [
+        {
+            "outputName": "kafka_data",
+            "func": {
+                "name": "kafka_data",
+                "args": [
+                    {
+                        "name": "start_time",
+                        "variable": "start_time"
+                    },
+                    {
+                        "name": "namespace",
+                        "variable": "namespace"
+                    },
+                    {
+                        "name": "producer",
+                        "variable": "producer"
+                    },
+                    {
+                        "name": "consumer",
+                        "variable": "consumer"
+                    },
+                    {
+                        "name": "topic",
+                        "variable": "topic"
+                    }
+                ]
+            }
+        }
+    ],
+    "widgets": [
+        {
+            "name": "Kafka Topics",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "w": 4,
+                "h": 2
+            },
+            "func": {
+                "name": "kafka_topics",
+                "args": [
+                    {
+                        "name": "start_time",
+                        "variable": "start_time"
+                    },
+                    {
+                        "name": "namespace",
+                        "variable": "namespace"
+                    }
+                ]
+            },
+            "displaySpec": {
+                "@type": "types.px.dev/px.vispb.Table"
+            }
+        },
+        {
+            "name": "Kafka Producers",
+            "position": {
+                "x": 4,
+                "y": 0,
+                "w": 4,
+                "h": 2
+            },
+            "func": {
+                "name": "kafka_producers",
+                "args": [
+                    {
+                        "name": "start_time",
+                        "variable": "start_time"
+                    },
+                    {
+                        "name": "namespace",
+                        "variable": "namespace"
+                    },
+                    {
+                        "name": "topic",
+                        "variable": "topic"
+                    }
+                ]
+            },
+            "displaySpec": {
+                "@type": "types.px.dev/px.vispb.Table"
+            }
+        },
+        {
+            "name": "Kafka Consumers",
+            "position": {
+                "x": 8,
+                "y": 0,
+                "w": 4,
+                "h": 2
+            },
+            "func": {
+                "name": "kafka_consumers",
+                "args": [
+                    {
+                        "name": "start_time",
+                        "variable": "start_time"
+                    },
+                    {
+                        "name": "namespace",
+                        "variable": "namespace"
+                    },
+                    {
+                        "name": "topic",
+                        "variable": "topic"
+                    }
+                ]
+            },
+            "displaySpec": {
+                "@type": "types.px.dev/px.vispb.Table"
+            }
+        },
+        {
+            "name": "Kafka Producer-Consumer Delay (seconds)",
+            "globalFuncOutputName": "kafka_data",
+            "displaySpec": {
+                "@type": "types.px.dev/px.vispb.TimeseriesChart",
+                "timeseries": [
+                    {
+                        "value": "delay",
+                        "series": "series_col",
+                        "stackBySeries": false,
+                        "mode": "MODE_LINE"
+                    }
+                ],
+                "title": "",
+                "yAxis": {
+                    "label": "Delay (seconds)"
+                },
+                "xAxis": null
+            },
+            "position": {
+                "x": 0,
+                "y": 2,
+                "w": 12,
+                "h": 3
+            }
+        }
+    ]
+}

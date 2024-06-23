@@ -1,0 +1,6 @@
+services:
+  foo:
+    build:
+      args:
+        buildno: 1
+        gitcommithash: cdc3b19

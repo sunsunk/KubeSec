@@ -1,0 +1,28 @@
+---
+name: Release Images
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - devel
+      - release-*
+
+permissions: {}
+
+jobs:
+  release:
+    name: Release Images
+    if: github.repository_owner == 'submariner-io'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          fetch-depth: 0
+
+      - name: Build and release new images
+        uses: submariner-io/shipyard/gh-actions/release-images@devel
+        with:
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}

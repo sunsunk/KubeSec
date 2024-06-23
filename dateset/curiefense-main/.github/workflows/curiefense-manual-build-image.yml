@@ -1,0 +1,35 @@
+name: Manual publish docker images
+
+on:
+  workflow_dispatch
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    environment: prod
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Cleaning root partition
+        run: |
+            sudo apt-get clean
+            sudo apt-get update
+
+      - name: Build and push the images
+        run: |
+            docker login -u "${{ secrets.DOCKER_HUB_USER }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+            pushd curiefense/images
+            export DOCKER_TAG=${GITHUB_REF_NAME//\//-}
+            PUSH=1 ./build-docker-images.sh
+            export DOCKER_TAG=${GITHUB_SHA}
+            PUSH=1 ./build-docker-images.sh
+
+      - name: Add 'dev' tag
+        run: |
+            docker login -u "${{ secrets.DOCKER_HUB_USER }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+            pushd curiefense/images
+            export DOCKER_TAG=dev
+            PUSH=1 ./build-docker-images.sh
